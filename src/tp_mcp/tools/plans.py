@@ -403,12 +403,32 @@ async def _get_writable_test_plan(
     return d, None
 
 
-def _check_plan_date(plan: dict[str, Any], workout_date: str) -> dict[str, Any] | None:
+def _check_plan_date(
+    plan: dict[str, Any], workout_date: str, *,
+    allow_first_workout_bootstrap: bool = False,
+) -> dict[str, Any] | None:
     target = _parse_plan_date(workout_date)
     start = _parse_plan_date((plan.get("startDate") or "")[:10])
     days = plan.get("dayCount") or (plan.get("weekCount") or 0) * 7
-    if target is None or start is None or not isinstance(days, int) or days <= 0:
-        return _err("VALIDATION_ERROR", "Invalid plan calendar dates.")
+    if target is None:
+        return _err("VALIDATION_ERROR", "Invalid plan calendar date.")
+    # A newly created STANDARD TrainingPeaks Training Plan has no startDate,
+    # weekCount or dayCount until it contains a workout (live readback on plan
+    # 684206). Allow a SINGLE, explicitly identified pilot swim to initialise
+    # that empty plan. Do not generalise this exception without a live audit.
+    if start is None or not isinstance(days, int) or days <= 0:
+        if (
+            allow_first_workout_bootstrap
+            and plan.get("planId") == 684206
+            and (plan.get("title") or "").strip()
+                == "[MCP TEST] Training Plan — Swim Bike Run"
+            and plan.get("workoutCount") in (None, 0)
+            and target == date_type(2027, 6, 21)
+        ):
+            return None
+        return _err("VALIDATION_ERROR",
+                    "Plan has no calendar range; only the guarded pilot "
+                    "bootstrap workout is permitted.")
     if not start <= target < start + timedelta(days=days):
         return _err("VALIDATION_ERROR",
                     "Target day must fall inside the [MCP TEST] plan date range.")
@@ -435,7 +455,14 @@ async def tp_add_training_plan_library_workout(
         if error is not None:
             return error
         assert plan is not None
-        date_error = _check_plan_date(plan, workout_date)
+        date_error = _check_plan_date(
+            plan, workout_date,
+            allow_first_workout_bootstrap=(
+                v.plan_id == 684206
+                and lib_id == 3890637
+                and template_id == 14935065
+            ),
+        )
         if date_error:
             return date_error
 
