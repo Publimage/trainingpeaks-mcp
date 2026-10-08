@@ -379,6 +379,9 @@ async def tp_create_training_plan(
         if (d.get("title") or "").strip() != title.strip():
             return _err("WRITE_UNVERIFIED",
                         f"Plan {plan_id} readback does not match the intended title.")
+        if d.get("isPublic") is True or d.get("price") not in (None, 0):
+            return _err("PROTECTED_RESOURCE",
+                        f"Plan {plan_id} is not confirmed private and unpriced; stop.")
         return {
             "success": True, "plan_id": plan_id,
             "title": title.strip(), "start_date": start.isoformat(),
