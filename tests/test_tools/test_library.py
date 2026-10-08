@@ -533,3 +533,54 @@ class TestScheduleLibraryWorkoutBulk:
         assert result["isError"] is True
         assert result["error_code"] == "VALIDATION_ERROR"
         mock_client.assert_not_called()
+
+
+class TestLibraryPlannedDistance:
+    @pytest.mark.asyncio
+    async def test_create_sends_distance_in_meters(self):
+        response = APIResponse(success=True, data={"exerciseLibraryItemId": 100})
+        with patch("tp_mcp.tools.library.TPClient") as mock_client:
+            client = AsyncMock()
+            client.ensure_athlete_id = AsyncMock(return_value=123)
+            client.post = AsyncMock(return_value=response)
+            mock_client.return_value.__aenter__.return_value = client
+            result = await tp_create_library_item(
+                library_id="1", name="Swim 1200 m", sport_family_id=1,
+                sport_type_id=2, distance_meters=1200, duration_hours=0.5,
+            )
+        assert result["success"] is True
+        assert client.post.call_args.kwargs["json"]["distancePlanned"] == 1200
+
+    @pytest.mark.asyncio
+    async def test_update_distance_and_preserve_existing_fields(self):
+        existing = {"exerciseLibraryItemId": 100, "itemName": "Swim",
+                    "workoutTypeId": 1, "totalTimePlanned": 0.5,
+                    "distancePlanned": None, "structure": {"structure": [{"type": "step"}]}}
+        with patch("tp_mcp.tools.library.TPClient") as mock_client:
+            client = AsyncMock()
+            client.ensure_athlete_id = AsyncMock(return_value=123)
+            client.get = AsyncMock(return_value=APIResponse(success=True, data=[existing]))
+            client.put = AsyncMock(return_value=APIResponse(success=True, data=None))
+            mock_client.return_value.__aenter__.return_value = client
+            result = await tp_update_library_item(
+                library_id="1", item_id="100", distance_meters=1200,
+            )
+        assert result["success"] is True
+        payload = client.put.call_args.kwargs["json"]
+        assert payload["distancePlanned"] == 1200
+        assert payload["totalTimePlanned"] == 0.5
+        assert payload["structure"] == {"structure": [{"type": "step"}]}
+
+    @pytest.mark.asyncio
+    async def test_negative_distance_rejected_without_writing(self):
+        with patch("tp_mcp.tools.library.TPClient") as mock_client:
+            client = AsyncMock()
+            client.ensure_athlete_id = AsyncMock(return_value=123)
+            client.post = AsyncMock()
+            mock_client.return_value.__aenter__.return_value = client
+            result = await tp_create_library_item(
+                library_id="1", name="Bad", sport_family_id=1,
+                sport_type_id=2, distance_meters=-1,
+            )
+        assert result["error_code"] == "VALIDATION_ERROR"
+        client.post.assert_not_called()

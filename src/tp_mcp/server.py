@@ -1167,6 +1167,7 @@ TOOLS = [
                     "description": "Sport subtype ID (e.g. 3=Road Bike)",
                 },
                 "duration_hours": {"type": "number"},
+                "distance_meters": {"type": "number", "minimum": 0, "description": "Planned distance in meters; stored as distancePlanned."},
                 "tss": {"type": "number"},
                 "description": {"type": "string"},
                 "structure": {"type": "object", "description": "Interval structure (nested object)"},
@@ -1184,6 +1185,7 @@ TOOLS = [
                 "item_id": {"type": "string"},
                 "name": {"type": "string"},
                 "duration_hours": {"type": "number"},
+                "distance_meters": {"type": "number", "minimum": 0, "description": "Planned distance in meters; stored as distancePlanned."},
                 "tss": {"type": "number"},
                 "description": {"type": "string"},
                 "structure": {"type": "object"},
@@ -2010,6 +2012,7 @@ async def _h_create_lib_item(args):
         sport_family_id=args["sport_family_id"], sport_type_id=args["sport_type_id"],
         duration_hours=args.get("duration_hours"), tss=args.get("tss"),
         description=args.get("description"), structure=args.get("structure"),
+        distance_meters=args.get("distance_meters"),
     )
 
 @_handler("tp_update_library_item")
@@ -2021,6 +2024,7 @@ async def _h_update_lib_item(args):
         structure=args.get("structure"),
         workout_type_id=args.get("workout_type_id"),
         workout_sub_type_id=args.get("workout_sub_type_id"),
+        distance_meters=args.get("distance_meters"),
     )
 
 @_handler("tp_schedule_library_workout")
