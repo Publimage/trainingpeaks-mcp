@@ -354,6 +354,7 @@ async def tp_create_library_item(
     tss: float | None = None,
     description: str | None = None,
     structure: dict[str, Any] | None = None,
+    distance_meters: float | None = None,
 ) -> dict[str, Any]:
     """Save a workout template to a library.
 
@@ -366,6 +367,7 @@ async def tp_create_library_item(
         tss: Optional planned TSS.
         description: Optional description.
         structure: Optional interval structure (nested object, NOT string).
+        distance_meters: Optional planned distance in meters (non-negative).
 
     Returns:
         Dict with confirmation or error.
@@ -406,6 +408,10 @@ async def tp_create_library_item(
             "workoutTypeId": sport_family_id,
             "workoutSubTypeId": sport_type_id,
         }
+        if distance_meters is not None:
+            if not isinstance(distance_meters, (int, float)) or isinstance(distance_meters, bool) or not 0 <= distance_meters < float("inf"):
+                return {"isError": True, "error_code": "VALIDATION_ERROR", "message": "distance_meters must be a finite, non-negative number."}
+            payload["distancePlanned"] = distance_meters
         if duration_hours is not None:
             payload["totalTimePlanned"] = duration_hours
         if tss is not None:
@@ -449,6 +455,7 @@ async def tp_update_library_item(
     structure: dict[str, Any] | None = None,
     workout_type_id: int | None = None,
     workout_sub_type_id: int | None = None,
+    distance_meters: float | None = None,
 ) -> dict[str, Any]:
     """Edit a workout template.
 
@@ -463,6 +470,7 @@ async def tp_update_library_item(
         workout_type_id: Optional sport/workout type (1=swim, 2=bike, 3=run, ...).
             Use to set the sport on templates that were saved without one.
         workout_sub_type_id: Optional workout subtype id (e.g. 6=Indoor Bike).
+        distance_meters: Optional planned distance in meters (non-negative).
 
     Returns:
         Dict with confirmation or error.
@@ -515,6 +523,10 @@ async def tp_update_library_item(
             }
 
         # Merge updates
+        if distance_meters is not None:
+            if not isinstance(distance_meters, (int, float)) or isinstance(distance_meters, bool) or not 0 <= distance_meters < float("inf"):
+                return {"isError": True, "error_code": "VALIDATION_ERROR", "message": "distance_meters must be a finite, non-negative number."}
+            existing["distancePlanned"] = distance_meters
         if name is not None:
             existing["itemName"] = name
         if duration_hours is not None:
