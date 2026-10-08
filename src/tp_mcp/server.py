@@ -32,8 +32,11 @@ from tp_mcp.tools import (
     tp_add_note_comment,
     tp_add_workout_comment,
     tp_analyze_workout,
+    tp_add_training_plan_library_workout,
+    tp_add_training_plan_note,
     tp_apply_training_plan,
     tp_auth_status,
+    tp_create_training_plan,
     tp_copy_workout,
     tp_create_availability,
     tp_create_equipment,
@@ -593,6 +596,53 @@ TOOLS = [
     ),
     # --- Training Plans (multi-week Plan Store / "My Plans" — distinct from
     #     workout libraries and the ATP) ---
+    Tool(
+        name="tp_create_training_plan",
+        description=("EXPERIMENTAL: create one private [MCP TEST] Training Plan. "
+                     "Candidate API body requires live verification; never retry "
+                     "after an ambiguous write."),
+        input_schema={
+            "type": "object",
+            "properties": {
+                "title": {"type": "string", "description": "Must begin with [MCP TEST]"},
+                "start_date": {"type": "string", "description": "Monday YYYY-MM-DD"},
+                "week_count": {"type": "integer", "minimum": 1, "maximum": 2},
+                "description": {"type": "string"},
+            },
+            "required": ["title", "start_date"],
+        },
+    ),
+    Tool(
+        name="tp_add_training_plan_library_workout",
+        description=("Insert one [MCP TEST] Workout Library template in a private "
+                     "[MCP TEST] Training Plan at an in-range plan date. "
+                     "Does NOT apply to any athlete."),
+        input_schema={
+            "type": "object",
+            "properties": {
+                "plan_id": {"type": "integer"},
+                "library_id": {"type": "string"},
+                "item_id": {"type": "string"},
+                "workout_date": {"type": "string", "description": "YYYY-MM-DD inside plan"},
+            },
+            "required": ["plan_id", "library_id", "item_id", "workout_date"],
+        },
+    ),
+    Tool(
+        name="tp_add_training_plan_note",
+        description=("Add a [MCP TEST] calendar note to a private [MCP TEST] "
+                     "Training Plan; never touches an athlete."),
+        input_schema={
+            "type": "object",
+            "properties": {
+                "plan_id": {"type": "integer"},
+                "note_date": {"type": "string", "description": "YYYY-MM-DD inside plan"},
+                "title": {"type": "string", "description": "Must begin with [MCP TEST]"},
+                "description": {"type": "string"},
+            },
+            "required": ["plan_id", "note_date", "title", "description"],
+        },
+    ),
     Tool(
         name="tp_list_training_plans",
         description="List the coach's authored multi-week training plans (id, title, "
@@ -1535,7 +1585,10 @@ _DESTRUCTIVE_TOOLS = {
 _NON_IDEMPOTENT_WRITES = {
     "tp_add_note_comment",
     "tp_add_workout_comment",
+    "tp_add_training_plan_library_workout",
+    "tp_add_training_plan_note",
     "tp_apply_training_plan",
+    "tp_create_training_plan",
     "tp_copy_workout",
     "tp_create_availability",
     "tp_create_equipment",
@@ -1804,6 +1857,28 @@ async def _h_weekly_summary(args): return await tp_get_weekly_summary(week_of=ar
 
 @_handler("tp_get_atp")
 async def _h_get_atp(args): return await tp_get_atp(start_date=args["start_date"], end_date=args["end_date"])
+
+@_handler("tp_create_training_plan")
+async def _h_create_training_plan(args):
+    return await tp_create_training_plan(
+        title=args["title"], start_date=args["start_date"],
+        week_count=args.get("week_count", 1),
+        description=args.get("description"),
+    )
+
+@_handler("tp_add_training_plan_library_workout")
+async def _h_add_training_plan_library_workout(args):
+    return await tp_add_training_plan_library_workout(
+        plan_id=args["plan_id"], library_id=args["library_id"],
+        item_id=args["item_id"], workout_date=args["workout_date"],
+    )
+
+@_handler("tp_add_training_plan_note")
+async def _h_add_training_plan_note(args):
+    return await tp_add_training_plan_note(
+        plan_id=args["plan_id"], note_date=args["note_date"],
+        title=args["title"], description=args["description"],
+    )
 
 @_handler("tp_list_training_plans")
 async def _h_list_training_plans(args): return await tp_list_training_plans()
