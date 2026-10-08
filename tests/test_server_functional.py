@@ -124,6 +124,7 @@ class TestListTools:
             "tp_add_training_plan_note",
             "tp_list_training_plans",
             "tp_get_training_plan",
+            "tp_get_training_plan_notes",
             "tp_get_training_plan_workouts",
             "tp_apply_training_plan",
         }
