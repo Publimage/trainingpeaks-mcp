@@ -6,7 +6,10 @@ import pytest
 
 from tp_mcp.client.http import APIResponse
 from tp_mcp.tools.plans import (
+    tp_add_training_plan_library_workout,
+    tp_add_training_plan_note,
     tp_apply_training_plan,
+    tp_create_training_plan,
     tp_get_training_plan,
     tp_get_training_plan_workouts,
     tp_list_training_plans,
@@ -136,3 +139,158 @@ async def test_apply_copies_workouts_skips_period_markers():
 async def test_invalid_plan_id_validation():
     r = await tp_get_training_plan(0)
     assert r["isError"] is True and r["error_code"] == "VALIDATION_ERROR"
+
+
+
+# Mock-only tests: do not contact TrainingPeaks and do not prove its
+# undocumented Training Plan creation endpoint works in the live product.
+_TEST_PLAN = {
+    "planId": 91919, "title": "[MCP TEST] Integration Plan",
+    "startDate": "2027-06-21T00:00:00", "dayCount": 7,
+    "weekCount": 1, "isPublic": False, "price": None,
+}
+
+
+@pytest.mark.asyncio
+async def test_create_private_test_plan_and_verify_readback():
+    client = AsyncMock()
+    client.get = AsyncMock(side_effect=[
+        APIResponse(success=True, data=[]),
+        APIResponse(success=True, data=_TEST_PLAN),
+    ])
+    client.post = AsyncMock(return_value=APIResponse(
+        success=True, data={"planId": 91919},
+    ))
+    p = _patch(client)
+    try:
+        result = await tp_create_training_plan(
+            title="[MCP TEST] Integration Plan",
+            start_date="2027-06-21", week_count=1,
+        )
+    finally:
+        p.stop()
+    assert result["success"] is True
+    assert result["verified"] is True
+    assert client.post.call_args.args[0] == "/plans/v1/plans"
+    payload = client.post.call_args.kwargs["json"]
+    assert payload["isPublic"] is False
+    assert payload["dayCount"] == 7
+
+
+@pytest.mark.asyncio
+async def test_duplicate_plan_refuses_creation():
+    client = AsyncMock()
+    client.get = AsyncMock(return_value=APIResponse(
+        success=True, data=[_TEST_PLAN],
+    ))
+    client.post = AsyncMock()
+    p = _patch(client)
+    try:
+        result = await tp_create_training_plan(
+            title="[MCP TEST] Integration Plan", start_date="2027-06-21",
+        )
+    finally:
+        p.stop()
+    assert result["error_code"] == "ALREADY_EXISTS"
+    client.post.assert_not_called()
+
+
+@pytest.mark.asyncio
+async def test_plan_create_rejects_non_test_title_before_api_call():
+    with patch("tp_mcp.tools.plans.TPClient") as client:
+        result = await tp_create_training_plan(
+            title="IRONMAN Intermediate", start_date="2027-06-21",
+        )
+    assert result["error_code"] == "VALIDATION_ERROR"
+    client.assert_not_called()
+
+
+@pytest.mark.asyncio
+async def test_add_library_workout_only_to_test_plan():
+    client = AsyncMock()
+    client.get = AsyncMock(side_effect=[
+        APIResponse(success=True, data=_TEST_PLAN),
+        APIResponse(success=True, data=[{
+            "exerciseLibraryItemId": 14935065,
+            "itemName": "[MCP TEST] Swim 1200",
+        }]),
+    ])
+    client.post = AsyncMock(return_value=APIResponse(success=True, data={}))
+    p = _patch(client)
+    try:
+        result = await tp_add_training_plan_library_workout(
+            plan_id=91919, library_id="3890637", item_id="14935065",
+            workout_date="2027-06-22",
+        )
+    finally:
+        p.stop()
+    assert result["success"] is True
+    assert result["readback_required"] is True
+    assert client.post.call_args.args[0] == (
+        "/plans/v1/plans/91919/commands/addworkoutfromlibraryitem"
+    )
+    assert client.post.call_args.kwargs["json"] == {
+        "planId": 91919, "exerciseLibraryItemId": 14935065,
+        "workoutDateTime": "2027-06-22",
+    }
+
+
+@pytest.mark.asyncio
+async def test_add_workout_refuses_non_test_plan():
+    client = AsyncMock()
+    client.get = AsyncMock(return_value=APIResponse(
+        success=True, data={**_TEST_PLAN, "title": "IRONMAN Intermediate"},
+    ))
+    client.post = AsyncMock()
+    p = _patch(client)
+    try:
+        result = await tp_add_training_plan_library_workout(
+            plan_id=91919, library_id="3890637", item_id="14935065",
+            workout_date="2027-06-22",
+        )
+    finally:
+        p.stop()
+    assert result["error_code"] == "PROTECTED_RESOURCE"
+    client.post.assert_not_called()
+    assert client.get.await_count == 1
+
+
+@pytest.mark.asyncio
+async def test_add_workout_refuses_out_of_range_date():
+    client = AsyncMock()
+    client.get = AsyncMock(return_value=APIResponse(
+        success=True, data=_TEST_PLAN,
+    ))
+    client.post = AsyncMock()
+    p = _patch(client)
+    try:
+        result = await tp_add_training_plan_library_workout(
+            plan_id=91919, library_id="3890637", item_id="14935065",
+            workout_date="2027-07-01",
+        )
+    finally:
+        p.stop()
+    assert result["error_code"] == "VALIDATION_ERROR"
+    client.post.assert_not_called()
+
+
+@pytest.mark.asyncio
+async def test_plan_note_payload_and_protection():
+    client = AsyncMock()
+    client.get = AsyncMock(return_value=APIResponse(
+        success=True, data=_TEST_PLAN,
+    ))
+    client.post = AsyncMock(return_value=APIResponse(success=True, data={}))
+    p = _patch(client)
+    try:
+        result = await tp_add_training_plan_note(
+            plan_id=91919, note_date="2027-06-21",
+            title="[MCP TEST] Instructions", description="Laboratory only",
+        )
+    finally:
+        p.stop()
+    assert result["success"] is True
+    assert client.post.call_args.args[0] == "/plans/v1/plans/91919/calendarNote"
+    payload = client.post.call_args.kwargs["json"]
+    assert payload["standardFormatDate"] == "Week 1, Monday"
+    assert payload["attachments"] == []
