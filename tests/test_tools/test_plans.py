@@ -11,6 +11,7 @@ from tp_mcp.tools.plans import (
     tp_apply_training_plan,
     tp_create_training_plan,
     tp_get_training_plan,
+    tp_get_training_plan_notes,
     tp_get_training_plan_workouts,
     tp_list_training_plans,
 )
@@ -214,6 +215,7 @@ async def test_add_library_workout_only_to_test_plan():
             "exerciseLibraryItemId": 14935065,
             "itemName": "[MCP TEST] Swim 1200",
         }]),
+        APIResponse(success=True, data=[]),  # no existing same-day workout
     ])
     client.post = AsyncMock(return_value=APIResponse(success=True, data={}))
     p = _patch(client)
@@ -380,3 +382,107 @@ async def test_bootstrap_disallowed_after_plan_has_workouts_without_date():
         p.stop()
     assert result["error_code"] == "VALIDATION_ERROR"
     inst.post.assert_not_called()
+
+
+
+@pytest.mark.asyncio
+async def test_test_plan_day_count_one_still_allows_full_first_week():
+    """dayCount=1 after first workout is not the end of the named week."""
+    plan = {
+        **_TEST_PLAN, "weekCount": 1, "dayCount": 1, "workoutCount": 1,
+    }
+    client = AsyncMock()
+    client.get = AsyncMock(side_effect=[
+        APIResponse(success=True, data=plan),
+        APIResponse(success=True, data=[{
+            "exerciseLibraryItemId": 14935073,
+            "itemName": "[MCP TEST] Bike | 3x5' FTP controllato",
+        }]),
+        APIResponse(success=True, data=[{
+            "workoutDay": "2027-06-21T00:00:00",
+            "title": "[MCP TEST] Swim | Tecnica 1200 m - Builder",
+        }]),
+    ])
+    client.post = AsyncMock(return_value=APIResponse(success=True, data={}))
+    p = _patch(client)
+    try:
+        result = await tp_add_training_plan_library_workout(
+            plan_id=91919, library_id="3890637", item_id="14935073",
+            workout_date="2027-06-22",
+        )
+    finally:
+        p.stop()
+    assert result["success"] is True
+    assert client.post.call_args.kwargs["json"]["workoutDateTime"] == "2027-06-22"
+
+
+@pytest.mark.asyncio
+async def test_duplicate_library_workout_is_blocked_before_post():
+    client = AsyncMock()
+    client.get = AsyncMock(side_effect=[
+        APIResponse(success=True, data={
+            **_TEST_PLAN, "weekCount": 1, "dayCount": 1, "workoutCount": 1,
+        }),
+        APIResponse(success=True, data=[{
+            "exerciseLibraryItemId": 14935065,
+            "itemName": "[MCP TEST] Swim 1200",
+        }]),
+        APIResponse(success=True, data=[{
+            "workoutDay": "2027-06-21T00:00:00",
+            "title": "[MCP TEST] Swim 1200",
+        }]),
+    ])
+    client.post = AsyncMock()
+    p = _patch(client)
+    try:
+        result = await tp_add_training_plan_library_workout(
+            plan_id=91919, library_id="3890637", item_id="14935065",
+            workout_date="2027-06-21",
+        )
+    finally:
+        p.stop()
+    assert result["error_code"] == "ALREADY_EXISTS"
+    client.post.assert_not_called()
+
+
+@pytest.mark.asyncio
+async def test_read_training_plan_notes_returns_relative_week_day():
+    client = AsyncMock()
+    client.get = AsyncMock(side_effect=[
+        APIResponse(success=True, data={
+            **_TEST_PLAN, "weekCount": 1, "dayCount": 1,
+        }),
+        APIResponse(success=True, data=[{
+            "calendarNoteId": 99515,
+            "title": "[MCP TEST] Plan note",
+            "noteDate": "2027-06-24T00:00:00",
+            "description": "Test instructions",
+        }]),
+    ])
+    p = _patch(client)
+    try:
+        result = await tp_get_training_plan_notes(plan_id=91919)
+    finally:
+        p.stop()
+    assert result["count"] == 1
+    assert result["notes"][0]["day"] == 4
+    assert result["notes"][0]["week"] == 1
+    assert result["notes"][0]["note_id"] == 99515
+    assert "/calendarNote/2027-06-21/2027-06-29" in client.get.call_args.args[0]
+
+
+@pytest.mark.asyncio
+async def test_read_training_plan_notes_is_read_only():
+    client = AsyncMock()
+    client.get = AsyncMock(side_effect=[
+        APIResponse(success=True, data=_TEST_PLAN),
+        APIResponse(success=True, data=[]),
+    ])
+    client.post = AsyncMock()
+    p = _patch(client)
+    try:
+        result = await tp_get_training_plan_notes(plan_id=91919)
+    finally:
+        p.stop()
+    assert result["count"] == 0
+    client.post.assert_not_called()
