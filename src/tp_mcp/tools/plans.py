@@ -288,3 +288,216 @@ async def tp_apply_training_plan(plan_id: int | str, start_date: str) -> dict[st
         if first_error:
             result["first_error"] = first_error[:160]
         return result
+
+
+# Experimental Training Plan Library write tools. These are deliberately
+# restricted to private [MCP TEST] plans until the API behaviour is proven.
+# TrainingPeaks plan-management endpoints are unofficial; creation requires
+# live verification against the coach's own test plan before production use.
+
+
+def _test_plan_guard(plan: dict[str, Any]) -> dict[str, Any] | None:
+    title = (plan.get("title") or "").strip()
+    if not title.startswith("[MCP TEST]"):
+        return _err("PROTECTED_RESOURCE",
+                    "Writes are limited to Training Plans starting with [MCP TEST].")
+    if plan.get("isPublic") is True or plan.get("price") not in (None, 0):
+        return _err("PROTECTED_RESOURCE",
+                    "Refusing to write to a published or priced Training Plan.")
+    return None
+
+
+def _parse_plan_date(value: str) -> date_type | None:
+    try:
+        return date_type.fromisoformat(value)
+    except (ValueError, TypeError):
+        return None
+
+
+async def tp_create_training_plan(
+    title: str, start_date: str, week_count: int = 1,
+    description: str | None = None,
+) -> dict[str, Any]:
+    """EXPERIMENTAL: create a private, minimal [MCP TEST] plan.
+
+    Endpoint/body for plan creation still require a live provider readback.
+    Never retries a POST after an ambiguous response.
+    """
+    if not title or not title.strip().startswith("[MCP TEST]"):
+        return _err("VALIDATION_ERROR", "Only [MCP TEST] plans may be created.")
+    if not isinstance(week_count, int) or isinstance(week_count, bool) or not 1 <= week_count <= 2:
+        return _err("VALIDATION_ERROR", "Test plans must be 1 or 2 weeks.")
+    start = _parse_plan_date(start_date)
+    if start is None or start.weekday() != 0:
+        return _err("VALIDATION_ERROR", "start_date must be a Monday (YYYY-MM-DD).")
+
+    async with TPClient() as client:
+        before = await client.get("/plans/v1/plans")
+        if before.is_error:
+            return _api_err(before)
+        if any((p.get("title") or "").strip() == title.strip()
+               for p in (before.data or [])):
+            return _err("ALREADY_EXISTS",
+                        "A plan with this exact title already exists. Refusing duplicate creation.")
+
+        payload: dict[str, Any] = {
+            "title": title.strip(),
+            "startDate": f"{start.isoformat()}T00:00:00",
+            "weekCount": week_count,
+            "dayCount": week_count * 7,
+            "isPublic": False,
+        }
+        if description is not None:
+            payload["description"] = description
+
+        # Unlike the workout-library command, the Training Plan creation body
+        # is not yet captured from a confirmed browser request. This is a single
+        # guarded candidate endpoint, not a verified TP API contract.
+        created = await client.post("/plans/v1/plans", json=payload)
+        if created.is_error:
+            return _api_err(created)
+
+        value = created.data if isinstance(created.data, dict) else {}
+        plan_id = value.get("planId") or value.get("id")
+        if plan_id is None:
+            after = await client.get("/plans/v1/plans")
+            if after.is_error:
+                return _err("WRITE_UNVERIFIED",
+                            "POST accepted but listing failed; check existing plans before retrying.")
+            candidates = [p for p in (after.data or [])
+                          if (p.get("title") or "").strip() == title.strip()]
+            if len(candidates) != 1 or not candidates[0].get("planId"):
+                return _err("WRITE_UNVERIFIED",
+                            "Creation not uniquely verified; inspect plan library before retrying.")
+            plan_id = candidates[0]["planId"]
+
+        verified = await client.get(f"/plans/v1/plans/{plan_id}")
+        if verified.is_error:
+            return _err("WRITE_UNVERIFIED",
+                        f"Plan {plan_id} returned by create but readback failed.")
+        d = verified.data or {}
+        if (d.get("title") or "").strip() != title.strip():
+            return _err("WRITE_UNVERIFIED",
+                        f"Plan {plan_id} readback does not match the intended title.")
+        return {
+            "success": True, "plan_id": plan_id,
+            "title": title.strip(), "start_date": start.isoformat(),
+            "weeks": week_count, "is_public": d.get("isPublic", False),
+            "verified": True,
+        }
+
+
+async def _get_writable_test_plan(
+    client: TPClient, plan_id: int,
+) -> tuple[dict[str, Any] | None, dict[str, Any] | None]:
+    result = await client.get(f"/plans/v1/plans/{plan_id}")
+    if result.is_error:
+        return None, _api_err(result)
+    d = result.data or {}
+    guard = _test_plan_guard(d)
+    if guard:
+        return None, guard
+    return d, None
+
+
+def _check_plan_date(plan: dict[str, Any], workout_date: str) -> dict[str, Any] | None:
+    target = _parse_plan_date(workout_date)
+    start = _parse_plan_date((plan.get("startDate") or "")[:10])
+    days = plan.get("dayCount") or (plan.get("weekCount") or 0) * 7
+    if target is None or start is None or not isinstance(days, int) or days <= 0:
+        return _err("VALIDATION_ERROR", "Invalid plan calendar dates.")
+    if not start <= target < start + timedelta(days=days):
+        return _err("VALIDATION_ERROR",
+                    "Target day must fall inside the [MCP TEST] plan date range.")
+    return None
+
+
+async def tp_add_training_plan_library_workout(
+    plan_id: int | str, library_id: str, item_id: str, workout_date: str,
+) -> dict[str, Any]:
+    """Add one existing [MCP TEST] workout template to one [MCP TEST] plan.
+
+    Provider endpoint/body documented from a coach account. Does not apply the
+    plan to any athlete or modify a library template.
+    """
+    try:
+        v = _PlanIdInput(plan_id=plan_id)  # type: ignore[arg-type]
+        lib_id, template_id = int(library_id), int(item_id)
+        if lib_id <= 0 or template_id <= 0:
+            raise ValueError("IDs must be positive")
+    except (ValidationError, ValueError, TypeError) as e:
+        return _err("VALIDATION_ERROR", str(e))
+    async with TPClient() as client:
+        plan, error = await _get_writable_test_plan(client, v.plan_id)
+        if error is not None:
+            return error
+        assert plan is not None
+        date_error = _check_plan_date(plan, workout_date)
+        if date_error:
+            return date_error
+
+        library = await client.get(f"/exerciselibrary/v2/libraries/{lib_id}/items")
+        if library.is_error:
+            return _api_err(library)
+        candidate = next(
+            (item for item in (library.data or [])
+             if item.get("exerciseLibraryItemId") == template_id), None,
+        )
+        if candidate is None or not (candidate.get("itemName") or "").startswith("[MCP TEST]"):
+            return _err("PROTECTED_RESOURCE",
+                        "Only existing [MCP TEST] library items can be inserted.")
+
+        payload = {
+            "planId": v.plan_id,
+            "exerciseLibraryItemId": template_id,
+            "workoutDateTime": workout_date,
+        }
+        r = await client.post(
+            f"/plans/v1/plans/{v.plan_id}/commands/addworkoutfromlibraryitem",
+            json=payload,
+        )
+        if r.is_error:
+            return _api_err(r)
+        return {
+            "success": True, "plan_id": v.plan_id, "library_id": lib_id,
+            "item_id": template_id, "workout_date": workout_date,
+            "provider_acknowledged": True,
+            "readback_required": True,
+        }
+
+
+async def tp_add_training_plan_note(
+    plan_id: int | str, note_date: str, title: str, description: str,
+) -> dict[str, Any]:
+    """Add one calendar note to a private [MCP TEST] Training Plan only."""
+    try:
+        v = _PlanIdInput(plan_id=plan_id)  # type: ignore[arg-type]
+    except (ValidationError, ValueError) as e:
+        return _err("VALIDATION_ERROR", str(e))
+    if not title.strip().startswith("[MCP TEST]"):
+        return _err("VALIDATION_ERROR", "Test note title must begin with [MCP TEST].")
+    async with TPClient() as client:
+        plan, error = await _get_writable_test_plan(client, v.plan_id)
+        if error is not None:
+            return error
+        assert plan is not None
+        date_error = _check_plan_date(plan, note_date)
+        if date_error:
+            return date_error
+        target = date_type.fromisoformat(note_date)
+        start = date_type.fromisoformat(plan["startDate"][:10])
+        week = (target - start).days // 7 + 1
+        payload = {
+            "planId": v.plan_id, "title": title.strip(),
+            "noteDate": note_date, "description": description,
+            "attachments": [],
+            "standardFormatDate": f"Week {week}, {target.strftime('%A')}",
+        }
+        r = await client.post(f"/plans/v1/plans/{v.plan_id}/calendarNote", json=payload)
+        if r.is_error:
+            return _api_err(r)
+        return {
+            "success": True, "plan_id": v.plan_id,
+            "title": title.strip(), "date": note_date,
+            "provider_acknowledged": True, "readback_required": True,
+        }
