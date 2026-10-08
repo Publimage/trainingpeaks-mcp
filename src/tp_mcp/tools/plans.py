@@ -409,7 +409,9 @@ def _check_plan_date(
 ) -> dict[str, Any] | None:
     target = _parse_plan_date(workout_date)
     start = _parse_plan_date((plan.get("startDate") or "")[:10])
-    days = plan.get("dayCount") or (plan.get("weekCount") or 0) * 7
+    # dayCount can be only the span of currently populated days (e.g. 1
+    # after placing the first workout). A named week has seven available days.
+    days = max(plan.get("dayCount") or 0, (plan.get("weekCount") or 0) * 7)
     if target is None:
         return _err("VALIDATION_ERROR", "Invalid plan calendar date.")
     # A newly created STANDARD TrainingPeaks Training Plan has no startDate,
@@ -477,6 +479,29 @@ async def tp_add_training_plan_library_workout(
             return _err("PROTECTED_RESOURCE",
                         "Only existing [MCP TEST] library items can be inserted.")
 
+        # The endpoint is non-idempotent: check whether the same template
+        # was already copied to this exact plan day before posting.
+        first = (plan.get("startDate") or "")[:10]
+        if first:
+            start = date_type.fromisoformat(first)
+            length = max(plan.get("dayCount") or 0,
+                         (plan.get("weekCount") or 0) * 7)
+            end = start + timedelta(days=length + 1)
+            existing = await client.get(
+                f"/plans/v1/plans/{v.plan_id}/workouts/"
+                f"{start.isoformat()}/{end.isoformat()}"
+            )
+            if existing.is_error:
+                return _api_err(existing)
+            for workout in existing.data or []:
+                workout_day = (workout.get("workoutDay") or "")[:10]
+                if (workout_day == workout_date
+                    and (workout.get("title") or "").strip()
+                        == (candidate.get("itemName") or "").strip()):
+                    return _err("ALREADY_EXISTS",
+                                "This [MCP TEST] library workout already exists "
+                                "on this plan day. Refusing a duplicate.")
+
         payload = {
             "planId": v.plan_id,
             "exerciseLibraryItemId": template_id,
@@ -495,6 +520,54 @@ async def tp_add_training_plan_library_workout(
             "readback_required": True,
         }
 
+
+
+async def tp_get_training_plan_notes(plan_id: int | str) -> dict[str, Any]:
+    """Read calendar notes from a Training Plan's relative-week calendar.
+
+    TrainingPeaks uses GET /plans/v1/plans/{id}/calendarNote/{start}/{end};
+    reading these notes is separate from workout comments and athlete notes.
+    """
+    try:
+        v = _PlanIdInput(plan_id=plan_id)  # type: ignore[arg-type]
+    except (ValidationError, ValueError) as e:
+        return _err("VALIDATION_ERROR", str(e))
+    async with TPClient() as client:
+        detail = await client.get(f"/plans/v1/plans/{v.plan_id}")
+        if detail.is_error:
+            return _api_err(detail)
+        plan = detail.data or {}
+        start = _parse_plan_date((plan.get("startDate") or "")[:10])
+        days = max(plan.get("dayCount") or 0,
+                   (plan.get("weekCount") or 0) * 7)
+        if start is None or days <= 0:
+            return _err("API_ERROR", "Plan has no populated calendar range.")
+        end = start + timedelta(days=days + 1)
+        response = await client.get(
+            f"/plans/v1/plans/{v.plan_id}/calendarNote/"
+            f"{start.isoformat()}/{end.isoformat()}"
+        )
+        if response.is_error:
+            return _api_err(response)
+        raw = response.data if isinstance(response.data, list) else []
+        out = []
+        for note in raw:
+            day = (note.get("noteDate") or note.get("date") or "")[:10]
+            offset = None
+            try:
+                offset = (date_type.fromisoformat(day) - start).days + 1
+            except ValueError:
+                pass
+            out.append({
+                "note_id": note.get("id") or note.get("calendarNoteId")
+                          or note.get("noteId"),
+                "title": (note.get("title") or "").strip(),
+                "description": note.get("description"),
+                "date": day or None,
+                "week": (offset - 1) // 7 + 1 if offset else None,
+                "day": offset,
+            })
+        return {"plan_id": v.plan_id, "notes": out, "count": len(out)}
 
 async def tp_add_training_plan_note(
     plan_id: int | str, note_date: str, title: str, description: str,
