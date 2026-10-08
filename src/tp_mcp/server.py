@@ -80,6 +80,7 @@ from tp_mcp.tools import (
     tp_get_strength_workout,
     tp_get_strength_workouts,
     tp_get_training_plan,
+    tp_get_training_plan_notes,
     tp_get_training_plan_workouts,
     tp_get_weekly_summary,
     tp_get_workout,
@@ -657,6 +658,18 @@ TOOLS = [
             "type": "object",
             "properties": {
                 "plan_id": {"type": "integer", "description": "Plan id (from tp_list_training_plans)"},
+            },
+            "required": ["plan_id"],
+        },
+    ),
+    Tool(
+        name="tp_get_training_plan_notes",
+        description=("Read native calendar notes from one Training Plan (date, title, "
+                     "description, and relative week/day); does not touch athlete calendars."),
+        input_schema={
+            "type": "object",
+            "properties": {
+                "plan_id": {"type": "integer", "description": "Plan id"},
             },
             "required": ["plan_id"],
         },
@@ -1885,6 +1898,10 @@ async def _h_list_training_plans(args): return await tp_list_training_plans()
 
 @_handler("tp_get_training_plan")
 async def _h_get_training_plan(args): return await tp_get_training_plan(plan_id=args["plan_id"])
+
+@_handler("tp_get_training_plan_notes")
+async def _h_get_training_plan_notes(args):
+    return await tp_get_training_plan_notes(plan_id=args["plan_id"])
 
 @_handler("tp_get_training_plan_workouts")
 async def _h_get_training_plan_workouts(args): return await tp_get_training_plan_workouts(plan_id=args["plan_id"])
