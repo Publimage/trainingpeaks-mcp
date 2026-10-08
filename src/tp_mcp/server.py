@@ -1577,8 +1577,11 @@ for _tool in TOOLS:
 _READ_ONLY_PREFIXES = ("tp_get_", "tp_list_", "tp_download_", "tp_search_", "tp_validate_", "tp_analyze_")
 _READ_ONLY_EXTRA = {"tp_auth_status"}
 
-# Irrecoverable data removal. Everything else that writes is recoverable by a
-# follow-up call (update/re-add), so destructiveHint stays False there.
+# DestructiveHint covers deletion AND modification that overwrites existing
+# user data; the former may be irreversible, and the latter may lose an old
+# value even when a user can enter another value later. TrainingPeaks confines
+# these writes to the account selected by the authenticated session; the
+# Publishing Gate additionally restricts real-athlete mutations.
 _DESTRUCTIVE_TOOLS = {
     "tp_delete_availability",
     "tp_delete_equipment",
@@ -1590,6 +1593,18 @@ _DESTRUCTIVE_TOOLS = {
     "tp_delete_workout",
     "tp_delete_workout_file",
     "tp_remove_athletes_from_group",
+    "tp_rename_group",
+    "tp_set_workout_note",
+    "tp_update_equipment",
+    "tp_update_event",
+    "tp_update_ftp",
+    "tp_update_hr_zones",
+    "tp_update_library_item",
+    "tp_update_note",
+    "tp_update_nutrition",
+    "tp_update_speed_zones",
+    "tp_update_strength_workout",
+    "tp_update_workout",
 }
 
 # Writes that append or create: repeating the call duplicates data. Updates,
@@ -1618,6 +1633,14 @@ _NON_IDEMPOTENT_WRITES = {
     "tp_upload_workout_file",
 }
 
+# The current tools access a bounded authenticated TrainingPeaks account,
+# including its private athlete roster, libraries, calendar and settings.
+# No tool accepts an arbitrary remote host, web URL or external recipient as
+# an action destination. Per OpenAI's MCP annotation guidance, this is a
+# closed-world workspace even though the API is hosted outside the Mac.
+# For a future open-ended/web/public publishing tool, add it explicitly here.
+_OPEN_WORLD_TOOLS: set[str] = set()
+
 _TITLE_ACRONYMS = {"atp": "ATP", "ftp": "FTP", "hr": "HR", "prs": "PRs"}
 _TITLE_OVERRIDES = {
     "tp_auth_status": "Check auth status",
@@ -1638,7 +1661,7 @@ for _tool in TOOLS:
         read_only_hint=_read_only,
         destructive_hint=_tool.name in _DESTRUCTIVE_TOOLS,
         idempotent_hint=_tool.name not in _NON_IDEMPOTENT_WRITES,
-        open_world_hint=True,  # every tool talks to the external TrainingPeaks API
+        open_world_hint=_tool.name in _OPEN_WORLD_TOOLS,
     )
 
 
