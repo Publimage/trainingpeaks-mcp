@@ -55,6 +55,7 @@ from tp_mcp.tools.plans import (
     tp_apply_training_plan,
     tp_create_training_plan,
     tp_get_training_plan,
+    tp_get_training_plan_notes,
     tp_get_training_plan_workouts,
     tp_list_training_plans,
 )
@@ -128,6 +129,7 @@ __all__ = [
     "tp_get_atp",
     "tp_list_training_plans",
     "tp_get_training_plan",
+    "tp_get_training_plan_notes",
     "tp_get_training_plan_workouts",
     "tp_add_training_plan_library_workout",
     "tp_add_training_plan_note",
