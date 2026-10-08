@@ -294,3 +294,89 @@ async def test_plan_note_payload_and_protection():
     payload = client.post.call_args.kwargs["json"]
     assert payload["standardFormatDate"] == "Week 1, Monday"
     assert payload["attachments"] == []
+
+
+@pytest.mark.asyncio
+async def test_empty_test_plan_accepts_only_first_swim_as_bootstrap():
+    """An empty plan with relative weeks may lack startDate/dayCount entirely.
+
+    Permit exactly the preapproved pilot workout into the test plan. This does
+    not assert the live provider will accept the command: a live readback is
+    still mandatory.
+    """
+    empty = {
+        "planId": 684206,
+        "title": "[MCP TEST] Training Plan — Swim Bike Run",
+        "startDate": None, "dayCount": None, "weekCount": 0,
+        "workoutCount": None, "isPublic": False, "price": None,
+    }
+    inst = AsyncMock()
+    inst.get = AsyncMock(side_effect=[
+        APIResponse(success=True, data=empty),
+        APIResponse(success=True, data=[{
+            "exerciseLibraryItemId": 14935065,
+            "itemName": "[MCP TEST] Swim | Tecnica 1200 m - Builder",
+        }]),
+    ])
+    inst.post = AsyncMock(return_value=APIResponse(success=True, data={}))
+    p = _patch(inst)
+    try:
+        result = await tp_add_training_plan_library_workout(
+            plan_id=684206, library_id="3890637", item_id="14935065",
+            workout_date="2027-06-21",
+        )
+    finally:
+        p.stop()
+    assert result["success"] is True
+    assert result["readback_required"] is True
+    assert inst.post.call_count == 1
+    assert inst.post.call_args.args[0] == (
+        "/plans/v1/plans/684206/commands/addworkoutfromlibraryitem"
+    )
+    assert inst.post.call_args.kwargs["json"]["workoutDateTime"] == "2027-06-21"
+
+
+@pytest.mark.asyncio
+async def test_empty_test_plan_rejects_other_workout_bootstraps():
+    empty = {
+        "planId": 684206,
+        "title": "[MCP TEST] Training Plan — Swim Bike Run",
+        "startDate": None, "dayCount": None, "weekCount": 0,
+        "workoutCount": None, "isPublic": False, "price": None,
+    }
+    inst = AsyncMock()
+    inst.get = AsyncMock(return_value=APIResponse(success=True, data=empty))
+    inst.post = AsyncMock()
+    p = _patch(inst)
+    try:
+        result = await tp_add_training_plan_library_workout(
+            plan_id=684206, library_id="3890637", item_id="14935073",
+            workout_date="2027-06-21",
+        )
+    finally:
+        p.stop()
+    assert result["error_code"] == "VALIDATION_ERROR"
+    inst.post.assert_not_called()
+
+
+@pytest.mark.asyncio
+async def test_bootstrap_disallowed_after_plan_has_workouts_without_date():
+    empty = {
+        "planId": 684206,
+        "title": "[MCP TEST] Training Plan — Swim Bike Run",
+        "startDate": None, "dayCount": None, "weekCount": 0,
+        "workoutCount": 1, "isPublic": False, "price": None,
+    }
+    inst = AsyncMock()
+    inst.get = AsyncMock(return_value=APIResponse(success=True, data=empty))
+    inst.post = AsyncMock()
+    p = _patch(inst)
+    try:
+        result = await tp_add_training_plan_library_workout(
+            plan_id=684206, library_id="3890637", item_id="14935065",
+            workout_date="2027-06-21",
+        )
+    finally:
+        p.stop()
+    assert result["error_code"] == "VALIDATION_ERROR"
+    inst.post.assert_not_called()
