@@ -544,7 +544,7 @@ async def test_workouts_reader_survives_a_notes_endpoint_failure():
             "totalTimePlanned": 0.5,
         }]),
         APIResponse(success=True, data=_TEST_PLAN),
-        APIResponse(success=False, status_code=503, message="Notes temporarily unavailable"),
+        APIResponse(success=False, message="Notes temporarily unavailable"),
     ])
     p = _patch(client)
     try:
