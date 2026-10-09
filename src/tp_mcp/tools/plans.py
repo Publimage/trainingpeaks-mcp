@@ -30,6 +30,14 @@ logger = logging.getLogger("tp-mcp")
 
 # workoutTypeValueId → sport label (mirrors SPORT_TYPE_MAP in workouts.py; for all
 # standard sports the family id equals the value id, so family = value on create).
+# Isolated staging plan for a four-week canonical archive pilot.
+# It is private, unpriced, and may eventually cover all 24 weeks.
+_INTERMEDIATE_PILOT_TITLE = "[MCP TEST] IRONMAN Intermediate 24W - Archive Pilot"
+_INTERMEDIATE_PILOT_START = date_type(2027, 1, 4)
+_INTERMEDIATE_PILOT_WEEKS = 24
+_INTERMEDIATE_PILOT_FIRST_UID = "IMINT24W-W01-MON-OTHER-01"
+
+
 _SPORT_BY_TYPE: dict[int, str] = {
     1: "Swim", 2: "Bike", 3: "Run", 4: "Brick", 5: "Crosstrain", 6: "Race",
     7: "DayOff", 8: "MtnBike", 9: "Strength", 11: "XCSki", 12: "Rowing", 13: "Walk",
@@ -408,11 +416,22 @@ async def tp_create_training_plan(
     """
     if not title or not title.strip().startswith("[MCP TEST]"):
         return _err("VALIDATION_ERROR", "Only [MCP TEST] plans may be created.")
-    if not isinstance(week_count, int) or isinstance(week_count, bool) or not 1 <= week_count <= 2:
-        return _err("VALIDATION_ERROR", "Test plans must be 1 or 2 weeks.")
+    if not isinstance(week_count, int) or isinstance(week_count, bool):
+        return _err("VALIDATION_ERROR", "week_count must be an integer.")
     start = _parse_plan_date(start_date)
     if start is None or start.weekday() != 0:
         return _err("VALIDATION_ERROR", "start_date must be a Monday (YYYY-MM-DD).")
+    if week_count == _INTERMEDIATE_PILOT_WEEKS:
+        if title.strip() != _INTERMEDIATE_PILOT_TITLE or start != _INTERMEDIATE_PILOT_START:
+            return _err(
+                "PROTECTED_RESOURCE",
+                "24-week plan creation is limited to the exact private Intermediate pilot.",
+            )
+    elif not 1 <= week_count <= 2:
+        return _err(
+            "VALIDATION_ERROR",
+            "Other lab plans must be 1 or 2 weeks; the approved pilot is exactly 24.",
+        )
 
     async with TPClient() as client:
         before = await client.get("/plans/v1/plans")
@@ -489,36 +508,68 @@ async def _get_writable_test_plan(
 def _check_plan_date(
     plan: dict[str, Any], workout_date: str, *,
     allow_first_workout_bootstrap: bool = False,
+    bootstrap_item_name: str | None = None,
 ) -> dict[str, Any] | None:
     target = _parse_plan_date(workout_date)
     start = _parse_plan_date((plan.get("startDate") or "")[:10])
-    # dayCount can be only the span of currently populated days (e.g. 1
-    # after placing the first workout). A named week has seven available days.
-    days = max(plan.get("dayCount") or 0, (plan.get("weekCount") or 0) * 7)
     if target is None:
         return _err("VALIDATION_ERROR", "Invalid plan calendar date.")
-    # A newly created STANDARD TrainingPeaks Training Plan has no startDate,
-    # weekCount or dayCount until it contains a workout (live readback on plan
-    # 684206). Allow a SINGLE, explicitly identified pilot swim to initialise
-    # that empty plan. Do not generalise this exception without a live audit.
+
+    title = (plan.get("title") or "").strip()
+    # A newly created Standard Training Plan may expose zero weeks until its
+    # first workout. Never let a Tuesday bootstrap shift week 1 from Monday.
+    if title == _INTERMEDIATE_PILOT_TITLE:
+        if not (
+            _INTERMEDIATE_PILOT_START <= target
+            < _INTERMEDIATE_PILOT_START + timedelta(weeks=_INTERMEDIATE_PILOT_WEEKS)
+        ):
+            return _err("PROTECTED_RESOURCE", "Date outside the Intermediate pilot.")
+        if start is not None and start != _INTERMEDIATE_PILOT_START:
+            return _err(
+                "PROTECTED_RESOURCE",
+                "Intermediate pilot has a shifted startDate: stop and inspect.",
+            )
+        if start is None:
+            if (
+                allow_first_workout_bootstrap
+                and plan.get("workoutCount") in (None, 0)
+                and target == _INTERMEDIATE_PILOT_START
+                and (bootstrap_item_name or "").startswith(
+                    "[MCP TEST] " + _INTERMEDIATE_PILOT_FIRST_UID + " | "
+                )
+            ):
+                return None
+            return _err(
+                "PROTECTED_RESOURCE",
+                "Only W1 Monday's weekly-objective item may "
+                "bootstrap this empty 24-week pilot.",
+            )
+        # Subsequent weeks may be empty even though TP reports weekCount=1;
+        # the exact title/first-date guard constrains this one development plan.
+        return None
+
+    # Preserve the existing 3-workout experiment without broadening its scope.
+    days = max(plan.get("dayCount") or 0, (plan.get("weekCount") or 0) * 7)
     if start is None or not isinstance(days, int) or days <= 0:
         if (
             allow_first_workout_bootstrap
             and plan.get("planId") == 684206
-            and (plan.get("title") or "").strip()
-                == "[MCP TEST] Training Plan — Swim Bike Run"
+            and title == "[MCP TEST] Training Plan — Swim Bike Run"
             and plan.get("workoutCount") in (None, 0)
             and target == date_type(2027, 6, 21)
         ):
             return None
-        return _err("VALIDATION_ERROR",
-                    "Plan has no calendar range; only the guarded pilot "
-                    "bootstrap workout is permitted.")
+        return _err(
+            "VALIDATION_ERROR",
+            "Plan has no calendar range; only the guarded pilot "
+            "bootstrap workout is permitted.",
+        )
     if not start <= target < start + timedelta(days=days):
-        return _err("VALIDATION_ERROR",
-                    "Target day must fall inside the [MCP TEST] plan date range.")
+        return _err(
+            "VALIDATION_ERROR",
+            "Target day must fall inside the [MCP TEST] plan date range.",
+        )
     return None
-
 
 async def tp_add_training_plan_library_workout(
     plan_id: int | str, library_id: str, item_id: str, workout_date: str,
@@ -540,27 +591,39 @@ async def tp_add_training_plan_library_workout(
         if error is not None:
             return error
         assert plan is not None
-        date_error = _check_plan_date(
-            plan, workout_date,
-            allow_first_workout_bootstrap=(
-                v.plan_id == 684206
-                and lib_id == 3890637
-                and template_id == 14935065
-            ),
-        )
-        if date_error:
-            return date_error
-
+        # Validate the actual template BEFORE permitting an empty-plan
+        # bootstrap. Never let an unrelated workout anchor the new calendar.
         library = await client.get(f"/exerciselibrary/v2/libraries/{lib_id}/items")
         if library.is_error:
             return _api_err(library)
+        if not isinstance(library.data, list):
+            return _err("API_ERROR", "Unverified Workout Library response.")
         candidate = next(
-            (item for item in (library.data or [])
+            (item for item in library.data
              if item.get("exerciseLibraryItemId") == template_id), None,
         )
         if candidate is None or not (candidate.get("itemName") or "").startswith("[MCP TEST]"):
-            return _err("PROTECTED_RESOURCE",
-                        "Only existing [MCP TEST] library items can be inserted.")
+            return _err(
+                "PROTECTED_RESOURCE",
+                "Only existing [MCP TEST] library items can be inserted.",
+            )
+        if (plan.get("title") or "").strip() == _INTERMEDIATE_PILOT_TITLE:
+            if not (candidate.get("itemName") or "").startswith("[MCP TEST] IMINT24W-"):
+                return _err(
+                    "PROTECTED_RESOURCE",
+                    "Intermediate pilot requires a canonical UID-prefixed template.",
+                )
+        date_error = _check_plan_date(
+            plan, workout_date,
+            allow_first_workout_bootstrap=(
+                (v.plan_id == 684206 and lib_id == 3890637
+                 and template_id == 14935065)
+                or (plan.get("title") or "").strip() == _INTERMEDIATE_PILOT_TITLE
+            ),
+            bootstrap_item_name=candidate.get("itemName"),
+        )
+        if date_error:
+            return date_error
 
         # The endpoint is non-idempotent: check whether the same template
         # was already copied to this exact plan day before posting.
