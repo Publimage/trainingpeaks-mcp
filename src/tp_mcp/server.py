@@ -37,6 +37,7 @@ from tp_mcp.tools import (
     tp_apply_training_plan,
     tp_auth_status,
     tp_create_training_plan,
+    tp_delete_training_plan_other,
     tp_copy_workout,
     tp_create_availability,
     tp_create_equipment,
@@ -644,6 +645,25 @@ TOOLS = [
                 "description": {"type": "string"},
             },
             "required": ["plan_id", "note_date", "title", "description"],
+        },
+    ),
+    Tool(
+        name="tp_delete_training_plan_other",
+        description=("EXPERIMENTAL AND FAIL-CLOSED. Dry-run one exact obsolete "
+                     "one-minute Other card in private Intermediate plan 684463. "
+                     "Read native-note twin and verify all 13 real workouts + 8 "
+                     "native notes. dry_run=false remains DISABLED until a "
+                     "browser-confirmed plan-specific DELETE endpoint is installed. "
+                     "Never deletes an athlete calendar workout."),
+        input_schema={
+            "type": "object",
+            "properties": {
+                "plan_id": {"type": "integer", "description": "Must be 684463"},
+                "expected_title": {"type": "string", "description": "Exact [MCP TEST] Other title from plan reader"},
+                "dry_run": {"type": "boolean", "default": True,
+                            "description": "True is read-only; false is blocked until plan-specific DELETE route is verified"},
+            },
+            "required": ["plan_id", "expected_title"],
         },
     ),
     Tool(
@@ -1595,6 +1615,7 @@ _DESTRUCTIVE_TOOLS = {
     "tp_delete_group",
     "tp_delete_library",
     "tp_delete_note",
+    "tp_delete_training_plan_other",
     "tp_delete_strength_workout",
     "tp_delete_workout",
     "tp_delete_workout_file",
@@ -1920,6 +1941,13 @@ async def _h_add_training_plan_note(args):
     return await tp_add_training_plan_note(
         plan_id=args["plan_id"], note_date=args["note_date"],
         title=args["title"], description=args["description"],
+    )
+
+@_handler("tp_delete_training_plan_other")
+async def _h_delete_training_plan_other(args):
+    return await tp_delete_training_plan_other(
+        plan_id=args["plan_id"], expected_title=args["expected_title"],
+        dry_run=args.get("dry_run", True),
     )
 
 @_handler("tp_list_training_plans")
