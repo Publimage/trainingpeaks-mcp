@@ -188,7 +188,28 @@ async def tp_get_training_plan_workouts(plan_id: int | str) -> dict[str, Any]:
                 "has_structure": w.get("structure") is not None,
             })
         out.sort(key=lambda x: (x["day"] or 0))
-        return {"plan_id": v.plan_id, "workouts": out, "count": len(out)}
+        result: dict[str, Any] = {
+            "plan_id": v.plan_id, "workouts": out, "count": len(out),
+        }
+
+        # Notes are part of the Training Plan's relative-week calendar, but
+        # TrainingPeaks exposes them via a DIFFERENT endpoint. Include them
+        # in this already established read-only tool so a cached ChatGPT MCP
+        # action list (which may hide newly added tools) can still audit the
+        # plan end-to-end. A notes API error must not erase valid workouts.
+        note_result = await tp_get_training_plan_notes(v.plan_id)
+        if note_result.get("isError"):
+            result["calendar_notes"] = None
+            result["calendar_notes_status"] = "unavailable"
+            result["calendar_notes_error"] = {
+                "code": note_result.get("error_code", "API_ERROR"),
+                "message": note_result.get("message", "Plan notes could not be read."),
+            }
+        else:
+            result["calendar_notes"] = note_result.get("notes", [])
+            result["calendar_notes_count"] = note_result.get("count", 0)
+            result["calendar_notes_status"] = "ok"
+        return result
 
 
 # NB on the NATIVE apply command — fully reverse-engineered (Claude-in-Chrome HAR +
@@ -590,6 +611,27 @@ async def tp_add_training_plan_note(
         target = date_type.fromisoformat(note_date)
         start = date_type.fromisoformat(plan["startDate"][:10])
         week = (target - start).days // 7 + 1
+        # This POST is non-idempotent. Preflight the exact plan calendar
+        # before creating the note, and never retry an ambiguous POST.
+        full_span = max(plan.get("dayCount") or 0,
+                        (plan.get("weekCount") or 0) * 7)
+        end = start + timedelta(days=full_span + 1)
+        existing = await client.get(
+            f"/plans/v1/plans/{v.plan_id}/calendarNote/"
+            f"{start.isoformat()}/{end.isoformat()}"
+        )
+        if existing.is_error:
+            return _api_err(existing)
+        if not isinstance(existing.data, list):
+            return _err("API_ERROR",
+                        "Unexpected Training Plan notes response; refusing an unverified POST.")
+        if any(
+            (n.get("title") or "").strip() == title.strip()
+            and ((n.get("noteDate") or n.get("date") or "")[:10] == note_date)
+            for n in existing.data
+        ):
+            return _err("ALREADY_EXISTS",
+                        "A note with this exact title already exists on this plan day.")
         payload = {
             "planId": v.plan_id, "title": title.strip(),
             "noteDate": note_date, "description": description,
