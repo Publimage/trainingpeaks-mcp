@@ -90,3 +90,53 @@ be marked complete.
 
 Canonical workstream state:
 Google Drive `21_TRAININGPEAKS_MCP_INTEGRATION_STATE`.
+
+
+## Local disposable probe — staged 2026-10-09
+
+The verified native reader after the coach's 107-passed local regression suite
+returned the complete six-card diagnostic in plan 684463: all six unique
+provider `workoutId` values were available, each one was a 1-minute Other,
+and all six had a byte-identical native-note counterpart. The plan still
+contained 13 true workouts, 6 legacy Other cards, and 8 native notes.
+This is a READ-ONLY audit; it does not validate the actual deletion route.
+
+The repo now includes `scripts/probe_training_plan_delete.py`, a separate
+local script that **never deletes from plan 684463 or any athlete**. It uses
+one private, one-week sacrificial `[MCP TEST]` plan anchored Monday
+2027-07-05 and three copies of the approved Other library template 14940092.
+It adds one Monday native note and attempts exactly two one-shot deletions:
+1. Wednesday (non-anchor) to validate the actual plan-scoped route and GET
+   readback of the two surviving cards, unchanged Monday start and native note;
+2. Monday's original seed (with a Tuesday Other + Monday note surviving) to
+   measure whether TrainingPeaks shifts the plan start date. A shifted anchor
+   MUST BLOCK deleting the Monday seed from actual Intermediate 684463.
+
+The script checks private/unpriced identity, hardcoded disposable title,
+provider ID uniqueness and Other metadata. It disables automatic retry on
+401 for its DELETE requests, refuses a reused disposable title, stops on
+ambiguous writes, and prints no credentials. It leaves one disposable
+Tuesday Other behind for audit.
+
+Five mock-only tests were added under
+`tests/test_probe_training_plan_delete.py`.
+These were created **after** the coach's reported 107-passed run and MUST be
+executed locally before invoking `--execute`.
+
+On Mac (existing .venv; NO tunnel restart required for this standalone script):
+```bash
+cd ~/trainingpeaks-mcp
+git pull --ff-only
+source .venv/bin/activate
+python -m pytest tests/test_probe_training_plan_delete.py -q
+python scripts/probe_training_plan_delete.py
+```
+If and ONLY IF new tests + read-only preflight are green, run:
+```bash
+python scripts/probe_training_plan_delete.py --execute
+```
+Copy only the sanitized JSON result, not browser HAR, tokens or logs.
+If any step fails/returns STOP, do NOT repeat automatically.
+
+After independent live proof and anchor-preservation result, the cleanup tool
+may be enabled/retested before deleting the six real-plan legacy cards.
