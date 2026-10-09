@@ -97,3 +97,40 @@ No change to prescribed dose.
 
 **Do not open a new full test framework.** The objective is one representative
 Forza A translation and one clean provider readback, then reuse.
+
+
+## Coach decision 2026-10-09: native-first functional substitutions APPROVED
+
+This section supersedes overly restrictive `HOLD` instructions above
+where the *only* issue was a non-identical historical exercise name or minor
+execution detail.
+
+The coach has explicitly approved choosing the closest **functionally
+appropriate native TrainingPeaks exercise**, even if the historical written
+exercise needs a minor change. Do **not** add redundant YouTube links in a
+native Strength Builder card: use embedded TP exercise videos by default.
+Historic approved links stay in the canonical Google Drive archive as backup.
+
+Selection priority: training objective/pattern -> safe movement variant with
+comparable training effect -> native TP exercise + embedded video -> rep/set
+prescription adjusted only where needed to protect intent and recoverability.
+A trivial nominal/implement difference is not a product blocker. A substantial
+change in stimulus, required equipment, risk or recoverability is **not**
+automatically authorized and needs an explicit review. Record the chosen TP
+exercise ID and material differences in the provider mapping.
+
+Practical impact for W1:
+- Calf Raise: use a suitable native TP calf-raise variation with matching
+  training function; the previously tested 553 elevated body-weight version
+  may be acceptable if execution and intent are coherent.
+- Step-Up: prefer a native unilateral step-up variant; exact historical name
+  is not required.
+- Pallof/anti-rotation: look for a native anti-rotation or core-stability
+  alternative that delivers the intended effect. Do **not** claim any core
+  movement is automatically an equivalent Pallof.
+- The canonical workout objective/dose and textual backup remain authoritative
+  until a deliberate mapped variation is recorded.
+
+The remaining blocking gate is the **technical ability to publish actual
+StructuredStrength inside TrainingPeaks Training Plan Library**, not
+one-for-one string matching of every historical exercise.
