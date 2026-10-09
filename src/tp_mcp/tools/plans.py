@@ -487,8 +487,12 @@ async def tp_create_training_plan(
         return {
             "success": True, "plan_id": plan_id,
             "title": title.strip(), "start_date": start.isoformat(),
-            "weeks": week_count, "is_public": d.get("isPublic", False),
-            "verified": True,
+            "weeks": week_count, "requested_weeks": week_count,
+            "provider_observed_weeks": d.get("weekCount"),
+            "provider_observed_start_date": (d.get("startDate") or "")[:10] or None,
+            "calendar_bootstrap_pending": not bool(d.get("startDate")),
+            "is_public": d.get("isPublic", False),
+            "verified": True,  # identity/private status only, not 24 populated weeks
         }
 
 
