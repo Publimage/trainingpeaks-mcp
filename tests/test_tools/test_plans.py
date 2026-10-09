@@ -4,7 +4,7 @@ from unittest.mock import AsyncMock, patch
 
 import pytest
 
-from tp_mcp.client.http import APIResponse
+from tp_mcp.client.http import APIResponse, ErrorCode
 from tp_mcp.tools.plans import (
     tp_add_training_plan_library_workout,
     tp_add_training_plan_note,
@@ -1079,7 +1079,6 @@ async def test_cleanup_never_deletes_training_workout_or_changed_card():
 
 @pytest.mark.asyncio
 async def test_cleanup_refuses_ambiguous_or_missing_workout_identity():
-    from unittest.mock import patch as mock_patch
     item = {
         **_CLEANUP_OTHER,
         "workoutId": None,
