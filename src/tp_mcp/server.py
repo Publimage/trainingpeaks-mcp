@@ -690,9 +690,11 @@ TOOLS = [
     ),
     Tool(
         name="tp_apply_training_plan",
-        description="Apply a training plan to an athlete's calendar from a start date "
-                    "by copying each plan workout (with structure) to start_date + its "
-                    "relative day. Targets the athlete given via the athlete parameter.",
+        description="LAB ONLY: synthetically COPY three [MCP TEST] Training Plan workouts "
+                    "from plan 684206 to athlete 941614 (Piattaforma TEST), starting "
+                    "2027-06-21. Requires an empty sandbox; never applies a native "
+                    "linked TrainingPeaks plan or copies its calendar notes. "
+                    "Rejects all other plans, athletes and dates.",
         input_schema={
             "type": "object",
             "properties": {
