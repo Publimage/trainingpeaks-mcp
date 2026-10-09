@@ -140,3 +140,45 @@ If any step fails/returns STOP, do NOT repeat automatically.
 
 After independent live proof and anchor-preservation result, the cleanup tool
 may be enabled/retested before deleting the six real-plan legacy cards.
+
+
+## 2026-10-09 observed live disposable proof and streamlined production cleanup
+
+TrainingPeaks live readback after the coach's disposable test:
+- Disposable private Plan `684484` exists with exactly **one surviving Tuesday
+  Other** workout, provider workout ID `3995256662`.
+- Its **native Monday note** (`2651317`) survived, and the plan start date
+  remained **2027-07-05** after removing the original Monday Other.
+- The two staged DELETE calls therefore produced the anticipated observable
+  final state. The coach ran the local probe; full Terminal output was not
+  captured. The disposable plan still exists: deleting the entire plan has
+  **not** been implemented/confirmed.
+- Intermediate pilot `684463` remains unchanged: 13 workouts, 6 old Other
+  cards, 8 native notes.
+
+For the protected Intermediate pilot, a **single-purpose runner** was added:
+`scripts/cleanup_intermediate_other.py --execute`. It uses the existing
+`tp_delete_training_plan_other` six-item allowlist and live readback, with
+provider identities checked against the six known workout IDs and matching
+native note IDs. The verified endpoint is enabled only in that one-shot local
+process: the MCP server remains fail-closed by default. The runner always
+keeps W1's Monday anchor deletion last and stops immediately on any mismatch.
+The native notes reader and workouts reader use a fixed 24-week pilot read
+window so deletion-induced shrinking `dayCount` does not hide W3/W4 notes.
+
+Local gate (in Mac venv; tunnel does not require a restart):
+```bash
+cd ~/trainingpeaks-mcp
+git pull --ff-only
+source .venv/bin/activate
+python -m pytest tests/test_tools/test_plans.py -q && python scripts/cleanup_intermediate_other.py --execute
+```
+Do not repeat the execute command after ambiguous errors; inspect the live
+pilot plan first.
+
+**Simplified experimental standard from the coach:** create a brand-new unused,
+private, disposable `[MCP TEST]` plan, test the one feature, check result,
+then delete the whole test plan once a verified deletion method is available.
+A populated, completed or public commercial plan stays in a protected workflow
+with scope checks, readback, and conservation of its existing content. No
+general test plan needs a 24-week product-level safety process.
