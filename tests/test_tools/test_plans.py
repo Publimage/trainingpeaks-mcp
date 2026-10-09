@@ -10,6 +10,7 @@ from tp_mcp.tools.plans import (
     tp_add_training_plan_note,
     tp_apply_training_plan,
     tp_create_training_plan,
+    tp_delete_training_plan_other,
     tp_get_training_plan,
     tp_get_training_plan_notes,
     tp_get_training_plan_workouts,
@@ -898,3 +899,250 @@ async def test_intermediate_pilot_refuses_outside_or_shifted(start, target):
         p.stop()
     assert result["error_code"] == "PROTECTED_RESOURCE"
     inst.post.assert_not_called()
+
+
+# Sandbox-only deletion preflight: by default no endpoint is installed.
+_CLEANUP_TITLE = (
+    "[MCP TEST] IMINT24W-W02-MON-OTHER-01 | "
+    "SETTIMANA 2 | Calibrazione e prima qualità"
+)
+_CLEANUP_DESCRIPTION = "OBIETTIVO DELLA SETTIMANA\n\nTesto confermato dal canonico."
+_CLEANUP_PLAN = {
+    "planId": 684463,
+    "title": "[MCP TEST] IRONMAN Intermediate 24W - Archive Pilot",
+    "startDate": "2027-01-04T00:00:00",
+    "weekCount": 4, "dayCount": 22, "workoutCount": 19,
+    "isPublic": False, "price": None,
+}
+_CLEANUP_OTHER = {
+    "workoutId": 888001,
+    "title": _CLEANUP_TITLE,
+    "workoutDay": "2027-01-11T00:00:00",
+    "workoutTypeValueId": 100,
+    "totalTimePlanned": 1 / 60,
+    "description": _CLEANUP_DESCRIPTION,
+    "structure": None,
+}
+_CLEANUP_REAL_WORKOUTS = [
+    {
+        "workoutId": 900000 + i,
+        "title": f"Actual training workout {i}",
+        "workoutDay": "2027-01-05T00:00:00",
+        "workoutTypeValueId": 1 if i % 2 else 2,
+        "totalTimePlanned": 0.5, "description": "Approved structured",
+        "structure": {"structure": [{"test": i}]},
+    }
+    for i in range(13)
+]
+_CLEANUP_NOTE = {
+    "calendarNoteId": 777700,
+    "title": _CLEANUP_TITLE,
+    "noteDate": "2027-01-11T00:00:00",
+    "description": _CLEANUP_DESCRIPTION,
+}
+_CLEANUP_NOTES = [_CLEANUP_NOTE] + [
+    {
+        "calendarNoteId": 777701 + i,
+        "title": f"[MCP TEST] Other native note {i}",
+        "noteDate": "2027-01-04T00:00:00",
+        "description": "Unchanged",
+    }
+    for i in range(7)
+]
+
+
+def _cleanup_mock_client(*, notes=None, plan=None, workouts=None, deletion=None):
+    inst = AsyncMock()
+    current = (workouts if workouts is not None
+               else [_CLEANUP_OTHER] + _CLEANUP_REAL_WORKOUTS)
+    note_data = notes if notes is not None else _CLEANUP_NOTES
+    plan_data = plan if plan is not None else _CLEANUP_PLAN
+    pre = [
+        APIResponse(success=True, data=plan_data),
+        APIResponse(success=True, data=current),
+        APIResponse(success=True, data=note_data),
+    ]
+    if deletion is not None:
+        pre.extend([
+            APIResponse(success=True, data=plan_data),
+            APIResponse(success=True, data=deletion),
+            APIResponse(success=True, data=note_data),
+        ])
+    inst.get = AsyncMock(side_effect=pre)
+    inst.delete = AsyncMock(return_value=APIResponse(success=True, data=True))
+    return inst
+
+
+@pytest.mark.asyncio
+async def test_cleanup_dry_run_requires_native_note_and_never_deletes():
+    inst = _cleanup_mock_client()
+    p = _patch(inst)
+    try:
+        result = await tp_delete_training_plan_other(
+            plan_id=684463, expected_title=_CLEANUP_TITLE,
+        )
+    finally:
+        p.stop()
+    assert result["success"] is True
+    assert result["dry_run"] is True
+    assert result["workout_id"] == 888001
+    assert result["matching_native_note_id"] == 777700
+    assert result["protected_training_workouts"] == 13
+    assert result["protected_native_notes"] == 8
+    assert result["delete_route_verified"] is False
+    inst.delete.assert_not_called()
+
+
+@pytest.mark.asyncio
+async def test_cleanup_real_delete_disabled_even_with_valid_candidate():
+    inst = _cleanup_mock_client()
+    p = _patch(inst)
+    try:
+        result = await tp_delete_training_plan_other(
+            plan_id=684463, expected_title=_CLEANUP_TITLE,
+            dry_run=False,
+        )
+    finally:
+        p.stop()
+    assert result["error_code"] == "DELETE_ROUTE_UNVERIFIED"
+    inst.delete.assert_not_called()
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize("plan_id,title", [
+    (679801, _CLEANUP_TITLE),  # protected Beginner product
+    (684206, _CLEANUP_TITLE),  # separate 3-workout lab
+    (684463, "[MCP TEST] IMINT24W-W02-TUE-SWIMMING-01 | Swim"),
+    (684463, "Other arbitrary title"),
+])
+async def test_cleanup_scope_guard_rejects_wrong_plans_or_titles(plan_id, title):
+    with patch("tp_mcp.tools.plans.TPClient") as client:
+        result = await tp_delete_training_plan_other(
+            plan_id=plan_id, expected_title=title, dry_run=False,
+        )
+    assert result["error_code"] == "PROTECTED_RESOURCE"
+    client.assert_not_called()
+
+
+@pytest.mark.asyncio
+async def test_cleanup_refuses_published_or_shifted_plan():
+    for detail in (
+        {**_CLEANUP_PLAN, "isPublic": True},
+        {**_CLEANUP_PLAN, "startDate": "2027-01-05T00:00:00"},
+        {**_CLEANUP_PLAN, "title": "Another [MCP TEST] plan"},
+    ):
+        inst = _cleanup_mock_client(plan=detail)
+        p = _patch(inst)
+        try:
+            result = await tp_delete_training_plan_other(
+                plan_id=684463, expected_title=_CLEANUP_TITLE,
+                dry_run=False,
+            )
+        finally:
+            p.stop()
+        assert result["error_code"] == "PROTECTED_RESOURCE"
+        inst.delete.assert_not_called()
+
+
+@pytest.mark.asyncio
+async def test_cleanup_dry_run_refuses_missing_native_note():
+    inst = _cleanup_mock_client(notes=_CLEANUP_NOTES[1:])
+    p = _patch(inst)
+    try:
+        result = await tp_delete_training_plan_other(
+            plan_id=684463, expected_title=_CLEANUP_TITLE,
+        )
+    finally:
+        p.stop()
+    assert result["error_code"] == "NATIVE_NOTE_MISSING"
+    inst.delete.assert_not_called()
+
+
+@pytest.mark.asyncio
+async def test_cleanup_never_deletes_training_workout_or_changed_card():
+    changed = {
+        **_CLEANUP_OTHER,
+        "workoutTypeValueId": 2, "totalTimePlanned": 1,
+    }
+    inst = _cleanup_mock_client(workouts=[changed] + _CLEANUP_REAL_WORKOUTS)
+    p = _patch(inst)
+    try:
+        result = await tp_delete_training_plan_other(
+            plan_id=684463, expected_title=_CLEANUP_TITLE,
+            dry_run=False,
+        )
+    finally:
+        p.stop()
+    assert result["error_code"] == "TARGET_UNVERIFIED"
+    inst.delete.assert_not_called()
+
+
+@pytest.mark.asyncio
+async def test_cleanup_refuses_ambiguous_or_missing_workout_identity():
+    from unittest.mock import patch as mock_patch
+    item = {
+        **_CLEANUP_OTHER,
+        "workoutId": None,
+        "planWorkoutId": 888001,
+        "id": 888002,
+    }
+    inst = _cleanup_mock_client(workouts=[item] + _CLEANUP_REAL_WORKOUTS)
+    p = _patch(inst)
+    try:
+        result = await tp_delete_training_plan_other(
+            plan_id=684463, expected_title=_CLEANUP_TITLE,
+            dry_run=False,
+        )
+    finally:
+        p.stop()
+    assert result["error_code"] == "WORKOUT_ID_UNVERIFIED"
+    inst.delete.assert_not_called()
+
+
+@pytest.mark.asyncio
+async def test_cleanup_mock_only_verified_route_must_preserve_every_survivor():
+    """A captured route MAY be installed later; no live route is shipped."""
+    inst = _cleanup_mock_client(deletion=_CLEANUP_REAL_WORKOUTS)
+    with patch(
+        "tp_mcp.tools.plans._VERIFIED_PLAN_WORKOUT_DELETE_TEMPLATE",
+        "/plans/v1/plans/{plan_id}/workouts/{workout_id}",
+    ):
+        p = _patch(inst)
+        try:
+            result = await tp_delete_training_plan_other(
+                plan_id=684463, expected_title=_CLEANUP_TITLE,
+                dry_run=False,
+            )
+        finally:
+            p.stop()
+    assert result["success"] is True
+    assert result["real_workouts_preserved"] == 13
+    assert result["native_notes_preserved"] == 8
+    assert result["remaining_other"] == 0
+    inst.delete.assert_awaited_once_with(
+        "/plans/v1/plans/684463/workouts/888001"
+    )
+    assert inst.get.await_count == 6
+
+
+@pytest.mark.asyncio
+async def test_cleanup_failed_delete_keeps_no_success_claim():
+    inst = _cleanup_mock_client()
+    inst.delete = AsyncMock(return_value=APIResponse(
+        success=False, error_code=ErrorCode.API_ERROR, message="404"
+    ))
+    with patch(
+        "tp_mcp.tools.plans._VERIFIED_PLAN_WORKOUT_DELETE_TEMPLATE",
+        "/plans/v1/plans/{plan_id}/workouts/{workout_id}",
+    ):
+        p = _patch(inst)
+        try:
+            result = await tp_delete_training_plan_other(
+                plan_id=684463, expected_title=_CLEANUP_TITLE,
+                dry_run=False,
+            )
+        finally:
+            p.stop()
+    assert result["isError"] is True
+    inst.delete.assert_awaited_once()
+
