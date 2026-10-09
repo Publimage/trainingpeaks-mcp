@@ -750,6 +750,9 @@ async def test_create_intermediate_24w_private_pilot_exact_scope():
     assert result["success"] is True
     assert result["verified"] is True
     assert result["plan_id"] == 784206
+    assert result["requested_weeks"] == 24
+    assert result["provider_observed_weeks"] == 0
+    assert result["calendar_bootstrap_pending"] is True
     payload = inst.post.call_args.kwargs["json"]
     assert payload["isPublic"] is False
     assert payload["weekCount"] == 24
@@ -862,6 +865,9 @@ async def test_intermediate_pilot_accepts_week4_beyond_reported_week_count():
     finally:
         p.stop()
     assert result["success"] is True
+    assert inst.get.call_args_list[-1].args[0] == (
+        "/plans/v1/plans/784206/workouts/2027-01-29/2027-01-31"
+    )
     assert inst.post.await_count == 1
 
 
