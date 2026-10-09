@@ -1004,6 +1004,49 @@ async def test_existing_plan_reader_exposes_read_only_legacy_other_inventory():
 
 
 @pytest.mark.asyncio
+async def test_cleanup_can_still_read_native_week4_notes_when_metadata_shrinks():
+    """Deleting the last W4 Other must not truncate the native notes query."""
+    shorter = {**_CLEANUP_PLAN, "dayCount": 9, "weekCount": 2, "workoutCount": 14}
+    inst = _cleanup_mock_client(plan=shorter)
+    p = _patch(inst)
+    try:
+        result = await tp_delete_training_plan_other(
+            plan_id=684463, expected_title=_CLEANUP_TITLE, dry_run=True,
+        )
+    finally:
+        p.stop()
+    assert result["success"] is True
+    assert result["protected_native_notes"] == 8
+    assert all(
+        "2027-01-04/2027-06-22" in call.args[0]
+        for call in inst.get.await_args_list
+        if "/workouts/" in call.args[0] or "/calendarNote/" in call.args[0]
+    )
+    inst._request.assert_not_called()
+
+
+@pytest.mark.asyncio
+async def test_intermediate_reader_uses_fixed_archive_span_after_metadata_shrinks():
+    shorter = {**_CLEANUP_PLAN, "dayCount": 9, "weekCount": 2, "workoutCount": 14}
+    inst = _client_with([
+        APIResponse(success=True, data=shorter),
+        APIResponse(success=True, data=[_CLEANUP_OTHER, *_CLEANUP_REAL_WORKOUTS]),
+        APIResponse(success=True, data=shorter),
+        APIResponse(success=True, data=_CLEANUP_NOTES),
+    ])
+    p = _patch(inst)
+    try:
+        result = await tp_get_training_plan_workouts(684463)
+    finally:
+        p.stop()
+    assert result["calendar_notes_count"] == 8
+    assert result["legacy_other_cleanup_readonly"]["native_notes_count"] == 8
+    paths = [call.args[0] for call in inst.get.await_args_list]
+    assert any("/workouts/2027-01-04/2027-06-22" in path for path in paths)
+    assert any("/calendarNote/2027-01-04/2027-06-22" in path for path in paths)
+
+
+@pytest.mark.asyncio
 async def test_cleanup_dry_run_requires_native_note_and_never_deletes():
     inst = _cleanup_mock_client()
     p = _patch(inst)
