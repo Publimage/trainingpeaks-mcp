@@ -869,11 +869,17 @@ async def tp_batch_add_training_plan_library_workouts(
             or (plan.get("title") or "").strip() != assembly_title
             or _test_plan_guard(plan) is not None):
             return _err("PROTECTED_RESOURCE", "Assembly plan identity/privacy mismatch.")
-        anchor = _parse_plan_date((plan.get("startDate") or "")[:10])
-        if anchor is None or anchor.weekday() != 0:
-            return _err("NEEDS_BOOTSTRAP",
-                        "Private plan must have a real Monday startDate. "
-                        "Anchor week 1 in native TrainingPeaks UI once.")
+        # Training Plans are relative WEEK/DAY templates, never athlete dates.
+        # TrainingPeaks stores a technical date for the first inserted session.
+        # Our verified seed is W1 TUESDAY, which may be the provider startDate.
+        provider_start = _parse_plan_date((plan.get("startDate") or "")[:10])
+        if provider_start is None:
+            return _err("NEEDS_FIRST_WORKOUT",
+                        "Insert the W1 Tuesday T1500 MASTER template once in the private plan.")
+        if provider_start.weekday() not in (0, 1):
+            return _err("RELATIVE_CALENDAR_UNVERIFIED",
+                        "Provider startDate is not Monday/Tuesday. Check relative W1 layout.")
+        anchor = provider_start - timedelta(days=provider_start.weekday())
         end = anchor + timedelta(weeks=24, days=1)
         manifest = []
         for lib, template, week, day, title in validated:
@@ -911,6 +917,16 @@ async def tp_batch_add_training_plan_library_workouts(
         if not isinstance(workouts_resp.data, list):
             return _err("API_ERROR", "Unexpected plan workout list.")
         before = workouts_resp.data
+        # Never derive weekday 1 from a raw date without checking the UI-seeded
+        # W1 Tuesday template exists in that exact relative slot.
+        seed_date = (anchor + timedelta(days=1)).isoformat()
+        seed = [w for w in before
+                if (w.get("workoutDay") or "")[:10] == seed_date
+                and (w.get("title") or "").strip()
+                    == "IRONMAN | SWIM | TEST T1500 iniziale | 2500 m"]
+        if len(seed) != 1 or seed[0].get("workoutTypeValueId") != 1:
+            return _err("RELATIVE_CALENDAR_UNVERIFIED",
+                        "W1 Tuesday T1500 marker is missing or ambiguous; no write.")
         to_add = []
         skipped = []
         for lib, template, day_date, title, candidate in candidates:
