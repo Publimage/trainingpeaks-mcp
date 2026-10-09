@@ -279,9 +279,10 @@ async def test_add_workout_refuses_out_of_range_date():
 @pytest.mark.asyncio
 async def test_plan_note_payload_and_protection():
     client = AsyncMock()
-    client.get = AsyncMock(return_value=APIResponse(
-        success=True, data=_TEST_PLAN,
-    ))
+    client.get = AsyncMock(side_effect=[
+        APIResponse(success=True, data=_TEST_PLAN),
+        APIResponse(success=True, data=[]),  # no same-day note
+    ])
     client.post = AsyncMock(return_value=APIResponse(success=True, data={}))
     p = _patch(client)
     try:
@@ -485,4 +486,120 @@ async def test_read_training_plan_notes_is_read_only():
     finally:
         p.stop()
     assert result["count"] == 0
+    client.post.assert_not_called()
+
+
+
+@pytest.mark.asyncio
+async def test_existing_workouts_reader_also_returns_native_plan_calendar_notes():
+    """The established 88th-or-earlier MCP action also audits plan notes.
+
+    This works even if the NEW tp_get_training_plan_notes tool is absent
+    from the host's cached action list.
+    """
+    client = AsyncMock()
+    client.get = AsyncMock(side_effect=[
+        APIResponse(success=True, data=_TEST_PLAN),
+        APIResponse(success=True, data=[{
+            "workoutDay": "2027-06-21T00:00:00",
+            "workoutTypeValueId": 1,
+            "title": "[MCP TEST] Swim 1200 m",
+            "totalTimePlanned": 0.5,
+            "distancePlanned": 1200,
+            "structure": {"primaryLengthMetric": "distance"},
+        }]),
+        APIResponse(success=True, data=_TEST_PLAN),
+        APIResponse(success=True, data=[{
+            "calendarNoteId": 99515,
+            "title": "[MCP TEST] Instructions",
+            "noteDate": "2027-06-24T00:00:00",
+            "description": "Pilot plan instructions",
+        }]),
+    ])
+    p = _patch(client)
+    try:
+        result = await tp_get_training_plan_workouts(91919)
+    finally:
+        p.stop()
+    assert result["count"] == 1
+    assert result["calendar_notes_status"] == "ok"
+    assert result["calendar_notes_count"] == 1
+    assert result["calendar_notes"][0]["title"] == "[MCP TEST] Instructions"
+    assert result["calendar_notes"][0]["day"] == 4
+    assert result["calendar_notes"][0]["week"] == 1
+    assert "/calendarNote/2027-06-21/2027-06-29" in client.get.call_args.args[0]
+    client.post.assert_not_called()
+
+
+@pytest.mark.asyncio
+async def test_workouts_reader_survives_a_notes_endpoint_failure():
+    """Do not silently misreport zero notes when the notes endpoint fails."""
+    client = AsyncMock()
+    client.get = AsyncMock(side_effect=[
+        APIResponse(success=True, data=_TEST_PLAN),
+        APIResponse(success=True, data=[{
+            "workoutDay": "2027-06-21T00:00:00",
+            "workoutTypeValueId": 1,
+            "title": "[MCP TEST] Swim 1200 m",
+            "totalTimePlanned": 0.5,
+        }]),
+        APIResponse(success=True, data=_TEST_PLAN),
+        APIResponse(success=False, status_code=503, message="Notes temporarily unavailable"),
+    ])
+    p = _patch(client)
+    try:
+        result = await tp_get_training_plan_workouts(91919)
+    finally:
+        p.stop()
+    assert result["count"] == 1
+    assert result["calendar_notes"] is None
+    assert result["calendar_notes_status"] == "unavailable"
+    assert result["calendar_notes_error"]["code"]
+
+
+@pytest.mark.asyncio
+async def test_plan_note_duplicate_is_detected_before_post():
+    client = AsyncMock()
+    client.get = AsyncMock(side_effect=[
+        APIResponse(success=True, data=_TEST_PLAN),
+        APIResponse(success=True, data=[{
+            "calendarNoteId": 99515,
+            "title": "[MCP TEST] Instructions",
+            "noteDate": "2027-06-24T00:00:00",
+        }]),
+    ])
+    client.post = AsyncMock()
+    p = _patch(client)
+    try:
+        result = await tp_add_training_plan_note(
+            plan_id=91919,
+            note_date="2027-06-24",
+            title="[MCP TEST] Instructions",
+            description="Do not duplicate the note.",
+        )
+    finally:
+        p.stop()
+    assert result["error_code"] == "ALREADY_EXISTS"
+    client.post.assert_not_called()
+
+
+@pytest.mark.asyncio
+async def test_plan_note_aborts_on_unexpected_preflight_response():
+    client = AsyncMock()
+    client.get = AsyncMock(side_effect=[
+        APIResponse(success=True, data=_TEST_PLAN),
+        APIResponse(success=True, data={"unexpected": "shape"}),
+    ])
+    client.post = AsyncMock()
+    p = _patch(client)
+    try:
+        result = await tp_add_training_plan_note(
+            plan_id=91919,
+            note_date="2027-06-24",
+            title="[MCP TEST] Instructions",
+            description="Do not post without a reliable duplicate check.",
+        )
+    finally:
+        p.stop()
+    assert result["error_code"] == "API_ERROR"
     client.post.assert_not_called()
