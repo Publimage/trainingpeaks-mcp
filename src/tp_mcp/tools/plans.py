@@ -175,6 +175,11 @@ async def _fetch_plan_workouts(
     if not start or not days:
         return None, _err("API_ERROR", "Plan has no startDate/dayCount.")
     sd = date_type.fromisoformat(start)
+    # Native TrainingPeaks plan metadata can shrink when the latest legacy
+    # Other is removed. Preserve a stable, fixed archive-pilot read window
+    # so W3/W4 native notes remain discoverable.
+    if plan_id == _INTERMEDIATE_PILOT_ID and sd == _INTERMEDIATE_PILOT_START:
+        days = max(int(days), _INTERMEDIATE_PILOT_WEEKS * 7)
     ed = sd + timedelta(days=int(days) + 1)
     wr = await client.get(f"/plans/v1/plans/{plan_id}/workouts/{sd.isoformat()}/{ed.isoformat()}")
     if wr.is_error:
@@ -810,11 +815,13 @@ async def tp_delete_training_plan_other(
             return _err("PROTECTED_RESOURCE", "Plan identity, privacy or Monday anchor changed.")
 
         start = _INTERMEDIATE_PILOT_START
-        length = max(int(plan.get("dayCount") or 0),
-                     int(plan.get("weekCount") or 0) * 7)
-        if not 22 <= length <= 168:
+        reported_length = max(int(plan.get("dayCount") or 0),
+                              int(plan.get("weekCount") or 0) * 7)
+        if not 9 <= reported_length <= _INTERMEDIATE_PILOT_WEEKS * 7:
             return _err("PROTECTED_RESOURCE", "Unexpected plan range.")
-        end = start + timedelta(days=length + 1)
+        # Do NOT use a shrinking provider dayCount to read the eight W1-W4
+        # native notes; their week-4 IDs must survive every deletion.
+        end = start + timedelta(weeks=_INTERMEDIATE_PILOT_WEEKS, days=1)
         wr = await client.get(
             f"/plans/v1/plans/{v.plan_id}/workouts/"
             f"{start.isoformat()}/{end.isoformat()}"
@@ -985,6 +992,8 @@ async def tp_get_training_plan_notes(plan_id: int | str) -> dict[str, Any]:
                    (plan.get("weekCount") or 0) * 7)
         if start is None or days <= 0:
             return _err("API_ERROR", "Plan has no populated calendar range.")
+        if v.plan_id == _INTERMEDIATE_PILOT_ID and start == _INTERMEDIATE_PILOT_START:
+            days = max(days, _INTERMEDIATE_PILOT_WEEKS * 7)
         end = start + timedelta(days=days + 1)
         response = await client.get(
             f"/plans/v1/plans/{v.plan_id}/calendarNote/"
