@@ -676,8 +676,10 @@ TOOLS = [
     ),
     Tool(
         name="tp_get_training_plan_workouts",
-        description="All workouts of a training plan laid out by week/day "
-                    "(sport, title, description, duration, TSS, has_structure).",
+        description="Read a Training Plan calendar: all workouts by week/day "
+                    "(sport, title, description, duration, TSS, has_structure), "
+                    "plus native plan calendar notes with separate notes-readback status. "
+                    "Read-only; does not touch an athlete calendar.",
         input_schema={
             "type": "object",
             "properties": {
