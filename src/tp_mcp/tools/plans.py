@@ -821,7 +821,11 @@ async def tp_delete_training_plan_other(
                 if k in candidate
             },
             "raw_keys": sorted(candidate.keys()),
-            "matching_native_note_id": exact_notes[0].get("calendarNoteId"),
+            "matching_native_note_id": (
+                exact_notes[0].get("id")
+                or exact_notes[0].get("calendarNoteId")
+                or exact_notes[0].get("noteId")
+            ),
             "protected_training_workouts": len(real_workouts),
             "protected_native_notes": len(notes),
             "old_other_count": len(before) - len(real_workouts),
