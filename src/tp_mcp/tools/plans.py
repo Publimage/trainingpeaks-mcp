@@ -907,7 +907,8 @@ async def tp_delete_training_plan_other(
             or "/athletes/" in endpoint or "?" in endpoint
         ):
             return _err("PROTECTED_RESOURCE", "Unexpected deletion endpoint.")
-        result = await client.delete(endpoint)
+        # A destructive request must never auto-retry on an ambiguous 401.
+        result = await client._request("DELETE", endpoint, _retry_on_401=False)
         if result.is_error:
             return _api_err(result)
 
