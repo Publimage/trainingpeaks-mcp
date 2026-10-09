@@ -591,6 +591,19 @@ async def tp_add_training_plan_library_workout(
         if error is not None:
             return error
         assert plan is not None
+        is_archive_pilot = (plan.get("title") or "").strip() == _INTERMEDIATE_PILOT_TITLE
+        # Keep the existing simple-plan guard order stable, including its
+        # fail-closed behavior before a Workout Library GET.
+        if not is_archive_pilot:
+            date_error = _check_plan_date(
+                plan, workout_date,
+                allow_first_workout_bootstrap=(
+                    v.plan_id == 684206 and lib_id == 3890637
+                    and template_id == 14935065
+                ),
+            )
+            if date_error:
+                return date_error
         # Validate the actual template BEFORE permitting an empty-plan
         # bootstrap. Never let an unrelated workout anchor the new calendar.
         library = await client.get(f"/exerciselibrary/v2/libraries/{lib_id}/items")
@@ -613,17 +626,13 @@ async def tp_add_training_plan_library_workout(
                     "PROTECTED_RESOURCE",
                     "Intermediate pilot requires a canonical UID-prefixed template.",
                 )
-        date_error = _check_plan_date(
-            plan, workout_date,
-            allow_first_workout_bootstrap=(
-                (v.plan_id == 684206 and lib_id == 3890637
-                 and template_id == 14935065)
-                or (plan.get("title") or "").strip() == _INTERMEDIATE_PILOT_TITLE
-            ),
-            bootstrap_item_name=candidate.get("itemName"),
-        )
-        if date_error:
-            return date_error
+        if is_archive_pilot:
+            date_error = _check_plan_date(
+                plan, workout_date, allow_first_workout_bootstrap=True,
+                bootstrap_item_name=candidate.get("itemName"),
+            )
+            if date_error:
+                return date_error
 
         # The endpoint is non-idempotent: check whether the same template
         # was already copied to this exact plan day before posting.
