@@ -710,3 +710,185 @@ async def test_plan_notes_reader_does_not_report_zero_on_unknown_payload():
     assert result["isError"] is True
     assert result["error_code"] == "API_ERROR"
     assert "count" not in result
+
+
+# Intermediate 24-week Training Plan Library staging — MOCK-ONLY regressions.
+# Live writes remain forbidden until editable-install tests and provider
+# readback confirm each stage in an unpriced [MCP TEST] private plan.
+_INTERMEDIATE_PILOT_TITLE = "[MCP TEST] IRONMAN Intermediate 24W - Archive Pilot"
+_INTERMEDIATE_FIRST_UID = "IMINT24W-W01-MON-OTHER-01"
+_INTERMEDIATE_FIRST_ITEM = (
+    "[MCP TEST] " + _INTERMEDIATE_FIRST_UID
+    + " | SETTIMANA 1 | Calibrazione e riferimenti"
+)
+
+
+@pytest.mark.asyncio
+async def test_create_intermediate_24w_private_pilot_exact_scope():
+    inst = AsyncMock()
+    inst.get = AsyncMock(side_effect=[
+        APIResponse(success=True, data=[]),
+        APIResponse(success=True, data={
+            "planId": 784206, "title": _INTERMEDIATE_PILOT_TITLE,
+            "startDate": None, "dayCount": None, "weekCount": 0,
+            "workoutCount": None, "isPublic": False, "price": None,
+        }),
+    ])
+    inst.post = AsyncMock(return_value=APIResponse(
+        success=True, data={"planId": 784206},
+    ))
+    p = _patch(inst)
+    try:
+        result = await tp_create_training_plan(
+            title=_INTERMEDIATE_PILOT_TITLE,
+            start_date="2027-01-04",
+            week_count=24,
+            description="PRIVATE archive pilot; no athlete sharing.",
+        )
+    finally:
+        p.stop()
+    assert result["success"] is True
+    assert result["verified"] is True
+    assert result["plan_id"] == 784206
+    payload = inst.post.call_args.kwargs["json"]
+    assert payload["isPublic"] is False
+    assert payload["weekCount"] == 24
+    assert payload["dayCount"] == 168
+    assert payload["startDate"] == "2027-01-04T00:00:00"
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize("title,start,weeks", [
+    ("[MCP TEST] Something else", "2027-01-04", 24),
+    ("[MCP TEST] IRONMAN Intermediate 24W - Archive Pilot", "2027-01-11", 24),
+    ("[MCP TEST] IRONMAN Intermediate 24W - Archive Pilot", "2027-01-04", 4),
+    ("[MCP TEST] IRONMAN Intermediate 24W - Archive Pilot", "2027-01-04", 25),
+])
+async def test_intermediate_pilot_rejects_other_plan_scopes(title, start, weeks):
+    with patch("tp_mcp.tools.plans.TPClient") as client:
+        result = await tp_create_training_plan(
+            title=title, start_date=start, week_count=weeks,
+        )
+    assert result["isError"] is True
+    client.assert_not_called()
+
+
+def _intermediate_pilot_detail(
+    start_date=None, workout_count=None, week_count=0, day_count=0,
+):
+    return {
+        "planId": 784206,
+        "title": _INTERMEDIATE_PILOT_TITLE,
+        "startDate": (start_date + "T00:00:00") if start_date else None,
+        "workoutCount": workout_count,
+        "weekCount": week_count, "dayCount": day_count,
+        "isPublic": False, "price": None,
+    }
+
+
+@pytest.mark.asyncio
+async def test_intermediate_empty_pilot_accepts_only_first_monday_uid():
+    inst = AsyncMock()
+    inst.get = AsyncMock(side_effect=[
+        APIResponse(success=True, data=_intermediate_pilot_detail()),
+        APIResponse(success=True, data=[{
+            "exerciseLibraryItemId": 2350001,
+            "itemName": _INTERMEDIATE_FIRST_ITEM,
+        }]),
+    ])
+    inst.post = AsyncMock(return_value=APIResponse(success=True, data={}))
+    p = _patch(inst)
+    try:
+        result = await tp_add_training_plan_library_workout(
+            plan_id=784206, library_id="3890637", item_id="2350001",
+            workout_date="2027-01-04",
+        )
+    finally:
+        p.stop()
+    assert result["success"] is True
+    assert inst.post.await_count == 1
+    assert inst.post.call_args.kwargs["json"]["workoutDateTime"] == "2027-01-04"
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize("date,item_name", [
+    ("2027-01-05", _INTERMEDIATE_FIRST_ITEM),
+    ("2027-01-04", "[MCP TEST] IMINT24W-W01-TUE-SWIMMING-01 | Test T1500"),
+    ("2027-01-04", "[MCP TEST] Old unrelated template"),
+])
+async def test_intermediate_empty_pilot_rejects_wrong_bootstrap(date, item_name):
+    inst = AsyncMock()
+    inst.get = AsyncMock(side_effect=[
+        APIResponse(success=True, data=_intermediate_pilot_detail()),
+        APIResponse(success=True, data=[{
+            "exerciseLibraryItemId": 2350001,
+            "itemName": item_name,
+        }]),
+    ])
+    inst.post = AsyncMock()
+    p = _patch(inst)
+    try:
+        result = await tp_add_training_plan_library_workout(
+            plan_id=784206, library_id="3890637", item_id="2350001",
+            workout_date=date,
+        )
+    finally:
+        p.stop()
+    assert result["error_code"] == "PROTECTED_RESOURCE"
+    inst.post.assert_not_called()
+
+
+@pytest.mark.asyncio
+async def test_intermediate_pilot_accepts_week4_beyond_reported_week_count():
+    inst = AsyncMock()
+    inst.get = AsyncMock(side_effect=[
+        APIResponse(success=True, data=_intermediate_pilot_detail(
+            start_date="2027-01-04", workout_count=13,
+            week_count=1, day_count=7,
+        )),
+        APIResponse(success=True, data=[{
+            "exerciseLibraryItemId": 2350002,
+            "itemName": "[MCP TEST] IMINT24W-W04-FRI-CYCLING-02 | Bici facile",
+        }]),
+        APIResponse(success=True, data=[]),
+    ])
+    inst.post = AsyncMock(return_value=APIResponse(success=True, data={}))
+    p = _patch(inst)
+    try:
+        result = await tp_add_training_plan_library_workout(
+            plan_id=784206, library_id="3890637", item_id="2350002",
+            workout_date="2027-01-29",
+        )
+    finally:
+        p.stop()
+    assert result["success"] is True
+    assert inst.post.await_count == 1
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize("start,target", [
+    ("2027-01-04", "2027-06-21"),  # day 169, outside 24 weeks
+    ("2027-01-05", "2027-01-06"),  # shifted source week anchor
+])
+async def test_intermediate_pilot_refuses_outside_or_shifted(start, target):
+    inst = AsyncMock()
+    inst.get = AsyncMock(side_effect=[
+        APIResponse(success=True, data=_intermediate_pilot_detail(
+            start_date=start, workout_count=2, week_count=1, day_count=3,
+        )),
+        APIResponse(success=True, data=[{
+            "exerciseLibraryItemId": 2350003,
+            "itemName": "[MCP TEST] IMINT24W-W01-WED-RUNNING-01 | Corsa facile",
+        }]),
+    ])
+    inst.post = AsyncMock()
+    p = _patch(inst)
+    try:
+        result = await tp_add_training_plan_library_workout(
+            plan_id=784206, library_id="3890637", item_id="2350003",
+            workout_date=target,
+        )
+    finally:
+        p.stop()
+    assert result["error_code"] == "PROTECTED_RESOURCE"
+    inst.post.assert_not_called()
