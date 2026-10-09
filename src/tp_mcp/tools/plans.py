@@ -235,6 +235,8 @@ async def tp_get_training_plan_workouts(plan_id: int | str) -> dict[str, Any]:
             for summary, raw in zip(out, ws):
                 if raw.get("workoutTypeValueId") == 1 and summary["title"].startswith("[MCP TEST]"):
                     summary["native_structure"] = raw.get("structure")
+                    summary["native_distance_planned_m"] = raw.get("distancePlanned")
+                    summary["native_duration_planned_h"] = raw.get("totalTimePlanned")
         out.sort(key=lambda x: (x["day"] or 0))
         result: dict[str, Any] = {
             "plan_id": v.plan_id, "workouts": out, "count": len(out),
