@@ -632,9 +632,14 @@ async def tp_get_training_plan_notes(plan_id: int | str) -> dict[str, Any]:
         )
         if response.is_error:
             return _api_err(response)
-        raw = response.data if isinstance(response.data, list) else []
+        # Do not mistake an undocumented response wrapper or partial
+        # provider failure for a successfully verified empty notes list.
+        if not isinstance(response.data, list) or any(
+            not isinstance(note, dict) for note in response.data
+        ):
+            return _err("API_ERROR", "Unexpected native Training Plan notes payload.")
         out = []
-        for note in raw:
+        for note in response.data:
             day = (note.get("noteDate") or note.get("date") or "")[:10]
             offset = None
             try:
