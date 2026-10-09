@@ -638,10 +638,17 @@ async def tp_add_training_plan_library_workout(
         # was already copied to this exact plan day before posting.
         first = (plan.get("startDate") or "")[:10]
         if first:
-            start = date_type.fromisoformat(first)
-            length = max(plan.get("dayCount") or 0,
-                         (plan.get("weekCount") or 0) * 7)
-            end = start + timedelta(days=length + 1)
+            if is_archive_pilot:
+                # Source metadata can lag behind a partially populated
+                # 24-week pilot. Check the EXACT target day regardless of the
+                # provider's currently observed weekCount/dayCount.
+                start = date_type.fromisoformat(workout_date)
+                end = start + timedelta(days=2)
+            else:
+                start = date_type.fromisoformat(first)
+                length = max(plan.get("dayCount") or 0,
+                             (plan.get("weekCount") or 0) * 7)
+                end = start + timedelta(days=length + 1)
             existing = await client.get(
                 f"/plans/v1/plans/{v.plan_id}/workouts/"
                 f"{start.isoformat()}/{end.isoformat()}"
