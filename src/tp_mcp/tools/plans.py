@@ -246,9 +246,68 @@ async def tp_apply_training_plan(plan_id: int | str, start_date: str) -> dict[st
         if not athlete_id:
             return _err("AUTH_INVALID", "Could not get athlete ID. Re-authenticate.")
 
+        # The synthetic copy method is still a pilot, NOT TrainingPeaks'
+        # native linked-plan application. Never expose an unrestricted
+        # calendar mutation path to actual coached athletes during the lab.
+        pilot_start = date_type(2027, 6, 21)
+        if (
+            v.plan_id != 684206
+            or v.start_date != pilot_start
+            or str(athlete_id) != "941614"
+        ):
+            return _err(
+                "PROTECTED_RESOURCE",
+                "Pilot synthetic copy restricted to Training Plan 684206, "
+                "Piattaforma TEST (941614), starting 2027-06-21.",
+            )
+        plan_response = await client.get(f"/plans/v1/plans/{v.plan_id}")
+        if plan_response.is_error:
+            return _api_err(plan_response)
+        pilot_error = _test_plan_guard(plan_response.data or {})
+        if pilot_error:
+            return pilot_error
+
         sd, ws = await _fetch_plan_workouts(client, v.plan_id)
         if sd is None:
             return ws  # error dict
+
+        # Require exactly the three pilot workouts in their expected order,
+        # all on the first three days of the sandbox week; fail closed if a
+        # partial/unexpected plan would be copied.
+        expected = (
+            (0, 1, "[MCP TEST] Swim | Tecnica 1200 m - Builder"),
+            (1, 2, "[MCP TEST] Bike | 3x5' FTP controllato"),
+            (2, 3, "[MCP TEST] Run | Progressivo RPE 35'"),
+        )
+        try:
+            actual = sorted(
+                (
+                    (date_type.fromisoformat((w["workoutDay"] or "")[:10]) - sd).days,
+                    w["workoutTypeValueId"],
+                    (w["title"] or "").strip(),
+                )
+                for w in ws
+            )
+        except (KeyError, TypeError, ValueError):
+            return _err("VALIDATION_ERROR", "Unexpected pilot-plan workout structure.")
+        if actual != list(expected):
+            return _err("PROTECTED_RESOURCE",
+                        "Plan no longer matches the three approved lab workouts.")
+
+        # A non-idempotent copy must not place duplicates or overwrite an
+        # occupied sandbox. This is checked AGAIN by the caller's readback.
+        sandbox_end = pilot_start + timedelta(days=6)
+        occupied = await client.get(
+            f"/fitness/v6/athletes/{athlete_id}/workouts/"
+            f"{pilot_start.isoformat()}/{sandbox_end.isoformat()}"
+        )
+        if occupied.is_error:
+            return _api_err(occupied)
+        if not isinstance(occupied.data, list):
+            return _err("API_ERROR", "Unexpected sandbox response; refusing to copy.")
+        if occupied.data:
+            return _err("ALREADY_EXISTS",
+                        "Sandbox has existing workouts; refusing synthetic copy.")
 
         created = failed = skipped = 0
         first_error: str | None = None
@@ -292,6 +351,9 @@ async def tp_apply_training_plan(plan_id: int | str, start_date: str) -> dict[st
                 failed += 1
                 if first_error is None:
                     first_error = resp.message
+                # Stop at the first failure. The caller must audit partial
+                # writes and never blindly retry a non-idempotent copy.
+                break
             else:
                 created += 1
 
