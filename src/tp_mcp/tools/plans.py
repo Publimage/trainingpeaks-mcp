@@ -784,6 +784,195 @@ async def tp_add_training_plan_library_workout(
 
 
 
+
+async def tp_batch_add_training_plan_library_workouts(
+    plan_id: int, items: list[dict[str, Any]], dry_run: bool = True,
+) -> dict[str, Any]:
+    """Guarded batch of MASTER templates into EXACT private assembly lab 684602.
+
+    Inputs are week (1..24), day (0=Monday..6=Sunday), and exact template
+    identity. Does not change any real athlete, priced plan, or MASTER item.
+    No retry of ambiguous POST: inspect readback and re-run only after audit.
+    """
+    assembly_id = 684602
+    assembly_title = "[MCP TEST] IRONMAN Intermediate Assembly 24W"
+    master_libraries = {3891872: (1, "IRONMAN | SWIM |"),
+                        3891873: (2, "IRONMAN | BIKE |"),
+                        3891874: (3, "IRONMAN | RUN |")}
+    if type(plan_id) is not int or plan_id != assembly_id:
+        return _err("PROTECTED_RESOURCE", "Batch writes only to private assembly lab 684602.")
+    if type(dry_run) is not bool:
+        return _err("VALIDATION_ERROR", "dry_run must be a bool.")
+    if not isinstance(items, list) or not 1 <= len(items) <= 25:
+        return _err("VALIDATION_ERROR", "Submit 1-25 items per batch.")
+    validated = []
+    seen = set()
+    for n, item in enumerate(items):
+        if not isinstance(item, dict):
+            return _err("VALIDATION_ERROR", f"Item {n} is not an object.")
+        try:
+            lib = int(item["library_id"])
+            template = int(item["item_id"])
+            week = item["week"]
+            day = item["day"]
+            expected = item["expected_title"]
+        except (KeyError, TypeError, ValueError):
+            return _err("VALIDATION_ERROR", f"Malformed item {n}.")
+        if (lib not in master_libraries or template <= 0
+            or type(week) is not int or not 1 <= week <= 24
+            or type(day) is not int or not 0 <= day <= 6
+            or not isinstance(expected, str)
+            or not expected.startswith(master_libraries[lib][1])):
+            return _err("VALIDATION_ERROR", f"Invalid master item/week/day/title at {n}.")
+        key = (week, day, expected)
+        if key in seen:
+            return _err("VALIDATION_ERROR", f"Duplicate manifest entry {key}.")
+        seen.add(key)
+        validated.append((lib, template, week, day, expected))
+
+    def core_structure(value: Any) -> Any:
+        if not isinstance(value, dict):
+            return None
+        return {
+            "length_metric": value.get("primaryLengthMetric"),
+            "intensity_metric": value.get("primaryIntensityMetric"),
+            "groups": [
+                (g.get("type"), (g.get("length") or {}).get("value"),
+                 [(s.get("name"), (s.get("length") or {}).get("value"),
+                   (s.get("length") or {}).get("unit"),
+                   s.get("intensityClass"),
+                   [(t.get("minValue"), t.get("maxValue"))
+                    for t in (s.get("targets") or [])])
+                  for s in (g.get("steps") or [])])
+                for g in (value.get("structure") or [])
+            ],
+        }
+
+    def equal_native(candidate: dict[str, Any], workout: dict[str, Any]) -> bool:
+        if (candidate.get("description") != workout.get("description")
+            or core_structure(candidate.get("structure")) != core_structure(workout.get("structure"))):
+            return False
+        if abs(float(candidate.get("totalTimePlanned") or 0)
+               - float(workout.get("totalTimePlanned") or 0)) > 1e-6:
+            return False
+        planned_distance = candidate.get("distancePlanned")
+        copied_distance = workout.get("distancePlanned")
+        return (planned_distance == copied_distance
+                or (planned_distance in (None, 0) and copied_distance in (None, 0)))
+
+    async with TPClient() as client:
+        detail = await client.get(f"/plans/v1/plans/{assembly_id}")
+        if detail.is_error:
+            return _api_err(detail)
+        plan = detail.data or {}
+        if (plan.get("planId") != assembly_id
+            or (plan.get("title") or "").strip() != assembly_title
+            or _test_plan_guard(plan) is not None):
+            return _err("PROTECTED_RESOURCE", "Assembly plan identity/privacy mismatch.")
+        anchor = _parse_plan_date((plan.get("startDate") or "")[:10])
+        if anchor is None or anchor.weekday() != 0:
+            return _err("NEEDS_BOOTSTRAP",
+                        "Private plan must have a real Monday startDate. "
+                        "Anchor week 1 in native TrainingPeaks UI once.")
+        end = anchor + timedelta(weeks=24, days=1)
+        manifest = []
+        for lib, template, week, day, title in validated:
+            day_date = (anchor + timedelta(weeks=week - 1, days=day)).isoformat()
+            manifest.append((lib, template, day_date, title))
+        libraries: dict[int, dict[int, dict[str, Any]]] = {}
+        for lib in sorted({v[0] for v in validated}):
+            response = await client.get(f"/exerciselibrary/v2/libraries/{lib}/items")
+            if response.is_error:
+                return _api_err(response)
+            if not isinstance(response.data, list):
+                return _err("API_ERROR", "Unexpected library list response.")
+            libraries[lib] = {
+                item.get("exerciseLibraryItemId"): item
+                for item in response.data if isinstance(item, dict)
+            }
+        candidates = []
+        for lib, template, day_date, title in manifest:
+            candidate = libraries[lib].get(template)
+            if (not candidate or candidate.get("itemName") != title
+                or candidate.get("workoutTypeId") != master_libraries[lib][0]
+                or not isinstance(candidate.get("structure"), dict)
+                or not candidate.get("description")
+                or float(candidate.get("totalTimePlanned") or 0) <= 0):
+                return _err("SOURCE_UNVERIFIED",
+                            f"MASTER item {template} does not match approved manifest.")
+            candidates.append((lib, template, day_date, title, candidate))
+
+        workouts_resp = await client.get(
+            f"/plans/v1/plans/{assembly_id}/workouts/"
+            f"{anchor.isoformat()}/{end.isoformat()}"
+        )
+        if workouts_resp.is_error:
+            return _api_err(workouts_resp)
+        if not isinstance(workouts_resp.data, list):
+            return _err("API_ERROR", "Unexpected plan workout list.")
+        before = workouts_resp.data
+        to_add = []
+        skipped = []
+        for lib, template, day_date, title, candidate in candidates:
+            matches = [w for w in before
+                       if (w.get("workoutDay") or "")[:10] == day_date
+                       and (w.get("title") or "").strip() == title]
+            if matches:
+                if len(matches) != 1 or not equal_native(candidate, matches[0]):
+                    return _err("CONFLICT", f"Plan has a different/duplicate workout on {day_date}: {title}")
+                skipped.append({"date": day_date, "item_id": template, "title": title})
+            else:
+                to_add.append((lib, template, day_date, title, candidate))
+        if dry_run:
+            return {
+                "success": True, "dry_run": True, "plan_id": assembly_id,
+                "anchor": anchor.isoformat(), "to_add": len(to_add),
+                "already_exact": len(skipped), "items": [
+                    {"date": d, "library_id": lib, "item_id": it, "title": title}
+                    for lib, it, d, title, _ in to_add
+                ],
+            }
+
+        attempted = []
+        for lib, template, day_date, title, candidate in to_add:
+            response = await client.post(
+                f"/plans/v1/plans/{assembly_id}/commands/addworkoutfromlibraryitem",
+                json={"planId": assembly_id, "exerciseLibraryItemId": template,
+                      "workoutDateTime": day_date},
+            )
+            if response.is_error:
+                return {
+                    **_api_err(response), "partial_writes_possible": True,
+                    "provider_acknowledged": attempted,
+                    "stop": "Inspect current plan before any retry.",
+                }
+            attempted.append({"date": day_date, "item_id": template, "title": title})
+
+        after_resp = await client.get(
+            f"/plans/v1/plans/{assembly_id}/workouts/"
+            f"{anchor.isoformat()}/{end.isoformat()}"
+        )
+        if after_resp.is_error or not isinstance(after_resp.data, list):
+            return _err("WRITE_UNVERIFIED",
+                        f"Provider acknowledged {len(attempted)} writes; readback unavailable.")
+        after = after_resp.data
+        qa = []
+        for lib, template, day_date, title, candidate in candidates:
+            matches = [w for w in after
+                       if (w.get("workoutDay") or "")[:10] == day_date
+                       and (w.get("title") or "").strip() == title]
+            good = len(matches) == 1 and equal_native(candidate, matches[0])
+            qa.append({"date": day_date, "item_id": template, "title": title,
+                       "native_exact": good,
+                       "workout_id": _plan_workout_id(matches[0]) if good else None})
+        return {
+            "success": all(x["native_exact"] for x in qa),
+            "plan_id": assembly_id, "provider_acknowledged": len(attempted),
+            "already_exact": len(skipped), "readback_exact": sum(x["native_exact"] for x in qa),
+            "total_manifest_items": len(qa), "qa": qa,
+        }
+
+
 async def tp_delete_training_plan_other(
     plan_id: int | str, expected_title: str, dry_run: bool = True,
 ) -> dict[str, Any]:
