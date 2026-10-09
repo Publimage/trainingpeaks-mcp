@@ -33,6 +33,7 @@ from tp_mcp.tools import (
     tp_add_workout_comment,
     tp_analyze_workout,
     tp_add_training_plan_library_workout,
+    tp_batch_add_training_plan_library_workouts,
     tp_add_training_plan_note,
     tp_apply_training_plan,
     tp_auth_status,
@@ -630,6 +631,31 @@ TOOLS = [
                 "workout_date": {"type": "string", "description": "YYYY-MM-DD inside plan"},
             },
             "required": ["plan_id", "library_id", "item_id", "workout_date"],
+        },
+    ),
+    Tool(
+        name="tp_batch_add_training_plan_library_workouts",
+        description=("Guarded assembly batch of 1-25 existing MASTER templates in "
+                     "private Training Plan 684602, using week 1-24 and weekday "
+                     "0=Monday..6=Sunday. Defaults to dry_run=true; never touches athletes."),
+        input_schema={
+            "type": "object",
+            "properties": {
+                "plan_id": {"type": "integer", "enum": [684602]},
+                "dry_run": {"type": "boolean", "default": True},
+                "items": {"type": "array", "minItems": 1, "maxItems": 25,
+                          "items": {"type": "object",
+                                    "properties": {
+                                        "library_id": {"type": "string"},
+                                        "item_id": {"type": "string"},
+                                        "week": {"type": "integer", "minimum": 1, "maximum": 24},
+                                        "day": {"type": "integer", "minimum": 0, "maximum": 6},
+                                        "expected_title": {"type": "string"},
+                                    },
+                                    "required": ["library_id", "item_id", "week", "day",
+                                                 "expected_title"]}},
+            },
+            "required": ["plan_id", "items"],
         },
     ),
     Tool(
@@ -1641,6 +1667,7 @@ _NON_IDEMPOTENT_WRITES = {
     "tp_add_note_comment",
     "tp_add_workout_comment",
     "tp_add_training_plan_library_workout",
+    "tp_batch_add_training_plan_library_workouts",
     "tp_add_training_plan_note",
     "tp_apply_training_plan",
     "tp_create_training_plan",
@@ -1934,6 +1961,13 @@ async def _h_add_training_plan_library_workout(args):
     return await tp_add_training_plan_library_workout(
         plan_id=args["plan_id"], library_id=args["library_id"],
         item_id=args["item_id"], workout_date=args["workout_date"],
+    )
+
+@_handler("tp_batch_add_training_plan_library_workouts")
+async def _h_batch_add_training_plan_library_workouts(args):
+    return await tp_batch_add_training_plan_library_workouts(
+        plan_id=args["plan_id"], items=args["items"],
+        dry_run=args.get("dry_run", True),
     )
 
 @_handler("tp_add_training_plan_note")
