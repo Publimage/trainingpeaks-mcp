@@ -229,6 +229,12 @@ async def tp_get_training_plan_workouts(plan_id: int | str) -> dict[str, Any]:
                 "tss": w.get("tssPlanned"),
                 "has_structure": w.get("structure") is not None,
             })
+        # Read-only QA: return provider-native swim steps for private test plans.
+        # The normal list response stays small for every commercial plan.
+        if v.plan_id in (684206, _INTERMEDIATE_PILOT_ID):
+            for summary, raw in zip(out, ws):
+                if raw.get("workoutTypeValueId") == 1 and summary["title"].startswith("[MCP TEST]"):
+                    summary["native_structure"] = raw.get("structure")
         out.sort(key=lambda x: (x["day"] or 0))
         result: dict[str, Any] = {
             "plan_id": v.plan_id, "workouts": out, "count": len(out),
