@@ -599,15 +599,17 @@ TOOLS = [
     #     workout libraries and the ATP) ---
     Tool(
         name="tp_create_training_plan",
-        description=("EXPERIMENTAL: create one private [MCP TEST] Training Plan. "
-                     "Candidate API body requires live verification; never retry "
-                     "after an ambiguous write."),
+        description=("EXPERIMENTAL: create one private, unpriced [MCP TEST] Training Plan. "
+                     "Ordinary lab plans are 1-2 weeks; the exact named Intermediate "
+                     "archive pilot may be 24 weeks starting 2027-01-04. "
+                     "No athlete calendar writes; never retry ambiguous POST."),
         input_schema={
             "type": "object",
             "properties": {
                 "title": {"type": "string", "description": "Must begin with [MCP TEST]"},
                 "start_date": {"type": "string", "description": "Monday YYYY-MM-DD"},
-                "week_count": {"type": "integer", "minimum": 1, "maximum": 2},
+                "week_count": {"type": "integer", "minimum": 1, "maximum": 24,
+                               "description": "1-2 for ordinary private lab plans; 24 only for the locked [MCP TEST] IRONMAN Intermediate 24W - Archive Pilot, anchored 2027-01-04"},
                 "description": {"type": "string"},
             },
             "required": ["title", "start_date"],
