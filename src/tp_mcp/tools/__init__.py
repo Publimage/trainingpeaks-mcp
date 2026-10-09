@@ -51,6 +51,7 @@ from tp_mcp.tools.metrics import tp_get_metrics, tp_get_nutrition, tp_log_metric
 from tp_mcp.tools.peaks import tp_get_peaks, tp_get_workout_prs
 from tp_mcp.tools.plans import (
     tp_add_training_plan_library_workout,
+    tp_batch_add_training_plan_library_workouts,
     tp_add_training_plan_note,
     tp_apply_training_plan,
     tp_create_training_plan,
@@ -134,6 +135,7 @@ __all__ = [
     "tp_get_training_plan_notes",
     "tp_get_training_plan_workouts",
     "tp_add_training_plan_library_workout",
+    "tp_batch_add_training_plan_library_workouts",
     "tp_add_training_plan_note",
     "tp_apply_training_plan",
     "tp_create_training_plan",
