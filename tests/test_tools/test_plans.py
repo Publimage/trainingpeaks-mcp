@@ -114,26 +114,115 @@ async def test_get_workouts_lays_out_by_week_day():
 
 
 @pytest.mark.asyncio
-async def test_apply_copies_workouts_skips_period_markers():
-    """Synthetic apply: each plan workout is recreated at start_date + relative
-    day (structure preserved as a JSON string); type-100 period markers skipped."""
-    post = APIResponse(success=True, data={"workoutId": 999})
-    inst = _client_with(_get_router, post=post)
+async def test_synthetic_apply_refuses_unapproved_plan_and_athlete():
+    """The previously generic synthetic apply must be TEST-only in the POC."""
+    inst = _client_with(_get_router, athlete_id=123)
     p = _patch(inst)
     try:
-        r = await tp_apply_training_plan(163992, "2027-09-01")
+        result = await tp_apply_training_plan(163992, "2027-09-01")
     finally:
         p.stop()
-    assert r["success"] is True and r["method"] == "synthetic"
-    assert r["created"] == 2          # run + day-off
-    assert r["skipped_periods"] == 1  # the type-100 annotation
-    assert r["failed"] == 0
-    creates = [c.kwargs["json"] for c in inst.post.call_args_list
-               if "/fitness/v6/" in c.args[0]]
-    run_post = next(b for b in creates if b["workoutTypeValueId"] == 3)
-    assert run_post["workoutDay"] == "2027-09-02T00:00:00"  # start_date + rel day 1
-    assert run_post["workoutTypeFamilyId"] == 3
-    assert isinstance(run_post["structure"], str) and "primaryLengthMetric" in run_post["structure"]
+    assert result["error_code"] == "PROTECTED_RESOURCE"
+    inst.get.assert_not_called()
+    inst.post.assert_not_called()
+
+
+def _approved_pilot_workouts():
+    return [
+        {
+            "workoutDay": "2027-06-21T00:00:00",
+            "workoutTypeValueId": 1,
+            "title": "[MCP TEST] Swim | Tecnica 1200 m - Builder",
+            "totalTimePlanned": 0.5,
+            "distancePlanned": 1200,
+            "structure": {"primaryLengthMetric": "distance"},
+        },
+        {
+            "workoutDay": "2027-06-22T00:00:00",
+            "workoutTypeValueId": 2,
+            "title": "[MCP TEST] Bike | 3x5' FTP controllato",
+            "totalTimePlanned": 0.75,
+            "structure": {"primaryLengthMetric": "duration"},
+        },
+        {
+            "workoutDay": "2027-06-23T00:00:00",
+            "workoutTypeValueId": 3,
+            "title": "[MCP TEST] Run | Progressivo RPE 35'",
+            "totalTimePlanned": 35 / 60,
+            "description": "Progressivo RPE",
+        },
+    ]
+
+
+def _pilot_route(path, **kwargs):
+    if path.startswith("/fitness/v6/athletes/941614/workouts/"):
+        return APIResponse(success=True, data=[])
+    if path.startswith("/plans/v1/plans/684206/workouts/"):
+        return APIResponse(success=True, data=_approved_pilot_workouts())
+    if path == "/plans/v1/plans/684206":
+        return APIResponse(success=True, data={
+            "planId": 684206,
+            "title": "[MCP TEST] Training Plan — Swim Bike Run",
+            "startDate": "2027-06-21T00:00:00",
+            "dayCount": 3, "weekCount": 1, "workoutCount": 3,
+            "isPublic": False, "price": None,
+        })
+    raise AssertionError(f"Unexpected pilot endpoint: {path}")
+
+
+@pytest.mark.asyncio
+async def test_synthetic_apply_copies_only_three_pilot_workouts_to_test():
+    inst = _client_with(_pilot_route, athlete_id=941614)
+    p = _patch(inst)
+    try:
+        result = await tp_apply_training_plan(684206, "2027-06-21")
+    finally:
+        p.stop()
+    assert result["success"] is True
+    assert result["method"] == "synthetic"
+    assert result["athlete_id"] == 941614
+    assert result["created"] == 3
+    assert result["failed"] == 0
+    creates = [x.kwargs["json"] for x in inst.post.call_args_list]
+    assert len(creates) == 3
+    assert [x["workoutDay"] for x in creates] == [
+        "2027-06-21T00:00:00",
+        "2027-06-22T00:00:00",
+        "2027-06-23T00:00:00",
+    ]
+    assert [x["athleteId"] for x in creates] == [941614] * 3
+    assert all(x["title"].startswith("[MCP TEST]") for x in creates)
+    assert all("structure" in x for x in creates[:2])
+    assert "structure" not in creates[2]
+    assert isinstance(creates[0]["structure"], str)
+
+
+@pytest.mark.asyncio
+async def test_synthetic_apply_refuses_occupied_test_sandbox():
+    def occupied_route(path, **kwargs):
+        if path.startswith("/fitness/v6/athletes/941614/workouts/"):
+            return APIResponse(success=True, data=[{"workoutId": 9}])
+        return _pilot_route(path, **kwargs)
+    inst = _client_with(occupied_route, athlete_id=941614)
+    p = _patch(inst)
+    try:
+        result = await tp_apply_training_plan(684206, "2027-06-21")
+    finally:
+        p.stop()
+    assert result["error_code"] == "ALREADY_EXISTS"
+    inst.post.assert_not_called()
+
+
+@pytest.mark.asyncio
+async def test_synthetic_apply_refuses_wrong_test_start_date():
+    inst = _client_with(_pilot_route, athlete_id=941614)
+    p = _patch(inst)
+    try:
+        result = await tp_apply_training_plan(684206, "2027-07-01")
+    finally:
+        p.stop()
+    assert result["error_code"] == "PROTECTED_RESOURCE"
+    inst.post.assert_not_called()
 
 
 @pytest.mark.asyncio
