@@ -36,6 +36,24 @@ _INTERMEDIATE_PILOT_TITLE = "[MCP TEST] IRONMAN Intermediate 24W - Archive Pilot
 _INTERMEDIATE_PILOT_START = date_type(2027, 1, 4)
 _INTERMEDIATE_PILOT_WEEKS = 24
 _INTERMEDIATE_PILOT_FIRST_UID = "IMINT24W-W01-MON-OTHER-01"
+_INTERMEDIATE_PILOT_ID = 684463
+
+# Only these six historical 1-minute Other cards in the private staging plan.
+# Native notes of exactly the same title/date/body already exist and MUST
+# survive each deletion. Never allow workout edits or real athlete calendars.
+_INTERMEDIATE_OTHER_CLEANUP: dict[str, str] = {
+    "[MCP TEST] IMINT24W-W01-MON-OTHER-01 | SETTIMANA 1 | Calibrazione e riferimenti": "2027-01-04",
+    "[MCP TEST] IMINT24W-PHASE-W01-W04 | FASE | Calibration / General Development": "2027-01-04",
+    "[MCP TEST] IMINT24W-CONTENT-README-FIRST | README FIRST | INIZIA DA QUI": "2027-01-04",
+    "[MCP TEST] IMINT24W-W02-MON-OTHER-01 | SETTIMANA 2 | Calibrazione e prima qualità": "2027-01-11",
+    "[MCP TEST] IMINT24W-W03-MON-OTHER-01 | SETTIMANA 3 | Primo blocco pienamente allenante": "2027-01-18",
+    "[MCP TEST] IMINT24W-W04-MON-OTHER-01 | SETTIMANA 4 | Assorbimento attivo": "2027-01-25",
+}
+
+# Must be filled ONLY after capturing the EXACT successful browser DELETE
+# request on a disposable [MCP TEST] plan, including path and ID semantics.
+# None deliberately prevents ANY destructive request in deployed code.
+_VERIFIED_PLAN_WORKOUT_DELETE_TEMPLATE: str | None = None
 
 
 _SPORT_BY_TYPE: dict[int, str] = {
@@ -164,6 +182,16 @@ async def _fetch_plan_workouts(
     return sd, (wr.data or [])
 
 
+def _plan_workout_id(workout: dict[str, Any]) -> int | None:
+    """Only return an unambiguous positive identity from the provider."""
+    matches = []
+    for key in ("workoutId", "planWorkoutId", "id"):
+        value = workout.get(key)
+        if isinstance(value, int) and not isinstance(value, bool) and value > 0:
+            matches.append(value)
+    return matches[0] if matches and len(set(matches)) == 1 else None
+
+
 async def tp_get_training_plan_workouts(plan_id: int | str) -> dict[str, Any]:
     """All workouts of a plan, laid out by week/day (slim — title/description/
     duration/TSS/has_structure; full structure is omitted to keep the payload
@@ -185,6 +213,7 @@ async def tp_get_training_plan_workouts(plan_id: int | str) -> dict[str, Any]:
             except ValueError:
                 rel = None
             out.append({
+                "workout_id": _plan_workout_id(w),
                 "week": ((rel - 1) // 7 + 1) if rel else None,
                 "day": rel,
                 "sport": _SPORT_BY_TYPE.get(w.get("workoutTypeValueId"), str(w.get("workoutTypeValueId"))),
@@ -686,6 +715,195 @@ async def tp_add_training_plan_library_workout(
             "readback_required": True,
         }
 
+
+
+async def tp_delete_training_plan_other(
+    plan_id: int | str, expected_title: str, dry_run: bool = True,
+) -> dict[str, Any]:
+    """Preflight removal of one exact, obsolete Other card in plan 684463.
+
+    Dry-run lists the verified target and matching NATIVE note. Execution is
+    deliberately DISABLED until the TrainingPeaks PLAN WORKOUT deletion route
+    is captured and independently verified; never reuse athlete-calendar
+    DELETE endpoints, never guess an undocumented destructive route.
+
+    With a verified route installed, every delete remains one-shot and checks
+    that all real workouts and native notes survive.
+    """
+    try:
+        v = _PlanIdInput(plan_id=plan_id)  # type: ignore[arg-type]
+    except (ValidationError, ValueError, TypeError) as exc:
+        return _err("VALIDATION_ERROR", str(exc))
+    if type(dry_run) is not bool:
+        return _err("VALIDATION_ERROR", "dry_run must be a boolean.")
+    if v.plan_id != _INTERMEDIATE_PILOT_ID:
+        return _err("PROTECTED_RESOURCE", "Only the exact private Intermediate pilot can be cleaned.")
+    if expected_title not in _INTERMEDIATE_OTHER_CLEANUP:
+        return _err("PROTECTED_RESOURCE", "Title is not one of the six approved Other cards.")
+
+    async with TPClient() as client:
+        plan, error = await _get_writable_test_plan(client, v.plan_id)
+        if error is not None:
+            return error
+        assert plan is not None
+        if (
+            plan.get("planId") != _INTERMEDIATE_PILOT_ID
+            or (plan.get("title") or "").strip() != _INTERMEDIATE_PILOT_TITLE
+            or plan.get("isPublic") is not False
+            or plan.get("price") not in (None, 0)
+            or (plan.get("startDate") or "")[:10] != _INTERMEDIATE_PILOT_START.isoformat()
+        ):
+            return _err("PROTECTED_RESOURCE", "Plan identity, privacy or Monday anchor changed.")
+
+        start = _INTERMEDIATE_PILOT_START
+        length = max(int(plan.get("dayCount") or 0),
+                     int(plan.get("weekCount") or 0) * 7)
+        if not 22 <= length <= 168:
+            return _err("PROTECTED_RESOURCE", "Unexpected plan range.")
+        end = start + timedelta(days=length + 1)
+        wr = await client.get(
+            f"/plans/v1/plans/{v.plan_id}/workouts/"
+            f"{start.isoformat()}/{end.isoformat()}"
+        )
+        if wr.is_error:
+            return _api_err(wr)
+        if not isinstance(wr.data, list) or any(
+            not isinstance(w, dict) for w in wr.data
+        ):
+            return _err("API_ERROR", "Unverified plan-workouts payload.")
+        before = wr.data
+        target_date = _INTERMEDIATE_OTHER_CLEANUP[expected_title]
+        candidates = [
+            w for w in before
+            if (w.get("title") or "").strip() == expected_title
+            and (w.get("workoutDay") or "")[:10] == target_date
+            and w.get("workoutTypeValueId") == 100
+            and w.get("structure") is None
+            and abs(float(w.get("totalTimePlanned") or 0) - 1 / 60) < 0.0001
+        ]
+        # If a title exists but differs from the approved date/type/duration,
+        # do not treat the mismatch as an already-removed card.
+        named = [w for w in before if (w.get("title") or "").strip() == expected_title]
+        if len(named) != 1 or len(candidates) != 1:
+            return _err("TARGET_UNVERIFIED",
+                        "Exact one-minute Other card missing, duplicated or altered.")
+        candidate = candidates[0]
+        identity = _plan_workout_id(candidate)
+
+        notes_response = await client.get(
+            f"/plans/v1/plans/{v.plan_id}/calendarNote/"
+            f"{start.isoformat()}/{end.isoformat()}"
+        )
+        if notes_response.is_error:
+            return _api_err(notes_response)
+        if not isinstance(notes_response.data, list) or any(
+            not isinstance(n, dict) for n in notes_response.data
+        ):
+            return _err("API_ERROR", "Unverified native notes response.")
+        notes = notes_response.data
+        exact_notes = [
+            n for n in notes
+            if (n.get("title") or "").strip() == expected_title
+            and (n.get("noteDate") or n.get("date") or "")[:10] == target_date
+            and n.get("description") == candidate.get("description")
+        ]
+        if len(exact_notes) != 1:
+            return _err("NATIVE_NOTE_MISSING", "Missing identical native note; deletion denied.")
+        real_workouts = [w for w in before if w.get("workoutTypeValueId") != 100]
+        if len(real_workouts) != 13 or len(notes) != 8:
+            return _err("MANIFEST_DRIFT", "Expected 13 workouts and 8 native notes in staging.")
+
+        preview: dict[str, Any] = {
+            "plan_id": v.plan_id, "target_title": expected_title,
+            "target_date": target_date, "workout_id": identity,
+            "observed_identifier_fields": {
+                k: candidate[k] for k in ("workoutId", "planWorkoutId", "id")
+                if k in candidate
+            },
+            "raw_keys": sorted(candidate.keys()),
+            "matching_native_note_id": exact_notes[0].get("calendarNoteId"),
+            "protected_training_workouts": len(real_workouts),
+            "protected_native_notes": len(notes),
+            "old_other_count": len(before) - len(real_workouts),
+            "delete_route_verified": bool(_VERIFIED_PLAN_WORKOUT_DELETE_TEMPLATE),
+        }
+        if dry_run:
+            return {"success": True, "dry_run": True, **preview}
+        if identity is None:
+            return _err("WORKOUT_ID_UNVERIFIED",
+                        "Plan workout has no unique, positive provider identifier.")
+        if _VERIFIED_PLAN_WORKOUT_DELETE_TEMPLATE is None:
+            return _err(
+                "DELETE_ROUTE_UNVERIFIED",
+                "Cannot delete before a successful browser request establishes "
+                "the exact Training Plan Library workout deletion endpoint.",
+            )
+
+        # Template is a fixed developer-audited path, never supplied by a
+        # model/user/tool parameter and never points to /fitness/v6/athletes/.
+        endpoint = _VERIFIED_PLAN_WORKOUT_DELETE_TEMPLATE.format(
+            plan_id=v.plan_id, workout_id=identity,
+        )
+        if (
+            not endpoint.startswith(f"/plans/v1/plans/{v.plan_id}/")
+            or "/athletes/" in endpoint or "?" in endpoint
+        ):
+            return _err("PROTECTED_RESOURCE", "Unexpected deletion endpoint.")
+        result = await client.delete(endpoint)
+        if result.is_error:
+            return _api_err(result)
+
+        # One-shot: even if verification fails or times out, NEVER retry.
+        detail_after = await client.get(f"/plans/v1/plans/{v.plan_id}")
+        after = await client.get(
+            f"/plans/v1/plans/{v.plan_id}/workouts/"
+            f"{start.isoformat()}/{end.isoformat()}"
+        )
+        notes_after = await client.get(
+            f"/plans/v1/plans/{v.plan_id}/calendarNote/"
+            f"{start.isoformat()}/{end.isoformat()}"
+        )
+        if (
+            detail_after.is_error or after.is_error or notes_after.is_error
+            or not isinstance(after.data, list)
+            or not isinstance(notes_after.data, list)
+        ):
+            return _err("WRITE_UNVERIFIED",
+                        "Provider may have deleted item; readback unavailable. Do not retry.")
+        if (detail_after.data or {}).get("startDate", "")[:10] != start.isoformat():
+            return _err("WRITE_UNVERIFIED",
+                        "Training Plan start date shifted; STOP and inspect.")
+        # Compare every surviving workout's stable athlete-facing content,
+        # not provider-recomputed summary or plan metadata.
+        def signature(w: dict[str, Any]) -> tuple[Any, ...]:
+            return (
+                (w.get("title") or "").strip(), (w.get("workoutDay") or "")[:10],
+                w.get("workoutTypeValueId"), w.get("description"),
+                w.get("totalTimePlanned"), w.get("distancePlanned"),
+                w.get("structure"),
+            )
+        survivor_before = [w for w in before if w is not candidate]
+        survivors_after = after.data
+        remaining = [w for w in survivors_after
+                     if (w.get("title") or "").strip() == expected_title]
+        unchanged = (
+            len(survivors_after) == len(before) - 1
+            and not remaining
+            and sorted(map(repr, map(signature, survivor_before)))
+                == sorted(map(repr, map(signature, survivors_after)))
+            and notes_after.data == notes
+        )
+        if not unchanged:
+            return _err("WRITE_UNVERIFIED",
+                        "Target or unrelated workouts/notes differ after delete. STOP.")
+        return {
+            "success": True, "deleted": True, "plan_id": v.plan_id,
+            "removed_workout_id": identity, "removed_title": expected_title,
+            "remaining_other": len(survivors_after) - len(real_workouts),
+            "real_workouts_preserved": len(real_workouts),
+            "native_notes_preserved": len(notes_after.data),
+            "start_date_preserved": True,
+        }
 
 
 async def tp_get_training_plan_notes(plan_id: int | str) -> dict[str, Any]:
