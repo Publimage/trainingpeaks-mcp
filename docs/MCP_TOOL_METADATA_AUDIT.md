@@ -105,3 +105,33 @@ tool actions and explicitly enable any new action if available.
   calendar. It is not an official native linked TrainingPeaks plan application.
 - The provider integration is an unofficial authenticated TrainingPeaks
   session and is still a POC, not production-ready.
+
+
+## 2026-10-09 — Existing-tool readback and synthetic pilot guard
+The user approved continuation of the controlled TrainingPeaks test lab.
+To avoid reliance on a newly registered tool hidden from the ChatGPT action
+snapshot (88 tools visible versus 89 in local Python), the existing
+\`tp_get_training_plan_workouts\` now performs a separate native calendarNote
+GET and includes:
+- \`calendar_notes_status="ok"\`, \`calendar_notes_count\`, \`calendar_notes\` when verified;
+- \`calendar_notes_status="unavailable"\`, \`calendar_notes=null\`, and
+  \`calendar_notes_error\` when the API read fails.
+It never conflates notes-unavailable with a verified empty notes list.
+
+\`tp_add_training_plan_note\` now preflights the full plan week via GET, rejects
+identical date+title duplicates and rejects unexpected notes API payloads. This
+does not make a non-idempotent POST safe to retry after an ambiguous response.
+
+\`tp_apply_training_plan\` has been restricted in the experimental branch to
+Training Plan 684206, TEST athlete ID 941614, and 2027-06-21 as the first
+calendar day. It verifies that the source remains the three expected
+\`[MCP TEST]\` workouts and that the TEST calendar week has ZERO prior
+workouts before any copy. It stops at first provider error. It remains
+synthetic independent workout copying, does NOT copy plan calendar notes and
+does NOT establish a native linked TrainingPeaks plan application.
+
+New mock regression tests are committed, but local Mac pytest, editable
+reinstall and tunnel restart MUST be completed before any further native note
+POST or synthetic apply test. After restart call the EXISTING
+\`tp_get_training_plan_workouts\` and inspect the new calendar_notes status.
+If the endpoint does not return \`ok\`, do not post a note.
