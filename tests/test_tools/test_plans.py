@@ -692,3 +692,21 @@ async def test_plan_note_aborts_on_unexpected_preflight_response():
         p.stop()
     assert result["error_code"] == "API_ERROR"
     client.post.assert_not_called()
+
+
+
+@pytest.mark.asyncio
+async def test_plan_notes_reader_does_not_report_zero_on_unknown_payload():
+    client = AsyncMock()
+    client.get = AsyncMock(side_effect=[
+        APIResponse(success=True, data=_TEST_PLAN),
+        APIResponse(success=True, data={"unexpected": "wrapper"}),
+    ])
+    p = _patch(client)
+    try:
+        result = await tp_get_training_plan_notes(plan_id=91919)
+    finally:
+        p.stop()
+    assert result["isError"] is True
+    assert result["error_code"] == "API_ERROR"
+    assert "count" not in result
