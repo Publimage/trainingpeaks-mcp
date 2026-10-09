@@ -217,6 +217,12 @@ async def tp_get_training_plan_workouts(plan_id: int | str) -> dict[str, Any]:
                 rel = (date_type.fromisoformat(wd) - sd).days + 1 if wd else None
             except ValueError:
                 rel = None
+            # On private assembly plans the first added workout may be a
+            # Tuesday: the provider startDate then reflects the first workout,
+            # NOT the Monday of W1. Expose correct relative week/weekday slots.
+            if v.plan_id == 684602 and wd:
+                relative_monday = sd - timedelta(days=sd.weekday())
+                rel = (date_type.fromisoformat(wd) - relative_monday).days + 1
             out.append({
                 "workout_id": _plan_workout_id(w),
                 "week": ((rel - 1) // 7 + 1) if rel else None,
