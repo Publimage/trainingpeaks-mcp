@@ -55,6 +55,8 @@ async def test_private_lab_exposes_native_steps(provider_stub):
     assert swim["native_structure"]["structure"][0]["steps"][1]["length"] == {
         "value": 20, "unit": "second"
     }
+    assert swim["native_distance_planned_m"] == 2700
+    assert swim["native_duration_planned_h"] == 50 / 60
     assert swim["distance_km"] == 2.7
     assert swim["duration_min"] == 50
 
@@ -65,3 +67,5 @@ async def test_commercial_plan_stays_slim(provider_stub):
     swim = res["workouts"][0]
     assert swim["has_structure"] is True
     assert "native_structure" not in swim
+    assert "native_distance_planned_m" not in swim
+    assert "native_duration_planned_h" not in swim
