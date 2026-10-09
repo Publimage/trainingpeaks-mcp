@@ -994,6 +994,27 @@ async def test_cleanup_dry_run_requires_native_note_and_never_deletes():
 
 
 @pytest.mark.asyncio
+@pytest.mark.parametrize("native_note_id_key", ["id", "calendarNoteId", "noteId"])
+async def test_cleanup_read_only_preview_resolves_provider_note_id_variants(native_note_id_key):
+    """Real plan notes can return 'id', not only 'calendarNoteId'."""
+    native_note = dict(_CLEANUP_NOTE)
+    native_note.pop("calendarNoteId")
+    native_note[native_note_id_key] = 777700
+    inst = _cleanup_mock_client(notes=[native_note, *_CLEANUP_NOTES[1:]])
+    p = _patch(inst)
+    try:
+        result = await tp_delete_training_plan_other(
+            plan_id=684463, expected_title=_CLEANUP_TITLE, dry_run=True,
+        )
+    finally:
+        p.stop()
+    assert result["success"] is True
+    assert result["dry_run"] is True
+    assert result["matching_native_note_id"] == 777700
+    inst.delete.assert_not_called()
+
+
+@pytest.mark.asyncio
 async def test_cleanup_real_delete_disabled_even_with_valid_candidate():
     inst = _cleanup_mock_client()
     p = _patch(inst)
