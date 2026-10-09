@@ -246,6 +246,60 @@ async def tp_get_training_plan_workouts(plan_id: int | str) -> dict[str, Any]:
             result["calendar_notes"] = note_result.get("notes", [])
             result["calendar_notes_count"] = note_result.get("count", 0)
             result["calendar_notes_status"] = "ok"
+
+        # The current ChatGPT action snapshot may not expose the NEW
+        # cleanup command until the local MCP install/tunnel is refreshed.
+        # Surface a read-only manifest on the EXISTING plan calendar reader,
+        # without making any DELETE request or assuming a workout ID exists.
+        if v.plan_id == _INTERMEDIATE_PILOT_ID:
+            parsed_notes = result.get("calendar_notes")
+            items = []
+            for title, expected_date in _INTERMEDIATE_OTHER_CLEANUP.items():
+                raw_cards = [
+                    w for w in ws
+                    if (w.get("title") or "").strip() == title
+                    and (w.get("workoutDay") or "")[:10] == expected_date
+                ]
+                candidate = raw_cards[0] if len(raw_cards) == 1 else None
+                duration = candidate.get("totalTimePlanned") if candidate else None
+                is_exact_other = bool(
+                    candidate and candidate.get("workoutTypeValueId") == 100
+                    and candidate.get("structure") is None
+                    and isinstance(duration, (int, float))
+                    and not isinstance(duration, bool)
+                    and abs(duration - 1 / 60) < 0.0001
+                )
+                native_matches = [
+                    n for n in (parsed_notes or [])
+                    if n["title"] == title and n["date"] == expected_date
+                ]
+                note_exact = bool(
+                    is_exact_other and len(native_matches) == 1
+                    and native_matches[0]["description"] == candidate.get("description")
+                )
+                items.append({
+                    "title": title,
+                    "date": expected_date,
+                    "matching_other_cards": len(raw_cards),
+                    "exact_one_minute_other": is_exact_other,
+                    "workout_id": _plan_workout_id(candidate) if is_exact_other else None,
+                    "provider_identifier_fields": {
+                        k: candidate[k] for k in ("workoutId", "planWorkoutId", "id")
+                        if k in candidate
+                    } if candidate else {},
+                    "matching_native_note": note_exact,
+                    "native_note_id": native_matches[0]["note_id"]
+                    if note_exact else None,
+                })
+            result["legacy_other_cleanup_readonly"] = {
+                "read_only": True,
+                "delete_route_verified": bool(_VERIFIED_PLAN_WORKOUT_DELETE_TEMPLATE),
+                "real_workouts_count": sum(w["sport"] != "Other" for w in out),
+                "other_cards_count": sum(w["sport"] == "Other" for w in out),
+                "native_notes_count": len(parsed_notes) if parsed_notes is not None else None,
+                "native_notes_status": result.get("calendar_notes_status"),
+                "items": items,
+            }
         return result
 
 
