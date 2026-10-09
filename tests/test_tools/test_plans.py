@@ -974,6 +974,36 @@ def _cleanup_mock_client(*, notes=None, plan=None, workouts=None, deletion=None)
 
 
 @pytest.mark.asyncio
+async def test_existing_plan_reader_exposes_read_only_legacy_other_inventory():
+    """The existing MCP read action must expose exact note/ID matches."""
+    inst = _client_with([
+        APIResponse(success=True, data=_CLEANUP_PLAN),
+        APIResponse(success=True, data=[_CLEANUP_OTHER, *_CLEANUP_REAL_WORKOUTS]),
+        APIResponse(success=True, data=_CLEANUP_PLAN),
+        APIResponse(success=True, data=_CLEANUP_NOTES),
+    ])
+    inst.delete = AsyncMock()
+    p = _patch(inst)
+    try:
+        result = await tp_get_training_plan_workouts(684463)
+    finally:
+        p.stop()
+    inventory = result["legacy_other_cleanup_readonly"]
+    assert inventory["read_only"] is True
+    assert inventory["delete_route_verified"] is False
+    assert inventory["real_workouts_count"] == 13
+    assert inventory["other_cards_count"] == 1
+    assert inventory["native_notes_count"] == 8
+    row = next(i for i in inventory["items"] if i["title"] == _CLEANUP_TITLE)
+    assert row["matching_other_cards"] == 1
+    assert row["exact_one_minute_other"] is True
+    assert row["workout_id"] == 888001
+    assert row["matching_native_note"] is True
+    assert row["native_note_id"] == 777700
+    inst.delete.assert_not_called()
+
+
+@pytest.mark.asyncio
 async def test_cleanup_dry_run_requires_native_note_and_never_deletes():
     inst = _cleanup_mock_client()
     p = _patch(inst)
