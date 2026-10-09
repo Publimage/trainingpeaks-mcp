@@ -969,7 +969,7 @@ def _cleanup_mock_client(*, notes=None, plan=None, workouts=None, deletion=None)
             APIResponse(success=True, data=note_data),
         ])
     inst.get = AsyncMock(side_effect=pre)
-    inst.delete = AsyncMock(return_value=APIResponse(success=True, data=True))
+    inst._request = AsyncMock(return_value=APIResponse(success=True, data=True))
     return inst
 
 
@@ -982,7 +982,7 @@ async def test_existing_plan_reader_exposes_read_only_legacy_other_inventory():
         APIResponse(success=True, data=_CLEANUP_PLAN),
         APIResponse(success=True, data=_CLEANUP_NOTES),
     ])
-    inst.delete = AsyncMock()
+    inst._request = AsyncMock()
     p = _patch(inst)
     try:
         result = await tp_get_training_plan_workouts(684463)
@@ -1000,7 +1000,7 @@ async def test_existing_plan_reader_exposes_read_only_legacy_other_inventory():
     assert row["workout_id"] == 888001
     assert row["matching_native_note"] is True
     assert row["native_note_id"] == 777700
-    inst.delete.assert_not_called()
+    inst._request.assert_not_called()
 
 
 @pytest.mark.asyncio
@@ -1020,7 +1020,7 @@ async def test_cleanup_dry_run_requires_native_note_and_never_deletes():
     assert result["protected_training_workouts"] == 13
     assert result["protected_native_notes"] == 8
     assert result["delete_route_verified"] is False
-    inst.delete.assert_not_called()
+    inst._request.assert_not_called()
 
 
 @pytest.mark.asyncio
@@ -1041,7 +1041,7 @@ async def test_cleanup_read_only_preview_resolves_provider_note_id_variants(nati
     assert result["success"] is True
     assert result["dry_run"] is True
     assert result["matching_native_note_id"] == 777700
-    inst.delete.assert_not_called()
+    inst._request.assert_not_called()
 
 
 @pytest.mark.asyncio
@@ -1056,7 +1056,7 @@ async def test_cleanup_real_delete_disabled_even_with_valid_candidate():
     finally:
         p.stop()
     assert result["error_code"] == "DELETE_ROUTE_UNVERIFIED"
-    inst.delete.assert_not_called()
+    inst._request.assert_not_called()
 
 
 @pytest.mark.asyncio
@@ -1092,7 +1092,7 @@ async def test_cleanup_refuses_published_or_shifted_plan():
         finally:
             p.stop()
         assert result["error_code"] == "PROTECTED_RESOURCE"
-        inst.delete.assert_not_called()
+        inst._request.assert_not_called()
 
 
 @pytest.mark.asyncio
@@ -1106,7 +1106,7 @@ async def test_cleanup_dry_run_refuses_missing_native_note():
     finally:
         p.stop()
     assert result["error_code"] == "NATIVE_NOTE_MISSING"
-    inst.delete.assert_not_called()
+    inst._request.assert_not_called()
 
 
 @pytest.mark.asyncio
@@ -1125,7 +1125,7 @@ async def test_cleanup_never_deletes_training_workout_or_changed_card():
     finally:
         p.stop()
     assert result["error_code"] == "TARGET_UNVERIFIED"
-    inst.delete.assert_not_called()
+    inst._request.assert_not_called()
 
 
 @pytest.mark.asyncio
@@ -1146,7 +1146,7 @@ async def test_cleanup_refuses_ambiguous_or_missing_workout_identity():
     finally:
         p.stop()
     assert result["error_code"] == "WORKOUT_ID_UNVERIFIED"
-    inst.delete.assert_not_called()
+    inst._request.assert_not_called()
 
 
 @pytest.mark.asyncio
@@ -1169,8 +1169,9 @@ async def test_cleanup_mock_only_verified_route_must_preserve_every_survivor():
     assert result["real_workouts_preserved"] == 13
     assert result["native_notes_preserved"] == 8
     assert result["remaining_other"] == 0
-    inst.delete.assert_awaited_once_with(
-        "/plans/v1/plans/684463/workouts/888001"
+    inst._request.assert_awaited_once_with(
+        "DELETE", "/plans/v1/plans/684463/workouts/888001",
+        _retry_on_401=False,
     )
     assert inst.get.await_count == 6
 
@@ -1178,7 +1179,7 @@ async def test_cleanup_mock_only_verified_route_must_preserve_every_survivor():
 @pytest.mark.asyncio
 async def test_cleanup_failed_delete_keeps_no_success_claim():
     inst = _cleanup_mock_client()
-    inst.delete = AsyncMock(return_value=APIResponse(
+    inst._request = AsyncMock(return_value=APIResponse(
         success=False, error_code=ErrorCode.API_ERROR, message="404"
     ))
     with patch(
@@ -1194,5 +1195,5 @@ async def test_cleanup_failed_delete_keeps_no_success_claim():
         finally:
             p.stop()
     assert result["isError"] is True
-    inst.delete.assert_awaited_once()
+    inst._request.assert_awaited_once()
 
