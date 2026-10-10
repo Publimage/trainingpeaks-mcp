@@ -29,7 +29,10 @@ def validate_export(export: dict[str, Any]) -> list[dict[str, Any]]:
     notes = export.get("notes")
     if export.get("provider_library_id") != PRODUCTION_LIBRARY_ID or not isinstance(notes, list) or len(notes) != 35:
         fail("Unexpected Notes library or canonical note count")
-    if export.get("kind") != "SNAPSHOT_NOT_SOURCE_OF_TRUTH" or export.get("desired_native_type") != "NoteTemplate":
+    if (export.get("kind") != "SNAPSHOT_NOT_SOURCE_OF_TRUTH" or export.get("desired_native_type") != "NoteTemplate"
+        or export.get("schema") != "IRONMAN_NOTE_NATIVE_LIBRARY_QUEUE_V1"
+        or export.get("count") != 35 or export.get("provider_plan_id") != 684602
+        or export.get("source_sheet") != "IRONMAN — WORKOUT ARCHIVE MASTER / NOTES_LIBRARY"):
         fail("Unverified export source/type")
     titles: set[str] = set()
     uids: set[str] = set()
@@ -75,6 +78,9 @@ async def list_items(client: Any, library_id: int) -> list[dict[str, Any]]:
     r = await client.get(f"/exerciselibrary/v2/libraries/{library_id}/items")
     if r.is_error or not isinstance(r.data, list):
         fail(f"Library GET failed: {library_id}")
+    for item in r.data:
+        if not isinstance(item, dict) or item.get("exerciseLibraryId") != library_id:
+            fail(f"Provider returned an item from a different or unverified library: {library_id}")
     return r.data
 
 
@@ -90,6 +96,24 @@ def match_existing(items: list[dict[str, Any]], title: str, description: str) ->
     if type(value) is not int or value <= 0:
         fail(f"Missing native provider ID: {title}")
     return value
+
+
+def validate_target_items(items: list[dict[str, Any]], notes: list[dict[str, Any]]) -> int:
+    """Reject foreign, duplicate or non-native contents before ANY batch write."""
+    approved = {n["title"]: n["description"] for n in notes}
+    if len(approved) != 35:
+        fail("Expected 35 distinct approved canonical titles")
+    if len(items) > 35:
+        fail("More than 35 items in target Notes library")
+    existing = 0
+    for item in items:
+        title = item.get("itemName")
+        if title not in approved:
+            fail("Unexpected unrelated template in native Notes library")
+        if match_existing(items, title, approved[title]) is None:
+            fail("Existing target item was not an exact native NoteTemplate")
+        existing += 1
+    return existing
 
 
 async def create_checked(client: Any, library_id: int, title: str, description: str) -> int:
@@ -119,8 +143,8 @@ async def run(mode: str, ack: int | None) -> dict[str, Any]:
         main = await list_items(client, PRODUCTION_LIBRARY_ID)
         if len({item.get("itemName") for item in main}) != len(main):
             fail("Duplicate names in target Notes library")
+        existing = validate_target_items(main, notes)
         if mode == "dry-run":
-            existing = sum(match_existing(main, x["title"], x["description"]) is not None for x in notes)
             return {"stage": "PREVIEW", "native_done": existing, "remaining": 35 - existing,
                     "provider_writes": 0, "provider_type_confirmed": False}
         if mode == "probe":
@@ -140,8 +164,8 @@ async def run(mode: str, ack: int | None) -> dict[str, Any]:
             )
             verified.append({"canonical_uid": note["canonical_uid"], "item_id": provider_id})
         final = await list_items(client, PRODUCTION_LIBRARY_ID)
-        if len(final) != 35 or len(verified) != 35:
-            fail("Final cardinality must be exactly 35 true native Notes")
+        if len(final) != 35 or len(verified) != 35 or validate_target_items(final, notes) != 35:
+            fail("Final cardinality and exact native NoteTemplate identity must be 35/35")
         return {"stage": "FINAL", "success": True, "native_notes": 35,
                 "provider_writes_max": 35, "verified": verified}
 
