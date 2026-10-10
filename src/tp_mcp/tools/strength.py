@@ -1085,9 +1085,27 @@ async def tp_batch_add_intermediate_strength(
         _, access, err = await _access(client)
         if err:
             return err
-        # Existing plan-Scoped native Builder source, saved via TP UI and verified.
-        # Its calendarId is NOT the planId, so reuse the native source value
-        # with the separately observed plan-scoped POST route.
+        # Native Strength plan routing uses each plan's planPersonId as the
+        # payload calendarId. Reusing the LAB workout's calendarId silently
+        # attached Intermediate workout 33969338 to LAB plan 684543, even
+        # when the URL named the Intermediate plan. Never repeat that.
+        lab = await client.get("/plans/v1/plans/684543")
+        lab_data = lab.data if not lab.is_error and isinstance(lab.data, dict) else {}
+        try:
+            calendar_id = int(plan.get("planPersonId"))
+            lab_person_id = int(lab_data.get("planPersonId"))
+            lab_owner = int(lab_data.get("ownerPersonId"))
+            target_owner = int(plan.get("ownerPersonId"))
+        except (TypeError, ValueError):
+            return _err("PLAN_PERSON_UNAVAILABLE", "Provider plan-person mapping unavailable.")
+        if (calendar_id <= 0 or lab_person_id <= 0
+            or calendar_id == lab_person_id
+            or lab_data.get("planId") != 684543
+            or (lab_data.get("title") or "").strip()
+                != "[MCP TEST] TP Native Strength Plan Route 2026-10-09"
+            or lab_data.get("weekCount") != 1
+            or lab_owner <= 0 or lab_owner != target_owner):
+            return _err("PLAN_PERSON_MISMATCH", "Protected plan-person mapping changed.")
         async with httpx.AsyncClient(timeout=STRENGTH_TIMEOUT) as h:
             source = await h.get(f"{STRENGTH_API_BASE}/rx/activity/v1/workouts/33903234",
                                  headers=_headers(access))
@@ -1095,15 +1113,15 @@ async def tp_batch_add_intermediate_strength(
                 return _err("SOURCE_UNAVAILABLE", "Lab native source not readable.")
             src = source.json().get("data") or {}
             try:
-                calendar_id = int(src.get("calendarId"))
+                source_calendar_id = int(src.get("calendarId"))
             except (TypeError, ValueError):
-                calendar_id = 0
+                source_calendar_id = 0
             if (str(src.get("id")) != "33903234"
                 or src.get("workoutType") != "StructuredStrength"
                 or (src.get("prescribedDate") or "")[:10] != "2027-08-04"
                 or (src.get("snapshot") or {}).get("totalSets") != 1
-                or calendar_id <= 0):
-                return _err("SOURCE_UNVERIFIED", "Native plan source changed.")
+                or source_calendar_id != lab_person_id):
+                return _err("SOURCE_UNVERIFIED", "LAB Strength calendarId did not match LAB planPersonId.")
             saved = []
             for z in manifest:
                 # Stop before each write if provider count has drifted.
@@ -1112,6 +1130,27 @@ async def tp_batch_add_intermediate_strength(
                     != expected_plan_count + len(saved)):
                     return {"success": False, "partial_writes": saved,
                             "error_code": "PLAN_DRIFT", "never_retry_without_readback": True}
+                # Check target plan's native Strength list at this relative
+                # calendar slot; classic plan workouts reader omits Strength.
+                slot_end = (dt.fromisoformat(z["date"]) + timedelta(days=1)).isoformat()
+                slot_url = (f"{STRENGTH_API_BASE}/rx/activity/v1/plans/{plan_id}/workouts/"
+                            f"{z['date']}/{slot_end}")
+                slot_before = await h.get(slot_url, headers=_headers(access))
+                if slot_before.status_code != 200:
+                    return {"success": False, "partial_writes": saved,
+                            "error_code": "NATIVE_MEMBERSHIP_UNAVAILABLE"}
+                existing = slot_before.json()
+                existing = existing.get("data") if isinstance(existing, dict) else existing
+                if not isinstance(existing, list):
+                    return {"success": False, "partial_writes": saved,
+                            "error_code": "NATIVE_MEMBERSHIP_BAD_SHAPE"}
+                if any(
+                    isinstance(v, dict)
+                    and (v.get("title") or "").strip() == z["title"]
+                    for v in existing
+                ):
+                    return {"success": False, "partial_writes": saved,
+                            "error_code": "ALREADY_EXISTS_IN_TARGET"}
                 payload = _build_payload(calendar_id, z["date"], z["title"],
                                          z["blocks"], z["instructions"])
                 try:
@@ -1168,12 +1207,24 @@ async def tp_batch_add_intermediate_strength(
                 actual_sets = (native.get("snapshot") or {}).get("totalSets")
                 ref = await client.get(f"/plans/v1/plans/{plan_id}")
                 count_after = (ref.data or {}).get("workoutCount") if not ref.is_error else None
+                slot_after = await h.get(slot_url, headers=_headers(access))
+                membership_verified = False
+                if slot_after.status_code == 200:
+                    listed = slot_after.json()
+                    listed = listed.get("data") if isinstance(listed, dict) else listed
+                    membership_verified = isinstance(listed, list) and any(
+                        isinstance(v, dict)
+                        and str(v.get("id") or v.get("workoutId")) == workout_id
+                        for v in listed
+                    )
                 if (native.get("workoutType") != "StructuredStrength"
                     or native.get("title") != z["title"]
                     or (native.get("prescribedDate") or "")[:10] != z["date"]
+                    or native.get("calendarId") != calendar_id
                     or native.get("instructions") != z["instructions"]
                     or actual_sets != expected_sets
                     or len(native.get("blocks") or []) != len(z["blocks"])
+                    or not membership_verified
                     or count_after != expected_plan_count + len(saved) + 1):
                     return {"success": False, "partial_writes": saved,
                             "unverified_workout_id": workout_id,
