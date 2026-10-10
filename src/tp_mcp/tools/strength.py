@@ -1000,3 +1000,159 @@ async def tp_create_strength_plan_lab_probe(dry_run: bool = True) -> dict[str, A
                 "manual_plan_ui_confirmation_still_required": True,
                 "never_retry_without_inspection": True,
             }
+
+async def tp_batch_add_intermediate_strength(
+    items: list[dict[str, Any]],
+    expected_plan_count: int,
+    dry_run: bool = True,
+) -> dict[str, Any]:
+    """Add native Strength Builder sessions to private Intermediate 684602 only.
+
+    Archive-authored structure and text are supplied by the caller. Plan scope,
+    immutable source, expected count, exact postreadback, no automatic retries.
+    Unlike standard workout endpoints, the legacy plan-workouts reader cannot
+    see StructuredStrength, so GET plan.workoutCount and Strength GET are used.
+    """
+    from datetime import date as dt, timedelta
+
+    plan_id = 684602
+    plan_title = "[MCP TEST] IRONMAN Intermediate Assembly 24W"
+    if type(dry_run) is not bool or type(expected_plan_count) is not int:
+        return _err("VALIDATION_ERROR", "Require boolean dry_run and integer expected_plan_count.")
+    if not isinstance(items, list) or not 1 <= len(items) <= 8:
+        return _err("VALIDATION_ERROR", "Require 1-8 strength workouts per batch.")
+    valid_days = {"TUE": 1, "WED": 2, "THU": 3, "FRI": 4}
+    manifest = []
+    signatures = set()
+    for item in items:
+        if not isinstance(item, dict):
+            return _err("VALIDATION_ERROR", "Each item must be an object.")
+        week = item.get("week")
+        day = item.get("day")
+        uid = item.get("uid")
+        title = item.get("title")
+        instructions = item.get("instructions")
+        blocks = item.get("blocks")
+        if (type(week) is not int or week < 1 or week > 22
+            or day not in valid_days
+            or not isinstance(uid, str)
+            or uid != f"IMINT24W-W{week:02d}-{day}-STRENGTH-0{3 if day == 'TUE' or day == 'FRI' else 2}"
+            or not isinstance(title, str)
+            or not title.startswith(f"IRONMAN | STRENGTH | W{week:02d} {day} | ")
+            or not isinstance(instructions, str)
+            or len(instructions) < 180):
+            return _err("VALIDATION_ERROR", f"Invalid strength identity, title or notes for {uid}.")
+        invalid = _validate_blocks(blocks)
+        if invalid:
+            return _err("VALIDATION_ERROR", f"{uid}: {invalid}")
+        if (week, day) in signatures:
+            return _err("VALIDATION_ERROR", "Duplicate week/day in batch.")
+        signatures.add((week, day))
+        date = (dt(2026, 10, 5) + timedelta(days=(week-1)*7 + valid_days[day])).isoformat()
+        manifest.append({"uid": uid, "title": title, "date": date, "blocks": blocks,
+                         "instructions": instructions,
+                         "sets": sum(len(e["sets"]) for b in blocks for e in b["exercises"])})
+    async with TPClient() as client:
+        r = await client.get(f"/plans/v1/plans/{plan_id}")
+        if r.is_error or not isinstance(r.data, dict):
+            return _err("PLAN_UNAVAILABLE", "Intermediate staging plan could not be read.")
+        plan = r.data
+        if (plan.get("planId") != plan_id
+            or (plan.get("title") or "").strip() != plan_title
+            or (plan.get("startDate") or "")[:10] != "2026-10-06"
+            or plan.get("weekCount") != 24
+            or plan.get("price") not in (None, 0)
+            or plan.get("workoutCount") != expected_plan_count
+            or expected_plan_count < 229 or expected_plan_count > 259):
+            return _err("PROTECTED_RESOURCE", "Plan identity/count changed; stop before write.")
+        if dry_run:
+            return {"success": True, "dry_run": True, "plan_id": plan_id,
+                    "expected_plan_count": expected_plan_count,
+                    "batch_count": len(manifest), "total_sets": sum(x["sets"] for x in manifest),
+                    "manifest": [{"uid": z["uid"], "title": z["title"],
+                                  "date": z["date"], "sets": z["sets"]} for z in manifest],
+                    "write_performed": False}
+        _, access, err = await _access(client)
+        if err:
+            return err
+        # Existing plan-Scoped native Builder source, saved via TP UI and verified.
+        # Its calendarId is NOT the planId, so reuse the native source value
+        # with the separately observed plan-scoped POST route.
+        async with httpx.AsyncClient(timeout=STRENGTH_TIMEOUT) as h:
+            source = await h.get(f"{STRENGTH_API_BASE}/rx/activity/v1/workouts/33903234",
+                                 headers=_headers(access))
+            if source.status_code != 200:
+                return _err("SOURCE_UNAVAILABLE", "Lab native source not readable.")
+            src = source.json().get("data") or {}
+            try:
+                calendar_id = int(src.get("calendarId"))
+            except (TypeError, ValueError):
+                calendar_id = 0
+            if (str(src.get("id")) != "33903234"
+                or src.get("workoutType") != "StructuredStrength"
+                or (src.get("prescribedDate") or "")[:10] != "2027-08-04"
+                or (src.get("snapshot") or {}).get("totalSets") != 1
+                or calendar_id <= 0):
+                return _err("SOURCE_UNVERIFIED", "Native plan source changed.")
+            saved = []
+            for z in manifest:
+                # Stop before each write if provider count has drifted.
+                fresh = await client.get(f"/plans/v1/plans/{plan_id}")
+                if (fresh.is_error or (fresh.data or {}).get("workoutCount")
+                    != expected_plan_count + len(saved)):
+                    return {"success": False, "partial_writes": saved,
+                            "error_code": "PLAN_DRIFT", "never_retry_without_readback": True}
+                payload = _build_payload(calendar_id, z["date"], z["title"],
+                                         z["blocks"], z["instructions"])
+                try:
+                    resp = await h.post(
+                        f"{STRENGTH_API_BASE}/rx/activity/v1/plans/{plan_id}/workouts/save",
+                        headers=_headers(access), json=payload,
+                    )
+                except httpx.RequestError:
+                    return {"success": False, "partial_writes": saved,
+                            "error_code": "AMBIGUOUS_POST",
+                            "never_retry_without_readback": True}
+                if resp.status_code != 200:
+                    return {"success": False, "partial_writes": saved,
+                            "error_code": "PROVIDER_REJECTED",
+                            "http_status": resp.status_code,
+                            "never_retry_without_readback": True}
+                try:
+                    body = resp.json().get("data") or {}
+                    workout_id = str(body.get("id") or payload["id"])
+                except (ValueError, TypeError):
+                    return {"success": False, "partial_writes": saved,
+                            "error_code": "AMBIGUOUS_REPLY",
+                            "never_retry_without_readback": True}
+                check = await h.get(f"{STRENGTH_API_BASE}/rx/activity/v1/workouts/{workout_id}",
+                                    headers=_headers(access))
+                if check.status_code != 200:
+                    return {"success": False, "partial_writes": saved,
+                            "unverified_workout_id": workout_id,
+                            "error_code": "READBACK_UNAVAILABLE",
+                            "never_retry_without_readback": True}
+                native = check.json().get("data") or {}
+                expected_sets = z["sets"]
+                actual_sets = (native.get("snapshot") or {}).get("totalSets")
+                ref = await client.get(f"/plans/v1/plans/{plan_id}")
+                count_after = (ref.data or {}).get("workoutCount") if not ref.is_error else None
+                if (native.get("workoutType") != "StructuredStrength"
+                    or native.get("title") != z["title"]
+                    or (native.get("prescribedDate") or "")[:10] != z["date"]
+                    or native.get("instructions") != z["instructions"]
+                    or actual_sets != expected_sets
+                    or len(native.get("blocks") or []) != len(z["blocks"])
+                    or count_after != expected_plan_count + len(saved) + 1):
+                    return {"success": False, "partial_writes": saved,
+                            "unverified_workout_id": workout_id,
+                            "error_code": "READBACK_MISMATCH",
+                            "actual_sets": actual_sets,
+                            "plan_count": count_after,
+                            "never_retry_without_readback": True}
+                saved.append({"uid": z["uid"], "workout_id": workout_id,
+                              "title": z["title"], "date": z["date"],
+                              "blocks": len(z["blocks"]), "sets": actual_sets})
+            return {"success": True, "dry_run": False, "plan_id": plan_id,
+                    "written": len(saved), "native_exact": len(saved),
+                    "workouts": saved, "count_after": expected_plan_count + len(saved)}
