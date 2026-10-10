@@ -40,7 +40,8 @@ class FakeTPClient:
         self.post_calls = []
         self.convert_to_classic = False
         self.suppress_post = False
-        self.athlete_id = mod.COACH_ID
+        self.person_id = mod.COACH_ID
+        self.athlete_id = 856352  # Own athlete entry differs from authenticated coach personId
 
     async def __aenter__(self):
         return self
@@ -50,6 +51,9 @@ class FakeTPClient:
 
     async def ensure_athlete_id(self):
         return self.athlete_id
+
+    async def _get_user_data(self):
+        return {"personId": self.person_id}
 
     async def get(self, path):
         if path == "/exerciselibrary/v2/libraries":
@@ -201,10 +205,22 @@ async def test_unverified_post_stop_no_retry(monkeypatch):
     assert fake.items[mod.LAB_ID] == []
 
 
+
+@pytest.mark.asyncio
+async def test_distinct_owner_person_id_and_self_athlete_id_is_accepted(monkeypatch):
+    fake = FakeTPClient()
+    assert fake.person_id == mod.COACH_ID
+    assert fake.athlete_id != mod.COACH_ID
+    _wire(monkeypatch, fake)
+    result = await mod.tp_sync_intermediate_native_notes(mode="preview")
+    assert result["success"] is True
+    assert result["provider_writes"] == 0
+    assert fake.post_calls == []
+
 @pytest.mark.asyncio
 async def test_wrong_connected_coach_prevents_all_post(monkeypatch):
     fake = FakeTPClient()
-    fake.athlete_id = 42
+    fake.person_id = 42
     _wire(monkeypatch, fake)
     result = await mod.tp_sync_intermediate_native_notes(
         mode="probe", ack_library_id=mod.LAB_ID,
