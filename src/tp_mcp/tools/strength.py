@@ -720,6 +720,12 @@ def _fmt_workout_detail(d: dict[str, Any]) -> dict[str, Any]:
     snap = d.get("snapshot") or {}
     return {
         "workout_id": str(d.get("id")),
+        # Read-only, native provider ownership fields. Essential to distinguish
+        # a private Training Plan workout from an orphan or athlete-calendar
+        # object after a plan-scoped save (e.g. 33969338).
+        "calendar_id": d.get("calendarId"),
+        "provider_plan_id": d.get("planId"),
+        "provider_training_plan_id": d.get("trainingPlanId"),
         "date": d.get("prescribedDate"),
         "title": d.get("title"),
         "workout_type": d.get("workoutType"),
