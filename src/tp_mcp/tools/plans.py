@@ -30,6 +30,32 @@ logger = logging.getLogger("tp-mcp")
 
 # workoutTypeValueId → sport label (mirrors SPORT_TYPE_MAP in workouts.py; for all
 # standard sports the family id equals the value id, so family = value on create).
+# Isolated staging plan for a four-week canonical archive pilot.
+# It is private, unpriced, and may eventually cover all 24 weeks.
+_INTERMEDIATE_PILOT_TITLE = "[MCP TEST] IRONMAN Intermediate 24W - Archive Pilot"
+_INTERMEDIATE_PILOT_START = date_type(2027, 1, 4)
+_INTERMEDIATE_PILOT_WEEKS = 24
+_INTERMEDIATE_PILOT_FIRST_UID = "IMINT24W-W01-MON-OTHER-01"
+_INTERMEDIATE_PILOT_ID = 684463
+
+# Only these six historical 1-minute Other cards in the private staging plan.
+# Native notes of exactly the same title/date/body already exist and MUST
+# survive each deletion. Never allow workout edits or real athlete calendars.
+_INTERMEDIATE_OTHER_CLEANUP: dict[str, str] = {
+    "[MCP TEST] IMINT24W-W01-MON-OTHER-01 | SETTIMANA 1 | Calibrazione e riferimenti": "2027-01-04",
+    "[MCP TEST] IMINT24W-PHASE-W01-W04 | FASE | Calibration / General Development": "2027-01-04",
+    "[MCP TEST] IMINT24W-CONTENT-README-FIRST | README FIRST | INIZIA DA QUI": "2027-01-04",
+    "[MCP TEST] IMINT24W-W02-MON-OTHER-01 | SETTIMANA 2 | Calibrazione e prima qualità": "2027-01-11",
+    "[MCP TEST] IMINT24W-W03-MON-OTHER-01 | SETTIMANA 3 | Primo blocco pienamente allenante": "2027-01-18",
+    "[MCP TEST] IMINT24W-W04-MON-OTHER-01 | SETTIMANA 4 | Assorbimento attivo": "2027-01-25",
+}
+
+# Must be filled ONLY after capturing the EXACT successful browser DELETE
+# request on a disposable [MCP TEST] plan, including path and ID semantics.
+# None deliberately prevents ANY destructive request in deployed code.
+_VERIFIED_PLAN_WORKOUT_DELETE_TEMPLATE: str | None = None
+
+
 _SPORT_BY_TYPE: dict[int, str] = {
     1: "Swim", 2: "Bike", 3: "Run", 4: "Brick", 5: "Crosstrain", 6: "Race",
     7: "DayOff", 8: "MtnBike", 9: "Strength", 11: "XCSki", 12: "Rowing", 13: "Walk",
@@ -123,6 +149,9 @@ async def tp_get_training_plan(plan_id: int | str) -> dict[str, Any]:
                 })
         return {
             "plan_id": d.get("planId"),
+            # Read-only provider-internal calendar association (may be null);
+            # do not infer equivalence with planId if absent.
+            "calendar_id": d.get("calendarId"),
             "title": (d.get("title") or "").strip(),
             "weeks": d.get("weekCount"),
             "day_count": d.get("dayCount"),
@@ -149,11 +178,26 @@ async def _fetch_plan_workouts(
     if not start or not days:
         return None, _err("API_ERROR", "Plan has no startDate/dayCount.")
     sd = date_type.fromisoformat(start)
+    # Native TrainingPeaks plan metadata can shrink when the latest legacy
+    # Other is removed. Preserve a stable, fixed archive-pilot read window
+    # so W3/W4 native notes remain discoverable.
+    if plan_id == _INTERMEDIATE_PILOT_ID and sd == _INTERMEDIATE_PILOT_START:
+        days = max(int(days), _INTERMEDIATE_PILOT_WEEKS * 7)
     ed = sd + timedelta(days=int(days) + 1)
     wr = await client.get(f"/plans/v1/plans/{plan_id}/workouts/{sd.isoformat()}/{ed.isoformat()}")
     if wr.is_error:
         return None, _api_err(wr)
     return sd, (wr.data or [])
+
+
+def _plan_workout_id(workout: dict[str, Any]) -> int | None:
+    """Only return an unambiguous positive identity from the provider."""
+    matches = []
+    for key in ("workoutId", "planWorkoutId", "id"):
+        value = workout.get(key)
+        if isinstance(value, int) and not isinstance(value, bool) and value > 0:
+            matches.append(value)
+    return matches[0] if matches and len(set(matches)) == 1 else None
 
 
 async def tp_get_training_plan_workouts(plan_id: int | str) -> dict[str, Any]:
@@ -176,7 +220,14 @@ async def tp_get_training_plan_workouts(plan_id: int | str) -> dict[str, Any]:
                 rel = (date_type.fromisoformat(wd) - sd).days + 1 if wd else None
             except ValueError:
                 rel = None
+            # On private assembly plans the first added workout may be a
+            # Tuesday: the provider startDate then reflects the first workout,
+            # NOT the Monday of W1. Expose correct relative week/weekday slots.
+            if v.plan_id == 684602 and wd:
+                relative_monday = sd - timedelta(days=sd.weekday())
+                rel = (date_type.fromisoformat(wd) - relative_monday).days + 1
             out.append({
+                "workout_id": _plan_workout_id(w),
                 "week": ((rel - 1) // 7 + 1) if rel else None,
                 "day": rel,
                 "sport": _SPORT_BY_TYPE.get(w.get("workoutTypeValueId"), str(w.get("workoutTypeValueId"))),
@@ -187,8 +238,91 @@ async def tp_get_training_plan_workouts(plan_id: int | str) -> dict[str, Any]:
                 "tss": w.get("tssPlanned"),
                 "has_structure": w.get("structure") is not None,
             })
+        # Read-only QA: return provider-native swim steps for private test plans.
+        # The normal list response stays small for every commercial plan.
+        if v.plan_id in (684206, _INTERMEDIATE_PILOT_ID):
+            for summary, raw in zip(out, ws):
+                if raw.get("workoutTypeValueId") == 1 and summary["title"].startswith("[MCP TEST]"):
+                    summary["native_structure"] = raw.get("structure")
+                    summary["native_distance_planned_m"] = raw.get("distancePlanned")
+                    summary["native_duration_planned_h"] = raw.get("totalTimePlanned")
         out.sort(key=lambda x: (x["day"] or 0))
-        return {"plan_id": v.plan_id, "workouts": out, "count": len(out)}
+        result: dict[str, Any] = {
+            "plan_id": v.plan_id, "workouts": out, "count": len(out),
+        }
+
+        # Notes are part of the Training Plan's relative-week calendar, but
+        # TrainingPeaks exposes them via a DIFFERENT endpoint. Include them
+        # in this already established read-only tool so a cached ChatGPT MCP
+        # action list (which may hide newly added tools) can still audit the
+        # plan end-to-end. A notes API error must not erase valid workouts.
+        note_result = await tp_get_training_plan_notes(v.plan_id)
+        if note_result.get("isError"):
+            result["calendar_notes"] = None
+            result["calendar_notes_status"] = "unavailable"
+            result["calendar_notes_error"] = {
+                "code": note_result.get("error_code", "API_ERROR"),
+                "message": note_result.get("message", "Plan notes could not be read."),
+            }
+        else:
+            result["calendar_notes"] = note_result.get("notes", [])
+            result["calendar_notes_count"] = note_result.get("count", 0)
+            result["calendar_notes_status"] = "ok"
+
+        # The current ChatGPT action snapshot may not expose the NEW
+        # cleanup command until the local MCP install/tunnel is refreshed.
+        # Surface a read-only manifest on the EXISTING plan calendar reader,
+        # without making any DELETE request or assuming a workout ID exists.
+        if v.plan_id == _INTERMEDIATE_PILOT_ID:
+            parsed_notes = result.get("calendar_notes")
+            items = []
+            for title, expected_date in _INTERMEDIATE_OTHER_CLEANUP.items():
+                raw_cards = [
+                    w for w in ws
+                    if (w.get("title") or "").strip() == title
+                    and (w.get("workoutDay") or "")[:10] == expected_date
+                ]
+                candidate = raw_cards[0] if len(raw_cards) == 1 else None
+                duration = candidate.get("totalTimePlanned") if candidate else None
+                is_exact_other = bool(
+                    candidate and candidate.get("workoutTypeValueId") == 100
+                    and candidate.get("structure") is None
+                    and isinstance(duration, (int, float))
+                    and not isinstance(duration, bool)
+                    and abs(duration - 1 / 60) < 0.0001
+                )
+                native_matches = [
+                    n for n in (parsed_notes or [])
+                    if n["title"] == title and n["date"] == expected_date
+                ]
+                note_exact = bool(
+                    is_exact_other and len(native_matches) == 1
+                    and native_matches[0]["description"] == candidate.get("description")
+                )
+                items.append({
+                    "title": title,
+                    "date": expected_date,
+                    "matching_other_cards": len(raw_cards),
+                    "exact_one_minute_other": is_exact_other,
+                    "workout_id": _plan_workout_id(candidate) if is_exact_other else None,
+                    "provider_identifier_fields": {
+                        k: candidate[k] for k in ("workoutId", "planWorkoutId", "id")
+                        if k in candidate
+                    } if candidate else {},
+                    "matching_native_note": note_exact,
+                    "native_note_id": native_matches[0]["note_id"]
+                    if note_exact else None,
+                })
+            result["legacy_other_cleanup_readonly"] = {
+                "read_only": True,
+                "delete_route_verified": bool(_VERIFIED_PLAN_WORKOUT_DELETE_TEMPLATE),
+                "real_workouts_count": sum(w["sport"] != "Other" for w in out),
+                "other_cards_count": sum(w["sport"] == "Other" for w in out),
+                "native_notes_count": len(parsed_notes) if parsed_notes is not None else None,
+                "native_notes_status": result.get("calendar_notes_status"),
+                "items": items,
+            }
+        return result
 
 
 # NB on the NATIVE apply command — fully reverse-engineered (Claude-in-Chrome HAR +
@@ -225,9 +359,68 @@ async def tp_apply_training_plan(plan_id: int | str, start_date: str) -> dict[st
         if not athlete_id:
             return _err("AUTH_INVALID", "Could not get athlete ID. Re-authenticate.")
 
+        # The synthetic copy method is still a pilot, NOT TrainingPeaks'
+        # native linked-plan application. Never expose an unrestricted
+        # calendar mutation path to actual coached athletes during the lab.
+        pilot_start = date_type(2027, 6, 21)
+        if (
+            v.plan_id != 684206
+            or v.start_date != pilot_start
+            or str(athlete_id) != "941614"
+        ):
+            return _err(
+                "PROTECTED_RESOURCE",
+                "Pilot synthetic copy restricted to Training Plan 684206, "
+                "Piattaforma TEST (941614), starting 2027-06-21.",
+            )
+        plan_response = await client.get(f"/plans/v1/plans/{v.plan_id}")
+        if plan_response.is_error:
+            return _api_err(plan_response)
+        pilot_error = _test_plan_guard(plan_response.data or {})
+        if pilot_error:
+            return pilot_error
+
         sd, ws = await _fetch_plan_workouts(client, v.plan_id)
         if sd is None:
             return ws  # error dict
+
+        # Require exactly the three pilot workouts in their expected order,
+        # all on the first three days of the sandbox week; fail closed if a
+        # partial/unexpected plan would be copied.
+        expected = (
+            (0, 1, "[MCP TEST] Swim | Tecnica 1200 m - Builder"),
+            (1, 2, "[MCP TEST] Bike | 3x5' FTP controllato"),
+            (2, 3, "[MCP TEST] Run | Progressivo RPE 35'"),
+        )
+        try:
+            actual = sorted(
+                (
+                    (date_type.fromisoformat((w["workoutDay"] or "")[:10]) - sd).days,
+                    w["workoutTypeValueId"],
+                    (w["title"] or "").strip(),
+                )
+                for w in ws
+            )
+        except (KeyError, TypeError, ValueError):
+            return _err("VALIDATION_ERROR", "Unexpected pilot-plan workout structure.")
+        if actual != list(expected):
+            return _err("PROTECTED_RESOURCE",
+                        "Plan no longer matches the three approved lab workouts.")
+
+        # A non-idempotent copy must not place duplicates or overwrite an
+        # occupied sandbox. This is checked AGAIN by the caller's readback.
+        sandbox_end = pilot_start + timedelta(days=6)
+        occupied = await client.get(
+            f"/fitness/v6/athletes/{athlete_id}/workouts/"
+            f"{pilot_start.isoformat()}/{sandbox_end.isoformat()}"
+        )
+        if occupied.is_error:
+            return _api_err(occupied)
+        if not isinstance(occupied.data, list):
+            return _err("API_ERROR", "Unexpected sandbox response; refusing to copy.")
+        if occupied.data:
+            return _err("ALREADY_EXISTS",
+                        "Sandbox has existing workouts; refusing synthetic copy.")
 
         created = failed = skipped = 0
         first_error: str | None = None
@@ -271,6 +464,9 @@ async def tp_apply_training_plan(plan_id: int | str, start_date: str) -> dict[st
                 failed += 1
                 if first_error is None:
                     first_error = resp.message
+                # Stop at the first failure. The caller must audit partial
+                # writes and never blindly retry a non-idempotent copy.
+                break
             else:
                 created += 1
 
@@ -288,3 +484,842 @@ async def tp_apply_training_plan(plan_id: int | str, start_date: str) -> dict[st
         if first_error:
             result["first_error"] = first_error[:160]
         return result
+
+
+# Experimental Training Plan Library write tools. These are deliberately
+# restricted to private [MCP TEST] plans until the API behaviour is proven.
+# TrainingPeaks plan-management endpoints are unofficial; creation requires
+# live verification against the coach's own test plan before production use.
+
+
+def _test_plan_guard(plan: dict[str, Any]) -> dict[str, Any] | None:
+    title = (plan.get("title") or "").strip()
+    if not title.startswith("[MCP TEST]"):
+        return _err("PROTECTED_RESOURCE",
+                    "Writes are limited to Training Plans starting with [MCP TEST].")
+    if plan.get("isPublic") is True or plan.get("price") not in (None, 0):
+        return _err("PROTECTED_RESOURCE",
+                    "Refusing to write to a published or priced Training Plan.")
+    return None
+
+
+def _parse_plan_date(value: str) -> date_type | None:
+    try:
+        return date_type.fromisoformat(value)
+    except (ValueError, TypeError):
+        return None
+
+
+async def tp_create_training_plan(
+    title: str, start_date: str, week_count: int = 1,
+    description: str | None = None,
+) -> dict[str, Any]:
+    """EXPERIMENTAL: create a private, minimal [MCP TEST] plan.
+
+    Endpoint/body for plan creation still require a live provider readback.
+    Never retries a POST after an ambiguous response.
+    """
+    if not title or not title.strip().startswith("[MCP TEST]"):
+        return _err("VALIDATION_ERROR", "Only [MCP TEST] plans may be created.")
+    if not isinstance(week_count, int) or isinstance(week_count, bool):
+        return _err("VALIDATION_ERROR", "week_count must be an integer.")
+    start = _parse_plan_date(start_date)
+    if start is None or start.weekday() != 0:
+        return _err("VALIDATION_ERROR", "start_date must be a Monday (YYYY-MM-DD).")
+    if week_count == _INTERMEDIATE_PILOT_WEEKS:
+        if title.strip() != _INTERMEDIATE_PILOT_TITLE or start != _INTERMEDIATE_PILOT_START:
+            return _err(
+                "PROTECTED_RESOURCE",
+                "24-week plan creation is limited to the exact private Intermediate pilot.",
+            )
+    elif not 1 <= week_count <= 2:
+        return _err(
+            "VALIDATION_ERROR",
+            "Other lab plans must be 1 or 2 weeks; the approved pilot is exactly 24.",
+        )
+
+    async with TPClient() as client:
+        before = await client.get("/plans/v1/plans")
+        if before.is_error:
+            return _api_err(before)
+        if any((p.get("title") or "").strip() == title.strip()
+               for p in (before.data or [])):
+            return _err("ALREADY_EXISTS",
+                        "A plan with this exact title already exists. Refusing duplicate creation.")
+
+        payload: dict[str, Any] = {
+            "title": title.strip(),
+            "startDate": f"{start.isoformat()}T00:00:00",
+            "weekCount": week_count,
+            "dayCount": week_count * 7,
+            "isPublic": False,
+        }
+        if description is not None:
+            payload["description"] = description
+
+        # Unlike the workout-library command, the Training Plan creation body
+        # is not yet captured from a confirmed browser request. This is a single
+        # guarded candidate endpoint, not a verified TP API contract.
+        created = await client.post("/plans/v1/plans", json=payload)
+        if created.is_error:
+            return _api_err(created)
+
+        value = created.data if isinstance(created.data, dict) else {}
+        plan_id = value.get("planId") or value.get("id")
+        if plan_id is None:
+            after = await client.get("/plans/v1/plans")
+            if after.is_error:
+                return _err("WRITE_UNVERIFIED",
+                            "POST accepted but listing failed; check existing plans before retrying.")
+            candidates = [p for p in (after.data or [])
+                          if (p.get("title") or "").strip() == title.strip()]
+            if len(candidates) != 1 or not candidates[0].get("planId"):
+                return _err("WRITE_UNVERIFIED",
+                            "Creation not uniquely verified; inspect plan library before retrying.")
+            plan_id = candidates[0]["planId"]
+
+        verified = await client.get(f"/plans/v1/plans/{plan_id}")
+        if verified.is_error:
+            return _err("WRITE_UNVERIFIED",
+                        f"Plan {plan_id} returned by create but readback failed.")
+        d = verified.data or {}
+        if (d.get("title") or "").strip() != title.strip():
+            return _err("WRITE_UNVERIFIED",
+                        f"Plan {plan_id} readback does not match the intended title.")
+        if d.get("isPublic") is True or d.get("price") not in (None, 0):
+            return _err("PROTECTED_RESOURCE",
+                        f"Plan {plan_id} is not confirmed private and unpriced; stop.")
+        return {
+            "success": True, "plan_id": plan_id,
+            "title": title.strip(), "start_date": start.isoformat(),
+            "weeks": week_count, "requested_weeks": week_count,
+            "provider_observed_weeks": d.get("weekCount"),
+            "provider_observed_start_date": (d.get("startDate") or "")[:10] or None,
+            "calendar_bootstrap_pending": not bool(d.get("startDate")),
+            "is_public": d.get("isPublic", False),
+            "verified": True,  # identity/private status only, not 24 populated weeks
+        }
+
+
+async def _get_writable_test_plan(
+    client: TPClient, plan_id: int,
+) -> tuple[dict[str, Any] | None, dict[str, Any] | None]:
+    result = await client.get(f"/plans/v1/plans/{plan_id}")
+    if result.is_error:
+        return None, _api_err(result)
+    d = result.data or {}
+    guard = _test_plan_guard(d)
+    if guard:
+        return None, guard
+    return d, None
+
+
+def _check_plan_date(
+    plan: dict[str, Any], workout_date: str, *,
+    allow_first_workout_bootstrap: bool = False,
+    bootstrap_item_name: str | None = None,
+) -> dict[str, Any] | None:
+    target = _parse_plan_date(workout_date)
+    start = _parse_plan_date((plan.get("startDate") or "")[:10])
+    if target is None:
+        return _err("VALIDATION_ERROR", "Invalid plan calendar date.")
+
+    title = (plan.get("title") or "").strip()
+    # A newly created Standard Training Plan may expose zero weeks until its
+    # first workout. Never let a Tuesday bootstrap shift week 1 from Monday.
+    if title == _INTERMEDIATE_PILOT_TITLE:
+        if not (
+            _INTERMEDIATE_PILOT_START <= target
+            < _INTERMEDIATE_PILOT_START + timedelta(weeks=_INTERMEDIATE_PILOT_WEEKS)
+        ):
+            return _err("PROTECTED_RESOURCE", "Date outside the Intermediate pilot.")
+        if start is not None and start != _INTERMEDIATE_PILOT_START:
+            return _err(
+                "PROTECTED_RESOURCE",
+                "Intermediate pilot has a shifted startDate: stop and inspect.",
+            )
+        if start is None:
+            if (
+                allow_first_workout_bootstrap
+                and plan.get("workoutCount") in (None, 0)
+                and target == _INTERMEDIATE_PILOT_START
+                and (bootstrap_item_name or "").startswith(
+                    "[MCP TEST] " + _INTERMEDIATE_PILOT_FIRST_UID + " | "
+                )
+            ):
+                return None
+            return _err(
+                "PROTECTED_RESOURCE",
+                "Only W1 Monday's weekly-objective item may "
+                "bootstrap this empty 24-week pilot.",
+            )
+        # Subsequent weeks may be empty even though TP reports weekCount=1;
+        # the exact title/first-date guard constrains this one development plan.
+        return None
+
+    # Preserve the existing 3-workout experiment without broadening its scope.
+    days = max(plan.get("dayCount") or 0, (plan.get("weekCount") or 0) * 7)
+    if start is None or not isinstance(days, int) or days <= 0:
+        if (
+            allow_first_workout_bootstrap
+            and plan.get("planId") == 684206
+            and title == "[MCP TEST] Training Plan — Swim Bike Run"
+            and plan.get("workoutCount") in (None, 0)
+            and target == date_type(2027, 6, 21)
+        ):
+            return None
+        return _err(
+            "VALIDATION_ERROR",
+            "Plan has no calendar range; only the guarded pilot "
+            "bootstrap workout is permitted.",
+        )
+    if not start <= target < start + timedelta(days=days):
+        return _err(
+            "VALIDATION_ERROR",
+            "Target day must fall inside the [MCP TEST] plan date range.",
+        )
+    return None
+
+async def tp_add_training_plan_library_workout(
+    plan_id: int | str, library_id: str, item_id: str, workout_date: str,
+) -> dict[str, Any]:
+    """Add one existing [MCP TEST] workout template to one [MCP TEST] plan.
+
+    Provider endpoint/body documented from a coach account. Does not apply the
+    plan to any athlete or modify a library template.
+    """
+    try:
+        v = _PlanIdInput(plan_id=plan_id)  # type: ignore[arg-type]
+        lib_id, template_id = int(library_id), int(item_id)
+        if lib_id <= 0 or template_id <= 0:
+            raise ValueError("IDs must be positive")
+    except (ValidationError, ValueError, TypeError) as e:
+        return _err("VALIDATION_ERROR", str(e))
+    async with TPClient() as client:
+        plan, error = await _get_writable_test_plan(client, v.plan_id)
+        if error is not None:
+            return error
+        assert plan is not None
+        is_archive_pilot = (plan.get("title") or "").strip() == _INTERMEDIATE_PILOT_TITLE
+        # Keep the existing simple-plan guard order stable, including its
+        # fail-closed behavior before a Workout Library GET.
+        if not is_archive_pilot:
+            date_error = _check_plan_date(
+                plan, workout_date,
+                allow_first_workout_bootstrap=(
+                    v.plan_id == 684206 and lib_id == 3890637
+                    and template_id == 14935065
+                ),
+            )
+            if date_error:
+                return date_error
+        # Validate the actual template BEFORE permitting an empty-plan
+        # bootstrap. Never let an unrelated workout anchor the new calendar.
+        library = await client.get(f"/exerciselibrary/v2/libraries/{lib_id}/items")
+        if library.is_error:
+            return _api_err(library)
+        if not isinstance(library.data, list):
+            return _err("API_ERROR", "Unverified Workout Library response.")
+        candidate = next(
+            (item for item in library.data
+             if item.get("exerciseLibraryItemId") == template_id), None,
+        )
+        if candidate is None or not (candidate.get("itemName") or "").startswith("[MCP TEST]"):
+            return _err(
+                "PROTECTED_RESOURCE",
+                "Only existing [MCP TEST] library items can be inserted.",
+            )
+        if (plan.get("title") or "").strip() == _INTERMEDIATE_PILOT_TITLE:
+            if not (candidate.get("itemName") or "").startswith("[MCP TEST] IMINT24W-"):
+                return _err(
+                    "PROTECTED_RESOURCE",
+                    "Intermediate pilot requires a canonical UID-prefixed template.",
+                )
+        if is_archive_pilot:
+            date_error = _check_plan_date(
+                plan, workout_date, allow_first_workout_bootstrap=True,
+                bootstrap_item_name=candidate.get("itemName"),
+            )
+            if date_error:
+                return date_error
+
+        # The endpoint is non-idempotent: check whether the same template
+        # was already copied to this exact plan day before posting.
+        first = (plan.get("startDate") or "")[:10]
+        if first:
+            if is_archive_pilot:
+                # Source metadata can lag behind a partially populated
+                # 24-week pilot. Check the EXACT target day regardless of the
+                # provider's currently observed weekCount/dayCount.
+                start = date_type.fromisoformat(workout_date)
+                end = start + timedelta(days=2)
+            else:
+                start = date_type.fromisoformat(first)
+                length = max(plan.get("dayCount") or 0,
+                             (plan.get("weekCount") or 0) * 7)
+                end = start + timedelta(days=length + 1)
+            existing = await client.get(
+                f"/plans/v1/plans/{v.plan_id}/workouts/"
+                f"{start.isoformat()}/{end.isoformat()}"
+            )
+            if existing.is_error:
+                return _api_err(existing)
+            for workout in existing.data or []:
+                workout_day = (workout.get("workoutDay") or "")[:10]
+                if (workout_day == workout_date
+                    and (workout.get("title") or "").strip()
+                        == (candidate.get("itemName") or "").strip()):
+                    return _err("ALREADY_EXISTS",
+                                "This [MCP TEST] library workout already exists "
+                                "on this plan day. Refusing a duplicate.")
+
+        payload = {
+            "planId": v.plan_id,
+            "exerciseLibraryItemId": template_id,
+            "workoutDateTime": workout_date,
+        }
+        r = await client.post(
+            f"/plans/v1/plans/{v.plan_id}/commands/addworkoutfromlibraryitem",
+            json=payload,
+        )
+        if r.is_error:
+            return _api_err(r)
+        return {
+            "success": True, "plan_id": v.plan_id, "library_id": lib_id,
+            "item_id": template_id, "workout_date": workout_date,
+            "provider_acknowledged": True,
+            "readback_required": True,
+        }
+
+
+
+
+async def tp_batch_add_training_plan_library_workouts(
+    plan_id: int, items: list[dict[str, Any]], dry_run: bool = True,
+) -> dict[str, Any]:
+    """Guarded batch of MASTER templates into EXACT private assembly lab 684602.
+
+    Inputs are week (1..24), day (0=Monday..6=Sunday), and exact template
+    identity. Does not change any real athlete, priced plan, or MASTER item.
+    No retry of ambiguous POST: inspect readback and re-run only after audit.
+    """
+    assembly_id = 684602
+    assembly_title = "[MCP TEST] IRONMAN Intermediate Assembly 24W"
+    master_libraries = {3891872: (1, "IRONMAN | SWIM |"),
+                        3891873: (2, "IRONMAN | BIKE |"),
+                        3891874: (3, "IRONMAN | RUN |")}
+    if type(plan_id) is not int or plan_id != assembly_id:
+        return _err("PROTECTED_RESOURCE", "Batch writes only to private assembly lab 684602.")
+    if type(dry_run) is not bool:
+        return _err("VALIDATION_ERROR", "dry_run must be a bool.")
+    if not isinstance(items, list) or not 1 <= len(items) <= 25:
+        return _err("VALIDATION_ERROR", "Submit 1-25 items per batch.")
+    validated = []
+    seen = set()
+    for n, item in enumerate(items):
+        if not isinstance(item, dict):
+            return _err("VALIDATION_ERROR", f"Item {n} is not an object.")
+        try:
+            lib = int(item["library_id"])
+            template = int(item["item_id"])
+            week = item["week"]
+            day = item["day"]
+            expected = item["expected_title"]
+        except (KeyError, TypeError, ValueError):
+            return _err("VALIDATION_ERROR", f"Malformed item {n}.")
+        if (lib not in master_libraries or template <= 0
+            or type(week) is not int or not 1 <= week <= 24
+            or type(day) is not int or not 0 <= day <= 6
+            or not isinstance(expected, str)
+            or not expected.startswith(master_libraries[lib][1])):
+            return _err("VALIDATION_ERROR", f"Invalid master item/week/day/title at {n}.")
+        key = (week, day, expected)
+        if key in seen:
+            return _err("VALIDATION_ERROR", f"Duplicate manifest entry {key}.")
+        seen.add(key)
+        validated.append((lib, template, week, day, expected))
+
+    def core_structure(value: Any) -> Any:
+        if not isinstance(value, dict):
+            return None
+        return {
+            "length_metric": value.get("primaryLengthMetric"),
+            "intensity_metric": value.get("primaryIntensityMetric"),
+            "groups": [
+                (g.get("type"), (g.get("length") or {}).get("value"),
+                 [(s.get("name"), (s.get("length") or {}).get("value"),
+                   (s.get("length") or {}).get("unit"),
+                   s.get("intensityClass"),
+                   [(t.get("minValue"), t.get("maxValue"))
+                    for t in (s.get("targets") or [])])
+                  for s in (g.get("steps") or [])])
+                for g in (value.get("structure") or [])
+            ],
+        }
+
+    def equal_native(candidate: dict[str, Any], workout: dict[str, Any]) -> bool:
+        if (candidate.get("description") != workout.get("description")
+            or core_structure(candidate.get("structure")) != core_structure(workout.get("structure"))):
+            return False
+        if abs(float(candidate.get("totalTimePlanned") or 0)
+               - float(workout.get("totalTimePlanned") or 0)) > 1e-6:
+            return False
+        planned_distance = candidate.get("distancePlanned")
+        copied_distance = workout.get("distancePlanned")
+        return (planned_distance == copied_distance
+                or (planned_distance in (None, 0) and copied_distance in (None, 0)))
+
+    async with TPClient() as client:
+        detail = await client.get(f"/plans/v1/plans/{assembly_id}")
+        if detail.is_error:
+            return _api_err(detail)
+        plan = detail.data or {}
+        if (plan.get("planId") != assembly_id
+            or (plan.get("title") or "").strip() != assembly_title
+            or _test_plan_guard(plan) is not None):
+            return _err("PROTECTED_RESOURCE", "Assembly plan identity/privacy mismatch.")
+        # Training Plans are relative WEEK/DAY templates, never athlete dates.
+        # TrainingPeaks stores a technical date for the first inserted session.
+        # Our verified seed is W1 TUESDAY, which may be the provider startDate.
+        provider_start = _parse_plan_date((plan.get("startDate") or "")[:10])
+        if provider_start is None:
+            return _err("NEEDS_FIRST_WORKOUT",
+                        "Insert the W1 Tuesday T1500 MASTER template once in the private plan.")
+        if provider_start.weekday() not in (0, 1):
+            return _err("RELATIVE_CALENDAR_UNVERIFIED",
+                        "Provider startDate is not Monday/Tuesday. Check relative W1 layout.")
+        anchor = provider_start - timedelta(days=provider_start.weekday())
+        end = anchor + timedelta(weeks=24, days=1)
+        manifest = []
+        for lib, template, week, day, title in validated:
+            day_date = (anchor + timedelta(weeks=week - 1, days=day)).isoformat()
+            manifest.append((lib, template, day_date, title))
+        libraries: dict[int, dict[int, dict[str, Any]]] = {}
+        for lib in sorted({v[0] for v in validated}):
+            response = await client.get(f"/exerciselibrary/v2/libraries/{lib}/items")
+            if response.is_error:
+                return _api_err(response)
+            if not isinstance(response.data, list):
+                return _err("API_ERROR", "Unexpected library list response.")
+            libraries[lib] = {
+                item.get("exerciseLibraryItemId"): item
+                for item in response.data if isinstance(item, dict)
+            }
+        candidates = []
+        for lib, template, day_date, title in manifest:
+            candidate = libraries[lib].get(template)
+            if (not candidate or candidate.get("itemName") != title
+                or candidate.get("workoutTypeId") != master_libraries[lib][0]
+                or not isinstance(candidate.get("structure"), dict)
+                or not candidate.get("description")
+                or float(candidate.get("totalTimePlanned") or 0) <= 0):
+                return _err("SOURCE_UNVERIFIED",
+                            f"MASTER item {template} does not match approved manifest.")
+            candidates.append((lib, template, day_date, title, candidate))
+
+        workouts_resp = await client.get(
+            f"/plans/v1/plans/{assembly_id}/workouts/"
+            f"{anchor.isoformat()}/{end.isoformat()}"
+        )
+        if workouts_resp.is_error:
+            return _api_err(workouts_resp)
+        if not isinstance(workouts_resp.data, list):
+            return _err("API_ERROR", "Unexpected plan workout list.")
+        before = workouts_resp.data
+        # Never derive weekday 1 from a raw date without checking the UI-seeded
+        # W1 Tuesday template exists in that exact relative slot.
+        seed_date = (anchor + timedelta(days=1)).isoformat()
+        seed = [w for w in before
+                if (w.get("workoutDay") or "")[:10] == seed_date
+                and (w.get("title") or "").strip()
+                    == "IRONMAN | SWIM | TEST T1500 iniziale | 2500 m"]
+        if len(seed) != 1 or seed[0].get("workoutTypeValueId") != 1:
+            return _err("RELATIVE_CALENDAR_UNVERIFIED",
+                        "W1 Tuesday T1500 marker is missing or ambiguous; no write.")
+        to_add = []
+        skipped = []
+        for lib, template, day_date, title, candidate in candidates:
+            matches = [w for w in before
+                       if (w.get("workoutDay") or "")[:10] == day_date
+                       and (w.get("title") or "").strip() == title]
+            if matches:
+                if len(matches) != 1 or not equal_native(candidate, matches[0]):
+                    return _err("CONFLICT", f"Plan has a different/duplicate workout on {day_date}: {title}")
+                skipped.append({"date": day_date, "item_id": template, "title": title})
+            else:
+                to_add.append((lib, template, day_date, title, candidate))
+        if dry_run:
+            return {
+                "success": True, "dry_run": True, "plan_id": assembly_id,
+                "anchor": anchor.isoformat(), "to_add": len(to_add),
+                "already_exact": len(skipped), "items": [
+                    {"date": d, "library_id": lib, "item_id": it, "title": title}
+                    for lib, it, d, title, _ in to_add
+                ],
+            }
+
+        attempted = []
+        for lib, template, day_date, title, candidate in to_add:
+            response = await client.post(
+                f"/plans/v1/plans/{assembly_id}/commands/addworkoutfromlibraryitem",
+                json={"planId": assembly_id, "exerciseLibraryItemId": template,
+                      "workoutDateTime": day_date},
+            )
+            if response.is_error:
+                return {
+                    **_api_err(response), "partial_writes_possible": True,
+                    "provider_acknowledged": attempted,
+                    "stop": "Inspect current plan before any retry.",
+                }
+            attempted.append({"date": day_date, "item_id": template, "title": title})
+
+        after_resp = await client.get(
+            f"/plans/v1/plans/{assembly_id}/workouts/"
+            f"{anchor.isoformat()}/{end.isoformat()}"
+        )
+        if after_resp.is_error or not isinstance(after_resp.data, list):
+            return _err("WRITE_UNVERIFIED",
+                        f"Provider acknowledged {len(attempted)} writes; readback unavailable.")
+        after = after_resp.data
+        qa = []
+        for lib, template, day_date, title, candidate in candidates:
+            matches = [w for w in after
+                       if (w.get("workoutDay") or "")[:10] == day_date
+                       and (w.get("title") or "").strip() == title]
+            good = len(matches) == 1 and equal_native(candidate, matches[0])
+            qa.append({"date": day_date, "item_id": template, "title": title,
+                       "native_exact": good,
+                       "workout_id": _plan_workout_id(matches[0]) if good else None})
+        return {
+            "success": all(x["native_exact"] for x in qa),
+            "plan_id": assembly_id, "provider_acknowledged": len(attempted),
+            "already_exact": len(skipped), "readback_exact": sum(x["native_exact"] for x in qa),
+            "total_manifest_items": len(qa), "qa": qa,
+        }
+
+
+async def tp_delete_training_plan_other(
+    plan_id: int | str, expected_title: str, dry_run: bool = True,
+) -> dict[str, Any]:
+    """Preflight removal of one exact, obsolete Other card in plan 684463.
+
+    Dry-run lists the verified target and matching NATIVE note. Execution is
+    deliberately DISABLED until the TrainingPeaks PLAN WORKOUT deletion route
+    is captured and independently verified; never reuse athlete-calendar
+    DELETE endpoints, never guess an undocumented destructive route.
+
+    With a verified route installed, every delete remains one-shot and checks
+    that all real workouts and native notes survive.
+    """
+    try:
+        v = _PlanIdInput(plan_id=plan_id)  # type: ignore[arg-type]
+    except (ValidationError, ValueError, TypeError) as exc:
+        return _err("VALIDATION_ERROR", str(exc))
+    if type(dry_run) is not bool:
+        return _err("VALIDATION_ERROR", "dry_run must be a boolean.")
+    if v.plan_id != _INTERMEDIATE_PILOT_ID:
+        return _err("PROTECTED_RESOURCE", "Only the exact private Intermediate pilot can be cleaned.")
+    if expected_title not in _INTERMEDIATE_OTHER_CLEANUP:
+        return _err("PROTECTED_RESOURCE", "Title is not one of the six approved Other cards.")
+
+    async with TPClient() as client:
+        plan, error = await _get_writable_test_plan(client, v.plan_id)
+        if error is not None:
+            return error
+        assert plan is not None
+        if (
+            plan.get("planId") != _INTERMEDIATE_PILOT_ID
+            or (plan.get("title") or "").strip() != _INTERMEDIATE_PILOT_TITLE
+            or plan.get("isPublic") is not False
+            or plan.get("price") not in (None, 0)
+            or (plan.get("startDate") or "")[:10] != _INTERMEDIATE_PILOT_START.isoformat()
+        ):
+            return _err("PROTECTED_RESOURCE", "Plan identity, privacy or Monday anchor changed.")
+
+        start = _INTERMEDIATE_PILOT_START
+        reported_length = max(int(plan.get("dayCount") or 0),
+                              int(plan.get("weekCount") or 0) * 7)
+        if not 9 <= reported_length <= _INTERMEDIATE_PILOT_WEEKS * 7:
+            return _err("PROTECTED_RESOURCE", "Unexpected plan range.")
+        # Do NOT use a shrinking provider dayCount to read the eight W1-W4
+        # native notes; their week-4 IDs must survive every deletion.
+        end = start + timedelta(weeks=_INTERMEDIATE_PILOT_WEEKS, days=1)
+        wr = await client.get(
+            f"/plans/v1/plans/{v.plan_id}/workouts/"
+            f"{start.isoformat()}/{end.isoformat()}"
+        )
+        if wr.is_error:
+            return _api_err(wr)
+        if not isinstance(wr.data, list) or any(
+            not isinstance(w, dict) for w in wr.data
+        ):
+            return _err("API_ERROR", "Unverified plan-workouts payload.")
+        before = wr.data
+        target_date = _INTERMEDIATE_OTHER_CLEANUP[expected_title]
+        candidates = [
+            w for w in before
+            if (w.get("title") or "").strip() == expected_title
+            and (w.get("workoutDay") or "")[:10] == target_date
+            and w.get("workoutTypeValueId") == 100
+            and w.get("structure") is None
+            and abs(float(w.get("totalTimePlanned") or 0) - 1 / 60) < 0.0001
+        ]
+        # If a title exists but differs from the approved date/type/duration,
+        # do not treat the mismatch as an already-removed card.
+        named = [w for w in before if (w.get("title") or "").strip() == expected_title]
+        if len(named) != 1 or len(candidates) != 1:
+            return _err("TARGET_UNVERIFIED",
+                        "Exact one-minute Other card missing, duplicated or altered.")
+        candidate = candidates[0]
+        identity = _plan_workout_id(candidate)
+
+        notes_response = await client.get(
+            f"/plans/v1/plans/{v.plan_id}/calendarNote/"
+            f"{start.isoformat()}/{end.isoformat()}"
+        )
+        if notes_response.is_error:
+            return _api_err(notes_response)
+        if not isinstance(notes_response.data, list) or any(
+            not isinstance(n, dict) for n in notes_response.data
+        ):
+            return _err("API_ERROR", "Unverified native notes response.")
+        notes = notes_response.data
+        exact_notes = [
+            n for n in notes
+            if (n.get("title") or "").strip() == expected_title
+            and (n.get("noteDate") or n.get("date") or "")[:10] == target_date
+            and n.get("description") == candidate.get("description")
+        ]
+        if len(exact_notes) != 1:
+            return _err("NATIVE_NOTE_MISSING", "Missing identical native note; deletion denied.")
+        real_workouts = [w for w in before if w.get("workoutTypeValueId") != 100]
+        if len(real_workouts) != 13 or len(notes) != 8:
+            return _err("MANIFEST_DRIFT", "Expected 13 workouts and 8 native notes in staging.")
+
+        preview: dict[str, Any] = {
+            "plan_id": v.plan_id, "target_title": expected_title,
+            "target_date": target_date, "workout_id": identity,
+            "observed_identifier_fields": {
+                k: candidate[k] for k in ("workoutId", "planWorkoutId", "id")
+                if k in candidate
+            },
+            "raw_keys": sorted(candidate.keys()),
+            "matching_native_note_id": (
+                exact_notes[0].get("id")
+                or exact_notes[0].get("calendarNoteId")
+                or exact_notes[0].get("noteId")
+            ),
+            "protected_training_workouts": len(real_workouts),
+            "protected_native_notes": len(notes),
+            "old_other_count": len(before) - len(real_workouts),
+            "delete_route_verified": bool(_VERIFIED_PLAN_WORKOUT_DELETE_TEMPLATE),
+        }
+        if dry_run:
+            return {"success": True, "dry_run": True, **preview}
+        if identity is None:
+            return _err("WORKOUT_ID_UNVERIFIED",
+                        "Plan workout has no unique, positive provider identifier.")
+        if _VERIFIED_PLAN_WORKOUT_DELETE_TEMPLATE is None:
+            return _err(
+                "DELETE_ROUTE_UNVERIFIED",
+                "Cannot delete before a successful browser request establishes "
+                "the exact Training Plan Library workout deletion endpoint.",
+            )
+
+        # Template is a fixed developer-audited path, never supplied by a
+        # model/user/tool parameter and never points to /fitness/v6/athletes/.
+        endpoint = _VERIFIED_PLAN_WORKOUT_DELETE_TEMPLATE.format(
+            plan_id=v.plan_id, workout_id=identity,
+        )
+        if (
+            not endpoint.startswith(f"/plans/v1/plans/{v.plan_id}/")
+            or "/athletes/" in endpoint or "?" in endpoint
+        ):
+            return _err("PROTECTED_RESOURCE", "Unexpected deletion endpoint.")
+        # A destructive request must never auto-retry on an ambiguous 401.
+        result = await client._request("DELETE", endpoint, _retry_on_401=False)
+        if result.is_error:
+            return _api_err(result)
+
+        # One-shot: even if verification fails or times out, NEVER retry.
+        detail_after = await client.get(f"/plans/v1/plans/{v.plan_id}")
+        after = await client.get(
+            f"/plans/v1/plans/{v.plan_id}/workouts/"
+            f"{start.isoformat()}/{end.isoformat()}"
+        )
+        notes_after = await client.get(
+            f"/plans/v1/plans/{v.plan_id}/calendarNote/"
+            f"{start.isoformat()}/{end.isoformat()}"
+        )
+        if (
+            detail_after.is_error or after.is_error or notes_after.is_error
+            or not isinstance(after.data, list)
+            or not isinstance(notes_after.data, list)
+        ):
+            return _err("WRITE_UNVERIFIED",
+                        "Provider may have deleted item; readback unavailable. Do not retry.")
+        if (detail_after.data or {}).get("startDate", "")[:10] != start.isoformat():
+            return _err("WRITE_UNVERIFIED",
+                        "Training Plan start date shifted; STOP and inspect.")
+        # Compare every surviving workout's stable athlete-facing content,
+        # not provider-recomputed summary or plan metadata.
+        def signature(w: dict[str, Any]) -> tuple[Any, ...]:
+            return (
+                (w.get("title") or "").strip(), (w.get("workoutDay") or "")[:10],
+                w.get("workoutTypeValueId"), w.get("description"),
+                w.get("totalTimePlanned"), w.get("distancePlanned"),
+                w.get("structure"),
+            )
+        survivor_before = [w for w in before if w is not candidate]
+        survivors_after = after.data
+        remaining = [w for w in survivors_after
+                     if (w.get("title") or "").strip() == expected_title]
+        unchanged = (
+            len(survivors_after) == len(before) - 1
+            and not remaining
+            and sorted(map(repr, map(signature, survivor_before)))
+                == sorted(map(repr, map(signature, survivors_after)))
+            and notes_after.data == notes
+        )
+        if not unchanged:
+            return _err("WRITE_UNVERIFIED",
+                        "Target or unrelated workouts/notes differ after delete. STOP.")
+        return {
+            "success": True, "deleted": True, "plan_id": v.plan_id,
+            "removed_workout_id": identity, "removed_title": expected_title,
+            "remaining_other": len(survivors_after) - len(real_workouts),
+            "real_workouts_preserved": len(real_workouts),
+            "native_notes_preserved": len(notes_after.data),
+            "start_date_preserved": True,
+        }
+
+
+async def tp_get_training_plan_notes(plan_id: int | str) -> dict[str, Any]:
+    """Read calendar notes from a Training Plan's relative-week calendar.
+
+    TrainingPeaks uses GET /plans/v1/plans/{id}/calendarNote/{start}/{end};
+    reading these notes is separate from workout comments and athlete notes.
+    """
+    try:
+        v = _PlanIdInput(plan_id=plan_id)  # type: ignore[arg-type]
+    except (ValidationError, ValueError) as e:
+        return _err("VALIDATION_ERROR", str(e))
+    async with TPClient() as client:
+        detail = await client.get(f"/plans/v1/plans/{v.plan_id}")
+        if detail.is_error:
+            return _api_err(detail)
+        plan = detail.data or {}
+        start = _parse_plan_date((plan.get("startDate") or "")[:10])
+        days = max(plan.get("dayCount") or 0,
+                   (plan.get("weekCount") or 0) * 7)
+        if v.plan_id == 684602 and start == date_type(2026, 10, 6):
+            # Calendar is a relative W1..W24 template. TP technical startDate
+            # reflects the first Tuesday workout, not the Monday of week 1.
+            start = start - timedelta(days=1)
+        if start is None or days <= 0:
+            return _err("API_ERROR", "Plan has no populated calendar range.")
+        if v.plan_id == _INTERMEDIATE_PILOT_ID and start == _INTERMEDIATE_PILOT_START:
+            days = max(days, _INTERMEDIATE_PILOT_WEEKS * 7)
+        end = start + timedelta(days=days + 1)
+        response = await client.get(
+            f"/plans/v1/plans/{v.plan_id}/calendarNote/"
+            f"{start.isoformat()}/{end.isoformat()}"
+        )
+        if response.is_error:
+            return _api_err(response)
+        # Do not mistake an undocumented response wrapper or partial
+        # provider failure for a successfully verified empty notes list.
+        if not isinstance(response.data, list) or any(
+            not isinstance(note, dict) for note in response.data
+        ):
+            return _err("API_ERROR", "Unexpected native Training Plan notes payload.")
+        out = []
+        for note in response.data:
+            day = (note.get("noteDate") or note.get("date") or "")[:10]
+            offset = None
+            try:
+                offset = (date_type.fromisoformat(day) - start).days + 1
+            except ValueError:
+                pass
+            out.append({
+                "note_id": note.get("id") or note.get("calendarNoteId")
+                          or note.get("noteId"),
+                "title": (note.get("title") or "").strip(),
+                "description": note.get("description"),
+                "date": day or None,
+                "week": (offset - 1) // 7 + 1 if offset else None,
+                "day": offset,
+            })
+        return {"plan_id": v.plan_id, "notes": out, "count": len(out)}
+
+async def tp_add_training_plan_note(
+    plan_id: int | str, note_date: str, title: str, description: str,
+) -> dict[str, Any]:
+    """Add one calendar note to a private [MCP TEST] Training Plan only."""
+    try:
+        v = _PlanIdInput(plan_id=plan_id)  # type: ignore[arg-type]
+    except (ValidationError, ValueError) as e:
+        return _err("VALIDATION_ERROR", str(e))
+    if not title.strip().startswith("[MCP TEST]"):
+        return _err("VALIDATION_ERROR", "Test note title must begin with [MCP TEST].")
+    async with TPClient() as client:
+        plan, error = await _get_writable_test_plan(client, v.plan_id)
+        if error is not None:
+            return error
+        assert plan is not None
+        # Guarded exception: exactly two canonical W1 Monday notes, no Other
+        # workaround, no date shift. All other plan guards remain unchanged.
+        w1_monday = (
+            v.plan_id == 684602
+            and (plan.get("title") or "").strip()
+                == "[MCP TEST] IRONMAN Intermediate Assembly 24W"
+            and (plan.get("startDate") or "")[:10] == "2026-10-06"
+            and note_date == "2026-10-05"
+            and title.strip() in {
+                "[MCP TEST] FASE | Calibration / General Development",
+                "[MCP TEST] SETTIMANA 1 | Calibrazione e riferimenti",
+            }
+        )
+        date_error = _check_plan_date(plan, note_date)
+        if date_error and not w1_monday:
+            return date_error
+        target = date_type.fromisoformat(note_date)
+        start = date_type.fromisoformat(plan["startDate"][:10])
+        if v.plan_id == 684602 and start == date_type(2026, 10, 6):
+            start -= timedelta(days=1)
+        week = (target - start).days // 7 + 1
+        # This POST is non-idempotent. Preflight the exact plan calendar
+        # before creating the note, and never retry an ambiguous POST.
+        full_span = max(plan.get("dayCount") or 0,
+                        (plan.get("weekCount") or 0) * 7)
+        end = start + timedelta(days=full_span + 1)
+        existing = await client.get(
+            f"/plans/v1/plans/{v.plan_id}/calendarNote/"
+            f"{start.isoformat()}/{end.isoformat()}"
+        )
+        if existing.is_error:
+            return _api_err(existing)
+        if not isinstance(existing.data, list):
+            return _err("API_ERROR",
+                        "Unexpected Training Plan notes response; refusing an unverified POST.")
+        if any(
+            (n.get("title") or "").strip() == title.strip()
+            and ((n.get("noteDate") or n.get("date") or "")[:10] == note_date)
+            for n in existing.data
+        ):
+            return _err("ALREADY_EXISTS",
+                        "A note with this exact title already exists on this plan day.")
+        payload = {
+            "planId": v.plan_id, "title": title.strip(),
+            "noteDate": note_date, "description": description,
+            "attachments": [],
+            "standardFormatDate": f"Week {week}, {target.strftime('%A')}",
+        }
+        r = await client.post(f"/plans/v1/plans/{v.plan_id}/calendarNote", json=payload)
+        if r.is_error:
+            return _api_err(r)
+        return {
+            "success": True, "plan_id": v.plan_id,
+            "title": title.strip(), "date": note_date,
+            "provider_acknowledged": True, "readback_required": True,
+        }

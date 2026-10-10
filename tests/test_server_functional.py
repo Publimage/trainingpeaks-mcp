@@ -119,13 +119,38 @@ class TestListTools:
             "tp_get_strength_workout",
             "tp_update_strength_workout",
             "tp_delete_strength_workout",
+            "tp_create_training_plan",
+            "tp_add_training_plan_library_workout",
+            "tp_add_training_plan_note",
+            "tp_delete_training_plan_other",
             "tp_list_training_plans",
             "tp_get_training_plan",
+            "tp_get_training_plan_notes",
             "tp_get_training_plan_workouts",
             "tp_apply_training_plan",
         }
         assert v2_tools.issubset(names)
         assert len(names) == len(core_tools) + len(v2_tools)
+
+    @pytest.mark.asyncio
+    async def test_training_plan_cleanup_tool_is_destructive_and_dry_run_by_default(self):
+        tools = await list_tools()
+        x = next(t for t in tools if t.name == "tp_delete_training_plan_other")
+        assert x.annotations.destructive_hint is True
+        assert x.annotations.read_only_hint is False
+        assert x.input_schema["properties"]["dry_run"]["default"] is True
+        assert x.input_schema["required"] == ["plan_id", "expected_title"]
+
+    @pytest.mark.asyncio
+    async def test_training_plan_cleanup_rejects_beginner_through_server(self):
+        result = _parse_result(await call_tool(
+            "tp_delete_training_plan_other",
+            {"plan_id": 679801,
+             "expected_title": "[MCP TEST] IMINT24W-W01-MON-OTHER-01 | SETTIMANA 1 | Calibrazione e riferimenti",
+             "dry_run": False},
+        ))
+        assert result["error_code"] == "PROTECTED_RESOURCE"
+
 
     @pytest.mark.asyncio
     async def test_create_workout_schema_includes_new_fields(self):

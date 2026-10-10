@@ -1,0 +1,803 @@
+{
+  "schema": "IMINT24W_NATIVE_NOTES_RELEASE_MANIFEST_v1",
+  "plan": {
+    "id": 684602,
+    "expected_title": "[MCP TEST] IRONMAN Intermediate Assembly 24W",
+    "expected_workout_count": 259,
+    "expected_existing_native_notes": 34,
+    "expected_after_readme": 35
+  },
+  "purpose": "WRITE-FREE release manifest. Provider note creation was blocked by safety; do NOT use alternate tooling to bypass. Future edits require authorized, officially supported note UI and post-write GET verification.",
+  "title_edits": [
+    {
+      "note_id": 2653513,
+      "canonical_uid": "IMINT24W-PHASE-W01-W04",
+      "relative_week": 1,
+      "relative_day": 1,
+      "technical_date": "2026-10-05",
+      "current_title": "[MCP TEST] FASE | Calibration / General Development",
+      "desired_title": "FASE | Calibration / General Development",
+      "description_must_remain_unmodified": true
+    },
+    {
+      "note_id": 2653514,
+      "canonical_uid": "IMINT24W-CONTENT-W01-WEEKLY",
+      "relative_week": 1,
+      "relative_day": 1,
+      "technical_date": "2026-10-05",
+      "current_title": "[MCP TEST] SETTIMANA 1 | Calibrazione e riferimenti",
+      "desired_title": "SETTIMANA 1 | Calibrazione e riferimenti",
+      "description_must_remain_unmodified": true
+    },
+    {
+      "note_id": 2652651,
+      "canonical_uid": "IMINT24W-CONTENT-W02-WEEKLY",
+      "relative_week": 2,
+      "relative_day": 8,
+      "technical_date": "2026-10-12",
+      "current_title": "[MCP TEST] SETTIMANA 2 | Calibrazione e prima qualità",
+      "desired_title": "SETTIMANA 2 | Calibrazione e prima qualità",
+      "description_must_remain_unmodified": true
+    },
+    {
+      "note_id": 2652952,
+      "canonical_uid": "IMINT24W-CONTENT-W03-WEEKLY",
+      "relative_week": 3,
+      "relative_day": 15,
+      "technical_date": "2026-10-19",
+      "current_title": "[MCP TEST] SETTIMANA 3 | Primo blocco pienamente allenante",
+      "desired_title": "SETTIMANA 3 | Primo blocco pienamente allenante",
+      "description_must_remain_unmodified": true
+    },
+    {
+      "note_id": 2652953,
+      "canonical_uid": "IMINT24W-CONTENT-W04-WEEKLY",
+      "relative_week": 4,
+      "relative_day": 22,
+      "technical_date": "2026-10-26",
+      "current_title": "[MCP TEST] SETTIMANA 4 | Assorbimento attivo",
+      "desired_title": "SETTIMANA 4 | Assorbimento attivo",
+      "description_must_remain_unmodified": true
+    },
+    {
+      "note_id": 2652954,
+      "canonical_uid": "IMINT24W-PHASE-W05-W08",
+      "relative_week": 5,
+      "relative_day": 29,
+      "technical_date": "2026-11-02",
+      "current_title": "[MCP TEST] FASE | Development I",
+      "desired_title": "FASE | Development I",
+      "description_must_remain_unmodified": true
+    },
+    {
+      "note_id": 2652955,
+      "canonical_uid": "IMINT24W-CONTENT-W05-WEEKLY",
+      "relative_week": 5,
+      "relative_day": 29,
+      "technical_date": "2026-11-02",
+      "current_title": "[MCP TEST] SETTIMANA 5 | Riprendere qualità senza rincorrere volume",
+      "desired_title": "SETTIMANA 5 | Riprendere qualità senza rincorrere volume",
+      "description_must_remain_unmodified": true
+    },
+    {
+      "note_id": 2652956,
+      "canonical_uid": "IMINT24W-CONTENT-W06-WEEKLY",
+      "relative_week": 6,
+      "relative_day": 36,
+      "technical_date": "2026-11-09",
+      "current_title": "[MCP TEST] SETTIMANA 6 | Threshold, sub-threshold e brick",
+      "desired_title": "SETTIMANA 6 | Threshold, sub-threshold e brick",
+      "description_must_remain_unmodified": true
+    },
+    {
+      "note_id": 2652983,
+      "canonical_uid": "IMINT24W-CONTENT-W07-WEEKLY",
+      "relative_week": 7,
+      "relative_day": 43,
+      "technical_date": "2026-11-16",
+      "current_title": "[MCP TEST] SETTIMANA 7 | Densità qualitativa",
+      "desired_title": "SETTIMANA 7 | Densità qualitativa",
+      "description_must_remain_unmodified": true
+    },
+    {
+      "note_id": 2652984,
+      "canonical_uid": "IMINT24W-CONTENT-W08-WEEKLY",
+      "relative_week": 8,
+      "relative_day": 50,
+      "technical_date": "2026-11-23",
+      "current_title": "[MCP TEST] SETTIMANA 8 | Recupero e ricalibrazione",
+      "desired_title": "SETTIMANA 8 | Recupero e ricalibrazione",
+      "description_must_remain_unmodified": true
+    },
+    {
+      "note_id": 2652985,
+      "canonical_uid": "IMINT24W-PHASE-W09-W12",
+      "relative_week": 9,
+      "relative_day": 57,
+      "technical_date": "2026-11-30",
+      "current_title": "[MCP TEST] FASE | Build I",
+      "desired_title": "FASE | Build I",
+      "description_must_remain_unmodified": true
+    },
+    {
+      "note_id": 2652986,
+      "canonical_uid": "IMINT24W-CONTENT-W09-WEEKLY",
+      "relative_week": 9,
+      "relative_day": 57,
+      "technical_date": "2026-11-30",
+      "current_title": "[MCP TEST] SETTIMANA 9 | Build I — entra l'Ironman Pace",
+      "desired_title": "SETTIMANA 9 | Build I — entra l'Ironman Pace",
+      "description_must_remain_unmodified": true
+    },
+    {
+      "note_id": 2652987,
+      "canonical_uid": "IMINT24W-CONTENT-W10-WEEKLY",
+      "relative_week": 10,
+      "relative_day": 64,
+      "technical_date": "2026-12-07",
+      "current_title": "[MCP TEST] SETTIMANA 10 | Build I — over-under e brick",
+      "desired_title": "SETTIMANA 10 | Build I — over-under e brick",
+      "description_must_remain_unmodified": true
+    },
+    {
+      "note_id": 2652988,
+      "canonical_uid": "IMINT24W-CONTENT-W11-WEEKLY",
+      "relative_week": 11,
+      "relative_day": 71,
+      "technical_date": "2026-12-14",
+      "current_title": "[MCP TEST] SETTIMANA 11 | Build I — durability",
+      "desired_title": "SETTIMANA 11 | Build I — durability",
+      "description_must_remain_unmodified": true
+    },
+    {
+      "note_id": 2652989,
+      "canonical_uid": "IMINT24W-CONTENT-W12-WEEKLY",
+      "relative_week": 12,
+      "relative_day": 78,
+      "technical_date": "2026-12-21",
+      "current_title": "[MCP TEST] SETTIMANA 12 | Assorbimento + retest corsa",
+      "desired_title": "SETTIMANA 12 | Assorbimento + retest corsa",
+      "description_must_remain_unmodified": true
+    },
+    {
+      "note_id": 2652990,
+      "canonical_uid": "IMINT24W-PHASE-W13-W16",
+      "relative_week": 13,
+      "relative_day": 85,
+      "technical_date": "2026-12-28",
+      "current_title": "[MCP TEST] FASE | Build II / Durability",
+      "desired_title": "FASE | Build II / Durability",
+      "description_must_remain_unmodified": true
+    },
+    {
+      "note_id": 2652991,
+      "canonical_uid": "IMINT24W-CONTENT-W13-WEEKLY",
+      "relative_week": 13,
+      "relative_day": 85,
+      "technical_date": "2026-12-28",
+      "current_title": "[MCP TEST] SETTIMANA 13 | Build II — specificità controllata",
+      "desired_title": "SETTIMANA 13 | Build II — specificità controllata",
+      "description_must_remain_unmodified": true
+    },
+    {
+      "note_id": 2652992,
+      "canonical_uid": "IMINT24W-CONTENT-W14-WEEKLY",
+      "relative_week": 14,
+      "relative_day": 92,
+      "technical_date": "2027-01-04",
+      "current_title": "[MCP TEST] SETTIMANA 14 | Build II — Pace+ e brick",
+      "desired_title": "SETTIMANA 14 | Build II — Pace+ e brick",
+      "description_must_remain_unmodified": true
+    },
+    {
+      "note_id": 2652993,
+      "canonical_uid": "IMINT24W-CONTENT-W15-WEEKLY",
+      "relative_week": 15,
+      "relative_day": 99,
+      "technical_date": "2027-01-11",
+      "current_title": "[MCP TEST] SETTIMANA 15 | Build II — durability sotto fatica",
+      "desired_title": "SETTIMANA 15 | Build II — durability sotto fatica",
+      "description_must_remain_unmodified": true
+    },
+    {
+      "note_id": 2652994,
+      "canonical_uid": "IMINT24W-CONTENT-W16-WEEKLY",
+      "relative_week": 16,
+      "relative_day": 106,
+      "technical_date": "2027-01-18",
+      "current_title": "[MCP TEST] SETTIMANA 16 | Assorbimento + retest",
+      "desired_title": "SETTIMANA 16 | Assorbimento + retest",
+      "description_must_remain_unmodified": true
+    },
+    {
+      "note_id": 2652995,
+      "canonical_uid": "IMINT24W-PHASE-W17-W20",
+      "relative_week": 17,
+      "relative_day": 113,
+      "technical_date": "2027-01-25",
+      "current_title": "[MCP TEST] FASE | Specific Ironman",
+      "desired_title": "FASE | Specific Ironman",
+      "description_must_remain_unmodified": true
+    },
+    {
+      "note_id": 2652996,
+      "canonical_uid": "IMINT24W-CONTENT-W17-WEEKLY",
+      "relative_week": 17,
+      "relative_day": 113,
+      "technical_date": "2027-01-25",
+      "current_title": "[MCP TEST] SETTIMANA 17 | Specific Ironman — esecuzione sostenibile",
+      "desired_title": "SETTIMANA 17 | Specific Ironman — esecuzione sostenibile",
+      "description_must_remain_unmodified": true
+    },
+    {
+      "note_id": 2652997,
+      "canonical_uid": "IMINT24W-CONTENT-W18-WEEKLY",
+      "relative_week": 18,
+      "relative_day": 120,
+      "technical_date": "2027-02-01",
+      "current_title": "[MCP TEST] SETTIMANA 18 | Specific Ironman — durata specifica",
+      "desired_title": "SETTIMANA 18 | Specific Ironman — durata specifica",
+      "description_must_remain_unmodified": true
+    },
+    {
+      "note_id": 2652998,
+      "canonical_uid": "IMINT24W-CONTENT-W19-WEEKLY",
+      "relative_week": 19,
+      "relative_day": 127,
+      "technical_date": "2027-02-08",
+      "current_title": "[MCP TEST] SETTIMANA 19 | Specific Ironman — massima durability controllata",
+      "desired_title": "SETTIMANA 19 | Specific Ironman — massima durability controllata",
+      "description_must_remain_unmodified": true
+    },
+    {
+      "note_id": 2652999,
+      "canonical_uid": "IMINT24W-CONTENT-W20-WEEKLY",
+      "relative_week": 20,
+      "relative_day": 134,
+      "technical_date": "2027-02-15",
+      "current_title": "[MCP TEST] SETTIMANA 20 | Rehearsal + assorbimento",
+      "desired_title": "SETTIMANA 20 | Rehearsal + assorbimento",
+      "description_must_remain_unmodified": true
+    },
+    {
+      "note_id": 2653000,
+      "canonical_uid": "IMINT24W-CONTENT-W20-REHEARSAL",
+      "relative_week": 20,
+      "relative_day": 139,
+      "technical_date": "2027-02-20",
+      "current_title": "[MCP TEST] REHEARSAL | Cosa stiamo verificando",
+      "desired_title": "REHEARSAL | Cosa stiamo verificando",
+      "description_must_remain_unmodified": true
+    },
+    {
+      "note_id": 2653001,
+      "canonical_uid": "IMINT24W-PHASE-W21-W24",
+      "relative_week": 21,
+      "relative_day": 141,
+      "technical_date": "2027-02-22",
+      "current_title": "[MCP TEST] FASE | Peak → Taper → Race Week",
+      "desired_title": "FASE | Peak → Taper → Race Week",
+      "description_must_remain_unmodified": true
+    },
+    {
+      "note_id": 2653002,
+      "canonical_uid": "IMINT24W-CONTENT-W21-WEEKLY",
+      "relative_week": 21,
+      "relative_day": 141,
+      "technical_date": "2027-02-22",
+      "current_title": "[MCP TEST] SETTIMANA 21 | Peak Specific — massimo carico utile",
+      "desired_title": "SETTIMANA 21 | Peak Specific — massimo carico utile",
+      "description_must_remain_unmodified": true
+    },
+    {
+      "note_id": 2653003,
+      "canonical_uid": "IMINT24W-CONTENT-W22-WEEKLY",
+      "relative_week": 22,
+      "relative_day": 148,
+      "technical_date": "2027-03-01",
+      "current_title": "[MCP TEST] SETTIMANA 22 | Taper transition — volume giù, specificità presente",
+      "desired_title": "SETTIMANA 22 | Taper transition — volume giù, specificità presente",
+      "description_must_remain_unmodified": true
+    },
+    {
+      "note_id": 2653004,
+      "canonical_uid": "IMINT24W-CONTENT-W22-TAPER",
+      "relative_week": 22,
+      "relative_day": 148,
+      "technical_date": "2027-03-01",
+      "current_title": "[MCP TEST] TAPER | Cosa cambia davvero",
+      "desired_title": "TAPER | Cosa cambia davvero",
+      "description_must_remain_unmodified": true
+    },
+    {
+      "note_id": 2653005,
+      "canonical_uid": "IMINT24W-CONTENT-W23-WEEKLY",
+      "relative_week": 23,
+      "relative_day": 155,
+      "technical_date": "2027-03-08",
+      "current_title": "[MCP TEST] SETTIMANA 23 | Taper — togliere fatica, non allenamento",
+      "desired_title": "SETTIMANA 23 | Taper — togliere fatica, non allenamento",
+      "description_must_remain_unmodified": true
+    },
+    {
+      "note_id": 2653006,
+      "canonical_uid": "IMINT24W-CONTENT-W24-RACEWEEK",
+      "relative_week": 24,
+      "relative_day": 162,
+      "technical_date": "2027-03-15",
+      "current_title": "[MCP TEST] RACE WEEK | Meno è meglio",
+      "desired_title": "RACE WEEK | Meno è meglio",
+      "description_must_remain_unmodified": true
+    },
+    {
+      "note_id": 2653007,
+      "canonical_uid": "IMINT24W-CONTENT-W24-WEEKLY",
+      "relative_week": 24,
+      "relative_day": 162,
+      "technical_date": "2027-03-15",
+      "current_title": "[MCP TEST] SETTIMANA 24 | Race Week — arrivare freschi e pronti",
+      "desired_title": "SETTIMANA 24 | Race Week — arrivare freschi e pronti",
+      "description_must_remain_unmodified": true
+    },
+    {
+      "note_id": 2653008,
+      "canonical_uid": "IMINT24W-CONTENT-W24-RACEDAY",
+      "relative_week": 24,
+      "relative_day": 168,
+      "technical_date": "2027-03-21",
+      "current_title": "[MCP TEST] RACE DAY | IRONMAN",
+      "desired_title": "RACE DAY | IRONMAN",
+      "description_must_remain_unmodified": true
+    }
+  ],
+  "add_native_note": {
+    "uid": "IMINT24W-CONTENT-README-FIRST",
+    "technical_plan_day": "2026-10-05",
+    "relative_week": 1,
+    "relative_weekday": "MON",
+    "title": "README FIRST | INIZIA DA QUI",
+    "description": "Questo è un piano IRONMAN di 24 settimane per un atleta intermedio: presuppone autonomia reale nelle tre discipline e la capacità di seguire workout strutturati, ma non presuppone che ogni giornata vada eseguita “a qualunque costo”.\n\nPRIMA DI INIZIARE\n1. Leggi LEGENDA | Come leggere il piano.\n2. Leggi INTENSITÀ | RPE, zone e soglie.\n3. Leggi TRAININGPEAKS | TSS e gli altri numeri.\n4. Leggi AUTOREGOLAZIONE | Quale dato decide davvero.\n5. Prima dei test iniziali, leggi TEST E SOGLIE | Come usare i riferimenti iniziali.\n6. Consulta la guida Fueling quando vuoi capire la logica completa: nel singolo workout prevale sempre la prescrizione specifica della seduta.\n\nCOME È COSTRUITO IL PIANO\nLa settimana organizza gli stimoli per funzione: qualità concentrata, lavoro facile davvero facile, lunghi progressivi, forza che diminuisce avvicinandosi alla gara, brick, posizione aero, fueling e specificità Ironman crescente. Le settimane di assorbimento non sono “settimane perse”: fanno parte della progressione.\n\nSE SALTI UNA SEDUTA\nNon comprimere automaticamente il calendario per recuperarla. Riprendi il flusso del piano e preserva prima la funzione delle sedute successive.\n\nSE NUMERO E SENSAZIONE NON COINCIDONO\nIl target strutturato è un riferimento, non un ordine cieco. RPE, capacità di completare il lavoro, risposta cardiaca coerente, tecnica e stato di recupero restano parte della decisione.\n\nSELF-GUIDED\nQuesto prodotto non presuppone un contatto diretto con un coach. Le note sono costruite per rendere il piano eseguibile e comprensibile in autonomia; dolore, malattia o problemi medici non vanno “allenati attraverso” e richiedono valutazione appropriata.",
+    "attachments": [
+      {
+        "name": "IRONMAN_Intermediate_24W_Guida_Settimana_per_Settimana_v1.0.pdf",
+        "drive_file_id": "1Ts5Q0vPsEk2Sxo9_UdzS9FiSWaIlGFMA",
+        "mime_type": "application/pdf",
+        "size_bytes": 169368,
+        "delivery": "actual uploaded PDF attachment to native note, not a Drive link"
+      },
+      {
+        "name": "IRONMAN_Intermediate_24W_Guida_Fueling_Nutrizione_v1.0.pdf",
+        "drive_file_id": "1tq4htfiNpOMGUkbNzKjRCGQYU5FUnpgz",
+        "mime_type": "application/pdf",
+        "size_bytes": 109724,
+        "delivery": "actual uploaded PDF attachment to native note, not a Drive link"
+      }
+    ]
+  },
+  "verification": [
+    "Training Plan 684602 remains exactly 259 workouts / 24 weeks, no workout modified",
+    "35 native plan notes, 3 on W1 MON",
+    "All existing 34 notes preserve id/date/description; only title prefix removed",
+    "Both PDF bytes uploaded as note attachments and visible/downloadable in TEST athlete plan after native apply",
+    "Training Plan remains private until release gates pass"
+  ],
+  "canonical_library": {
+    "workspace": "IRONMAN — WORKOUT ARCHIVE MASTER",
+    "spreadsheet_id": "1ulKJfLdr3X2WK32XP7TSXbF90OIDXSmkjkWULpNTIgk",
+    "sheet_title": "NOTES_LIBRARY",
+    "gid": 1325556000,
+    "source_of_truth_columns": [
+      "A:canonical_uid",
+      "G:EDITABLE_TITLE",
+      "H:EDITABLE_BODY",
+      "I:approval_status",
+      "J:qa_status",
+      "K:content_version"
+    ],
+    "provider_mapping_columns": [
+      "L:provider_plan_id",
+      "M:provider_note_id",
+      "N:provider_current_title",
+      "O:provider_sync_status",
+      "P:relative_day"
+    ],
+    "archival_compatibility": "CANONICAL_CONTENT K:L for 35 matching UIDs contain live Google Sheets formulas linked to NOTES_LIBRARY G:H.",
+    "items_total": 35,
+    "published_notes_awaiting_title_cleanup": 34,
+    "missing_readme_notes": 1,
+    "canonical_source": "LIVE GOOGLE DRIVE NOTES_LIBRARY - DO NOT USE THIS STATIC SNAPSHOT AFTER LIBRARY CHANGES"
+  },
+  "snapshot_only": true,
+  "warning": "Source of truth is live Google Drive NOTES_LIBRARY, not this snapshot. This snapshot was verified against TrainingPeaks as of 2026-10-10. Never republish if Google Drive content changed. Plan-note updates must be supported and verified plan-scoped. No delete/recreate, no athlete calendar writes.",
+  "provider_notes_to_clean": [
+    {
+      "uid": "IMINT24W-CONTENT-README-FIRST",
+      "note_id": 2653899,
+      "date": "2026-10-05",
+      "title_before": "[MCP TEST] README FIRST | INIZIA DA QUI",
+      "title_after": "README FIRST | INIZIA DA QUI",
+      "description": "Questo è un piano IRONMAN di 24 settimane per un atleta intermedio: presuppone autonomia reale nelle tre discipline e la capacità di seguire workout strutturati, ma non presuppone che ogni giornata vada eseguita “a qualunque costo”.\n\nPRIMA DI INIZIARE\n1. Leggi LEGENDA | Come leggere il piano.\n2. Leggi INTENSITÀ | RPE, zone e soglie.\n3. Leggi TRAININGPEAKS | TSS e gli altri numeri.\n4. Leggi AUTOREGOLAZIONE | Quale dato decide davvero.\n5. Prima dei test iniziali, leggi TEST E SOGLIE | Come usare i riferimenti iniziali.\n6. Consulta la guida Fueling quando vuoi capire la logica completa: nel singolo workout prevale sempre la prescrizione specifica della seduta.\n\nCOME È COSTRUITO IL PIANO\nLa settimana organizza gli stimoli per funzione: qualità concentrata, lavoro facile davvero facile, lunghi progressivi, forza che diminuisce avvicinandosi alla gara, brick, posizione aero, fueling e specificità Ironman crescente. Le settimane di assorbimento non sono “settimane perse”: fanno parte della progressione.\n\nSE SALTI UNA SEDUTA\nNon comprimere automaticamente il calendario per recuperarla. Riprendi il flusso del piano e preserva prima la funzione delle sedute successive.\n\nSE NUMERO E SENSAZIONE NON COINCIDONO\nIl target strutturato è un riferimento, non un ordine cieco. RPE, capacità di completare il lavoro, risposta cardiaca coerente, tecnica e stato di recupero restano parte della decisione.\n\nSELF-GUIDED\nQuesto prodotto non presuppone un contatto diretto con un coach. Le note sono costruite per rendere il piano eseguibile e comprensibile in autonomia; dolore, malattia o problemi medici non vanno “allenati attraverso” e richiedono valutazione appropriata.",
+      "week": 1,
+      "relative_day": 1,
+      "language": "it-IT"
+    },
+    {
+      "uid": "IMINT24W-PHASE-W01-W04",
+      "note_id": 2653513,
+      "date": "2026-10-05",
+      "title_before": "[MCP TEST] FASE | Calibration / General Development",
+      "title_after": "FASE | Calibration / General Development",
+      "description": "CALIBRATION / GENERAL DEVELOPMENT — W1–W4\nCreare riferimenti affidabili, consolidare frequenza e tecnica, osservare baseline di fueling e posizione aero. La progressione non viene cercata aumentando contemporaneamente tutte le leve. W4 assorbe il primo blocco.",
+      "week": 1,
+      "relative_day": 1,
+      "language": "it-IT"
+    },
+    {
+      "uid": "IMINT24W-CONTENT-W01-WEEKLY",
+      "note_id": 2653514,
+      "date": "2026-10-05",
+      "title_before": "[MCP TEST] SETTIMANA 1 | Calibrazione e riferimenti",
+      "title_after": "SETTIMANA 1 | Calibrazione e riferimenti",
+      "description": "OBIETTIVO DELLA SETTIMANA\n\nCreare riferimenti affidabili nelle tre discipline senza trasformare la settimana in una batteria continua di test; il resto del lavoro resta facile e controllato.\n\nIl lunedì resta libero da allenamento strutturato. Le sedute saltate non vanno compresse nei giorni successivi.",
+      "week": 1,
+      "relative_day": 1,
+      "language": "it-IT"
+    },
+    {
+      "uid": "IMINT24W-CONTENT-W02-WEEKLY",
+      "note_id": 2652651,
+      "date": "2026-10-12",
+      "title_before": "[MCP TEST] SETTIMANA 2 | Calibrazione e prima qualità",
+      "title_after": "SETTIMANA 2 | Calibrazione e prima qualità",
+      "description": "OBIETTIVO DELLA SETTIMANA\n\nUsare i riferimenti appena creati per introdurre la prima qualità controllata; il test 5 km sostituisce la qualità corsa e non si aggiunge ad altro lavoro duro.\n\nIl lunedì resta libero da allenamento strutturato. Le sedute saltate non vanno compresse nei giorni successivi.",
+      "week": 2,
+      "relative_day": 8,
+      "language": "it-IT"
+    },
+    {
+      "uid": "IMINT24W-CONTENT-W03-WEEKLY",
+      "note_id": 2652952,
+      "date": "2026-10-19",
+      "title_before": "[MCP TEST] SETTIMANA 3 | Primo blocco pienamente allenante",
+      "title_after": "SETTIMANA 3 | Primo blocco pienamente allenante",
+      "description": "OBIETTIVO DELLA SETTIMANA\n\nConcentrare la qualità nei due key day, far crescere la durability soprattutto in bici e mantenere realmente facili le sedute di supporto.\n\nIl lunedì resta libero da allenamento strutturato. Le sedute saltate non vanno compresse nei giorni successivi.",
+      "week": 3,
+      "relative_day": 15,
+      "language": "it-IT"
+    },
+    {
+      "uid": "IMINT24W-CONTENT-W04-WEEKLY",
+      "note_id": 2652953,
+      "date": "2026-10-26",
+      "title_before": "[MCP TEST] SETTIMANA 4 | Assorbimento attivo",
+      "title_after": "SETTIMANA 4 | Assorbimento attivo",
+      "description": "OBIETTIVO DELLA SETTIMANA\n\nRidurre il carico mantenendo frequenza, tecnica e un piccolo benchmark non distruttivo.\n\nIl lunedì resta libero da allenamento strutturato. Le sedute saltate non vanno compresse nei giorni successivi.",
+      "week": 4,
+      "relative_day": 22,
+      "language": "it-IT"
+    },
+    {
+      "uid": "IMINT24W-PHASE-W05-W08",
+      "note_id": 2652954,
+      "date": "2026-11-02",
+      "title_before": "[MCP TEST] FASE | Development I",
+      "title_after": "FASE | Development I",
+      "description": "DEVELOPMENT I — W5–W8\nRiprendere qualità strutturata, far crescere soprattutto bici, aero e brick, mantenendo il lungo corsa controllato. Il fueling passa dalla semplice baseline a un vero gut training progressivo. W8 riduce il carico e rivalida i riferimenti.",
+      "week": 5,
+      "relative_day": 29,
+      "language": "it-IT"
+    },
+    {
+      "uid": "IMINT24W-CONTENT-W05-WEEKLY",
+      "note_id": 2652955,
+      "date": "2026-11-02",
+      "title_before": "[MCP TEST] SETTIMANA 5 | Riprendere qualità senza rincorrere volume",
+      "title_after": "SETTIMANA 5 | Riprendere qualità senza rincorrere volume",
+      "description": "OBIETTIVO DELLA SETTIMANA\n\nRiprendere il carico dopo lo scarico con qualità strutturata; aero e fueling progrediscono, ma il lungo corsa resta controllato.\n\nIl lunedì resta libero da allenamento strutturato. Le sedute saltate non vanno compresse nei giorni successivi.",
+      "week": 5,
+      "relative_day": 29,
+      "language": "it-IT"
+    },
+    {
+      "uid": "IMINT24W-CONTENT-W06-WEEKLY",
+      "note_id": 2652956,
+      "date": "2026-11-09",
+      "title_before": "[MCP TEST] SETTIMANA 6 | Threshold, sub-threshold e brick",
+      "title_after": "SETTIMANA 6 | Threshold, sub-threshold e brick",
+      "description": "OBIETTIVO DELLA SETTIMANA\n\nConsolidare la capacità di sostenere lavoro qualitativo, facendo progredire soprattutto bici e brick mentre il lungo corsa resta stabile.\n\nIl lunedì resta libero da allenamento strutturato. Le sedute saltate non vanno compresse nei giorni successivi.",
+      "week": 6,
+      "relative_day": 36,
+      "language": "it-IT"
+    },
+    {
+      "uid": "IMINT24W-CONTENT-W07-WEEKLY",
+      "note_id": 2652983,
+      "date": "2026-11-16",
+      "title_before": "[MCP TEST] SETTIMANA 7 | Densità qualitativa",
+      "title_after": "SETTIMANA 7 | Densità qualitativa",
+      "description": "OBIETTIVO DELLA SETTIMANA\n\nAumentare la densità dello stimolo con un richiamo high-aerobic in bici, senza far crescere anche il lungo bici; il resto rimane controllato.\n\nIl lunedì resta libero da allenamento strutturato. Le sedute saltate non vanno compresse nei giorni successivi.",
+      "week": 7,
+      "relative_day": 43,
+      "language": "it-IT"
+    },
+    {
+      "uid": "IMINT24W-CONTENT-W08-WEEKLY",
+      "note_id": 2652984,
+      "date": "2026-11-23",
+      "title_before": "[MCP TEST] SETTIMANA 8 | Recupero e ricalibrazione",
+      "title_after": "SETTIMANA 8 | Recupero e ricalibrazione",
+      "description": "OBIETTIVO DELLA SETTIMANA\n\nAbbassare nettamente il carico mantenendo frequenza e tecnica, aggiornando i riferimenti di nuoto e bici senza aggiungere qualità superflua.\n\nIl lunedì resta libero da allenamento strutturato. Le sedute saltate non vanno compresse nei giorni successivi.",
+      "week": 8,
+      "relative_day": 50,
+      "language": "it-IT"
+    },
+    {
+      "uid": "IMINT24W-PHASE-W09-W12",
+      "note_id": 2652985,
+      "date": "2026-11-30",
+      "title_before": "[MCP TEST] FASE | Build I",
+      "title_after": "FASE | Build I",
+      "description": "BUILD I — W9–W12\nEntrano i primi blocchi espliciti Ironman Pace in bici e la durability diventa più specifica. Il fueling deve essere eseguibile in posizione gara e sotto fatica. W11 è il picco di durability del blocco; W12 assorbe e rivalida la corsa.",
+      "week": 9,
+      "relative_day": 57,
+      "language": "it-IT"
+    },
+    {
+      "uid": "IMINT24W-CONTENT-W09-WEEKLY",
+      "note_id": 2652986,
+      "date": "2026-11-30",
+      "title_before": "[MCP TEST] SETTIMANA 9 | Build I — entra l'Ironman Pace",
+      "title_after": "SETTIMANA 9 | Build I — entra l'Ironman Pace",
+      "description": "OBIETTIVO DELLA SETTIMANA\n\nRiattivare il carico dopo lo scarico W8 e introdurre i primi blocchi esplicitamente specifici Ironman nel lungo bici.\n\nLa progressione di questa settimana viene soprattutto dalla specificità: il lungo corsa resta controllato, la qualità è concentrata e il brick rimane facile.\n\nIronman Pace Bike è un riferimento operativo di gara, non una nuova zona: la durability e la qualità della corsa successiva restano il vincolo.",
+      "week": 9,
+      "relative_day": 57,
+      "language": "it-IT"
+    },
+    {
+      "uid": "IMINT24W-CONTENT-W10-WEEKLY",
+      "note_id": 2652987,
+      "date": "2026-12-07",
+      "title_before": "[MCP TEST] SETTIMANA 10 | Build I — over-under e brick",
+      "title_after": "SETTIMANA 10 | Build I — over-under e brick",
+      "description": "OBIETTIVO DELLA SETTIMANA\n\nLa priorità è la qualità ciclistica controllata e un brick leggermente più lungo.\n\nIl lungo bici cresce, mentre il lungo corsa resta stabile rispetto a W9. Questo evita di aumentare insieme tutte le leve ad alto costo.\n\nFacile significa ancora facile: la qualità è concentrata nei punti indicati.",
+      "week": 10,
+      "relative_day": 64,
+      "language": "it-IT"
+    },
+    {
+      "uid": "IMINT24W-CONTENT-W11-WEEKLY",
+      "note_id": 2652988,
+      "date": "2026-12-14",
+      "title_before": "[MCP TEST] SETTIMANA 11 | Build I — durability",
+      "title_after": "SETTIMANA 11 | Build I — durability",
+      "description": "OBIETTIVO DELLA SETTIMANA\n\nLa priorità è il lungo bici da 4h30 con specificità sotto fatica.\n\nPer creare spazio a questo stimolo, la qualità infrasettimanale resta controllata e il volume di forza si riduce.\n\nNel lungo non cerchiamo un numero eroico: osserviamo se posizione, potenza, RPE e capacità di alimentarsi restano stabili quando la fatica sale.",
+      "week": 11,
+      "relative_day": 71,
+      "language": "it-IT"
+    },
+    {
+      "uid": "IMINT24W-CONTENT-W12-WEEKLY",
+      "note_id": 2652989,
+      "date": "2026-12-21",
+      "title_before": "[MCP TEST] SETTIMANA 12 | Assorbimento + retest corsa",
+      "title_after": "SETTIMANA 12 | Assorbimento + retest corsa",
+      "description": "OBIETTIVO DELLA SETTIMANA\n\nAssorbire il blocco W9–W11 e rivalidare il riferimento corsa.\n\nIl 5 km sostituisce la qualità della disciplina. Non va compensato con altri lavori duri.\n\nSe il retest è dubbio, mal gestito o condizionato da fattori esterni, conserva la Run Threshold precedente.",
+      "week": 12,
+      "relative_day": 78,
+      "language": "it-IT"
+    },
+    {
+      "uid": "IMINT24W-PHASE-W13-W16",
+      "note_id": 2652990,
+      "date": "2026-12-28",
+      "title_before": "[MCP TEST] FASE | Build II / Durability",
+      "title_after": "FASE | Build II / Durability",
+      "description": "BUILD II / DURABILITY — W13–W16\n\nIl piano aumenta la specificità senza aumentare contemporaneamente tutte le leve. Crescono soprattutto il tempo utile a Ironman Pace, la capacità di restare in posizione aero e la qualità dell'esecuzione sotto fatica.\n\nW13 riprende il carico dopo l'assorbimento.\nW14 introduce brevi blocchi Ironman Pace+ e allunga il brick senza trasformare Pace+ in una nuova zona.\nW15 usa deliberatamente la sequenza lungo corsa → lungo bici per osservare durability quando la fatica è già presente.\nW16 riduce il volume e rivalida i riferimenti di nuoto e bici.\n\nLa domanda del blocco non è “quanto riesco a spingere?”, ma “quanto controllo riesco a mantenere quando il lavoro accumulato aumenta?”",
+      "week": 13,
+      "relative_day": 85,
+      "language": "it-IT"
+    },
+    {
+      "uid": "IMINT24W-CONTENT-W13-WEEKLY",
+      "note_id": 2652991,
+      "date": "2026-12-28",
+      "title_before": "[MCP TEST] SETTIMANA 13 | Build II — specificità controllata",
+      "title_after": "SETTIMANA 13 | Build II — specificità controllata",
+      "description": "OBIETTIVO DELLA SETTIMANA\n\nRiprendere il carico dopo W12 aumentando soprattutto il tempo utile a Ironman Pace nel lungo bici. La qualità infrasettimanale resta selettiva: non aumentare insieme tutte le leve.\n\nIl lunedì resta libero da allenamento strutturato. Le sedute saltate non vanno compresse nei giorni successivi.",
+      "week": 13,
+      "relative_day": 85,
+      "language": "it-IT"
+    },
+    {
+      "uid": "IMINT24W-CONTENT-W14-WEEKLY",
+      "note_id": 2652992,
+      "date": "2027-01-04",
+      "title_before": "[MCP TEST] SETTIMANA 14 | Build II — Pace+ e brick",
+      "title_after": "SETTIMANA 14 | Build II — Pace+ e brick",
+      "description": "OBIETTIVO DELLA SETTIMANA\n\nAumentare la specificità ciclistica con brevi blocchi Ironman Pace+ e portare il brick a 30', senza allungare anche il lungo corsa. Il Pace+ resta un breve gradino specifico sopra Ironman Pace, non una nuova zona fisiologica.\n\nIl lunedì resta libero da allenamento strutturato. Le sedute saltate non vanno compresse nei giorni successivi.",
+      "week": 14,
+      "relative_day": 92,
+      "language": "it-IT"
+    },
+    {
+      "uid": "IMINT24W-CONTENT-W15-WEEKLY",
+      "note_id": 2652993,
+      "date": "2027-01-11",
+      "title_before": "[MCP TEST] SETTIMANA 15 | Build II — durability sotto fatica",
+      "title_after": "SETTIMANA 15 | Build II — durability sotto fatica",
+      "description": "OBIETTIVO DELLA SETTIMANA\n\nCostruire durability con una rotazione deliberata: lungo corsa sabato e lungo bici specifico domenica. La qualità del weekend nasce dalla distribuzione della fatica, non dall'aumento indiscriminato di tutte le intensità.\n\nIl lunedì resta libero da allenamento strutturato. Le sedute saltate non vanno compresse nei giorni successivi.",
+      "week": 15,
+      "relative_day": 99,
+      "language": "it-IT"
+    },
+    {
+      "uid": "IMINT24W-CONTENT-W16-WEEKLY",
+      "note_id": 2652994,
+      "date": "2027-01-18",
+      "title_before": "[MCP TEST] SETTIMANA 16 | Assorbimento + retest",
+      "title_after": "SETTIMANA 16 | Assorbimento + retest",
+      "description": "OBIETTIVO DELLA SETTIMANA\n\nRidurre nettamente il carico mantenendo frequenza e aggiornare i riferimenti di nuoto e bici con gli stessi protocolli operativi già usati nel prodotto. Nessuna qualità aggiuntiva oltre ai retest.\n\nIl lunedì resta libero da allenamento strutturato. Le sedute saltate non vanno compresse nei giorni successivi.",
+      "week": 16,
+      "relative_day": 106,
+      "language": "it-IT"
+    },
+    {
+      "uid": "IMINT24W-PHASE-W17-W20",
+      "note_id": 2652995,
+      "date": "2027-01-25",
+      "title_before": "[MCP TEST] FASE | Specific Ironman",
+      "title_after": "FASE | Specific Ironman",
+      "description": "SPECIFIC IRONMAN — W17–W20\nLa priorità passa dalla costruzione della capacità alla qualità dell'esecuzione: più tempo utile a Ironman Pace, più aero, fueling realistico, brick e lettura della durability sotto fatica. Il volume cresce fino a W19 senza superare i tetti standard del prodotto; W20 riduce il carico e concentra la specificità in una rehearsal non massimale. Il successo non è produrre il numero più alto, ma preservare controllo, posizione, alimentazione e capacità di correre dopo la bici.",
+      "week": 17,
+      "relative_day": 113,
+      "language": "it-IT"
+    },
+    {
+      "uid": "IMINT24W-CONTENT-W17-WEEKLY",
+      "note_id": 2652996,
+      "date": "2027-01-25",
+      "title_before": "[MCP TEST] SETTIMANA 17 | Specific Ironman — esecuzione sostenibile",
+      "title_after": "SETTIMANA 17 | Specific Ironman — esecuzione sostenibile",
+      "description": "OBIETTIVO DELLA SETTIMANA\n\nEntrare nella fase specifica aumentando soprattutto tempo aero, Ironman Pace e precisione del fueling. Il lungo bici è la priorità; il lungo corsa resta controllato e il brick non diventa un test.\n\nIl lunedì resta libero da allenamento strutturato. Le sedute saltate non vanno compresse nei giorni successivi.",
+      "week": 17,
+      "relative_day": 113,
+      "language": "it-IT"
+    },
+    {
+      "uid": "IMINT24W-CONTENT-W18-WEEKLY",
+      "note_id": 2652997,
+      "date": "2027-02-01",
+      "title_before": "[MCP TEST] SETTIMANA 18 | Specific Ironman — durata specifica",
+      "title_after": "SETTIMANA 18 | Specific Ironman — durata specifica",
+      "description": "OBIETTIVO DELLA SETTIMANA\n\nAumentare la durata specifica in bici mantenendo stabile il lungo corsa. La priorità è riuscire a stare in aero e alimentarsi con regolarità mentre cresce il tempo utile a Ironman Pace.\n\nIl lunedì resta libero da allenamento strutturato. Le sedute saltate non vanno compresse nei giorni successivi.",
+      "week": 18,
+      "relative_day": 120,
+      "language": "it-IT"
+    },
+    {
+      "uid": "IMINT24W-CONTENT-W19-WEEKLY",
+      "note_id": 2652998,
+      "date": "2027-02-08",
+      "title_before": "[MCP TEST] SETTIMANA 19 | Specific Ironman — massima durability controllata",
+      "title_after": "SETTIMANA 19 | Specific Ironman — massima durability controllata",
+      "description": "OBIETTIVO DELLA SETTIMANA\n\nCreare il massimo stimolo di durability del blocco con lungo corsa sabato e lungo bici specifico domenica. La fatica pregressa è parte del disegno, ma non giustifica perdita di controllo, fueling irregolare o inseguimento dei numeri.\n\nIl lunedì resta libero da allenamento strutturato. Le sedute saltate non vanno compresse nei giorni successivi.",
+      "week": 19,
+      "relative_day": 127,
+      "language": "it-IT"
+    },
+    {
+      "uid": "IMINT24W-CONTENT-W20-WEEKLY",
+      "note_id": 2652999,
+      "date": "2027-02-15",
+      "title_before": "[MCP TEST] SETTIMANA 20 | Rehearsal + assorbimento",
+      "title_after": "SETTIMANA 20 | Rehearsal + assorbimento",
+      "description": "OBIETTIVO DELLA SETTIMANA\n\nRidurre il volume ma concentrare la specificità su una rehearsal controllata. Verificare pacing, aero, fueling, logistica e transizione; non simulare un Ironman intero e non cercare un picco massimale.\n\nIl lunedì resta libero da allenamento strutturato. Le sedute saltate non vanno compresse nei giorni successivi.",
+      "week": 20,
+      "relative_day": 134,
+      "language": "it-IT"
+    },
+    {
+      "uid": "IMINT24W-CONTENT-W20-REHEARSAL",
+      "note_id": 2653000,
+      "date": "2027-02-20",
+      "title_before": "[MCP TEST] REHEARSAL | Cosa stiamo verificando",
+      "title_after": "REHEARSAL | Cosa stiamo verificando",
+      "description": "La rehearsal non è una gara e non è un test massimale. Serve a verificare se l'esecuzione è abbastanza stabile da essere portata verso il giorno gara.\n\nCONTROLLA\n- primi 60' di bici deliberatamente controllati;\n- capacità di restare in posizione aero senza irrigidirti o perdere qualità;\n- regolarità del fueling e comfort gastrointestinale;\n- gestione di salite, vento e piccoli cambi di ritmo senza uscire dal piano;\n- RPE e qualità della pedalata nell'ultima ora;\n- sensazione nei primi 10' del brick;\n- ritmo realmente sostenibile a RPE 3–4 dopo la bici, senza inseguire un passo teorico;\n- equipaggiamento, porta-nutrizione e dettagli logistici da correggere.\n\nDOPO\nAnnota cosa ha funzionato, cosa è diventato difficile e cosa cambieresti. Queste informazioni valgono più di una media potenza o di un passo isolato e serviranno a definire sempre meglio il race execution personale.",
+      "week": 20,
+      "relative_day": 139,
+      "language": "it-IT"
+    },
+    {
+      "uid": "IMINT24W-PHASE-W21-W24",
+      "note_id": 2653001,
+      "date": "2027-02-22",
+      "title_before": "[MCP TEST] FASE | Peak → Taper → Race Week",
+      "title_after": "FASE | Peak → Taper → Race Week",
+      "description": "FINAL BLOCK — W21–W24\nW21 raggiunge il massimo carico utile del prodotto: race execution, Ironman Pace, aero e fueling sotto controllo. Da W22 il volume scende in modo netto ma la frequenza e i richiami specifici restano presenti. W23 toglie ulteriore fatica senza spegnere il gesto; W24 contiene soltanto attivazioni brevi e la gara.\n\nPrincipio del taper: togliere fatica, non togliere allenamento. Non aggiungere test, recuperi di sedute perse o esperimenti perché ti senti più fresco.",
+      "week": 21,
+      "relative_day": 141,
+      "language": "it-IT"
+    },
+    {
+      "uid": "IMINT24W-CONTENT-W21-WEEKLY",
+      "note_id": 2653002,
+      "date": "2027-02-22",
+      "title_before": "[MCP TEST] SETTIMANA 21 | Peak Specific — massimo carico utile",
+      "title_after": "SETTIMANA 21 | Peak Specific — massimo carico utile",
+      "description": "OBIETTIVO DELLA SETTIMANA\n\nRaggiungere il picco del prodotto aumentando soprattutto race execution, tempo a Ironman Pace, posizione gara e qualità del fueling. È il massimo carico utile, non una settimana-test: ogni blocco specifico deve restare sostenibile e tecnicamente pulito.\n\nIl lunedì resta libero da allenamento strutturato. Le sedute saltate non vanno compresse nei giorni successivi.",
+      "week": 21,
+      "relative_day": 141,
+      "language": "it-IT"
+    },
+    {
+      "uid": "IMINT24W-CONTENT-W22-WEEKLY",
+      "note_id": 2653003,
+      "date": "2027-03-01",
+      "title_before": "[MCP TEST] SETTIMANA 22 | Taper transition — volume giù, specificità presente",
+      "title_after": "SETTIMANA 22 | Taper transition — volume giù, specificità presente",
+      "description": "OBIETTIVO DELLA SETTIMANA\n\nIniziare a togliere fatica senza spegnere l'allenamento: il volume scende nettamente, ma restano frequenza, Ironman Pace, aero, strides e un brick breve. Nessun test, nessun nuovo stress e nessun recupero compulsivo delle sedute perse.\n\nIl lunedì resta libero da allenamento strutturato. Le sedute saltate non vanno compresse nei giorni successivi.",
+      "week": 22,
+      "relative_day": 148,
+      "language": "it-IT"
+    },
+    {
+      "uid": "IMINT24W-CONTENT-W22-TAPER",
+      "note_id": 2653004,
+      "date": "2027-03-01",
+      "title_before": "[MCP TEST] TAPER | Cosa cambia davvero",
+      "title_after": "TAPER | Cosa cambia davvero",
+      "description": "Il taper non serve a diventare più allenato nelle ultime due settimane: serve a far emergere la forma costruita riducendo la fatica.\n\nCOSA SCENDE\n- volume totale;\n- durata dei lunghi;\n- forza e costo meccanico;\n- densità dei blocchi specifici.\n\nCOSA RESTA\n- frequenza delle tre discipline quanto basta per mantenere familiarità;\n- brevi richiami di ritmo;\n- posizione gara in bici;\n- strides controllati;\n- routine di sonno, alimentazione e idratazione.\n\nCOSA POTRESTI SENTIRE\nPiù fresco, ma anche piatto, rigido o semplicemente “diverso”. Non cercare ogni giorno una prova che il taper stia funzionando.\n\nERRORE DA EVITARE\nUsare la freschezza per aggiungere chilometri, test o lavori persi. La freschezza è il risultato cercato, non un buco da riempire.",
+      "week": 22,
+      "relative_day": 148,
+      "language": "it-IT"
+    },
+    {
+      "uid": "IMINT24W-CONTENT-W23-WEEKLY",
+      "note_id": 2653005,
+      "date": "2027-03-08",
+      "title_before": "[MCP TEST] SETTIMANA 23 | Taper — togliere fatica, non allenamento",
+      "title_after": "SETTIMANA 23 | Taper — togliere fatica, non allenamento",
+      "description": "OBIETTIVO DELLA SETTIMANA\n\nRidurre ancora il volume mantenendo frequenza e piccoli richiami di qualità. Niente forza strutturata, niente pliometria, niente test e niente sedute aggiunte perché ti senti più fresco: l'obiettivo è far emergere il lavoro già costruito.\n\nIl lunedì resta libero da allenamento strutturato. Le sedute saltate non vanno compresse nei giorni successivi.",
+      "week": 23,
+      "relative_day": 155,
+      "language": "it-IT"
+    },
+    {
+      "uid": "IMINT24W-CONTENT-W24-RACEWEEK",
+      "note_id": 2653006,
+      "date": "2027-03-15",
+      "title_before": "[MCP TEST] RACE WEEK | Meno è meglio",
+      "title_after": "RACE WEEK | Meno è meglio",
+      "description": "Questa settimana l'obiettivo è arrivare alla partenza fresco, coordinato e con meno decisioni possibili ancora da prendere.\n\nNON CAMBIARE ADESSO\n- posizione o componenti importanti della bici;\n- scarpe o abbigliamento senza averli già provati;\n- prodotti nutrizionali;\n- strategia di carboidrati, caffeina o idratazione;\n- routine solo perché la gara è vicina.\n\nMANTIENI\n- sonno e orari il più regolari possibile;\n- pasti semplici e familiari;\n- idratazione normale, senza forzare litri all'ultimo momento;\n- brevi attivazioni che ti facciano finire meglio di come hai iniziato;\n- una checklist semplice per attrezzatura, nutrizione e logistica.\n\nCONTROLLABILI\nConcentrati su ciò che puoi ancora gestire: organizzazione, calma, equipaggiamento, pasti e ritmo delle giornate. Meteo, sensazioni perfette e sonno perfetto la notte prima non sono requisiti.\n\nSe una seduta pre-gara ti lascia stanco, era troppo.",
+      "week": 24,
+      "relative_day": 162,
+      "language": "it-IT"
+    },
+    {
+      "uid": "IMINT24W-CONTENT-W24-WEEKLY",
+      "note_id": 2653007,
+      "date": "2027-03-15",
+      "title_before": "[MCP TEST] SETTIMANA 24 | Race Week — arrivare freschi e pronti",
+      "title_after": "SETTIMANA 24 | Race Week — arrivare freschi e pronti",
+      "description": "OBIETTIVO DELLA SETTIMANA\n\nQuesta settimana non costruisce più fitness. Manteniamo soltanto sensazione d'acqua, posizione gara, elasticità e routine: nessun prodotto nuovo, nessuna modifica importante all'attrezzatura e nessun allenamento da dimostrare.\n\nIl lunedì resta libero da allenamento strutturato. Le sedute saltate non vanno compresse nei giorni successivi.",
+      "week": 24,
+      "relative_day": 162,
+      "language": "it-IT"
+    },
+    {
+      "uid": "IMINT24W-CONTENT-W24-RACEDAY",
+      "note_id": 2653008,
+      "date": "2027-03-21",
+      "title_before": "[MCP TEST] RACE DAY | IRONMAN",
+      "title_after": "RACE DAY | IRONMAN",
+      "description": "Oggi non devi dimostrare la preparazione: devi eseguirla.\n\nFAI LA TUA GARA\nLa presenza degli altri modifica facilmente il ritmo percepito. Non reagire a chi ti supera o a chi parte più forte. Immagina di dover produrre la tua migliore gara anche se fossi solo sul percorso.\n\nNUOTO\nPartenza controllata. Trova spazio e ritmo prima di inseguire velocità. Se serve, pensa alla prossima boa invece che a tutta la frazione.\n\nBICI\nCostruisci gradualmente. Ironman Pace Bike resta il riferimento specifico già allenato: 68–74% FTP / RPE 3–4 quando coerente con durability, condizioni e risposta reale.\nNon spendere nei primi chilometri quello che servirà nella maratona. Potenza, FC e RPE sono strumenti: nessun numero vale più della capacità di restare in controllo e alimentarti.\n\nFUELING\nUsa soltanto la strategia già validata nei lunghi e nelle rehearsal. Inizia presto, mantieni regolarità e non aspettare che fame o calo energetico decidano per te.\n\nCORSA\nParti con pazienza. Il prodotto non impone un passo Ironman universale: usa RPE, condizioni e risposta reale.\nQuando la gara diventa difficile, riduci l'orizzonte: prossimo ristoro, prossimo chilometro, prossimo compito.\n\nLA CRISI\nUna crisi può arrivare anche se hai preparato e gestito bene la gara. Può arrivarne più di una. Non interpretarla automaticamente come prova che eri impreparato.\nRiduci il problema a ciò che puoi fare adesso: rallenta se serve, alimentati secondo il piano possibile, raffreddati, continua a muoverti e rivaluta dopo qualche minuto. Molte crisi cambiano forma se non reagisci con panico o accelerazioni impulsive.\n\nREGOLA FINALE\nNiente esperimenti. Controllo prima, esecuzione poi. Resta nel presente abbastanza a lungo da lasciare che il piano faccia il suo lavoro.",
+      "week": 24,
+      "relative_day": 168,
+      "language": "it-IT"
+    }
+  ],
+  "expected_notes_count_before": 35,
+  "readme_added_workout_id": 2653899,
+  "readme_added_verified_utc": "2026-10-10",
+  "provider_attachments_present": 0
+}

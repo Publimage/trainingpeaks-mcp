@@ -1,0 +1,333 @@
+{
+  "schema": "IRONMAN_STRENGTH_TEXT_LIBRARY_MAP_V1",
+  "source_of_truth": "IRONMAN — WORKOUT ARCHIVE MASTER / CANONICAL_WORKOUTS",
+  "product_code": "IM-INTERMEDIATE-24W",
+  "trainingpeaks_library_name": "IRONMAN MASTER | Forza",
+  "trainingpeaks_library_id": 3891875,
+  "status": "TEXTUAL_FALLBACK_ONLY",
+  "note": "20 unique full-text strength WorkoutTemplate records representing 30 approved Intermediate strength instances. These are NOT native Strength Workout Builder objects. Native structured strength already exists in TEST Training Plan 684602 and is not modified. Do not claim the library native-builder-complete; replace or complement only after verified provider native note/strength library method and QA.",
+  "canonical_instances": 30,
+  "unique_prescription_groups": 20,
+  "templates": [
+    {
+      "library_item_id": 14949642,
+      "library_item_name": "Forza A | Base 35' | Testuale",
+      "canonical_uids": [
+        "IMINT24W-W01-WED-STRENGTH-02",
+        "IMINT24W-W02-WED-STRENGTH-02",
+        "IMINT24W-W03-WED-STRENGTH-02",
+        "IMINT24W-W05-WED-STRENGTH-02",
+        "IMINT24W-W06-WED-STRENGTH-02",
+        "IMINT24W-W07-WED-STRENGTH-02"
+      ],
+      "source_weeks": [
+        1,
+        2,
+        3,
+        5,
+        6,
+        7
+      ],
+      "duration_sec": 2100,
+      "source_text_length": 1543,
+      "provider_item_type": "WorkoutTemplate",
+      "native_strength_builder": false,
+      "qa_status": "READBACK_VERIFIED_EXACT"
+    },
+    {
+      "library_item_id": 14949643,
+      "library_item_name": "Forza B | Richiamo 20' | Testuale",
+      "canonical_uids": [
+        "IMINT24W-W01-FRI-STRENGTH-03",
+        "IMINT24W-W02-FRI-STRENGTH-03",
+        "IMINT24W-W03-FRI-STRENGTH-03",
+        "IMINT24W-W05-FRI-STRENGTH-03",
+        "IMINT24W-W06-FRI-STRENGTH-03"
+      ],
+      "source_weeks": [
+        1,
+        2,
+        3,
+        5,
+        6
+      ],
+      "duration_sec": 1200,
+      "source_text_length": 1469,
+      "provider_item_type": "WorkoutTemplate",
+      "native_strength_builder": false,
+      "qa_status": "READBACK_VERIFIED_EXACT"
+    },
+    {
+      "library_item_id": 14949644,
+      "library_item_name": "Forza | Scarico 25' | Var. W04 | Testuale",
+      "canonical_uids": [
+        "IMINT24W-W04-WED-STRENGTH-02",
+        "IMINT24W-W08-WED-STRENGTH-02"
+      ],
+      "source_weeks": [
+        4,
+        8
+      ],
+      "duration_sec": 1500,
+      "source_text_length": 1469,
+      "provider_item_type": "WorkoutTemplate",
+      "native_strength_builder": false,
+      "qa_status": "READBACK_VERIFIED_EXACT"
+    },
+    {
+      "library_item_id": 14949645,
+      "library_item_name": "Forza B | Microdose 15' | Testuale",
+      "canonical_uids": [
+        "IMINT24W-W07-FRI-STRENGTH-03"
+      ],
+      "source_weeks": [
+        7
+      ],
+      "duration_sec": 900,
+      "source_text_length": 1469,
+      "provider_item_type": "WorkoutTemplate",
+      "native_strength_builder": false,
+      "qa_status": "READBACK_VERIFIED_EXACT"
+    },
+    {
+      "library_item_id": 14949646,
+      "library_item_name": "Forza | Neurale 35' | Var. W09 | Testuale",
+      "canonical_uids": [
+        "IMINT24W-W09-TUE-STRENGTH-03"
+      ],
+      "source_weeks": [
+        9
+      ],
+      "duration_sec": 2100,
+      "source_text_length": 1527,
+      "provider_item_type": "WorkoutTemplate",
+      "native_strength_builder": false,
+      "qa_status": "READBACK_VERIFIED_EXACT"
+    },
+    {
+      "library_item_id": 14949647,
+      "library_item_name": "Forza | Microdose 15' | Var. W09 | Testuale",
+      "canonical_uids": [
+        "IMINT24W-W09-FRI-STRENGTH-03"
+      ],
+      "source_weeks": [
+        9
+      ],
+      "duration_sec": 900,
+      "source_text_length": 1215,
+      "provider_item_type": "WorkoutTemplate",
+      "native_strength_builder": false,
+      "qa_status": "READBACK_VERIFIED_EXACT"
+    },
+    {
+      "library_item_id": 14949648,
+      "library_item_name": "Forza | Neurale 35' | Var. W10 | Testuale",
+      "canonical_uids": [
+        "IMINT24W-W10-TUE-STRENGTH-03"
+      ],
+      "source_weeks": [
+        10
+      ],
+      "duration_sec": 2100,
+      "source_text_length": 1379,
+      "provider_item_type": "WorkoutTemplate",
+      "native_strength_builder": false,
+      "qa_status": "READBACK_VERIFIED_EXACT"
+    },
+    {
+      "library_item_id": 14949649,
+      "library_item_name": "Forza | Microdose 15' | Var. W10 | Testuale",
+      "canonical_uids": [
+        "IMINT24W-W10-FRI-STRENGTH-03"
+      ],
+      "source_weeks": [
+        10
+      ],
+      "duration_sec": 900,
+      "source_text_length": 1140,
+      "provider_item_type": "WorkoutTemplate",
+      "native_strength_builder": false,
+      "qa_status": "READBACK_VERIFIED_EXACT"
+    },
+    {
+      "library_item_id": 14949650,
+      "library_item_name": "Forza | Mantenimento neurale 30' | Var. W11 | Testuale",
+      "canonical_uids": [
+        "IMINT24W-W11-TUE-STRENGTH-03"
+      ],
+      "source_weeks": [
+        11
+      ],
+      "duration_sec": 1800,
+      "source_text_length": 1303,
+      "provider_item_type": "WorkoutTemplate",
+      "native_strength_builder": false,
+      "qa_status": "READBACK_VERIFIED_EXACT"
+    },
+    {
+      "library_item_id": 14949651,
+      "library_item_name": "Forza | Scarico 25' | Var. W12 | Testuale",
+      "canonical_uids": [
+        "IMINT24W-W12-TUE-STRENGTH-03"
+      ],
+      "source_weeks": [
+        12
+      ],
+      "duration_sec": 1500,
+      "source_text_length": 1079,
+      "provider_item_type": "WorkoutTemplate",
+      "native_strength_builder": false,
+      "qa_status": "READBACK_VERIFIED_EXACT"
+    },
+    {
+      "library_item_id": 14949652,
+      "library_item_name": "Forza | Mantenimento neurale 30' | Var. W13 | Testuale",
+      "canonical_uids": [
+        "IMINT24W-W13-TUE-STRENGTH-03"
+      ],
+      "source_weeks": [
+        13
+      ],
+      "duration_sec": 1800,
+      "source_text_length": 1563,
+      "provider_item_type": "WorkoutTemplate",
+      "native_strength_builder": false,
+      "qa_status": "READBACK_VERIFIED_EXACT"
+    },
+    {
+      "library_item_id": 14949653,
+      "library_item_name": "Forza | Mantenimento neurale 30' | Var. W14 | Testuale",
+      "canonical_uids": [
+        "IMINT24W-W14-TUE-STRENGTH-03"
+      ],
+      "source_weeks": [
+        14
+      ],
+      "duration_sec": 1800,
+      "source_text_length": 1550,
+      "provider_item_type": "WorkoutTemplate",
+      "native_strength_builder": false,
+      "qa_status": "READBACK_VERIFIED_EXACT"
+    },
+    {
+      "library_item_id": 14949654,
+      "library_item_name": "Forza | Minimo efficace 25' | Testuale",
+      "canonical_uids": [
+        "IMINT24W-W15-TUE-STRENGTH-03"
+      ],
+      "source_weeks": [
+        15
+      ],
+      "duration_sec": 1500,
+      "source_text_length": 1553,
+      "provider_item_type": "WorkoutTemplate",
+      "native_strength_builder": false,
+      "qa_status": "READBACK_VERIFIED_EXACT"
+    },
+    {
+      "library_item_id": 14949655,
+      "library_item_name": "Forza | Scarico 25' | Var. W16 | Testuale",
+      "canonical_uids": [
+        "IMINT24W-W16-THU-STRENGTH-02"
+      ],
+      "source_weeks": [
+        16
+      ],
+      "duration_sec": 1500,
+      "source_text_length": 1419,
+      "provider_item_type": "WorkoutTemplate",
+      "native_strength_builder": false,
+      "qa_status": "READBACK_VERIFIED_EXACT"
+    },
+    {
+      "library_item_id": 14949656,
+      "library_item_name": "Forza | Minimo efficace 20' | Var. W17 | Testuale",
+      "canonical_uids": [
+        "IMINT24W-W17-TUE-STRENGTH-03"
+      ],
+      "source_weeks": [
+        17
+      ],
+      "duration_sec": 1200,
+      "source_text_length": 1446,
+      "provider_item_type": "WorkoutTemplate",
+      "native_strength_builder": false,
+      "qa_status": "READBACK_VERIFIED_EXACT"
+    },
+    {
+      "library_item_id": 14949657,
+      "library_item_name": "Forza | Minimo efficace 20' | Var. W18 | Testuale",
+      "canonical_uids": [
+        "IMINT24W-W18-TUE-STRENGTH-03"
+      ],
+      "source_weeks": [
+        18
+      ],
+      "duration_sec": 1200,
+      "source_text_length": 1424,
+      "provider_item_type": "WorkoutTemplate",
+      "native_strength_builder": false,
+      "qa_status": "READBACK_VERIFIED_EXACT"
+    },
+    {
+      "library_item_id": 14949658,
+      "library_item_name": "Forza | Minimo efficace 20' | Var. W19 | Testuale",
+      "canonical_uids": [
+        "IMINT24W-W19-TUE-STRENGTH-03"
+      ],
+      "source_weeks": [
+        19
+      ],
+      "duration_sec": 1200,
+      "source_text_length": 1046,
+      "provider_item_type": "WorkoutTemplate",
+      "native_strength_builder": false,
+      "qa_status": "READBACK_VERIFIED_EXACT"
+    },
+    {
+      "library_item_id": 14949659,
+      "library_item_name": "Forza | Attivazione minima 15' | Testuale",
+      "canonical_uids": [
+        "IMINT24W-W20-TUE-STRENGTH-03"
+      ],
+      "source_weeks": [
+        20
+      ],
+      "duration_sec": 900,
+      "source_text_length": 1012,
+      "provider_item_type": "WorkoutTemplate",
+      "native_strength_builder": false,
+      "qa_status": "READBACK_VERIFIED_EXACT"
+    },
+    {
+      "library_item_id": 14949660,
+      "library_item_name": "Forza | Microdose peak 20' | Testuale",
+      "canonical_uids": [
+        "IMINT24W-W21-TUE-STRENGTH-03"
+      ],
+      "source_weeks": [
+        21
+      ],
+      "duration_sec": 1200,
+      "source_text_length": 1124,
+      "provider_item_type": "WorkoutTemplate",
+      "native_strength_builder": false,
+      "qa_status": "READBACK_VERIFIED_EXACT"
+    },
+    {
+      "library_item_id": 14949661,
+      "library_item_name": "Forza | Attivazione 15' | Testuale",
+      "canonical_uids": [
+        "IMINT24W-W22-TUE-STRENGTH-03"
+      ],
+      "source_weeks": [
+        22
+      ],
+      "duration_sec": 900,
+      "source_text_length": 1127,
+      "provider_item_type": "WorkoutTemplate",
+      "native_strength_builder": false,
+      "qa_status": "READBACK_VERIFIED_EXACT"
+    }
+  ]
+}

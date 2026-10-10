@@ -2,7 +2,7 @@ name: CI
 
 on:
   push:
-    branches: [main, v2.x]
+    branches: [main, v2.x, feat/mcp-test-training-plan-lab]
   pull_request:
     branches: [main, v2.x]
   schedule:
