@@ -149,6 +149,9 @@ async def tp_get_training_plan(plan_id: int | str) -> dict[str, Any]:
                 })
         return {
             "plan_id": d.get("planId"),
+            # Read-only provider-internal calendar association (may be null);
+            # do not infer equivalence with planId if absent.
+            "calendar_id": d.get("calendarId"),
             "title": (d.get("title") or "").strip(),
             "weeks": d.get("weekCount"),
             "day_count": d.get("dayCount"),
