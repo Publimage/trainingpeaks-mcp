@@ -134,9 +134,13 @@ def _validate_target(items: list[dict[str, Any]], notes: list[dict[str, Any]]) -
 
 
 async def _assert_owner_and_libraries(client: TPClient) -> None:
-    user_id = await client.ensure_athlete_id()
-    if user_id != COACH_ID:
-        _stop("TrainingPeaks account mismatch. No write.")
+    # The owning coach's personId is NOT necessarily the coach's own
+    # athleteId. ensure_athlete_id() resolves the self-athlete roster entry
+    # (856352 on this account), whereas library.ownerId is personId (2116886).
+    # Check the authenticated user identity directly; never relax ownership.
+    user_data = await client._get_user_data()
+    if not isinstance(user_data, dict) or user_data.get("personId") != COACH_ID:
+        _stop("TrainingPeaks coach account mismatch. No write.")
     resp = await client.get("/exerciselibrary/v2/libraries")
     if resp.is_error or not isinstance(resp.data, list):
         _stop("Provider library ownership unavailable.")
