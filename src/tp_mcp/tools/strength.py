@@ -1046,7 +1046,8 @@ async def tp_batch_add_intermediate_strength(
             or not isinstance(title, str)
             or not title.startswith(f"IRONMAN | STRENGTH | W{week:02d} {day} | ")
             or not isinstance(instructions, str)
-            or len(instructions) < 180):
+            or len(instructions) < 180
+            or len(instructions) > 1000):
             return _err("VALIDATION_ERROR", f"Invalid strength identity, title or notes for {uid}.")
         invalid = _validate_blocks(blocks)
         if invalid:
