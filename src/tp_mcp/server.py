@@ -47,6 +47,7 @@ from tp_mcp.tools import (
     tp_create_library,
     tp_create_library_item,
     tp_create_note,
+    tp_batch_add_intermediate_strength,
     tp_create_strength_plan_lab_probe,
     tp_create_strength_workout,
     tp_create_workout,
@@ -1373,6 +1374,34 @@ TOOLS = [
         },
     ),
     Tool(
+        name="tp_batch_add_intermediate_strength",
+        description=(
+            "Add 1-8 native StructuredStrength Builder workouts (not text) "
+            "to private Intermediate 24-week TEST Training Plan 684602, "
+            "from approved canonical exercise blocks. Requires exact "
+            "expected plan count. Defaults to dry-run; POST once per "
+            "workout, with native readback; stops on provider drift."
+        ),
+        input_schema={
+            "type": "object",
+            "properties": {
+                "items": {
+                    "type": "array",
+                    "items": {"type": "object"},
+                    "description": (
+                        "Each {uid,week,day,title,instructions,blocks} "
+                        "with week 1-22 and day TUE/WED/THU/FRI; "
+                        "blocks use native Strength Builder exercise ids, "
+                        "sets, and parameters."
+                    ),
+                },
+                "expected_plan_count": {"type": "integer"},
+                "dry_run": {"type": "boolean", "default": True},
+            },
+            "required": ["items", "expected_plan_count"],
+        },
+    ),
+    Tool(
         name="tp_create_strength_plan_lab_probe",
         description=(
             "LAB ONLY. Dry-run checks a known native Strength Builder in "
@@ -1619,6 +1648,7 @@ _ATHLETE_EXEMPT_TOOLS = {
     "tp_search_exercises",
     # Hard-locked pilot, not athlete-scoped and never accepts override.
     "tp_create_strength_plan_lab_probe",
+    "tp_batch_add_intermediate_strength",
     # Coach-scoped (groups belong to the coach, not a targeted athlete).
     "tp_list_groups", "tp_list_athletes_in_group",
     "tp_create_group", "tp_rename_group", "tp_delete_group",
@@ -1698,6 +1728,7 @@ _NON_IDEMPOTENT_WRITES = {
     "tp_create_library",
     "tp_create_library_item",
     "tp_create_note",
+    "tp_batch_add_intermediate_strength",
     "tp_create_strength_plan_lab_probe",
     "tp_create_strength_workout",
     "tp_create_workout",
@@ -1921,6 +1952,12 @@ async def _h_search_exercises(args):
     return await tp_search_exercises(
         query=args.get("query", ""), limit=args.get("limit", 20),
         muscle_group=args.get("muscle_group"))
+
+@_handler("tp_batch_add_intermediate_strength")
+async def _h_batch_add_intermediate_strength(args):
+    return await tp_batch_add_intermediate_strength(
+        items=args["items"], expected_plan_count=args["expected_plan_count"],
+        dry_run=args.get("dry_run", True))
 
 @_handler("tp_create_strength_plan_lab_probe")
 async def _h_create_strength_plan_lab_probe(args):
