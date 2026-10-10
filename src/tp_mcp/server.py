@@ -47,6 +47,7 @@ from tp_mcp.tools import (
     tp_create_library,
     tp_create_library_item,
     tp_create_note,
+    tp_create_strength_plan_lab_probe,
     tp_create_strength_workout,
     tp_create_workout,
     tp_create_zones,
@@ -1372,6 +1373,22 @@ TOOLS = [
         },
     ),
     Tool(
+        name="tp_create_strength_plan_lab_probe",
+        description=(
+            "LAB ONLY. Dry-run checks a known native Strength Builder in "
+            "private sacrificial Training Plan 684543. When dry_run=false, "
+            "attempts one plan-scoped Goblet 1x7 create on an observed provider "
+            "route, with strict preflight and independent readback. Not for "
+            "athletes or plan 684602. Never retry an ambiguous POST."
+        ),
+        input_schema={
+            "type": "object",
+            "properties": {
+                "dry_run": {"type": "boolean", "default": True},
+            },
+        },
+    ),
+    Tool(
         name="tp_create_strength_workout",
         description=(
             "Create a structured strength/gym workout on the athlete's calendar. "
@@ -1600,6 +1617,8 @@ _ATHLETE_EXEMPT_TOOLS = {
     "tp_get_zone_methods",
     # Offline exercise-library search — not athlete-scoped.
     "tp_search_exercises",
+    # Hard-locked pilot, not athlete-scoped and never accepts override.
+    "tp_create_strength_plan_lab_probe",
     # Coach-scoped (groups belong to the coach, not a targeted athlete).
     "tp_list_groups", "tp_list_athletes_in_group",
     "tp_create_group", "tp_rename_group", "tp_delete_group",
@@ -1679,6 +1698,7 @@ _NON_IDEMPOTENT_WRITES = {
     "tp_create_library",
     "tp_create_library_item",
     "tp_create_note",
+    "tp_create_strength_plan_lab_probe",
     "tp_create_strength_workout",
     "tp_create_workout",
     "tp_create_zones",
@@ -1901,6 +1921,10 @@ async def _h_search_exercises(args):
     return await tp_search_exercises(
         query=args.get("query", ""), limit=args.get("limit", 20),
         muscle_group=args.get("muscle_group"))
+
+@_handler("tp_create_strength_plan_lab_probe")
+async def _h_create_strength_plan_lab_probe(args):
+    return await tp_create_strength_plan_lab_probe(dry_run=args.get("dry_run", True))
 
 @_handler("tp_create_strength_workout")
 async def _h_create_strength(args):
