@@ -73,6 +73,7 @@ from tp_mcp.tools.settings import (
     tp_update_speed_zones,
 )
 from tp_mcp.tools.strength import (
+    tp_batch_add_intermediate_strength,
     tp_create_strength_plan_lab_probe,
     tp_create_strength_workout,
     tp_delete_strength_workout,
@@ -193,6 +194,7 @@ __all__ = [
     "tp_upload_workout_file",
     "tp_validate_structure",
     "tp_search_exercises",
+    "tp_batch_add_intermediate_strength",
     "tp_create_strength_plan_lab_probe",
     "tp_create_strength_workout",
     "tp_get_strength_summary",
