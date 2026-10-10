@@ -76,6 +76,69 @@ async def main() -> int:
                 except (httpx.RequestError, ValueError, TypeError):
                     output["strength"][str(workout_id)] = {"error": "read_failed"}
 
+    # The workout detail JSON does not contain an authoritative plan id:
+    # the same calendarId occurs on both lab and Intermediate items.
+    # Query only narrow, read-only candidate PLAN listing routes to establish
+    # whether the plan library actually indexes the created Strength workout.
+    probes: dict[str, object] = {}
+    windows = {
+        684543: ("2027-08-02", "2027-08-09"),
+        684602: ("2026-10-05", "2026-10-12"),
+    }
+    async with httpx.AsyncClient(timeout=15.0) as http:
+        for plan_id, (start, end) in windows.items():
+            base = f"{STRENGTH_API_BASE}/rx/activity/v1/plans/{plan_id}"
+            paths = {
+                "plan_detail": base,
+                "strength_workouts": base + "/workouts",
+                "strength_workouts_dates": base + f"/workouts/{start}/{end}",
+                "strength_workouts_query": base + f"/workouts?startDate={start}&endDate={end}",
+            }
+            plan_probes: dict[str, object] = {}
+            for label, url in paths.items():
+                try:
+                    response = await http.get(url, headers=_headers(access))
+                    info: dict[str, object] = {"http_status": response.status_code}
+                    if response.status_code == 200:
+                        if len(response.content) > 500000:
+                            info["data"] = "response_too_large_to_summarize"
+                        else:
+                            try:
+                                parsed = response.json()
+                            except ValueError:
+                                parsed = None
+                            if isinstance(parsed, dict):
+                                info["top_level_keys"] = list(parsed)[:12]
+                                data = parsed.get("data")
+                                if isinstance(data, list):
+                                    info["items_count"] = len(data)
+                                    info["match_ids"] = [
+                                        str(it.get("id") or it.get("workoutId"))
+                                        for it in data if isinstance(it, dict)
+                                        and str(it.get("id") or it.get("workoutId"))
+                                        in {"33903234", "33966177", "33969338"}
+                                    ]
+                                elif isinstance(data, dict):
+                                    info["data_keys"] = list(data)[:20]
+                                # Search only three already-known workout IDs.
+                                # Return booleans, never unfiltered provider JSON.
+                                encoded = json.dumps(parsed, ensure_ascii=False)
+                                info["known_id_present"] = {
+                                    x: x in encoded
+                                    for x in ("33903234", "33966177", "33969338")
+                                }
+                            elif isinstance(parsed, list):
+                                info["items_count"] = len(parsed)
+                                encoded = json.dumps(parsed, ensure_ascii=False)
+                                info["known_id_present"] = {
+                                    x: x in encoded
+                                    for x in ("33903234", "33966177", "33969338")
+                                }
+                    plan_probes[label] = info
+                except (httpx.RequestError, TypeError, ValueError):
+                    plan_probes[label] = {"error": "read_failed"}
+            probes[str(plan_id)] = plan_probes
+    output["plan_membership_probes"] = probes
     print(json.dumps(output, ensure_ascii=False, indent=2))
     return 0
 
