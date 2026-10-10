@@ -94,13 +94,35 @@ def day_of(w: dict[str, Any]) -> str:
     return (w.get("workoutDay") or w.get("date") or "")[:10]
 
 
+def core_structure(value: Any) -> Any:
+    """Compare meaningful native TP blocks, not regenerated visualization IDs."""
+    if not isinstance(value, dict):
+        return None
+    return {
+        "length_metric": value.get("primaryLengthMetric"),
+        "intensity_metric": value.get("primaryIntensityMetric"),
+        "groups": [
+            (group.get("type"), (group.get("length") or {}).get("value"),
+             [(step.get("name"), (step.get("length") or {}).get("value"),
+               (step.get("length") or {}).get("unit"),
+               step.get("intensityClass"),
+               [(target.get("minValue"), target.get("maxValue"))
+                for target in (step.get("targets") or [])])
+              for step in (group.get("steps") or [])])
+            for group in (value.get("structure") or [])
+        ],
+    }
+
+
 def protected_workout(w: dict[str, Any]) -> tuple[Any, ...]:
-    """Contents to preserve across copying (allow ID/title metadata changes)."""
+    """Preserve native prescription; ignore only identity/title metadata."""
+    duration = float(w.get("totalTimePlanned") or 0)
+    distance = float(w.get("distancePlanned") or 0)
     return (day_of(w), w.get("workoutTypeValueId"),
-            w.get("workoutSubTypeId"),
-            w.get("description"), w.get("totalTimePlanned"),
-            w.get("distancePlanned"), w.get("tssPlanned"),
-            json.dumps(w.get("structure"), sort_keys=True, default=str))
+            w.get("description"), round(duration, 6),
+            round(distance, 6), w.get("tssPlanned"),
+            json.dumps(core_structure(w.get("structure")),
+                       sort_keys=True, default=str))
 
 
 def notes_signature(notes: list[dict[str, Any]]) -> list[tuple[Any, ...]]:
@@ -171,6 +193,8 @@ def audit_manifest(rows: list[dict[str, Any]], workouts: list[dict[str, Any]],
 
 async def run(execute: bool, max_updates: int) -> int:
     rows = load_manifest()
+    # Keep the original UI-seeded W1 swim test for the last guarded operation.
+    rows.sort(key=lambda row: row["workout_id"] == 3996039593)
     async with TPClient() as client:
         plan, original, notes = await read(client)
         # A previously interrupted copy may have created ONE extra workout.
