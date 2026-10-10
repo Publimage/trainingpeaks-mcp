@@ -1117,9 +1117,30 @@ async def tp_batch_add_intermediate_strength(
                             "error_code": "AMBIGUOUS_POST",
                             "never_retry_without_readback": True}
                 if resp.status_code != 200:
+                    # A rejected request is not an ambiguous POST. Surface only
+                    # bounded validation diagnostics, never headers or tokens.
+                    validation = {}
+                    try:
+                        problem = resp.json()
+                        if isinstance(problem, dict):
+                            for field in ("message", "error", "errorCode", "code"):
+                                value = problem.get(field)
+                                if isinstance(value, (str, int, float)):
+                                    validation[field] = str(value)[:350]
+                            issues = problem.get("errors")
+                            if isinstance(issues, dict):
+                                validation["fields"] = {
+                                    str(k)[:80]: str(v)[:250]
+                                    for k, v in list(issues.items())[:6]
+                                }
+                            elif isinstance(issues, list):
+                                validation["issues"] = [str(v)[:250] for v in issues[:6]]
+                    except (ValueError, TypeError):
+                        pass
                     return {"success": False, "partial_writes": saved,
                             "error_code": "PROVIDER_REJECTED",
                             "http_status": resp.status_code,
+                            "provider_validation": validation,
                             "never_retry_without_readback": True}
                 try:
                     body = resp.json().get("data") or {}
