@@ -72,6 +72,7 @@ from tp_mcp.tools import (
     tp_get_libraries,
     tp_get_library_item,
     tp_get_library_items,
+    tp_sync_intermediate_native_notes,
     tp_get_metrics,
     tp_get_next_event,
     tp_get_note,
@@ -1212,6 +1213,30 @@ TOOLS = [
     ),
     # --- Workout Library ---
     Tool(
+        name="tp_sync_intermediate_native_notes",
+        description=(
+            "Guarded native TrainingPeaks NoteTemplate library publisher for the "
+            "private [MCP TEST] Intermediate plan 684602. Default preview is "
+            "READ-ONLY. mode=probe creates ONE disposable LAB NoteTemplate in "
+            "library 3890637; mode=publish writes approved notes exclusively "
+            "to IRONMAN MASTER | Note (3892900), after LAB type-canary and "
+            "live plan/content readback. Does NOT touch athlete calendars "
+            "or edit source notes. Never retries ambiguous POST."
+        ),
+        input_schema={
+            "type": "object",
+            "properties": {
+                "mode": {"type": "string", "enum": ["preview", "probe", "publish"],
+                         "default": "preview"},
+                "ack_library_id": {"type": "integer",
+                                   "description": "3890637 for probe; 3892900 for publish."},
+                "max_items": {"type": "integer", "minimum": 1, "maximum": 35,
+                              "default": 35},
+            },
+            "required": [],
+        },
+    ),
+    Tool(
         name="tp_get_libraries",
         description="List workout library folders.",
         input_schema={"type": "object", "properties": {}, "required": []},
@@ -1649,6 +1674,7 @@ _ATHLETE_EXEMPT_TOOLS = {
     # Hard-locked pilot, not athlete-scoped and never accepts override.
     "tp_create_strength_plan_lab_probe",
     "tp_batch_add_intermediate_strength",
+    "tp_sync_intermediate_native_notes",
     # Coach-scoped (groups belong to the coach, not a targeted athlete).
     "tp_list_groups", "tp_list_athletes_in_group",
     "tp_create_group", "tp_rename_group", "tp_delete_group",
@@ -1727,6 +1753,7 @@ _NON_IDEMPOTENT_WRITES = {
     "tp_create_group",
     "tp_create_library",
     "tp_create_library_item",
+    "tp_sync_intermediate_native_notes",
     "tp_create_note",
     "tp_batch_add_intermediate_strength",
     "tp_create_strength_plan_lab_probe",
@@ -2238,6 +2265,14 @@ async def _h_get_libs(args): return await tp_get_libraries()
 
 @_handler("tp_get_library_items")
 async def _h_get_lib_items(args): return await tp_get_library_items(library_id=args["library_id"])
+
+@_handler("tp_sync_intermediate_native_notes")
+async def _h_sync_native_notes(args):
+    return await tp_sync_intermediate_native_notes(
+        mode=args.get("mode", "preview"),
+        ack_library_id=args.get("ack_library_id"),
+        max_items=args.get("max_items", 35),
+    )
 
 @_handler("tp_get_library_item")
 async def _h_get_lib_item(args):
