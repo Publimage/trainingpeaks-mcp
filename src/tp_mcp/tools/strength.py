@@ -1059,7 +1059,10 @@ async def tp_batch_add_intermediate_strength(
         plan = r.data
         if (plan.get("planId") != plan_id
             or (plan.get("title") or "").strip() != plan_title
-            or (plan.get("startDate") or "")[:10] != "2026-10-06"
+            # Adding the two canonical W1 Monday notes moves the provider
+            # startDate from Tue 2026-10-06 to Mon 2026-10-05. Both are
+            # validated W1 anchors for the exact same private plan.
+            or (plan.get("startDate") or "")[:10] not in ("2026-10-05", "2026-10-06")
             or plan.get("weekCount") != 24
             or plan.get("price") not in (None, 0)
             or plan.get("workoutCount") != expected_plan_count
