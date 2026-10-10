@@ -7,6 +7,7 @@ from __future__ import annotations
 
 import asyncio
 import json
+import sys
 
 import httpx
 
@@ -139,7 +140,8 @@ async def main() -> int:
                     plan_probes[label] = {"error": "read_failed"}
             probes[str(plan_id)] = plan_probes
     output["plan_membership_probes"] = probes
-    print(json.dumps(output, ensure_ascii=False, indent=2))
+    summary = probes if "--membership-only" in sys.argv[1:] else output
+    print(json.dumps(summary, ensure_ascii=False, indent=2))
     return 0
 
 
