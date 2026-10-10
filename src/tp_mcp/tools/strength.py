@@ -1103,7 +1103,13 @@ async def tp_batch_add_intermediate_strength(
             or lab_data.get("planId") != 684543
             or (lab_data.get("title") or "").strip()
                 != "[MCP TEST] TP Native Strength Plan Route 2026-10-09"
-            or lab_data.get("weekCount") != 1
+            # A misrouted W01 native Strength expanded the sacrificial LAB
+            # technical span (1 -> 44 weeks) without changing its actual
+            # relative workout design. Confirm the observed abnormal state
+            # instead of silently assuming it is still a one-week plan.
+            or lab_data.get("weekCount") != 44
+            or (lab_data.get("startDate") or "")[:10] != "2026-10-07"
+            or lab_data.get("workoutCount") != 5
             or lab_owner <= 0 or lab_owner != target_owner):
             return _err("PLAN_PERSON_MISMATCH", "Protected plan-person mapping changed.")
         async with httpx.AsyncClient(timeout=STRENGTH_TIMEOUT) as h:
