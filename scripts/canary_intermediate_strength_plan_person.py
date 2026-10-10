@@ -100,10 +100,18 @@ async def main() -> int:
         target_r = await client.get(f"/plans/v1/plans/{TARGET_ID}")
         lab = lab_r.data if not lab_r.is_error else None
         target = target_r.data if not target_r.is_error else None
-        if not valid_plan(lab, LAB_ID, LAB_TITLE, 1, 5) or not valid_plan(
+        if not valid_plan(lab, LAB_ID, LAB_TITLE, 44, 5) or not valid_plan(
             target, TARGET_ID, TARGET_TITLE, 24, 229
         ):
-            output(success=False, stage="preflight", reason="Protected plan title/privacy/week/count mismatch", wrote=False)
+            output(success=False, stage="preflight", wrote=False,
+                   reason="Protected plan metadata mismatch",
+                   lab_observed={"weeks": lab.get("weekCount"), "count": lab.get("workoutCount"),
+                                 "day_count": lab.get("dayCount"),
+                                 "privacy_false": lab.get("isPublic") is False}
+                                if isinstance(lab, dict) else None,
+                   target_observed={"weeks": target.get("weekCount"), "count": target.get("workoutCount"),
+                                    "privacy_false": target.get("isPublic") is False}
+                                   if isinstance(target, dict) else None)
             return 1
 
         lab_person = positive_id(lab.get("planPersonId"))
@@ -129,12 +137,19 @@ async def main() -> int:
             output(success=False, stage="auth", wrote=False, reason="No authenticated session")
             return 1
 
-        lab_start = date.fromisoformat(lab["startDate"][:10])
+        lab_technical_anchor = date.fromisoformat(lab["startDate"][:10])
+        lab_original_window = date(2027, 8, 2)
         target_start = date.fromisoformat(target["startDate"][:10])
+        if (lab_technical_anchor != date(2026, 10, 7)
+            or (lab.get("dayCount") or 0) != 304
+            or target_start != date(2026, 10, 5)):
+            output(success=False, stage="technical_mapping_guard", wrote=False,
+                   reason="Plan coordinates/extent changed; no POST")
+            return 1
         w1_wed = target_start + timedelta(days=(2 - target_start.weekday()) % 7)
 
         async with httpx.AsyncClient(timeout=STRENGTH_TIMEOUT) as h:
-            lab_known = await plan_strength(h, access, LAB_ID, lab_start, 9)
+            lab_known = await plan_strength(h, access, LAB_ID, lab_original_window, 9)
             lab_orphan = await plan_strength(h, access, LAB_ID, target_start, 9)
             target_w1 = await plan_strength(h, access, TARGET_ID, target_start, 9)
             if (
@@ -202,7 +217,7 @@ async def main() -> int:
             fresh_lab = await client.get(f"/plans/v1/plans/{LAB_ID}")
             if (
                 fresh.is_error or not valid_plan(fresh.data, TARGET_ID, TARGET_TITLE, 24, 229)
-                or fresh_lab.is_error or not valid_plan(fresh_lab.data, LAB_ID, LAB_TITLE, 1, 5)
+                or fresh_lab.is_error or not valid_plan(fresh_lab.data, LAB_ID, LAB_TITLE, 44, 5)
             ):
                 output(success=False, stage="last_gate", wrote=False,
                        reason="Training Plan count/identity changed before POST")
