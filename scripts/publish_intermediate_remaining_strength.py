@@ -130,11 +130,17 @@ async def preflight() -> tuple[bool, dict[str, Any]]:
                 "lab_count": l.get("workoutCount"),
                 "lab_weeks": l.get("weekCount"),
             }
+        try:
+            target_person = int(p.get("planPersonId"))
+            lab_person = int(l.get("planPersonId"))
+            target_owner = int(p.get("ownerPersonId"))
+            lab_owner = int(l.get("ownerPersonId"))
+        except (TypeError, ValueError):
+            return False, {"error": "PLAN_PERSON_MAPPING_UNREADABLE"}
         if (
-            not isinstance(p.get("planPersonId"), int)
-            or not isinstance(l.get("planPersonId"), int)
-            or p["planPersonId"] == l["planPersonId"]
-            or p.get("ownerPersonId") != l.get("ownerPersonId")
+            target_person <= 0 or lab_person <= 0
+            or target_person == lab_person or target_owner <= 0
+            or target_owner != lab_owner
         ):
             return False, {"error": "PLAN_PERSON_MAPPING_DRIFT"}
         _, access, error = await _access(client)
@@ -144,7 +150,7 @@ async def preflight() -> tuple[bool, dict[str, Any]]:
             url = (
                 f"{STRENGTH_API_BASE}/rx/activity/v1/plans/{PLAN_ID}"
                 f"/workouts/{EXPECTED_START.isoformat()}/"
-                f"{(EXPECTED_START + timedelta(days=169)).isoformat()}"
+                f"{(EXPECTED_START + timedelta(days=8)).isoformat()}"
             )
             try:
                 rr = await h.get(url, headers=_headers(access))
@@ -170,7 +176,7 @@ async def preflight() -> tuple[bool, dict[str, Any]]:
                 if (
                     x.get("title") != "IRONMAN | STRENGTH | W01 WED | Forza A | Base 35'"
                     or x.get("workoutType") != "StructuredStrength"
-                    or x.get("calendarId") != p["planPersonId"]
+                    or int(x.get("calendarId") or 0) != target_person
                     or len(x.get("blocks") or []) != 6
                     or (x.get("snapshot") or {}).get("totalSets") != 14
                 ):
@@ -233,7 +239,7 @@ async def publish() -> int:
                     "count_after": res.get("plan_count"),
                     "created_so_far": created, "retry_automatically": False})
             return 1
-        new = res.get("saved", [])
+        new = res.get("workouts", [])
         if not isinstance(new, list) or len(new) != 1 or (
             new[0].get("uid") != item["uid"]
         ):
