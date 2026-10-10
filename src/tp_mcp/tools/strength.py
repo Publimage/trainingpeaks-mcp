@@ -874,3 +874,129 @@ async def tp_delete_strength_workout(workout_id: str) -> dict[str, Any]:
         if r.status_code not in (200, 204):
             return _map_status(r.status_code, r.text)
         return {"deleted": True, "workout_id": wid}
+
+
+# --- Plan-scope Strength pilot (strictly isolated) ---
+
+# --- Plan-scope Strength pilot (strictly isolated) ---
+async def tp_create_strength_plan_lab_probe(dry_run: bool = True) -> dict[str, Any]:
+    """Inspect, then optionally attempt ONE new Strength Builder in lab plan 684543.
+
+    The plan-specific POST path was observed in the coach's browser HAR.
+    A create operation via that path is NOT yet proven. Never retries a POST.
+    No athlete-calendar write route is used by this function.
+    """
+    plan_id = 684543
+    plan_title = "[MCP TEST] TP Native Strength Plan Route 2026-10-09"
+    sample_id = "33903234"
+    trial_date = "2027-08-05"
+    trial_title = "[MCP TEST] Native Strength Plan route - Goblet 1x7"
+    if type(dry_run) is not bool:
+        return _err("VALIDATION_ERROR", "dry_run must be boolean.")
+    async with TPClient() as client:
+        detail = await client.get(f"/plans/v1/plans/{plan_id}")
+        if detail.is_error or not isinstance(detail.data, dict):
+            return _err("PLAN_UNAVAILABLE", "Lab plan cannot be verified; no write.")
+        plan = detail.data
+        if (plan.get("planId") != plan_id
+            or plan.get("title") != plan_title
+            or (plan.get("startDate") or "")[:10] != "2027-08-02"
+            or plan.get("workoutCount") != 2
+            or plan.get("price") not in (None, 0)):
+            return _err("PROTECTED_RESOURCE",
+                        "Lab identity, privacy, anchor or prior count changed.")
+        _, access, error = await _access(client)
+        if error:
+            return error
+        async with httpx.AsyncClient(timeout=STRENGTH_TIMEOUT) as h:
+            source = await h.get(
+                f"{STRENGTH_API_BASE}/rx/activity/v1/workouts/{sample_id}",
+                headers=_headers(access),
+            )
+            if source.status_code != 200:
+                return _err("SOURCE_UNAVAILABLE", "Lab Strength source not readable.")
+            try:
+                raw = source.json().get("data") or {}
+            except (ValueError, TypeError):
+                return _err("SOURCE_UNVERIFIED", "Lab Strength JSON invalid.")
+            snap = raw.get("snapshot") or {}
+            if (str(raw.get("id")) != sample_id
+                or raw.get("workoutType") != "StructuredStrength"
+                or (raw.get("prescribedDate") or "")[:10] != "2027-08-04"
+                or (snap.get("totalSets") or 0) != 1):
+                return _err("SOURCE_UNVERIFIED", "Source Strength pilot changed.")
+            blocks = raw.get("blocks") or []
+            try:
+                pres = blocks[0]["prescriptions"][0]
+                paramvals = pres["sets"][0]["parameterValues"]
+                ex = pres.get("exercise") or {}
+                correct = (
+                    ex.get("title") == "Goblet Squat"
+                    and any(p.get("parameter") == "Reps"
+                            and str(p.get("prescribedValue")) == "7"
+                            for p in paramvals)
+                )
+                calendar_id = int(raw.get("calendarId"))
+            except (ValueError, TypeError, KeyError, IndexError):
+                correct, calendar_id = False, 0
+            if not correct or calendar_id <= 0:
+                return _err("SOURCE_UNVERIFIED",
+                            "Source exercise, 1x7 dose or plan calendar ID not verified.")
+            if dry_run:
+                return {
+                    "success": True, "dry_run": True, "plan_id": plan_id,
+                    "source_workout_id": sample_id,
+                    "source_calendar_matches_plan": calendar_id == plan_id,
+                    "observed_provider_route":
+                        f"/rx/activity/v1/plans/{plan_id}/workouts/save",
+                    "planned_date": trial_date, "planned_title": trial_title,
+                    "write_performed": False,
+                    "warning": "Creating a new Strength object on this route is not yet proven.",
+                }
+            trial = _build_payload(
+                calendar_id, trial_date, trial_title,
+                [{"type": "SingleExercise",
+                  "title": "Plan-scoped route test",
+                  "exercises": [{"id": "144", "sets": [{"Reps": 7}]}]}],
+                "Private lab test only; not part of a product or athlete calendar.",
+            )
+            try:
+                response = await h.post(
+                    f"{STRENGTH_API_BASE}/rx/activity/v1/plans/{plan_id}/workouts/save",
+                    headers=_headers(access), json=trial,
+                )
+            except httpx.RequestError:
+                return _err("AMBIGUOUS_POST",
+                            "Network failure; never retry before checking lab UI.")
+            if response.status_code != 200:
+                return _err("PROVIDER_REJECTED",
+                            f"Plan-specific Strength create returned HTTP {response.status_code}.")
+            try:
+                response_data = response.json().get("data") or {}
+            except (ValueError, TypeError):
+                return _err("AMBIGUOUS_POST", "Provider success but unreadable response.")
+            new_id = str(response_data.get("id") or trial["id"])
+            check = await h.get(
+                f"{STRENGTH_API_BASE}/rx/activity/v1/workouts/{new_id}",
+                headers=_headers(access),
+            )
+            if check.status_code != 200:
+                return _err("AMBIGUOUS_POST",
+                            "Provider acknowledged but native readback failed; do not retry.")
+            native = check.json().get("data") or {}
+            refreshed = await client.get(f"/plans/v1/plans/{plan_id}")
+            updated = refreshed.data if not refreshed.is_error else {}
+            return {
+                "success": (
+                    native.get("workoutType") == "StructuredStrength"
+                    and native.get("title") == trial_title
+                    and updated.get("workoutCount") == 3
+                ),
+                "plan_id": plan_id, "workout_id": new_id,
+                "native_type": native.get("workoutType"),
+                "title": native.get("title"),
+                "workout_count_after": updated.get("workoutCount"),
+                "provider_acknowledged": True,
+                "manual_plan_ui_confirmation_still_required": True,
+                "never_retry_without_inspection": True,
+            }
