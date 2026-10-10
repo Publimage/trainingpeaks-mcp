@@ -44,6 +44,8 @@ def _safe_identity(data: object) -> dict[str, object]:
 
 async def main() -> int:
     output: dict[str, object] = {"read_only": True, "plans": {}, "strength": {}}
+    plan_config: dict[str, dict[str, object]] = {}
+    plan_owners: dict[str, object] = {}
     async with TPClient() as client:
         for plan_id in PLAN_IDS:
             result = await client.get(f"/plans/v1/plans/{plan_id}")
@@ -51,6 +53,20 @@ async def main() -> int:
                 output["plans"][str(plan_id)] = {"error": "plan_read_failed"}
             else:
                 output["plans"][str(plan_id)] = _safe_identity(result.data)
+                raw = result.data if isinstance(result.data, dict) else {}
+                plan_config[str(plan_id)] = {
+                    key: raw.get(key) for key in (
+                        "hasActivityWorkout", "eventPlan", "planCategory",
+                        "isPublic", "price", "weekCount", "workoutCount",
+                        "dayCount", "startDate"
+                    )
+                }
+                plan_config[str(plan_id)]["planAccess_type"] = type(
+                    raw.get("planAccess")
+                ).__name__
+                plan_owners[str(plan_id)] = (
+                    raw.get("ownerPersonId"), raw.get("planPersonId")
+                )
 
         _, access, error = await _access(client)
         if error or not access:
@@ -113,6 +129,28 @@ async def main() -> int:
                                 data = parsed.get("data")
                                 if isinstance(data, list):
                                     info["items_count"] = len(data)
+                                    if label == "strength_workouts_dates" and len(data) <= 5:
+                                        # Sample only keys and limited plan-mapping
+                                        # fields, not personal/raw provider details.
+                                        allowed = (
+                                            "id", "workoutId", "activityWorkoutId",
+                                            "planId", "trainingPlanId", "calendarId",
+                                            "workoutType", "prescribedDate", "workoutDay"
+                                        )
+                                        info["item_identity"] = [
+                                            {
+                                                "keys": sorted(str(k) for k in item)[:35],
+                                                "ids": {
+                                                    key: item.get(key)
+                                                    for key in allowed
+                                                    if key in item and isinstance(
+                                                        item[key],
+                                                        (str, int, bool, type(None)),
+                                                    ) and len(str(item[key])) <= 100
+                                                },
+                                            }
+                                            for item in data if isinstance(item, dict)
+                                        ]
                                     info["match_ids"] = [
                                         str(it.get("id") or it.get("workoutId"))
                                         for it in data if isinstance(it, dict)
@@ -140,7 +178,37 @@ async def main() -> int:
                     plan_probes[label] = {"error": "read_failed"}
             probes[str(plan_id)] = plan_probes
     output["plan_membership_probes"] = probes
-    summary = probes if "--membership-only" in sys.argv[1:] else output
+    config_comparison: dict[str, object] = {
+        "plans": plan_config,
+        "same_ownerPersonId": (
+            plan_owners.get("684543", [None])[0]
+            == plan_owners.get("684602", [None])[0]
+        ),
+        "same_planPersonId": (
+            plan_owners.get("684543", [None, None])[1]
+            == plan_owners.get("684602", [None, None])[1]
+        ),
+        "lab_strength_items": (
+            probes.get("684543", {}).get("strength_workouts_dates", {}).get("item_identity")
+        ),
+        "intermediate_strength_count": (
+            probes.get("684602", {}).get("strength_workouts_dates", {}).get("items_count")
+        ),
+        "orphan_33969338_not_in_both_plan_lists": (
+            all(
+                not probes.get(str(pid), {}).get(
+                    "strength_workouts_dates", {}
+                ).get("known_id_present", {}).get("33969338", False)
+                for pid in PLAN_IDS
+            )
+        ),
+    }
+    output["config_comparison"] = config_comparison
+    summary = (
+        config_comparison if "--compare-only" in sys.argv[1:]
+        else probes if "--membership-only" in sys.argv[1:]
+        else output
+    )
     print(json.dumps(summary, ensure_ascii=False, indent=2))
     return 0
 
