@@ -380,5 +380,33 @@
     "All existing 34 notes preserve id/date/description; only title prefix removed",
     "Both PDF bytes uploaded as note attachments and visible/downloadable in TEST athlete plan after native apply",
     "Training Plan remains private until release gates pass"
-  ]
+  ],
+  "canonical_library": {
+    "workspace": "IRONMAN — WORKOUT ARCHIVE MASTER",
+    "spreadsheet_id": "1ulKJfLdr3X2WK32XP7TSXbF90OIDXSmkjkWULpNTIgk",
+    "sheet_title": "NOTES_LIBRARY",
+    "gid": 1325556000,
+    "source_of_truth_columns": [
+      "A:canonical_uid",
+      "G:EDITABLE_TITLE",
+      "H:EDITABLE_BODY",
+      "I:approval_status",
+      "J:qa_status",
+      "K:content_version"
+    ],
+    "provider_mapping_columns": [
+      "L:provider_plan_id",
+      "M:provider_note_id",
+      "N:provider_current_title",
+      "O:provider_sync_status",
+      "P:relative_day"
+    ],
+    "archival_compatibility": "CANONICAL_CONTENT K:L for 35 matching UIDs contain live Google Sheets formulas linked to NOTES_LIBRARY G:H.",
+    "items_total": 35,
+    "published_notes_awaiting_title_cleanup": 34,
+    "missing_readme_notes": 1,
+    "canonical_source": "LIVE GOOGLE DRIVE NOTES_LIBRARY - DO NOT USE THIS STATIC SNAPSHOT AFTER LIBRARY CHANGES"
+  },
+  "snapshot_only": true,
+  "warning": "This file predates/records the note library at 2026-10-10. Never treat these stored text bodies as a live source or a publishing authorization. A future publisher MUST read current Drive NOTES_LIBRARY, verify approval QA + provider identity/slot, and use only plan-scoped supported API. Provider note creation attempt was safety-blocked: do not bypass by script. No provider writes in this commit."
 }
