@@ -266,6 +266,14 @@
       "scope": "trainingpeaks:chasing-library:3894341:copy-native-A60-from-lab330612",
       "script": "scripts/ironman_jobs/native_chasing_library_seed_a60.py",
       "test": "tests/test_native_chasing_library_seed_a60.py"
+    },
+    {
+      "name": "native_chasing_b60_publish",
+      "mode": "GUARDED_WRITE",
+      "owner_id": 2116886,
+      "scope": "trainingpeaks:chasing-library:3894341:copy-and-save-native-B60",
+      "script": "scripts/ironman_jobs/native_chasing_b60_publish.py",
+      "test": "tests/test_native_chasing_b60_publish.py"
     }
   ]
 }
