@@ -274,6 +274,14 @@
       "scope": "trainingpeaks:chasing-library:3894341:copy-and-save-native-B60",
       "script": "scripts/ironman_jobs/native_chasing_b60_publish.py",
       "test": "tests/test_native_chasing_b60_publish.py"
+    },
+    {
+      "name": "chasing_strength_publish_m60",
+      "mode": "GUARDED_WRITE",
+      "owner_id": 2116886,
+      "scope": "trainingpeaks:chasing-library:3894341:publish-native-m60",
+      "script": "scripts/ironman_jobs/chasing_strength_publish_m60.py",
+      "test": "tests/test_chasing_strength_native_publish_variants.py"
     }
   ]
 }
