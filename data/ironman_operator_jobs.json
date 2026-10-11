@@ -18,6 +18,14 @@
       "scope": "trainingpeaks:plan:684602:calendarNote:w1monday:read",
       "script": "scripts/ironman_jobs/readme_first_order_audit.py",
       "test": "tests/test_readme_first_order.py"
+    },
+    {
+      "name": "readme_delete_canary",
+      "mode": "GUARDED_WRITE",
+      "owner_id": 2116886,
+      "scope": "trainingpeaks:disposable-plan:684484:transient-note:create-delete",
+      "script": "scripts/ironman_jobs/readme_delete_canary.py",
+      "test": "tests/test_readme_delete_canary.py"
     }
   ]
 }
