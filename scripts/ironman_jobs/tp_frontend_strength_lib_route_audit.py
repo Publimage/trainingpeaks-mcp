@@ -12,7 +12,7 @@ from urllib.parse import urljoin, urlparse
 import httpx
 
 PAGES=("https://app.trainingpeaks.com/","https://home.trainingpeaks.com/","https://app.trainingpeaks.com/coach/")
-PATTERNS=("exerciselibrary","StructuredStrength","/rx/activity/","strengthworkout","libraryitem","WorkoutLibrary")
+PATTERNS=("exerciselibrary","StructuredStrength","/rx/activity/","strengthworkout","libraryitem","WorkoutLibrary","System.import","release-2026","webpack","javascript:")
 ALLOWED=("trainingpeaks.com","peakswaresb.com")
 MAX_BYTES=5000000
 MAX_SCRIPTS=30
@@ -44,7 +44,7 @@ async def main()->int:
                 print(json.dumps({"source":url,"http":r.status_code,"redirect":r.headers.get("location","")[:140],
                                   "html_bytes":len(data),"script_count":len(srcs),
                                   "script_sample":[urlparse(x).path for x in srcs[:15]],
-                                  "matches":snippets(data)[:12]},ensure_ascii=False),flush=True)
+                                  "matches":snippets(data)[:12],"js_mentions":list(dict.fromkeys(re.findall(r'[A-Za-z0-9_./:@+-]+[.]js',data)))[:35]},ensure_ascii=False),flush=True)
             except (httpx.RequestError,ValueError) as e:
                 print(json.dumps({"source":url,"error":type(e).__name__}),flush=True)
         unique=list(dict.fromkeys(scripts))[:MAX_SCRIPTS]
