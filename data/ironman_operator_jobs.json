@@ -50,6 +50,14 @@
       "scope": "trainingpeaks:disposable-plan:684484:restore-title",
       "script": "scripts/ironman_jobs/plan_title_restore_lab.py",
       "test": "tests/test_plan_title_restore_lab.py"
+    },
+    {
+      "name": "rename_intermediate_release",
+      "mode": "GUARDED_WRITE",
+      "owner_id": 2116886,
+      "scope": "trainingpeaks:private-plan:684602:title-only-rename",
+      "script": "scripts/ironman_jobs/rename_intermediate_release.py",
+      "test": "tests/test_rename_intermediate_release.py"
     }
   ]
 }
