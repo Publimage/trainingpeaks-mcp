@@ -24,7 +24,7 @@ absent, and must not authorize duplicate publishing.
 
 ## One-time droplet bootstrap
 
-From the existing DigitalOcean Web Console SSH session running as `root`, run Git operations as the actual repository owner `ironman`. Do not whitelist the repository globally via `git config --global safe.directory` just to bypass Git ownership protection. Replace `REVIEWED_FULL_SHA` with the full, verified feature-branch commit supplied for this deployment:
+From the existing DigitalOcean Web Console SSH session running as `root`, run Git operations as the actual repository owner `ironman`, and change the working directory to the repository before starting pytest. The `ironman` account cannot enter `/root`, even if the interpreter is launched with `sudo -u ironman -H`. Do not whitelist the repository globally via `git config --global safe.directory` just to bypass Git ownership protection. Replace `REVIEWED_FULL_SHA` with the full, verified feature-branch commit supplied for this deployment:
 
 ```bash
 (
@@ -32,6 +32,8 @@ set -e
 REPO=/home/ironman/trainingpeaks-mcp
 PY=/home/ironman/tp-mcp-venv/bin/python
 PIN=REVIEWED_FULL_SHA
+# pytest inherits this working directory; /root is inaccessible to ironman.
+cd "$REPO"
 OLD=$(sudo -u ironman -H git -C "$REPO" rev-parse HEAD)
 sudo -u ironman -H git -C "$REPO" fetch origin feat/mcp-test-training-plan-lab
 NEW=$(sudo -u ironman -H git -C "$REPO" rev-parse FETCH_HEAD)
