@@ -15,9 +15,30 @@ ANCHOR=2651317
 TITLE="[MCP TEST] README BODY PDF PRESERVATION CANARY"
 ORIGINAL="Disposable protected Note with binary PDF."
 UPDATED=ORIGINAL+" The athlete guide must be read first."
-PDF=Path("/home/ironman/.local/state/ironman-operator/intermediate-guide-v3.pdf")
-SHA="7759224d295123bfdab5203dd82dfc7822228b0a3e60885a6b1003a1b4d7c938"
-FILENAME="IRONMAN_Intermediate_24W_Guida_Atleta_v3_Verificata.pdf"
+FILENAME="[MCP TEST] LAB ONLY PDF PRESERVATION.pdf"
+def make_lab_pdf():
+    content=b"BT /F1 12 Tf 40 90 Td (Disposable TrainingPeaks PDF attachment canary) Tj ET"
+    stream=b"<< /Length "+str(len(content)).encode()+b" >>\\nstream\\n"+content+b"\\nendstream"
+    stream=stream.replace(b"\\\\n",b"\\n")
+    objects=[
+      b"<< /Type /Catalog /Pages 2 0 R >>",
+      b"<< /Type /Pages /Kids [3 0 R] /Count 1 >>",
+      b"<< /Type /Page /Parent 2 0 R /MediaBox [0 0 300 140] /Resources << /Font << /F1 5 0 R >> >> /Contents 4 0 R >>",
+      stream,
+      b"<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>",
+    ]
+    out=b"%PDF-1.4\\n";out=out.replace(b"\\n",b"\n")
+    offsets=[0]
+    for i,obj in enumerate(objects,1):
+      offsets.append(len(out))
+      out+=f"{i} 0 obj\\n".encode().replace(b"\\n",b"\n")+obj+b"\nendobj\n"
+    xref=len(out)
+    out+=f"xref\\n0 {len(objects)+1}\\n".encode().replace(b"\\n",b"\n")
+    out+=b"0000000000 65535 f \n"
+    for pos in offsets[1:]:
+      out+=f"{pos:010d} 00000 n \\n".encode().replace(b"\\n",b"\n")
+    out+=f"trailer\\n<< /Size {len(objects)+1} /Root 1 0 R >>\\nstartxref\\n{xref}\\n%%EOF".encode().replace(b"\\n",b"\n")
+    return out
 START="2027-07-05";END="2027-07-12"
 
 class Stop(Exception): pass
@@ -41,9 +62,8 @@ async def run():
   original=await notes()
   must(len(original)==1 and original[0].get("id")==ANCHOR,"LAB_NOT_EMPTY")
   anchor=json.dumps(original[0],sort_keys=True)
-  must(PDF.is_file() and PDF.stat().st_size==396936,"PDF_UNAVAILABLE")
-  pdf=PDF.read_bytes()
-  must(hashlib.sha256(pdf).hexdigest()==SHA,"PDF_CORRUPTED")
+  pdf=make_lab_pdf()
+  must(pdf.startswith(b"%PDF-") and pdf.endswith(b"%%EOF") and len(pdf)>300,"LAB_PDF_INVALID")
   payload={"planId":LAB,"title":TITLE,"noteDate":START,
            "description":ORIGINAL,"attachments":[],"standardFormatDate":"Week 1, Monday"}
   try:
@@ -76,7 +96,7 @@ async def run():
   tmp=next(x for x in now if x.get("id")==nid)
   before_att=tmp.get("attachments") or []
   must(len(before_att)==1 and before_att[0].get("fileName")==FILENAME
-       and before_att[0].get("contentLength")==396936,"LAB_PDF_ATTACHMENT_FAILED")
+       and before_att[0].get("contentLength")==len(pdf),"LAB_PDF_ATTACHMENT_FAILED")
   # Put original provider Note object plus single changed description.
   put_payload=dict(tmp)
   put_payload["description"]=UPDATED
