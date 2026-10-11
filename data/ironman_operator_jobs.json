@@ -210,6 +210,14 @@
       "scope": "trainingpeaks:private-plan:684602:readme-2653899:description-only-guide-first",
       "script": "scripts/ironman_jobs/update_intermediate_readme_guide_order.py",
       "test": "tests/test_update_intermediate_readme_guide_order.py"
+    },
+    {
+      "name": "native_strength_library_canary",
+      "mode": "GUARDED_WRITE",
+      "owner_id": 2116886,
+      "scope": "trainingpeaks:lab-library:3890637:one-native-strength-template-canary",
+      "script": "scripts/ironman_jobs/native_strength_library_one_canary.py",
+      "test": "tests/test_native_strength_library_one_canary.py"
     }
   ]
 }
