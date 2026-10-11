@@ -6,7 +6,7 @@ Print bounded 650-char neighborhoods for selected identifiers in public bundle.
 from __future__ import annotations
 import asyncio,json,re,httpx
 
-URL="https://app.trainingpeaks.com/release-20261009-47467f9/modules-f765ba67.js"
+URL="https://app.trainingpeaks.com/release-20261009-47467f9/modules-23bb80da.js"
 TERMS=("onAddWorkoutToLibrary",)
 
 def spans(src:str,term:str,limit:int=60)->list[dict]:
@@ -17,20 +17,20 @@ def spans(src:str,term:str,limit:int=60)->list[dict]:
     return result
 
 async def main()->int:
-    async with httpx.AsyncClient(timeout=25,follow_redirects=False) as h:
-        r=await h.get(URL)
-    if r.status_code!=200 or len(r.content)>6_000_000:
-        print(json.dumps({"http":r.status_code,"len":len(r.content),"stop":True}));return 2
-    source=r.content.decode("utf-8","replace")
-    print(json.dumps({"source":URL,"bytes":len(source),"read_only":True}),flush=True)
-    terms=("onCopyCalendarActivityToWorkoutLibrary","copyCalendarActivityToWorkoutLibrary",
-           "CopyCalendarActivityToWorkoutLibrary","copyActivityToWorkoutLibrary")
-    for term in terms:
-        hits=list(re.finditer(re.escape(term),source,re.I))
-        print(json.dumps({"term":term,"count":len(hits)}),flush=True)
-        for m in hits[:12]:
-            a,b=max(0,m.start()-520),min(len(source),m.end()+650)
-            print(json.dumps({"offset":m.start(),"context":source[a:b]},ensure_ascii=False),flush=True)
+    async with httpx.AsyncClient(timeout=20,follow_redirects=False) as h:
+        response=await h.get(URL)
+    if response.status_code!=200 or len(response.content)>1000000:
+        print(json.dumps({"status":"STOP","http":response.status_code}),flush=True)
+        return 2
+    source=response.text
+    print(json.dumps({"bytes":len(source),"read_only":True}),flush=True)
+    for term in ("copyCalendarActivityToLibrary","createFromWorkout","workoutLibraryItemType",
+                 "LibraryContent","_v1BaseUrl"):
+        matches=list(re.finditer(re.escape(term),source,re.I))
+        for m in matches[:4]:
+            a,b=max(0,m.start()-700),min(len(source),m.end()+1200)
+            print(json.dumps({"term":term,"offset":m.start(),
+                              "context":source[a:b]},ensure_ascii=False),flush=True)
     return 0
 
 if __name__=="__main__":
