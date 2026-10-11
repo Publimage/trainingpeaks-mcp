@@ -1,0 +1,15 @@
+{
+  "schema": "IRONMAN_OPERATOR_JOBS_V1",
+  "owner": 2116886,
+  "notes": "Registry is trusted code metadata. Jobs run only from the pinned verified branch; allow only reviewed scripts.",
+  "jobs": [
+    {
+      "name": "native_strength_library_audit",
+      "mode": "READ_ONLY",
+      "owner_id": 2116886,
+      "scope": "trainingpeaks:library:3891875:read",
+      "script": "scripts/ironman_jobs/native_strength_library_audit.py",
+      "test": "tests/test_native_note_library.py"
+    }
+  ]
+}
