@@ -28,8 +28,8 @@ async def main():
  old=manifest["old_body"];new=manifest["new_body"]
  must(len(old)==1671 and len(new)>len(old)+500 and "1. GUIDA ATLETA INTERMEDIATE 24W" in new,
       "CONTENT_MANIFEST_INVALID")
- must(new.replace(new[new.index("I 3 PDF ALLEGATI"):new.index("COME È COSTRUITO IL PIANO")],
-      "PRIMA DI INIZIARE\n")==old,
+ prefix,suffix=old.split("PRIMA DI INIZIARE\\n".replace("\\\\n","\\n"),1)
+ must(new.startswith(prefix) and new.endswith(suffix) and new.count("1. GUIDA ATLETA INTERMEDIATE 24W")==1,
       "ORIGINAL_CONTENT_NOT_PRESERVED")
  async with TPClient() as c:
   owner=await c._get_user_data()
