@@ -122,6 +122,14 @@
       "scope": "trainingpeaks:disposable-plan:684484:note:2655001:invalid-json-probe",
       "script": "scripts/ironman_jobs/native_pdf_json_contract_lab.py",
       "test": "tests/test_native_pdf_json_contract_lab.py"
+    },
+    {
+      "name": "native_pdf_json_fields_lab",
+      "mode": "GUARDED_WRITE",
+      "owner_id": 2116886,
+      "scope": "trainingpeaks:disposable-plan:684484:note:2655001:probe-json-mandatory-fields",
+      "script": "scripts/ironman_jobs/native_pdf_json_fields_lab.py",
+      "test": "tests/test_native_pdf_json_fields_lab.py"
     }
   ]
 }
