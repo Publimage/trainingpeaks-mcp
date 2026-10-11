@@ -1,5 +1,7 @@
 """Chasing M60 native DRAFT library-only publisher with guarded exception report."""
-import asyncio,json,traceback
+import asyncio,json,traceback,sys
+from pathlib import Path
+sys.path.insert(0,str(Path(__file__).resolve().parents[2]))
 from scripts.ironman_jobs.chasing_strength_native_publish_common import publish
 if __name__=="__main__":
     try:
