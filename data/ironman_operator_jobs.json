@@ -90,6 +90,14 @@
       "scope": "trainingpeaks:plan:684602:note-attachments:read",
       "script": "scripts/ironman_jobs/native_note_attachment_routes.py",
       "test": "tests/test_native_note_attachment_routes.py"
+    },
+    {
+      "name": "note_attachment_methods_readonly",
+      "mode": "READ_ONLY",
+      "owner_id": 2116886,
+      "scope": "trainingpeaks:lab:684484:attachment:methods-readonly",
+      "script": "scripts/ironman_jobs/note_attachment_methods_readonly.py",
+      "test": "tests/test_note_attachment_methods_readonly.py"
     }
   ]
 }
