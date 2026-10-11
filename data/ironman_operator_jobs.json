@@ -42,6 +42,14 @@
       "scope": "trainingpeaks:disposable-plan:684484:title-put-revert",
       "script": "scripts/ironman_jobs/plan_title_canary.py",
       "test": "tests/test_plan_title_canary.py"
+    },
+    {
+      "name": "plan_title_restore_lab",
+      "mode": "GUARDED_WRITE",
+      "owner_id": 2116886,
+      "scope": "trainingpeaks:disposable-plan:684484:restore-title",
+      "script": "scripts/ironman_jobs/plan_title_restore_lab.py",
+      "test": "tests/test_plan_title_restore_lab.py"
     }
   ]
 }
