@@ -47,9 +47,13 @@ async def main()->int:
                 try:
                     response=await http.get(STRENGTH_API_BASE+path,headers=_headers(token))
                     data=response.json() if response.status_code==200 else {}
-                    print(json.dumps({"stage":"NATIVE_LIBRARY_GET","library":lib,"http":response.status_code,
-                                      "result":shape(data),"writes":0},ensure_ascii=False),flush=True)
                     items=data.get("data") if isinstance(data,dict) else data
+                    compact=[{"id":x.get("id"),"title":x.get("title"),
+                              "time":{k:w.get(k) for k in ("totalTimePlanned","durationPlanned","plannedDurationInSeconds","durationInSeconds","timePlanned") if w.get(k) is not None}}
+                             for x in (items if isinstance(items,list) else []) if isinstance(x,dict)
+                             for w in [x.get("workout") or {}] if isinstance(w,dict)]
+                    print(json.dumps({"stage":"NATIVE_LIBRARY_GET","library":lib,"http":response.status_code,
+                                      "items":compact,"writes":0},ensure_ascii=False),flush=True)
                     if response.status_code==200 and isinstance(items,list):
                         summary[str(lib)]={"total":len(items),"native_structured_strength":sum(1 for x in items if isinstance(x,dict) and x.get("workoutLibraryItemType")=="ActivityWorkoutTemplate" and isinstance(x.get("workout"),dict) and x["workout"].get("workoutType")=="StructuredStrength"),"ids_unique":len({str(x.get("id")) for x in items if isinstance(x,dict)})==len(items),"titles_unique":len({str(x.get("title")) for x in items if isinstance(x,dict)})==len(items),"undated":all(isinstance(x.get("workout"),dict) and x["workout"].get("calendarId") is None and x["workout"].get("prescribedDate") is None for x in items if isinstance(x,dict))}
                     else:
