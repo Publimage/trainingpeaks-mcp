@@ -14,7 +14,10 @@ def endpoint(lib_id:int)->str:
 def shape(obj):
     if isinstance(obj,list):
         return {"shape":"list","count":len(obj),"samples":[{"id":z.get("id"),"type":z.get("workoutLibraryItemType"),
-                       "title":str(z.get("title") or "")[:100],"keys":sorted(z.keys())[:22]}
+                       "title":str(z.get("title") or "")[:100],"keys":sorted(z.keys())[:22],
+                       "workout_type":z.get("workout",{}).get("workoutType") if isinstance(z.get("workout"),dict) else type(z.get("workout")).__name__,
+                       "workout_keys":sorted(z.get("workout",{}).keys())[:22] if isinstance(z.get("workout"),dict) else [],
+                       "blocks":len(z.get("workout",{}).get("blocks") or []) if isinstance(z.get("workout"),dict) else None}
                        for z in obj[:4] if isinstance(z,dict)]}
     if isinstance(obj,dict):
         return {"shape":"dict","keys":sorted(obj.keys())[:30],
