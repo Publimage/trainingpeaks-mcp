@@ -242,6 +242,14 @@
       "scope": "trainingpeaks:strength-native:library:3890637,3891875:read",
       "script": "scripts/ironman_jobs/native_strength_library_rx_probe.py",
       "test": "tests/test_native_strength_library_rx_probe.py"
+    },
+    {
+      "name": "native_strength_library_copy_lab_canary",
+      "mode": "GUARDED_WRITE",
+      "owner_id": 2116886,
+      "scope": "trainingpeaks:lab-library:3890637:copy-one-existing-native-strength-template",
+      "script": "scripts/ironman_jobs/native_strength_library_copy_lab_canary.py",
+      "test": "tests/test_native_strength_library_copy_lab_canary.py"
     }
   ]
 }
