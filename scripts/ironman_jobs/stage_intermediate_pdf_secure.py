@@ -33,7 +33,7 @@ async def main():
   uri=d.split("\n",1)[0].split("=",1)[1]
   print("STAGE_VALIDATED_NOTE",len(uri),flush=True)
   u=urlsplit(uri)
-  assert u.scheme=="https" and u.hostname=="sdmntprpolandcentral.oaiusercontent.com"
+  assert u.scheme=="https" and u.hostname in {"sdmntprpolandcentral.oaiusercontent.com","sdmntprdenmarkeast.oaiusercontent.com"}
   print("STAGE_HOST_VALIDATED",flush=True)
   assert len(uri)<1000 and u.username is None and u.password is None
   async with httpx.AsyncClient(follow_redirects=False,timeout=45) as client:
