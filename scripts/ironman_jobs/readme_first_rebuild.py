@@ -70,7 +70,7 @@ async def run():
         must((p.get("planId"), p.get("title"), p.get("weekCount"), p.get("workoutCount"))
              == (PLAN, PLAN_TITLE, 24, 259), "WRONG_PLAN_OR_WORKOUT_DRIFT")
         must(p.get("isPublic") is False and p.get("price") in (None, 0), "PLAN_NOT_PRIVATE")
-        must((p.get("startDate") or "")[:10] == "2026-10-06", "PLAN_ANCHOR_CHANGED")
+        must((p.get("startDate") or "")[:10] == "2026-10-05", "PLAN_ANCHOR_CHANGED")
         async def read_notes():
             r = await tp.get(f"/plans/v1/plans/{PLAN}/calendarNote/{FIRST}/{END}")
             must(not r.is_error and isinstance(r.data, list) and all(isinstance(x,dict) for x in r.data),
