@@ -250,6 +250,14 @@
       "scope": "trainingpeaks:lab-library:3890637:copy-one-existing-native-strength-template",
       "script": "scripts/ironman_jobs/native_strength_library_copy_lab_canary.py",
       "test": "tests/test_native_strength_library_copy_lab_canary.py"
+    },
+    {
+      "name": "native_chasing_a60_lab_save",
+      "mode": "GUARDED_WRITE",
+      "owner_id": 2116886,
+      "scope": "trainingpeaks:lab-library:3890637:replace-item330612-with-Chasing-native-A60",
+      "script": "scripts/ironman_jobs/native_chasing_a60_lab_save.py",
+      "test": "tests/test_native_chasing_a60_lab_save.py"
     }
   ]
 }
