@@ -27,6 +27,35 @@ def _setup(monkeypatch, tmp_path, mode="READ_ONLY"):
     return job
 
 
+
+def test_registered_as_explicit_non_idempotent_tool():
+    from tp_mcp.server import TOOLS, _TOOL_HANDLERS
+    tools = [x for x in TOOLS if x.name == "tp_ironman_operator"]
+    assert len(tools) == 1
+    assert "job" in tools[0].input_schema["required"]
+    assert "revision" in tools[0].input_schema["required"]
+    assert tools[0].annotations.idempotent_hint is False
+    assert "tp_ironman_operator" in _TOOL_HANDLERS
+
+
+def test_rejects_secret_environment_in_child(monkeypatch, tmp_path):
+    job = _setup(monkeypatch, tmp_path)
+    monkeypatch.setenv("CONTROL_PLANE_API_KEY", "must-not-leak")
+    monkeypatch.setenv("PUBLIC_TEST_SETTING", "must-not-leak")
+    seen = {}
+
+    def fake_run(args, **kwargs):
+        seen["env"] = kwargs["env"]
+        return subprocess.CompletedProcess(args, 0, "", "")
+
+    monkeypatch.setattr(op.subprocess, "run", fake_run)
+    result = op._run("git", "status", "--porcelain")
+    assert result.returncode == 0
+    assert "CONTROL_PLANE_API_KEY" not in seen["env"]
+    assert "PUBLIC_TEST_SETTING" not in seen["env"]
+    assert seen["env"]["PYTHONPATH"].endswith("/src")
+
+
 def test_operator_registry_allows_only_approved_scripts(monkeypatch, tmp_path):
     job = _setup(monkeypatch, tmp_path)
     assert op._check_job(job, "execute", None)["mode"] == "READ_ONLY"
