@@ -31,43 +31,50 @@ def snippets(content:str)->list[str]:
             found.append(raw[:260])
     return found[:55]
 
+
 async def main()->int:
-    async with httpx.AsyncClient(timeout=18,follow_redirects=False,headers={"User-Agent":"Mozilla/5.0"}) as h:
-        scripts=[]
-        for url in PAGES:
-            try:
-                r=await h.get(url)
-                data=r.text[:MAX_BYTES] if "text/html" in r.headers.get("content-type","") else ""
-                srcs=re.findall(r"""<script[^>]+src=['"]([^'"]+)""",data,re.I)
-                srcs=[urljoin(url,v) for v in srcs]
-                scripts.extend([x for x in srcs if trusted(x)])
-                print(json.dumps({"source":url,"http":r.status_code,"redirect":r.headers.get("location","")[:140],
-                                  "html_bytes":len(data),"script_count":len(srcs),
-                                  "script_sample":[urlparse(x).path for x in srcs[:15]],
-                                  "matches":snippets(data)[:12],"js_mentions":list(dict.fromkeys(re.findall(r'[A-Za-z0-9_./:@+-]+[.]js',data)))[:35]},ensure_ascii=False),flush=True)
-            except (httpx.RequestError,ValueError) as e:
-                print(json.dumps({"source":url,"error":type(e).__name__}),flush=True)
-        unique=list(dict.fromkeys(scripts))[:MAX_SCRIPTS]
-        print(json.dumps({"js_count":len(unique)}),flush=True)
-        for src in unique:
-            try:
-                async with h.stream("GET",src) as r:
-                    if r.status_code!=200:
-                        print(json.dumps({"asset":urlparse(src).path[:160],"http":r.status_code}),flush=True)
-                        continue
-                    chunks=[];n=0
-                    async for c in r.aiter_bytes():
-                        n+=len(c)
-                        if n>MAX_BYTES:break
-                        chunks.append(c)
-                    if n>MAX_BYTES:
-                        print(json.dumps({"asset":urlparse(src).path[:160],"status":"OVERSIZE","bytes":n}),flush=True)
-                        continue
-                    js=b"".join(chunks).decode("utf-8","replace")
-                hits=snippets(js)
-                print(json.dumps({"asset":urlparse(src).path[:160],"status":"OK","bytes":len(js),"matches":hits},ensure_ascii=False),flush=True)
-            except (httpx.RequestError,ValueError,UnicodeError) as e:
-                print(json.dumps({"asset":urlparse(src).path[:160],"error":type(e).__name__}),flush=True)
+    base="https://app.trainingpeaks.com/"
+    targets=("copyCalendarActivityToWorkoutLibrary","copyWorkoutToLibrary",
+             "copyActivityToWorkoutLibrary","onCopyCalendarActivityToWorkoutLibrary",
+             "exerciselibrary/v1","/exerciselibrary/","saveworkouttolibrary",
+             "saveToWorkoutLibrary","workoutlibraryitem","/rx/activity/v1/workouts/")
+    async with httpx.AsyncClient(timeout=22,follow_redirects=False,headers={"User-Agent":"Mozilla/5.0"}) as h:
+        page=await h.get(base)
+        if page.status_code!=200:return 3
+        urls=re.findall(r"""<script[^>]+src=['"]([^'"]+)""",page.text,re.I)
+        urls=[urljoin(base,u) for u in urls if "release-" in u and ".js" in u]
+        urls=list(dict.fromkeys(x for x in urls if trusted(x)))[:180]
+        print(json.dumps({"phase":"INDEX","asset_count":len(urls)}),flush=True)
+        sem=asyncio.Semaphore(8)
+        async def inspect(url):
+            async with sem:
+                try:
+                    resp=await h.get(url)
+                    if resp.status_code!=200:
+                        return {"asset":urlparse(url).path,"http":resp.status_code}
+                    if len(resp.content)>13000000:
+                        return {"asset":urlparse(url).path,"status":"OVERSIZED","bytes":len(resp.content)}
+                    body=resp.text
+                    hits=[]
+                    for term in targets:
+                        mm=list(re.finditer(re.escape(term),body,re.I))
+                        if mm:
+                            matches=[]
+                            for m in mm[:3]:
+                                a,b=max(0,m.start()-180),min(len(body),m.end()+260)
+                                matches.append(body[a:b].replace("\n"," "))
+                            hits.append({"term":term,"count":len(mm),"samples":matches})
+                    return {"asset":urlparse(url).path,"bytes":len(body),"hits":hits}
+                except Exception as e:
+                    return {"asset":urlparse(url).path,"error":type(e).__name__}
+        results=await asyncio.gather(*(inspect(url) for url in urls))
+        matched=[r for r in results if r.get("hits")]
+        print(json.dumps({"phase":"SUMMARY","scanned":len(results),"matched":len(matched),
+                          "skipped_oversize":[x for x in results if x.get("status")=="OVERSIZED"],
+                          "failed":[x for x in results if x.get("http")!=None or x.get("error")][:12]},
+                          ensure_ascii=False),flush=True)
+        for r in matched:
+            print(json.dumps(r,ensure_ascii=False),flush=True)
     return 0
 
 if __name__=="__main__":
