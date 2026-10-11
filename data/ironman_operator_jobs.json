@@ -98,6 +98,14 @@
       "scope": "trainingpeaks:lab:684484:attachment:methods-readonly",
       "script": "scripts/ironman_jobs/note_attachment_methods_readonly.py",
       "test": "tests/test_note_attachment_methods_readonly.py"
+    },
+    {
+      "name": "test_lab_note_pdf_upload",
+      "mode": "GUARDED_WRITE",
+      "owner_id": 2116886,
+      "scope": "trainingpeaks:disposable-plan:684484:note:2655001:attach-v3-pdf",
+      "script": "scripts/ironman_jobs/test_lab_note_pdf_upload.py",
+      "test": "tests/test_lab_note_pdf_upload.py"
     }
   ]
 }
