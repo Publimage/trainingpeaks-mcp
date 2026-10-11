@@ -178,6 +178,14 @@
       "scope": "trainingpeaks:disposable-plan:684484:delete-temporary-note2655001",
       "script": "scripts/ironman_jobs/cleanup_intermediate_pdf_lab.py",
       "test": "tests/test_cleanup_intermediate_pdf_lab.py"
+    },
+    {
+      "name": "intermediate_release_postflight",
+      "mode": "READ_ONLY",
+      "owner_id": 2116886,
+      "scope": "trainingpeaks:private-plan:684602:readme-pdfs:final-read",
+      "script": "scripts/ironman_jobs/intermediate_release_postflight.py",
+      "test": "tests/test_intermediate_release_postflight.py"
     }
   ]
 }
