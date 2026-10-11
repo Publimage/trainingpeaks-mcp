@@ -202,6 +202,14 @@
       "scope": "trainingpeaks:disposable-plan:684484:pdf-canary-read",
       "script": "scripts/ironman_jobs/note_put_pdf_canary_readback.py",
       "test": "tests/test_note_put_pdf_canary_readback.py"
+    },
+    {
+      "name": "update_intermediate_readme_guide_order",
+      "mode": "GUARDED_WRITE",
+      "owner_id": 2116886,
+      "scope": "trainingpeaks:private-plan:684602:readme-2653899:description-only-guide-first",
+      "script": "scripts/ironman_jobs/update_intermediate_readme_guide_order.py",
+      "test": "tests/test_update_intermediate_readme_guide_order.py"
     }
   ]
 }
