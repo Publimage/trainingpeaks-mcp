@@ -162,6 +162,14 @@
       "scope": "trainingpeaks:private-plan:684602:readme2653899:append-third-pdf-v3",
       "script": "scripts/ironman_jobs/publish_intermediate_third_pdf.py",
       "test": "tests/test_publish_intermediate_third_pdf.py"
+    },
+    {
+      "name": "pdf_note_inventory_readonly",
+      "mode": "READ_ONLY",
+      "owner_id": 2116886,
+      "scope": "trainingpeaks:notes:lab-and-readme:attachment-inventory-read",
+      "script": "scripts/ironman_jobs/pdf_note_inventory_readonly.py",
+      "test": "tests/test_pdf_note_inventory_readonly.py"
     }
   ]
 }
