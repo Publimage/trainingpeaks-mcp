@@ -82,6 +82,14 @@
       "scope": "trainingpeaks:disposable-plan:684484:pdf-transfer:read",
       "script": "scripts/ironman_jobs/stage_intermediate_pdf_secure.py",
       "test": "tests/test_stage_intermediate_pdf_secure.py"
+    },
+    {
+      "name": "native_note_attachment_routes",
+      "mode": "READ_ONLY",
+      "owner_id": 2116886,
+      "scope": "trainingpeaks:plan:684602:note-attachments:read",
+      "script": "scripts/ironman_jobs/native_note_attachment_routes.py",
+      "test": "tests/test_native_note_attachment_routes.py"
     }
   ]
 }
