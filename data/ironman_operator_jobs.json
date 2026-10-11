@@ -74,6 +74,14 @@
       "scope": "trainingpeaks:private-plan:684602:restore-author-email-from-684463",
       "script": "scripts/ironman_jobs/restore_intermediate_plan_metadata.py",
       "test": "tests/test_restore_intermediate_plan_metadata.py"
+    },
+    {
+      "name": "stage_intermediate_pdf_secure",
+      "mode": "READ_ONLY",
+      "owner_id": 2116886,
+      "scope": "trainingpeaks:disposable-plan:684484:pdf-transfer:read",
+      "script": "scripts/ironman_jobs/stage_intermediate_pdf_secure.py",
+      "test": "tests/test_stage_intermediate_pdf_secure.py"
     }
   ]
 }
