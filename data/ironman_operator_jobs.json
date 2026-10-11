@@ -186,6 +186,14 @@
       "scope": "trainingpeaks:private-plan:684602:readme-pdfs:final-read",
       "script": "scripts/ironman_jobs/intermediate_release_postflight.py",
       "test": "tests/test_intermediate_release_postflight.py"
+    },
+    {
+      "name": "note_put_pdf_preservation_lab",
+      "mode": "GUARDED_WRITE",
+      "owner_id": 2116886,
+      "scope": "trainingpeaks:disposable-plan:684484:pdf-preserving-note-put-canary",
+      "script": "scripts/ironman_jobs/note_put_pdf_preservation_lab.py",
+      "test": "tests/test_note_put_pdf_preservation_lab.py"
     }
   ]
 }
