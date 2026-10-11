@@ -17,7 +17,11 @@ def shape(obj):
                        "title":str(z.get("title") or "")[:100],"keys":sorted(z.keys())[:22],
                        "workout_type":z.get("workout",{}).get("workoutType") if isinstance(z.get("workout"),dict) else type(z.get("workout")).__name__,
                        "workout_keys":sorted(z.get("workout",{}).keys())[:22] if isinstance(z.get("workout"),dict) else [],
-                       "blocks":len(z.get("workout",{}).get("blocks") or []) if isinstance(z.get("workout"),dict) else None}
+                       "blocks":len(z.get("workout",{}).get("blocks") or []) if isinstance(z.get("workout"),dict) else None,
+                       "native_id":z.get("workout",{}).get("id") if isinstance(z.get("workout"),dict) else None,
+                       "native_calendar_id":z.get("workout",{}).get("calendarId") if isinstance(z.get("workout"),dict) else None,
+                       "native_prescribed_date":z.get("workout",{}).get("prescribedDate") if isinstance(z.get("workout"),dict) else None,
+                       "block_summary":[{"type":b.get("blockType"),"title":b.get("title"),"prescriptions":len(b.get("prescriptions") or [])} for b in (z.get("workout",{}).get("blocks") or [])[:10]] if isinstance(z.get("workout"),dict) else []}
                        for z in obj[:4] if isinstance(z,dict)]}
     if isinstance(obj,dict):
         return {"shape":"dict","keys":sorted(obj.keys())[:30],
