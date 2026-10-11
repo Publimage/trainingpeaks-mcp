@@ -38,7 +38,7 @@ async def main()->int:
             try:
                 r=await h.get(url)
                 data=r.text[:MAX_BYTES] if "text/html" in r.headers.get("content-type","") else ""
-                srcs=re.findall(r'<script[^>]+src=["\\']([^"\\']+)',data,re.I)
+                srcs=re.findall(r'<script[^>]+src="([^"]+)"',data,re.I)
                 srcs=[urljoin(url,v) for v in srcs]
                 scripts.extend([x for x in srcs if trusted(x)])
                 print(json.dumps({"source":url,"http":r.status_code,"redirect":r.headers.get("location","")[:140],
