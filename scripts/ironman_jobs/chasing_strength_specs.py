@@ -28,5 +28,15 @@ SPECS={
        ("553",[{"Reps":8}],"Calf 1x8"),
        ("516",[{"Reps":6}],"DB Row 1x6"),
        ("5366",[{"Reps":6}],"Push up 1x6"),
-       ("79",[{"RepsPerSide":1,"Duration":20}],"Side plank 20s/lato")]}
+       ("79",[{"RepsPerSide":1,"Duration":20}],"Side plank 20s/lato")]},
+ "S60":{"title":"[DRAFT] CHASING | Forza S60 | Sviluppo full body + WarmUp","minutes":60,
+ "ex":[("144",[{"Reps":5},{"Reps":5},{"Reps":5}],"Goblet squat 3x5 RIR2-3, rec 2-3min, solo se tecnica acquisita"),
+       ("154",[{"Reps":5},{"Reps":5}],"Romanian Deadlift 2x5 RIR3, rec 2-3min"),
+       ("158",[{"RepsPerSide":5}],"Split squat 1x5/lato RIR4"),
+       ("553",[{"Reps":8},{"Reps":8}],"Calf raise 2x8 senza cedimento"),
+       ("151",[{"RepsPerSide":8},{"RepsPerSide":8}],"Single arm DB row 2x8 RIR3-4"),
+       ("5366",[{"Reps":8},{"Reps":8}],"Push up 2x8 RIR3-4"),
+       ("79",[{"RepsPerSide":1,"Duration":25}],"Side plank 25s per lato"),
+       ("5312",[{"RepsPerSide":6}],"Dead bug 1x6/lato")]}
+
 }
