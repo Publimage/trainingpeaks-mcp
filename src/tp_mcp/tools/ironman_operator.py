@@ -12,6 +12,7 @@ from __future__ import annotations
 
 import asyncio
 import fcntl
+import hashlib
 import json
 import os
 import re
@@ -147,8 +148,45 @@ def _execute_blocking(job: str, revision: str, operation: str, ack_scope: str | 
         command = [str(VENV_PYTHON), "-m", "pytest", "-q", spec["test"]]
         _require_ok(_run(*command, timeout=125), "Approved job tests")
         script = REPO / spec["script"]
+        # Guarded writes are non-idempotent. Claim a durable local receipt before
+        # executing. Any crash/timeout leaves a STOP requiring provider readback.
+        receipt_path = None
+        if kind == GUARDED_WRITE:
+            fingerprint = hashlib.sha256(
+                f"{job}|{revision}|{spec['scope']}".encode("utf-8")
+            ).hexdigest()[:32]
+            receipt_path = STATE_DIR / f"{fingerprint}.json"
+            if receipt_path.exists():
+                raise BridgeStop(
+                    "Protected job already attempted; inspect provider state before any repeat."
+                )
+            pending = {
+                "job": job, "revision": revision, "scope": spec["scope"],
+                "state": "STARTED_UNVERIFIED",
+            }
+            tmp = receipt_path.with_suffix(".tmp")
+            with tmp.open("x", encoding="utf-8") as out:
+                os.chmod(tmp, 0o600)
+                json.dump(pending, out)
+                out.flush()
+                os.fsync(out.fileno())
+            tmp.replace(receipt_path)
+
         # Only a trusted checked-out script path. Never shell=True / caller argv.
         proc = _run(str(VENV_PYTHON), str(script), timeout=175)
+        if receipt_path is not None:
+            audit = {
+                "job": job, "revision": revision, "scope": spec["scope"],
+                "state": "DONE_NEEDS_PROVIDER_AUDIT" if proc.returncode == 0 else "STOP_REVIEW",
+                "exit_code": proc.returncode,
+            }
+            tmp = receipt_path.with_suffix(".tmp")
+            with tmp.open("x", encoding="utf-8") as out:
+                os.chmod(tmp, 0o600)
+                json.dump(audit, out)
+                out.flush()
+                os.fsync(out.fileno())
+            tmp.replace(receipt_path)
         # Strip any accidental bearer/cookie/password strings from returned logs.
         output = re.sub(
             r"(?i)(authorization|bearer|cookie|password|secret|token)\s*[:=]\s*\S+",
