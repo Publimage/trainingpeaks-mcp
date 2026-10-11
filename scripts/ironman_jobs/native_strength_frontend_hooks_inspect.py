@@ -7,12 +7,12 @@ from __future__ import annotations
 import asyncio,json,re,httpx
 
 URL="https://app.trainingpeaks.com/release-20261009-47467f9/modules-f765ba67.js"
-TERMS=("onAddWorkoutToLibrary","SaveToWorkoutLibrary","saveWorkoutToLibraryFolder","/exerciselibrary/")
+TERMS=("onAddWorkoutToLibrary",)
 
-def spans(src:str,term:str,limit:int=2)->list[dict]:
+def spans(src:str,term:str,limit:int=12)->list[dict]:
     result=[]
     for m in list(re.finditer(re.escape(term),src,re.I))[:limit]:
-        a,b=max(0,m.start()-200),min(len(src),m.end()+290)
+        a,b=max(0,m.start()-400),min(len(src),m.end()+390)
         result.append({"pos":m.start(),"context":src[a:b].replace("\n"," ")})
     return result
 
