@@ -314,6 +314,14 @@
       "scope": "trainingpeaks:chasing-library:3894341:publish-native-s60",
       "script": "scripts/ironman_jobs/chasing_strength_publish_s60.py",
       "test": "tests/test_chasing_strength_native_publish_variants.py"
+    },
+    {
+      "name": "chasing_strength_block_titles_fix",
+      "mode": "GUARDED_WRITE",
+      "owner_id": 2116886,
+      "scope": "trainingpeaks:chasing-library:3894341:rename-five-native-exercise-blocks",
+      "script": "scripts/ironman_jobs/chasing_strength_block_titles_fix.py",
+      "test": "tests/test_chasing_strength_block_titles_fix.py"
     }
   ]
 }
