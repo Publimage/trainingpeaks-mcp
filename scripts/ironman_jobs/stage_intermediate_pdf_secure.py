@@ -31,11 +31,14 @@ async def main():
   d=found[0].get("description","")
   assert d.startswith("SIGNED_READ_URI=") and "\nSHA256="+EXPECTED_SHA256 in d
   uri=d.split("\n",1)[0].split("=",1)[1]
+  print("STAGE_VALIDATED_NOTE",len(uri),flush=True)
   u=urlsplit(uri)
   assert u.scheme=="https" and u.hostname=="sdmntprpolandcentral.oaiusercontent.com"
+  print("STAGE_HOST_VALIDATED",flush=True)
   assert len(uri)<1000 and u.username is None and u.password is None
   async with httpx.AsyncClient(follow_redirects=False,timeout=45) as client:
    response=await client.get(uri)
+   print("STAGE_HTTP",response.status_code,"bytes",len(response.content),flush=True)
    response.raise_for_status()
    assert response.status_code==200 and len(response.content)==EXPECTED_BYTES
    data=response.content
@@ -53,4 +56,8 @@ async def main():
   print("TRANSFER_VERIFIED", "bytes",len(data),"sha256",EXPECTED_SHA256,
         "stored_private",True,"trainingpeaks_writes",0,flush=True)
   return 0
-if __name__=="__main__":raise SystemExit(asyncio.run(main()))
+if __name__=="__main__":
+ try:raise SystemExit(asyncio.run(main()))
+ except Exception as exc:
+  print("STAGE_FAIL",type(exc).__name__,flush=True)
+  raise SystemExit(2)
