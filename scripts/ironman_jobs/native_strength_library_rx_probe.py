@@ -40,6 +40,7 @@ async def main()->int:
         _,token,error=await _access(client)
         if error or not token:
             print(json.dumps({"stage":"STOP_AUTH","writes":0}));return 4
+        summary={}
         async with httpx.AsyncClient(timeout=20,follow_redirects=False) as http:
             for lib in LIBS:
                 path=endpoint(lib)
@@ -48,8 +49,14 @@ async def main()->int:
                     data=response.json() if response.status_code==200 else {}
                     print(json.dumps({"stage":"NATIVE_LIBRARY_GET","library":lib,"http":response.status_code,
                                       "result":shape(data),"writes":0},ensure_ascii=False),flush=True)
+                    items=data.get("data") if isinstance(data,dict) else data
+                    if response.status_code==200 and isinstance(items,list):
+                        summary[str(lib)]={"total":len(items),"native_structured_strength":sum(1 for x in items if isinstance(x,dict) and x.get("workoutLibraryItemType")=="ActivityWorkoutTemplate" and isinstance(x.get("workout"),dict) and x["workout"].get("workoutType")=="StructuredStrength"),"ids_unique":len({str(x.get("id")) for x in items if isinstance(x,dict)})==len(items),"titles_unique":len({str(x.get("title")) for x in items if isinstance(x,dict)})==len(items),"undated":all(isinstance(x.get("workout"),dict) and x["workout"].get("calendarId") is None and x["workout"].get("prescribedDate") is None for x in items if isinstance(x,dict))}
+                    else:
+                        summary[str(lib)]={"http":response.status_code}
                 except (httpx.RequestError,ValueError,TypeError):
                     print(json.dumps({"stage":"NETWORK_OR_PARSE_STOP","library":lib,"writes":0}),flush=True)
+    print(json.dumps({"stage":"COMPACT_NATIVE_LIBRARY_SUMMARY","libraries":summary,"writes":0},ensure_ascii=False),flush=True)
     return 0
 
 if __name__=="__main__":
