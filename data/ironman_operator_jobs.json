@@ -106,6 +106,14 @@
       "scope": "trainingpeaks:disposable-plan:684484:note:2655001:attach-v3-pdf",
       "script": "scripts/ironman_jobs/test_lab_note_pdf_upload.py",
       "test": "tests/test_lab_note_pdf_upload.py"
+    },
+    {
+      "name": "delete_pdf_transfer_note_lab",
+      "mode": "GUARDED_WRITE",
+      "owner_id": 2116886,
+      "scope": "trainingpeaks:disposable-plan:684484:delete-signed-transport-note-2655001",
+      "script": "scripts/ironman_jobs/delete_pdf_transfer_note_lab.py",
+      "test": "tests/test_delete_pdf_transfer_note_lab.py"
     }
   ]
 }
