@@ -58,6 +58,14 @@
       "scope": "trainingpeaks:private-plan:684602:title-only-rename",
       "script": "scripts/ironman_jobs/rename_intermediate_release.py",
       "test": "tests/test_rename_intermediate_release.py"
+    },
+    {
+      "name": "plan_metadata_audit",
+      "mode": "READ_ONLY",
+      "owner_id": 2116886,
+      "scope": "trainingpeaks:plans:owned:metadata:read",
+      "script": "scripts/ironman_jobs/plan_metadata_audit.py",
+      "test": "tests/test_plan_metadata_audit.py"
     }
   ]
 }
