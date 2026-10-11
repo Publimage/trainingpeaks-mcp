@@ -226,6 +226,14 @@
       "scope": "public:trainingpeaks:frontend:read",
       "script": "scripts/ironman_jobs/tp_frontend_strength_lib_route_audit.py",
       "test": "tests/test_tp_frontend_strength_lib_route_audit.py"
+    },
+    {
+      "name": "native_strength_frontend_hooks_inspect",
+      "mode": "READ_ONLY",
+      "owner_id": 2116886,
+      "scope": "public:trainingpeaks:frontend:strength-library-hooks:read",
+      "script": "scripts/ironman_jobs/native_strength_frontend_hooks_inspect.py",
+      "test": "tests/test_native_strength_frontend_hooks_inspect.py"
     }
   ]
 }
