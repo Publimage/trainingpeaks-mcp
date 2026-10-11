@@ -72,6 +72,7 @@ from tp_mcp.tools import (
     tp_get_libraries,
     tp_get_library_item,
     tp_get_library_items,
+    tp_ironman_operator,
     tp_sync_intermediate_native_notes,
     tp_get_metrics,
     tp_get_next_event,
@@ -1211,6 +1212,34 @@ TOOLS = [
             "required": [],
         },
     ),
+    # --- IRONMAN Cloud Operator ---
+    Tool(
+        name="tp_ironman_operator",
+        description=(
+            "Execute a revision-pinned, GitHub-reviewed IRONMAN job using the existing "
+            "DigitalOcean TrainingPeaks cloud runtime. Does not accept arbitrary "
+            "commands or paths. Defaults to read-only preview; execute verifies "
+            "authenticated coach owner 2116886, trusted repo and exact commit, "
+            "runs approved tests then executes registered task. Native Strength "
+            "Library audit job: native_strength_library_audit. A guarded-write "
+            "job requires explicit exact scope acknowledgement. The job may "
+            "alter the repo checkout, but does not restart the MCP tunnel."
+        ),
+        input_schema={
+            "type": "object",
+            "properties": {
+                "job": {"type": "string", "minLength": 3,
+                        "description": "Approved named job in data/ironman_operator_jobs.json."},
+                "revision": {"type": "string", "minLength": 40, "maxLength": 40,
+                             "description": "Pinned full SHA of trusted GitHub branch tip."},
+                "operation": {"type": "string", "enum": ["preview", "execute"],
+                              "default": "preview"},
+                "ack_scope": {"type": "string",
+                              "description": "Required only for explicitly approved guarded-write jobs."},
+            },
+            "required": ["job", "revision"],
+        },
+    ),
     # --- Workout Library ---
     Tool(
         name="tp_sync_intermediate_native_notes",
@@ -1739,6 +1768,7 @@ _DESTRUCTIVE_TOOLS = {
 # sets, deletes and membership changes converge on the same state and are
 # therefore idempotent.
 _NON_IDEMPOTENT_WRITES = {
+    "tp_ironman_operator",
     "tp_add_note_comment",
     "tp_add_workout_comment",
     "tp_add_training_plan_library_workout",
@@ -2265,6 +2295,15 @@ async def _h_get_libs(args): return await tp_get_libraries()
 
 @_handler("tp_get_library_items")
 async def _h_get_lib_items(args): return await tp_get_library_items(library_id=args["library_id"])
+
+@_handler("tp_ironman_operator")
+async def _h_ironman_operator(args):
+    return await tp_ironman_operator(
+        job=args["job"],
+        revision=args["revision"],
+        operation=args.get("operation", "preview"),
+        ack_scope=args.get("ack_scope"),
+    )
 
 @_handler("tp_sync_intermediate_native_notes")
 async def _h_sync_native_notes(args):
