@@ -66,6 +66,14 @@
       "scope": "trainingpeaks:plans:owned:metadata:read",
       "script": "scripts/ironman_jobs/plan_metadata_audit.py",
       "test": "tests/test_plan_metadata_audit.py"
+    },
+    {
+      "name": "restore_intermediate_plan_metadata",
+      "mode": "GUARDED_WRITE",
+      "owner_id": 2116886,
+      "scope": "trainingpeaks:private-plan:684602:restore-author-email-from-684463",
+      "script": "scripts/ironman_jobs/restore_intermediate_plan_metadata.py",
+      "test": "tests/test_restore_intermediate_plan_metadata.py"
     }
   ]
 }
