@@ -26,6 +26,14 @@
       "scope": "trainingpeaks:disposable-plan:684484:transient-note:create-delete",
       "script": "scripts/ironman_jobs/readme_delete_canary.py",
       "test": "tests/test_readme_delete_canary.py"
+    },
+    {
+      "name": "readme_first_rebuild",
+      "mode": "GUARDED_WRITE",
+      "owner_id": 2116886,
+      "scope": "trainingpeaks:private-test-plan:684602:w1monday:readme-first:rebuild-two-other-notes",
+      "script": "scripts/ironman_jobs/readme_first_rebuild.py",
+      "test": "tests/test_readme_first_rebuild.py"
     }
   ]
 }
