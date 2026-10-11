@@ -22,11 +22,12 @@ async def main()->int:
     if response.status_code!=200 or len(response.content)>1000000:
         print(json.dumps({"status":"STOP","http":response.status_code}),flush=True);return 2
     source=response.text
-    for term in ("copyCalendarActivityToLibrary","createFromWorkout"):
+    for term in ("getAllActivitiesForLibrary","getActivityFromLibrary","deleteActivityFromLibrary",
+                 "getAllWorkoutLibraries","createFromWorkout","workoutLibraryItemType"):
         hits=list(re.finditer(re.escape(term),source,re.I))
         if hits:
             hit=hits[0]
-            a,b=max(0,hit.start()-900),min(len(source),hit.end()+2900)
+            a,b=max(0,hit.start()-550),min(len(source),hit.end()+1550)
             print(json.dumps({"term":term,"count":len(hits),"offset":hit.start(),"context":source[a:b]},ensure_ascii=False),flush=True)
     return 0
 
