@@ -15,7 +15,7 @@ PAGES=("https://app.trainingpeaks.com/","https://home.trainingpeaks.com/","https
 PATTERNS=("exerciselibrary","StructuredStrength","/rx/activity/","strengthworkout","libraryitem","WorkoutLibrary","System.import","release-2026","webpack","javascript:")
 ALLOWED=("trainingpeaks.com","peakswaresb.com")
 MAX_BYTES=5000000
-MAX_SCRIPTS=30
+MAX_SCRIPTS=90
 
 def trusted(url:str)->bool:
     host=(urlparse(url).hostname or "").lower()
@@ -38,7 +38,7 @@ async def main()->int:
             try:
                 r=await h.get(url)
                 data=r.text[:MAX_BYTES] if "text/html" in r.headers.get("content-type","") else ""
-                srcs=re.findall(r'<script[^>]+src="([^"]+)"',data,re.I)
+                srcs=re.findall(r"""<script[^>]+src=['"]([^'"]+)""",data,re.I)
                 srcs=[urljoin(url,v) for v in srcs]
                 scripts.extend([x for x in srcs if trusted(x)])
                 print(json.dumps({"source":url,"http":r.status_code,"redirect":r.headers.get("location","")[:140],
