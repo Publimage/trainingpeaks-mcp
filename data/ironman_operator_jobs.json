@@ -146,6 +146,14 @@
       "scope": "trainingpeaks:disposable-plan:684484:note:2655001:json-attach-v3-pdf",
       "script": "scripts/ironman_jobs/test_lab_note_pdf_json.py",
       "test": "tests/test_lab_note_pdf_json.py"
+    },
+    {
+      "name": "native_note_pdf_json_field_probe",
+      "mode": "GUARDED_WRITE",
+      "owner_id": 2116886,
+      "scope": "trainingpeaks:disposable-plan:684484:note:2655001:invalid-json-data-probe",
+      "script": "scripts/ironman_jobs/native_note_pdf_json_field_probe.py",
+      "test": "tests/test_native_note_pdf_json_field_probe.py"
     }
   ]
 }
