@@ -34,10 +34,9 @@ def snippets(content:str)->list[str]:
 
 async def main()->int:
     base="https://app.trainingpeaks.com/"
-    targets=("copyCalendarActivityToWorkoutLibrary","copyWorkoutToLibrary",
-             "copyActivityToWorkoutLibrary","onCopyCalendarActivityToWorkoutLibrary",
-             "exerciselibrary/v1","/exerciselibrary/","saveworkouttolibrary",
-             "saveToWorkoutLibrary","workoutlibraryitem","/rx/activity/v1/workouts/")
+    targets=("onCopyCalendarActivityToLibrary","copyCalendarActivityToLibrary",
+             "onCopyActivityToLibrary","copyWorkoutToLibrary",
+             "addWorkoutToLibrary","addWorkoutToLibraryFolder")
     async with httpx.AsyncClient(timeout=22,follow_redirects=False,headers={"User-Agent":"Mozilla/5.0"}) as h:
         page=await h.get(base)
         if page.status_code!=200:return 3
