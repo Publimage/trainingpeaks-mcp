@@ -10,6 +10,14 @@
       "scope": "trainingpeaks:library:3891875:read",
       "script": "scripts/ironman_jobs/native_strength_library_audit.py",
       "test": "tests/test_native_note_library.py"
+    },
+    {
+      "name": "readme_first_order_audit",
+      "mode": "READ_ONLY",
+      "owner_id": 2116886,
+      "scope": "trainingpeaks:plan:684602:calendarNote:w1monday:read",
+      "script": "scripts/ironman_jobs/readme_first_order_audit.py",
+      "test": "tests/test_readme_first_order.py"
     }
   ]
 }
