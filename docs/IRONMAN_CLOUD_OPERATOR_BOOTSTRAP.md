@@ -24,17 +24,19 @@ absent, and must not authorize duplicate publishing.
 
 ## One-time droplet bootstrap
 
-From the existing SSH connection as user `ironman`:
+From the existing DigitalOcean Web Console SSH session running as `root`, run Git operations as the actual repository owner `ironman`. Do not whitelist the repository globally via `git config --global safe.directory` just to bypass Git ownership protection. Replace `REVIEWED_FULL_SHA` with the full, verified feature-branch commit supplied for this deployment:
 
 ```bash
 (
 set -e
 REPO=/home/ironman/trainingpeaks-mcp
 PY=/home/ironman/tp-mcp-venv/bin/python
-OLD=$(git -C "$REPO" rev-parse HEAD)
+PIN=REVIEWED_FULL_SHA
+OLD=$(sudo -u ironman -H git -C "$REPO" rev-parse HEAD)
 sudo -u ironman -H git -C "$REPO" fetch origin feat/mcp-test-training-plan-lab
-NEW=$(git -C "$REPO" rev-parse FETCH_HEAD)
-sudo -u ironman -H git -C "$REPO" checkout --detach "$NEW"
+NEW=$(sudo -u ironman -H git -C "$REPO" rev-parse FETCH_HEAD)
+test "$NEW" = "$PIN" || { echo "STOP: GitHub branch changed; no checkout"; exit 1; }
+sudo -u ironman -H git -C "$REPO" checkout --detach "$PIN"
 if ! sudo -u ironman -H "$PY" -m pytest -q "$REPO/tests/test_ironman_operator.py" "$REPO/tests/test_native_note_library.py" ||
    ! sudo -u ironman -H "$PY" -c "from tp_mcp.server import TOOLS, _TOOL_HANDLERS; assert any(t.name == 'tp_ironman_operator' for t in TOOLS); assert 'tp_ironman_operator' in _TOOL_HANDLERS"; then
   echo "TEST FAILED. Restoring previous revision; NOT restarting service."
