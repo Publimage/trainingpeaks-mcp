@@ -1,0 +1,32 @@
+"""Canonical DRAFT native Chasing Strength templates, no athlete dates."""
+WARM=[("1",[{"Reps":8}]),("579",[{"Reps":8}]),("440",[{"RepsPerSide":5}])]
+SPECS={
+ "M60":{"title":"[DRAFT] CHASING | Forza M60 | Mantenimento full body + WarmUp","minutes":60,
+ "ex":[("144",[{"Reps":5},{"Reps":5}],"Squat 2x5 RIR3-4, rec 2-3min"),
+       ("154",[{"Reps":5}],"Hip hinge 1x5 RIR4 rec 2-3min"),
+       ("165",[{"RepsPerSide":5}],"Step up 1x5/lato RIR4"),
+       ("520",[{"RepsPerSide":8}],"Calf soleus 1x8/lato"),
+       ("516",[{"Reps":8},{"Reps":8}],"Upper pull 2x8 RIR4"),
+       ("5366",[{"Reps":8}],"Upper push 1x8 RIR4"),
+       ("79",[{"RepsPerSide":1,"Duration":25}],"Side plank 25s/lato")]},
+ "D40":{"title":"[DRAFT] CHASING | Forza D40 | Scarico tecnico + WarmUp","minutes":40,
+ "ex":[("144",[{"Reps":6}],"Squat tecnico 1x6 RIR5"),
+       ("579",[{"Reps":8}],"Glute bridge 1x8 facile"),
+       ("553",[{"Reps":8}],"Calf raise 1x8"),
+       ("516",[{"Reps":8}],"DB Row 1x8 leggero"),
+       ("616",[{"Reps":8}],"Incline push up 1x8 facile"),
+       ("5312",[{"RepsPerSide":6}],"Dead bug 1x6/lato")]},
+ "M45":{"title":"[DRAFT] CHASING | Forza M45 | Specificita mantenimento + WarmUp","minutes":45,
+ "ex":[("144",[{"Reps":4},{"Reps":4}],"Squat 2x4 RIR4, rec 2-3min"),
+       ("154",[{"Reps":5}],"Hinge 1x5 RIR4"),
+       ("553",[{"Reps":8}],"Calf 1x8 senza DOMS"),
+       ("516",[{"Reps":8}],"Upper pull 1x8"),
+       ("5366",[{"Reps":6}],"Upper push 1x6"),
+       ("79",[{"RepsPerSide":1,"Duration":20}],"Side plank 20s/lato")]},
+ "M30":{"title":"[DRAFT] CHASING | Forza M30 | Richiamo neurale minimo + WarmUp","minutes":30,
+ "ex":[("144",[{"Reps":4}],"Squat 1x4 RIR4, gesto rapido solo se familiare"),
+       ("553",[{"Reps":8}],"Calf 1x8"),
+       ("516",[{"Reps":6}],"DB Row 1x6"),
+       ("5366",[{"Reps":6}],"Push up 1x6"),
+       ("79",[{"RepsPerSide":1,"Duration":20}],"Side plank 20s/lato")]}
+}
