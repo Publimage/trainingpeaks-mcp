@@ -47,7 +47,7 @@ async def main():
   async def read(a,b):
    r=await c.get(f"/plans/v1/plans/{PLAN}/workouts/{a}/{b}")
    return None if r.is_error or not isinstance(r.data,list) else r.data
-  start=when(7,0).isoformat()
+  start=when(6,0).isoformat()
   end=when(7,0).isoformat()
   initial=await read(start,end)
   if initial is None:log(stage="STOP_PREFLIGHT_READ");return 4
