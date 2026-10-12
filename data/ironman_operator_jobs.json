@@ -794,6 +794,14 @@
       "scope": "trainingpeaks:plan:685173:move-one-45min-w02-run-fri-to-mon",
       "script": "scripts/ironman_jobs/chasing_w02_run_to_monday.py",
       "test": "tests/test_chasing_w02_run_to_monday.py"
+    },
+    {
+      "name": "chasing_w03_w04_run_rebalance",
+      "mode": "GUARDED_WRITE",
+      "owner_id": 2116886,
+      "scope": "trainingpeaks:plan:685173:move-three-w03-w04-run-dates-preserve-volume",
+      "script": "scripts/ironman_jobs/chasing_w03_w04_run_rebalance.py",
+      "test": "tests/test_chasing_w03_w04_run_rebalance.py"
     }
   ]
 }
