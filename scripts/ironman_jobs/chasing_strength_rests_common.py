@@ -85,7 +85,10 @@ def strip_note_deltas(original,updated):
     for current,before in zip(w["blocks"],original["blocks"]):
         for p,q in zip(current.get("prescriptions") or [],before.get("prescriptions") or []):
             p["coachNotes"]=q.get("coachNotes")
-    return w==original
+    w.pop("lastUpdatedAt",None)
+    original_copy=copy.deepcopy(original)
+    original_copy.pop("lastUpdatedAt",None)
+    return w==original_copy
 
 def assert_correct(original,updated,key):
     expected=apply(original,key)
@@ -93,6 +96,9 @@ def assert_correct(original,updated,key):
         raise ValueError("DURATION_CHANGED")
     if not strip_note_deltas(original,updated):
         raise ValueError("NON_NOTE_FIELDS_CHANGED")
-    if updated!=expected:
+    current=copy.deepcopy(updated)
+    current.pop("lastUpdatedAt",None)
+    expected.pop("lastUpdatedAt",None)
+    if current!=expected:
         raise ValueError("WRONG_REST_NOTES")
     return True
