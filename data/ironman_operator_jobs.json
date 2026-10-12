@@ -850,6 +850,14 @@
       "scope": "trainingpeaks:plan:684484:probe-startDate-july5-to-july4-and-restore",
       "script": "scripts/ironman_jobs/chasing_lab_plan_anchor_probe.py",
       "test": "tests/test_chasing_lab_plan_anchor_probe.py"
+    },
+    {
+      "name": "chasing_lab_prestart_workout_probe",
+      "mode": "GUARDED_WRITE",
+      "owner_id": 2116886,
+      "scope": "trainingpeaks:plan:684484:move-one-workout-before-start-and-restore",
+      "script": "scripts/ironman_jobs/chasing_lab_prestart_workout_probe.py",
+      "test": "tests/test_chasing_lab_prestart_workout_probe.py"
     }
   ]
 }
