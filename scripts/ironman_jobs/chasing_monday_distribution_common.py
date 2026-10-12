@@ -66,7 +66,7 @@ async def run(first,last):
                           "minutes":thu["RU"],"intent":"Thursday easy run -> Sunday; Wednesday long stays"})
     backup=Path.home()/f".trainingpeaks-mcp/chasing_run_moves_w{first:02d}_w{last:02d}_backup.json"
     start=d(first,0)
-    end=d(last+1,0)
+    end=d(last,6)  # provider end is inclusive; exclude next block's Monday
     async with TPClient() as c:
         me=await c._get_user_data()
         must(isinstance(me,dict) and me.get("personId")==OWNER,"WRONG_OWNER")
