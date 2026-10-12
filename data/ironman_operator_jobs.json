@@ -874,6 +874,14 @@
       "scope": "trainingpeaks:plan:685173:postmove-24w-distribution-audit:read",
       "script": "scripts/ironman_jobs/chasing_live_distribution_postmove_audit.py",
       "test": "tests/test_chasing_live_distribution_postmove_audit.py"
+    },
+    {
+      "name": "chasing_content_patch_dto_audit",
+      "mode": "READ_ONLY",
+      "owner_id": 2116886,
+      "scope": "trainingpeaks:plans:684206-685173:content-substitution-dto:read",
+      "script": "scripts/ironman_jobs/chasing_content_patch_dto_audit.py",
+      "test": "tests/test_chasing_content_patch_dto_audit.py"
     }
   ]
 }
