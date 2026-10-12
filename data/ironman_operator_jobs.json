@@ -890,6 +890,14 @@
       "scope": "trainingpeaks:plan:684206:replace-one-lab-run-content-and-restore",
       "script": "scripts/ironman_jobs/chasing_lab_content_replace.py",
       "test": "tests/test_chasing_lab_content_replace.py"
+    },
+    {
+      "name": "chasing_w01_baseline_tests",
+      "mode": "GUARDED_WRITE",
+      "owner_id": 2116886,
+      "scope": "trainingpeaks:plan:685173:replace-w01-run5k-swim1500-bike20-three-workouts",
+      "script": "scripts/ironman_jobs/chasing_w01_baseline_tests.py",
+      "test": "tests/test_chasing_w01_baseline_tests.py"
     }
   ]
 }
