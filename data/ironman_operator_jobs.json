@@ -802,6 +802,46 @@
       "scope": "trainingpeaks:plan:685173:move-three-w03-w04-run-dates-preserve-volume",
       "script": "scripts/ironman_jobs/chasing_w03_w04_run_rebalance.py",
       "test": "tests/test_chasing_w03_w04_run_rebalance.py"
+    },
+    {
+      "name": "chasing_distribute_w05_w08",
+      "mode": "GUARDED_WRITE",
+      "owner_id": 2116886,
+      "scope": "trainingpeaks:plan:685173:inplace-run-distribution-w05-w08",
+      "script": "scripts/ironman_jobs/chasing_distribute_w05_w08.py",
+      "test": "tests/test_chasing_distribute_w05_w08.py"
+    },
+    {
+      "name": "chasing_distribute_w09_w12",
+      "mode": "GUARDED_WRITE",
+      "owner_id": 2116886,
+      "scope": "trainingpeaks:plan:685173:inplace-run-distribution-w09-w12",
+      "script": "scripts/ironman_jobs/chasing_distribute_w09_w12.py",
+      "test": "tests/test_chasing_distribute_w09_w12.py"
+    },
+    {
+      "name": "chasing_distribute_w13_w16",
+      "mode": "GUARDED_WRITE",
+      "owner_id": 2116886,
+      "scope": "trainingpeaks:plan:685173:inplace-run-distribution-w13-w16",
+      "script": "scripts/ironman_jobs/chasing_distribute_w13_w16.py",
+      "test": "tests/test_chasing_distribute_w13_w16.py"
+    },
+    {
+      "name": "chasing_distribute_w17_w20",
+      "mode": "GUARDED_WRITE",
+      "owner_id": 2116886,
+      "scope": "trainingpeaks:plan:685173:inplace-run-distribution-w17-w20",
+      "script": "scripts/ironman_jobs/chasing_distribute_w17_w20.py",
+      "test": "tests/test_chasing_distribute_w17_w20.py"
+    },
+    {
+      "name": "chasing_distribute_w21_w23",
+      "mode": "GUARDED_WRITE",
+      "owner_id": 2116886,
+      "scope": "trainingpeaks:plan:685173:inplace-run-distribution-w21-w23",
+      "script": "scripts/ironman_jobs/chasing_distribute_w21_w23.py",
+      "test": "tests/test_chasing_distribute_w21_w23.py"
     }
   ]
 }
