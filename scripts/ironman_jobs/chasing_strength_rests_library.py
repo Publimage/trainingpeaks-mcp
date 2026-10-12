@@ -6,7 +6,7 @@ import asyncio,json,httpx,copy
 from pathlib import Path
 from tp_mcp.client import TPClient
 from tp_mcp.tools.strength import _access,_headers,STRENGTH_API_BASE
-from scripts.ironman_jobs.chasing_strength_rests_common import LIB_ID,apply,assert_correct,MARKER
+from chasing_strength_rests_common import LIB_ID,apply,assert_correct,MARKER
 OWNER=2116886; LIB=3894341
 BASE="/rx/activity/v1/libraryContent/workoutLibrary"
 BACKUP=Path.home()/".trainingpeaks-mcp/chasing_strength_rests_library_v1_backup.json"
