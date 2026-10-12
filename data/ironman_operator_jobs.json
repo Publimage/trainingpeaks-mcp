@@ -1018,6 +1018,14 @@
       "scope": "trainingpeaks:plan:685173:week-04-run-reallocation-monday-easy-sunday-long",
       "script": "scripts/ironman_jobs/chasing_intermediate_layout_w04.py",
       "test": "tests/test_chasing_intermediate_layout_w04.py"
+    },
+    {
+      "name": "chasing_w01_partial_resume",
+      "mode": "GUARDED_WRITE",
+      "owner_id": 2116886,
+      "scope": "trainingpeaks:plan:685173:resume-verified-week-01-partial-restore-monday-anchor",
+      "script": "scripts/ironman_jobs/chasing_w01_partial_resume.py",
+      "test": "tests/test_chasing_w01_partial_resume.py"
     }
   ]
 }
