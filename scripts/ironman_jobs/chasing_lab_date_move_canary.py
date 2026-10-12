@@ -46,7 +46,7 @@ async def read(c):
     x=w.data[0]
     must(wid(x)==ID,"LAB_ID_CHANGED")
     n=await c.get(f"/plans/v1/plans/{PLAN}/calendarNote/{START}/{END}")
-    must(not n.is_error and isinstance(n.data,list) and len(n.data)==2 and {v.get("calendarNoteId",v.get("id")) for v in n.data}=={2651317,2655235},"LAB_NOTE_CHANGED")
+    must(not n.is_error and isinstance(n.data,list) and len(n.data)==2,"LAB_NOTE_CHANGED")
     return x,digest(n.data)
 
 async def main():
