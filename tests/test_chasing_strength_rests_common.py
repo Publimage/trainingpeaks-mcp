@@ -1,7 +1,7 @@
 from scripts.ironman_jobs.chasing_strength_rests_common import REST,LIB_ID,apply,assert_correct
 import pytest
 def _mk(key):
- blocks=[{"blockType":"WarmUp","prescriptions":[{"coachNotes":"WU"}]*3}]
+ blocks=[{"blockType":"WarmUp","prescriptions":[{"coachNotes":"WU"} for _ in range(3)]}]
  for between,_ in REST[key]:
   n=2 if between else 1
   blocks.append({"blockType":"SingleExercise","prescriptions":[{"coachNotes":"RIR 4","sets":[{"parameterValues":[{"parameter":"Reps","prescribedValue":"5"}]} for _ in range(n)]}]})
