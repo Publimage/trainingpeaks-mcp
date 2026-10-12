@@ -378,6 +378,14 @@
       "scope": "trainingpeaks:plan:685173:24w-library-coverage:read",
       "script": "scripts/ironman_jobs/chasing_24w_coverage_audit.py",
       "test": "tests/test_chasing_24w_coverage_audit.py"
+    },
+    {
+      "name": "chasing_w05_candidate_audit",
+      "mode": "READ_ONLY",
+      "owner_id": 2116886,
+      "scope": "trainingpeaks:plan:685173:w05-candidates:read",
+      "script": "scripts/ironman_jobs/chasing_w05_candidate_audit.py",
+      "test": "tests/test_chasing_w05_candidate_audit.py"
     }
   ]
 }
