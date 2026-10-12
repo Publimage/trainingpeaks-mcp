@@ -938,6 +938,14 @@
       "scope": "trainingpeaks:strength-library:3890637:single-coachnotes-lab-write-and-restore",
       "script": "scripts/ironman_jobs/chasing_strength_rest_lab_canary.py",
       "test": "tests/test_chasing_strength_rest_lab_canary.py"
+    },
+    {
+      "name": "chasing_strength_rests_library",
+      "mode": "GUARDED_WRITE",
+      "owner_id": 2116886,
+      "scope": "trainingpeaks:strength-library:3894341:seven-model-recovery-notes-only",
+      "script": "scripts/ironman_jobs/chasing_strength_rests_library.py",
+      "test": "tests/test_chasing_strength_rests_library.py"
     }
   ]
 }
