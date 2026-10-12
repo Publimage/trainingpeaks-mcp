@@ -698,6 +698,14 @@
       "scope": "trainingpeaks:plan:684543:native-strength:read",
       "script": "scripts/ironman_jobs/chasing_native_plan_lab_audit.py",
       "test": "tests/test_chasing_native_plan_lab_audit.py"
+    },
+    {
+      "name": "chasing_native_strength_plan_lab_canary",
+      "mode": "GUARDED_WRITE",
+      "owner_id": 2116886,
+      "scope": "trainingpeaks:plan:684543:one-native-strength-lab-canary-only",
+      "script": "scripts/ironman_jobs/chasing_native_strength_plan_lab_canary.py",
+      "test": "tests/test_chasing_native_strength_plan_lab_canary.py"
     }
   ]
 }
