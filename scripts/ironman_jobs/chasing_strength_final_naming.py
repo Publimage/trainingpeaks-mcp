@@ -92,8 +92,8 @@ async def main():
         # Folder naming is a separate metadata operation; never recreate/move/delete library.
         folder_result="ALREADY_OK"
         if lib["libraryName"]==OLD_LIB:
-            merged=dict(lib);merged["libraryName"]=NEW_LIB
-            try:result=await client.put(f"/exerciselibrary/v1/libraries/{LIB}",json=merged)
+            # Confirmed provider rename route; the plain /libraries/{id} PUT returned HTTP 405.
+            try:result=await client.put(f"/exerciselibrary/v1/libraries/{LIB}/name",json={"value":NEW_LIB})
             except Exception:
                 log(stage="FOLDER_PUT_UNCERTAIN",renamed_items=modified,retry=False);return 6
             check=await client.get("/exerciselibrary/v2/libraries")
