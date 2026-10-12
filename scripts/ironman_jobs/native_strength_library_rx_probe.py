@@ -5,7 +5,7 @@ from tp_mcp.client import TPClient
 from tp_mcp.tools.strength import _access,_headers,STRENGTH_API_BASE
 
 OWNER=2116886
-LIBS={3890637:"[MCP TEST] Integration Lab",3891875:"IRONMAN MASTER | Forza",3894341:"CHASING THE SLOT | Forza — DRAFT NATIVE"}
+LIBS={3890637:"[MCP TEST] Integration Lab",3891875:"IRONMAN MASTER | Forza",3894341:"CHASING THE SLOT | Forza"}
 
 def endpoint(lib_id:int)->str:
     assert lib_id in LIBS
@@ -28,6 +28,43 @@ def shape(obj):
                 "data":shape(obj["data"]) if isinstance(obj.get("data"),(list,dict)) else None}
     return {"shape":type(obj).__name__}
 
+
+def dose_shape(item):
+    blocks=((item.get("workout") or {}).get("blocks") or [])
+    result=[]
+    for block in blocks:
+        prs=[]
+        for p in block.get("prescriptions") or []:
+            sets=[]
+            for series in p.get("sets") or []:
+                vals=tuple(sorted((str(v.get("parameter")),str(v.get("prescribedValue")))
+                             for v in (series.get("parameterValues") or [])))
+                sets.append(vals)
+            prs.append((str((p.get("exercise") or {}).get("id")),tuple(sets)))
+        result.append((str(block.get("blockType")),tuple(prs)))
+    return tuple(result)
+
+def muscle_ids(item):
+    return [str((p.get("exercise") or {}).get("id")) for b in ((item.get("workout") or {}).get("blocks") or [])
+            if b.get("blockType")!="WarmUp" for p in b.get("prescriptions") or []]
+
+def compare_corpora(intermediate,chasing):
+    output=[]
+    for ch in chasing:
+        a=set(muscle_ids(ch))
+        exact=[im for im in intermediate if dose_shape(ch)==dose_shape(im)]
+        near=sorted(intermediate,key=lambda im:(-(len(a & set(muscle_ids(im))) / max(1,len(a | set(muscle_ids(im))))),str(im.get("id"))))[:2]
+        output.append({"chasing_id":ch.get("id"),"chasing_title":ch.get("title"),
+                       "main_exercises":len(muscle_ids(ch)),
+                       "total_sets":sum(len(p.get("sets") or []) for b in ((ch.get("workout") or {}).get("blocks") or []) for p in b.get("prescriptions") or []),
+                       "identical_dose_ids":[str(im.get("id")) for im in exact],
+                       "closest":[{"intermediate_id":str(im.get("id")),
+                                   "shared_main_ids":len(a & set(muscle_ids(im))),
+                                   "intermediate_main":len(muscle_ids(im)),
+                                   "identical_dose":dose_shape(ch)==dose_shape(im)}
+                                  for im in near]})
+    return output
+
 async def main()->int:
     async with TPClient() as client:
         me=await client._get_user_data()
@@ -41,6 +78,7 @@ async def main()->int:
         if error or not token:
             print(json.dumps({"stage":"STOP_AUTH","writes":0}));return 4
         summary={}
+        inventories={}
         async with httpx.AsyncClient(timeout=20,follow_redirects=False) as http:
             for lib in LIBS:
                 path=endpoint(lib)
@@ -55,11 +93,14 @@ async def main()->int:
                     print(json.dumps({"stage":"NATIVE_LIBRARY_GET","library":lib,"http":response.status_code,
                                       "items":compact,"writes":0},ensure_ascii=False),flush=True)
                     if response.status_code==200 and isinstance(items,list):
+                        inventories[lib]=items
                         summary[str(lib)]={"total":len(items),"native_structured_strength":sum(1 for x in items if isinstance(x,dict) and x.get("workoutLibraryItemType")=="ActivityWorkoutTemplate" and isinstance(x.get("workout"),dict) and x["workout"].get("workoutType")=="StructuredStrength"),"ids_unique":len({str(x.get("id")) for x in items if isinstance(x,dict)})==len(items),"titles_unique":len({str(x.get("title")) for x in items if isinstance(x,dict)})==len(items),"undated":all(isinstance(x.get("workout"),dict) and x["workout"].get("calendarId") is None and x["workout"].get("prescribedDate") is None for x in items if isinstance(x,dict))}
                     else:
                         summary[str(lib)]={"http":response.status_code}
                 except (httpx.RequestError,ValueError,TypeError):
                     print(json.dumps({"stage":"NETWORK_OR_PARSE_STOP","library":lib,"writes":0}),flush=True)
+    if 3891875 in inventories and 3894341 in inventories:
+        print(json.dumps({"stage":"CROSS_LIBRARY_COMPARISON","comparison":compare_corpora(inventories[3891875],inventories[3894341]),"writes":0},ensure_ascii=False),flush=True)
     print(json.dumps({"stage":"COMPACT_NATIVE_LIBRARY_SUMMARY","libraries":summary,"writes":0},ensure_ascii=False),flush=True)
     return 0
 
