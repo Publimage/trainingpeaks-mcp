@@ -20,7 +20,7 @@ async def main():
    for x in items:
     if str(x.get("id")) in ("330618","330621","330624","330626","330628","330629","330631"):
      w=x.get("workout") or {}
-     print(json.dumps({"id":x.get("id"),"title":x.get("title"),"type":w.get("workoutType"),"minutes":w.get("totalTimePlanned"),"blocks":len(w.get("blocks") or []),"calendarId":w.get("calendarId")}),flush=True)
+     print(json.dumps({"id":x.get("id"),"title":x.get("title"),"type":w.get("workoutType"),"minutes":w.get("totalTimePlanned"),"blocks":len(w.get("blocks") or []),"calendarId":w.get("calendarId"),"workoutKeys":list(w.keys()),"firstBlockKeys":list((w.get("blocks") or [{}])[0].keys())}),flush=True)
    cr=await h.get(STRENGTH_API_BASE+"/rx/activity/v1/workouts/calendar/6682479/2027-01-04/2027-01-20",headers=_headers(token))
    cv=cr.json() if cr.status_code==200 else []
    print(json.dumps({"calendar_status":cr.status_code,"calendar_count":len(cv) if isinstance(cv,list) else None}),flush=True)
