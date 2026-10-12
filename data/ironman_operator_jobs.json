@@ -338,6 +338,14 @@
       "scope": "trainingpeaks:coach:2116886:rename-shared-it-libraries-5",
       "script": "scripts/ironman_jobs/rename_shared_it_libraries.py",
       "test": "tests/test_rename_shared_it_libraries.py"
+    },
+    {
+      "name": "chasing_plan_create",
+      "mode": "GUARDED_WRITE",
+      "owner_id": 2116886,
+      "scope": "trainingpeaks:coach:2116886:create-private-chasing-24w-and-seed",
+      "script": "scripts/ironman_jobs/chasing_plan_create.py",
+      "test": "tests/test_chasing_plan_create.py"
     }
   ]
 }
