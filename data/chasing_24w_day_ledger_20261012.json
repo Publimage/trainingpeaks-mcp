@@ -19,7 +19,8 @@
           "SW": 55,
           "BI": 95,
           "RU": 0,
-          "ST": 40
+          "ST": 60,
+          "strength_template": "A60"
         },
         {
           "day": "MER",
@@ -40,7 +41,8 @@
           "SW": 55,
           "BI": 0,
           "RU": 40,
-          "ST": 40
+          "ST": 60,
+          "strength_template": "B60"
         },
         {
           "day": "SAB",
@@ -56,7 +58,13 @@
           "RU": 55,
           "ST": 0
         }
-      ]
+      ],
+      "ledger": {
+        "endurance_min": 730,
+        "real_min": 850,
+        "weighted_min": 790,
+        "session_count": 12
+      }
     },
     {
       "week": 2,
@@ -74,7 +82,8 @@
           "SW": 60,
           "BI": 100,
           "RU": 0,
-          "ST": 40
+          "ST": 60,
+          "strength_template": "A60"
         },
         {
           "day": "MER",
@@ -95,7 +104,8 @@
           "SW": 60,
           "BI": 0,
           "RU": 45,
-          "ST": 40
+          "ST": 60,
+          "strength_template": "B60"
         },
         {
           "day": "SAB",
@@ -111,7 +121,13 @@
           "RU": 35,
           "ST": 0
         }
-      ]
+      ],
+      "ledger": {
+        "endurance_min": 790,
+        "real_min": 910,
+        "weighted_min": 850,
+        "session_count": 12
+      }
     },
     {
       "week": 3,
@@ -129,7 +145,8 @@
           "SW": 60,
           "BI": 115,
           "RU": 0,
-          "ST": 40
+          "ST": 60,
+          "strength_template": "A60"
         },
         {
           "day": "MER",
@@ -150,7 +167,8 @@
           "SW": 60,
           "BI": 0,
           "RU": 60,
-          "ST": 40
+          "ST": 60,
+          "strength_template": "B60"
         },
         {
           "day": "SAB",
@@ -166,7 +184,13 @@
           "RU": 0,
           "ST": 0
         }
-      ]
+      ],
+      "ledger": {
+        "endurance_min": 820,
+        "real_min": 940,
+        "weighted_min": 880,
+        "session_count": 11
+      }
     },
     {
       "week": 4,
@@ -184,7 +208,8 @@
           "SW": 50,
           "BI": 95,
           "RU": 0,
-          "ST": 40
+          "ST": 40,
+          "strength_template": "D40"
         },
         {
           "day": "MER",
@@ -221,7 +246,13 @@
           "RU": 35,
           "ST": 0
         }
-      ]
+      ],
+      "ledger": {
+        "endurance_min": 680,
+        "real_min": 720,
+        "weighted_min": 700,
+        "session_count": 11
+      }
     },
     {
       "week": 5,
@@ -239,7 +270,8 @@
           "SW": 60,
           "BI": 105,
           "RU": 0,
-          "ST": 40
+          "ST": 60,
+          "strength_template": "A60"
         },
         {
           "day": "MER",
@@ -260,7 +292,8 @@
           "SW": 60,
           "BI": 0,
           "RU": 35,
-          "ST": 40
+          "ST": 60,
+          "strength_template": "B60"
         },
         {
           "day": "SAB",
@@ -276,7 +309,13 @@
           "RU": 20,
           "ST": 0
         }
-      ]
+      ],
+      "ledger": {
+        "endurance_min": 790,
+        "real_min": 910,
+        "weighted_min": 850,
+        "session_count": 12
+      }
     },
     {
       "week": 6,
@@ -294,7 +333,8 @@
           "SW": 60,
           "BI": 115,
           "RU": 0,
-          "ST": 40
+          "ST": 60,
+          "strength_template": "A60"
         },
         {
           "day": "MER",
@@ -315,7 +355,8 @@
           "SW": 60,
           "BI": 0,
           "RU": 40,
-          "ST": 40
+          "ST": 60,
+          "strength_template": "B60"
         },
         {
           "day": "SAB",
@@ -331,7 +372,13 @@
           "RU": 30,
           "ST": 0
         }
-      ]
+      ],
+      "ledger": {
+        "endurance_min": 850,
+        "real_min": 970,
+        "weighted_min": 910,
+        "session_count": 12
+      }
     },
     {
       "week": 7,
@@ -349,7 +396,8 @@
           "SW": 60,
           "BI": 120,
           "RU": 0,
-          "ST": 40
+          "ST": 60,
+          "strength_template": "A60"
         },
         {
           "day": "MER",
@@ -370,7 +418,8 @@
           "SW": 60,
           "BI": 0,
           "RU": 45,
-          "ST": 35
+          "ST": 60,
+          "strength_template": "B60"
         },
         {
           "day": "SAB",
@@ -386,7 +435,13 @@
           "RU": 0,
           "ST": 0
         }
-      ]
+      ],
+      "ledger": {
+        "endurance_min": 825,
+        "real_min": 945,
+        "weighted_min": 885,
+        "session_count": 12
+      }
     },
     {
       "week": 8,
@@ -404,7 +459,8 @@
           "SW": 50,
           "BI": 100,
           "RU": 0,
-          "ST": 40
+          "ST": 40,
+          "strength_template": "D40"
         },
         {
           "day": "MER",
@@ -441,7 +497,13 @@
           "RU": 35,
           "ST": 0
         }
-      ]
+      ],
+      "ledger": {
+        "endurance_min": 710,
+        "real_min": 750,
+        "weighted_min": 730,
+        "session_count": 11
+      }
     },
     {
       "week": 9,
@@ -459,7 +521,8 @@
           "SW": 60,
           "BI": 130,
           "RU": 0,
-          "ST": 30
+          "ST": 60,
+          "strength_template": "M60"
         },
         {
           "day": "MER",
@@ -480,7 +543,7 @@
           "SW": 60,
           "BI": 0,
           "RU": 40,
-          "ST": 30
+          "ST": 0
         },
         {
           "day": "SAB",
@@ -496,7 +559,13 @@
           "RU": 0,
           "ST": 0
         }
-      ]
+      ],
+      "ledger": {
+        "endurance_min": 900,
+        "real_min": 960,
+        "weighted_min": 930,
+        "session_count": 11
+      }
     },
     {
       "week": 10,
@@ -514,7 +583,8 @@
           "SW": 60,
           "BI": 130,
           "RU": 0,
-          "ST": 30
+          "ST": 60,
+          "strength_template": "M60"
         },
         {
           "day": "MER",
@@ -535,7 +605,7 @@
           "SW": 60,
           "BI": 0,
           "RU": 40,
-          "ST": 30
+          "ST": 0
         },
         {
           "day": "SAB",
@@ -551,7 +621,13 @@
           "RU": 25,
           "ST": 0
         }
-      ]
+      ],
+      "ledger": {
+        "endurance_min": 915,
+        "real_min": 975,
+        "weighted_min": 945,
+        "session_count": 11
+      }
     },
     {
       "week": 11,
@@ -569,7 +645,8 @@
           "SW": 60,
           "BI": 135,
           "RU": 0,
-          "ST": 45
+          "ST": 60,
+          "strength_template": "M60"
         },
         {
           "day": "MER",
@@ -606,7 +683,13 @@
           "RU": 0,
           "ST": 0
         }
-      ]
+      ],
+      "ledger": {
+        "endurance_min": 900,
+        "real_min": 960,
+        "weighted_min": 930,
+        "session_count": 11
+      }
     },
     {
       "week": 12,
@@ -624,7 +707,8 @@
           "SW": 50,
           "BI": 110,
           "RU": 0,
-          "ST": 45
+          "ST": 45,
+          "strength_template": "D45"
         },
         {
           "day": "MER",
@@ -661,7 +745,13 @@
           "RU": 30,
           "ST": 0
         }
-      ]
+      ],
+      "ledger": {
+        "endurance_min": 735,
+        "real_min": 780,
+        "weighted_min": 757.5,
+        "session_count": 11
+      }
     },
     {
       "week": 13,
@@ -679,7 +769,8 @@
           "SW": 60,
           "BI": 130,
           "RU": 0,
-          "ST": 45
+          "ST": 60,
+          "strength_template": "M60"
         },
         {
           "day": "MER",
@@ -716,7 +807,13 @@
           "RU": 0,
           "ST": 0
         }
-      ]
+      ],
+      "ledger": {
+        "endurance_min": 1005,
+        "real_min": 1065,
+        "weighted_min": 1035,
+        "session_count": 11
+      }
     },
     {
       "week": 14,
@@ -734,7 +831,8 @@
           "SW": 65,
           "BI": 130,
           "RU": 0,
-          "ST": 45
+          "ST": 60,
+          "strength_template": "M60"
         },
         {
           "day": "MER",
@@ -771,7 +869,13 @@
           "RU": 0,
           "ST": 0
         }
-      ]
+      ],
+      "ledger": {
+        "endurance_min": 990,
+        "real_min": 1050,
+        "weighted_min": 1020,
+        "session_count": 12
+      }
     },
     {
       "week": 15,
@@ -789,7 +893,8 @@
           "SW": 65,
           "BI": 120,
           "RU": 0,
-          "ST": 45
+          "ST": 45,
+          "strength_template": "M45"
         },
         {
           "day": "MER",
@@ -826,7 +931,13 @@
           "RU": 0,
           "ST": 0
         }
-      ]
+      ],
+      "ledger": {
+        "endurance_min": 1155,
+        "real_min": 1200,
+        "weighted_min": 1177.5,
+        "session_count": 12
+      }
     },
     {
       "week": 16,
@@ -844,7 +955,8 @@
           "SW": 55,
           "BI": 120,
           "RU": 0,
-          "ST": 35
+          "ST": 35,
+          "strength_template": "M35"
         },
         {
           "day": "MER",
@@ -881,7 +993,13 @@
           "RU": 30,
           "ST": 0
         }
-      ]
+      ],
+      "ledger": {
+        "endurance_min": 805,
+        "real_min": 840,
+        "weighted_min": 822.5,
+        "session_count": 11
+      }
     },
     {
       "week": 17,
@@ -899,7 +1017,8 @@
           "SW": 65,
           "BI": 130,
           "RU": 0,
-          "ST": 45
+          "ST": 45,
+          "strength_template": "M45"
         },
         {
           "day": "MER",
@@ -936,7 +1055,13 @@
           "RU": 0,
           "ST": 0
         }
-      ]
+      ],
+      "ledger": {
+        "endurance_min": 1035,
+        "real_min": 1080,
+        "weighted_min": 1057.5,
+        "session_count": 12
+      }
     },
     {
       "week": 18,
@@ -954,7 +1079,8 @@
           "SW": 65,
           "BI": 125,
           "RU": 0,
-          "ST": 45
+          "ST": 45,
+          "strength_template": "M45"
         },
         {
           "day": "MER",
@@ -991,21 +1117,32 @@
           "RU": 0,
           "ST": 0
         }
-      ]
+      ],
+      "ledger": {
+        "endurance_min": 990,
+        "real_min": 1035,
+        "weighted_min": 1012.5,
+        "session_count": 12
+      }
     },
     {
       "week": 19,
       "title": "W19 — 18h30 REALI | ultima grande rehearsal; due giornate OFF consecutive a cavallo di W20",
       "days": [
         {
-          "day": "LUN"
+          "day": "LUN",
+          "ST": 0,
+          "SW": 0,
+          "BI": 0,
+          "RU": 0
         },
         {
           "day": "MAR",
           "SW": 65,
           "BI": 130,
           "RU": 0,
-          "ST": 40
+          "ST": 40,
+          "strength_template": "M40"
         },
         {
           "day": "MER",
@@ -1036,23 +1173,38 @@
           "ST": 0
         },
         {
-          "day": "DOM"
+          "day": "DOM",
+          "ST": 0,
+          "SW": 0,
+          "BI": 0,
+          "RU": 0
         }
-      ]
+      ],
+      "ledger": {
+        "endurance_min": 1070,
+        "real_min": 1110,
+        "weighted_min": 1090,
+        "session_count": 12
+      }
     },
     {
       "week": 20,
       "title": "W20 — 16h30 REALI | assorbimento post rehearsal; abbassare stress interno più delle sole ore",
       "days": [
         {
-          "day": "LUN"
+          "day": "LUN",
+          "ST": 0,
+          "SW": 0,
+          "BI": 0,
+          "RU": 0
         },
         {
           "day": "MAR",
           "SW": 60,
           "BI": 115,
           "RU": 0,
-          "ST": 30
+          "ST": 30,
+          "strength_template": "M30"
         },
         {
           "day": "MER",
@@ -1089,21 +1241,32 @@
           "RU": 30,
           "ST": 0
         }
-      ]
+      ],
+      "ledger": {
+        "endurance_min": 960,
+        "real_min": 990,
+        "weighted_min": 975,
+        "session_count": 13
+      }
     },
     {
       "week": 21,
       "title": "W21 — 20h00 REALI | secondo picco di tempo totale, prevalentemente BI sub-LT1; non nuova rehearsal",
       "days": [
         {
-          "day": "LUN"
+          "day": "LUN",
+          "ST": 0,
+          "SW": 0,
+          "BI": 0,
+          "RU": 0
         },
         {
           "day": "MAR",
           "SW": 65,
           "BI": 130,
           "RU": 0,
-          "ST": 30
+          "ST": 30,
+          "strength_template": "M30"
         },
         {
           "day": "MER",
@@ -1140,97 +1303,135 @@
           "RU": 0,
           "ST": 0
         }
-      ]
+      ],
+      "ledger": {
+        "endurance_min": 1170,
+        "real_min": 1200,
+        "weighted_min": 1185,
+        "session_count": 13
+      }
     },
     {
       "week": 22,
       "title": "W22 — SPECIFICITÀ CONTROLLATA GIÀ IN RIDUZIONE, NON UNA TERZA REHEARSAL",
       "days": [
         {
-          "day": "LUN"
+          "day": "LUN",
+          "ST": 0,
+          "SW": 0,
+          "BI": 0,
+          "RU": 0
         },
         {
           "day": "MAR",
           "SW": 60,
           "BI": 125,
-          "RU": 0
+          "RU": 0,
+          "ST": 0
         },
         {
           "day": "MER",
           "SW": 60,
           "BI": 35,
-          "RU": 70
+          "RU": 70,
+          "ST": 0
         },
         {
           "day": "GIO",
           "SW": 0,
           "BI": 115,
-          "RU": 45
+          "RU": 45,
+          "ST": 0
         },
         {
           "day": "VEN",
           "SW": 60,
           "BI": 0,
-          "RU": 40
+          "RU": 40,
+          "ST": 0
         },
         {
           "day": "SAB",
           "SW": 0,
           "BI": 225,
-          "RU": 25
+          "RU": 25,
+          "ST": 0
         },
         {
           "day": "DOM",
           "SW": 0,
           "BI": 70,
-          "RU": 0
+          "RU": 0,
+          "ST": 0
         }
-      ]
+      ],
+      "ledger": {
+        "endurance_min": 930,
+        "real_min": 930,
+        "weighted_min": 930,
+        "session_count": 12
+      }
     },
     {
       "week": 23,
       "title": "W23 — TAPER SOSTANZIALE, POCHI RICHIAMI A RITMO GARA SENZA STANCHEZZA RESIDUA",
       "days": [
         {
-          "day": "LUN"
+          "day": "LUN",
+          "ST": 0,
+          "SW": 0,
+          "BI": 0,
+          "RU": 0
         },
         {
           "day": "MAR",
           "SW": 45,
           "BI": 75,
-          "RU": 0
+          "RU": 0,
+          "ST": 0
         },
         {
           "day": "MER",
           "SW": 45,
           "BI": 0,
-          "RU": 70
+          "RU": 70,
+          "ST": 0
         },
         {
           "day": "GIO",
           "SW": 0,
           "BI": 65,
-          "RU": 35
+          "RU": 35,
+          "ST": 0
         },
         {
           "day": "VEN",
           "SW": 45,
           "BI": 0,
-          "RU": 30
+          "RU": 30,
+          "ST": 0
         },
         {
           "day": "SAB",
           "SW": 0,
           "BI": 125,
-          "RU": 15
+          "RU": 15,
+          "ST": 0
         },
         {
           "day": "DOM",
           "SW": 0,
           "BI": 50,
-          "RU": 0
+          "RU": 0,
+          "ST": 0
         }
-      ]
+      ],
+      "ledger": {
+        "endurance_min": 600,
+        "real_min": 600,
+        "weighted_min": 600,
+        "session_count": 11
+      }
     },
     {
       "week": 24,
@@ -1240,39 +1441,61 @@
           "day": "LUN",
           "SW": 30,
           "BI": 0,
-          "RU": 0
+          "RU": 0,
+          "ST": 0
         },
         {
           "day": "MAR",
           "SW": 0,
           "BI": 45,
-          "RU": 15
+          "RU": 15,
+          "ST": 0
         },
         {
           "day": "MER",
           "SW": 30,
           "BI": 0,
-          "RU": 0
+          "RU": 0,
+          "ST": 0
         },
         {
           "day": "GIO",
           "SW": 0,
           "BI": 40,
-          "RU": 15
+          "RU": 15,
+          "ST": 0
         },
         {
           "day": "VEN",
           "SW": 0,
           "BI": 20,
-          "RU": 15
+          "RU": 15,
+          "ST": 0
         },
         {
-          "day": "SAB"
+          "day": "SAB",
+          "ST": 0,
+          "SW": 0,
+          "BI": 0,
+          "RU": 0
         },
         {
-          "day": "DOM"
+          "day": "DOM",
+          "ST": 0,
+          "SW": 0,
+          "BI": 0,
+          "RU": 0
         }
-      ]
+      ],
+      "ledger": {
+        "endurance_min": 210,
+        "real_min": 210,
+        "weighted_min": 210,
+        "session_count": 8
+      }
     }
-  ]
+  ],
+  "strength_overlay": "Canonical section 40: W01-03 W05-07 A60+B60; W04/08 D40; W09-11 M60; W12 D45; W13-14 M60; W15-21 maintenance 45/35/45/45/40/30/30; W22-24 none. Native Strength Builder templates must be verified. M35/M40 may require equivalent supported templates or approved duration adaptation.",
+  "test_overlay": "W01 SW T1500, BI 20min OR 2x8min, RU 5km on distinct days replacing quality; retests W05 W09 W13, optional W17, no maximal W21-24. Day and protocol selection still requires conflict reconciliation.",
+  "status": "COMPLETE_24W_DAY_LEDGER_NOT_PUBLISHED"
 }
