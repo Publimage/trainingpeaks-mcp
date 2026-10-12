@@ -898,6 +898,14 @@
       "scope": "trainingpeaks:plan:685173:replace-w01-run5k-swim1500-bike20-three-workouts",
       "script": "scripts/ironman_jobs/chasing_w01_baseline_tests.py",
       "test": "tests/test_chasing_w01_baseline_tests.py"
+    },
+    {
+      "name": "chasing_w05_w09_retest_labels",
+      "mode": "GUARDED_WRITE",
+      "owner_id": 2116886,
+      "scope": "trainingpeaks:plan:685173:label-three-existing-w05-w09-retests",
+      "script": "scripts/ironman_jobs/chasing_w05_w09_retest_labels.py",
+      "test": "tests/test_chasing_w05_w09_retest_labels.py"
     }
   ]
 }
