@@ -1,1 +1,12 @@
-W05 working checkpoint. Plan 685173 remains private. Source canonical Product Master. No athlete calendar writes.
+CHASING THE SLOT W05 | plan 685173 | PRIVATE DRAFT
+Canonical source: 27_CHASING_THE_SLOT_24W_PRODUCT_MASTER W05 plus sections 38-40.
+MON OFF
+TUE SW60 2700m aerobic; BI105 sub LT1; ST A60 native
+WED SW60 2700m aerobic; RU85 controlled steady quality
+THU BI95 sub LT1; RU50 easy
+FRI SW60 2700m aerobic; RU35 easy; ST B60 native
+SAT BI220 endurance fueling
+SUN RU20 easy
+ENDURANCE 790 min; ST 120 min; REAL 910 min; WEIGHTED 850 min; swim 8100m; 12 sessions.
+W05 retest: replace a suitable quality workout, never add to weekly load; readiness gate and protocol comparison required. Existing W05 upload script is outdated and must not be executed unchanged.
+No athlete calendar write. No commercial release. Next: map validated library items, verify TP date/sport collision and native strength structure, then publish only to private draft and read back.
