@@ -906,6 +906,14 @@
       "scope": "trainingpeaks:plan:685173:label-three-existing-w05-w09-retests",
       "script": "scripts/ironman_jobs/chasing_w05_w09_retest_labels.py",
       "test": "tests/test_chasing_w05_w09_retest_labels.py"
+    },
+    {
+      "name": "chasing_swim_duration_first4",
+      "mode": "GUARDED_WRITE",
+      "owner_id": 2116886,
+      "scope": "trainingpeaks:plan:685173:repair-11-swim-duration-w01-w04",
+      "script": "scripts/ironman_jobs/chasing_swim_duration_first4.py",
+      "test": "tests/test_chasing_swim_duration_first4.py"
     }
   ]
 }
