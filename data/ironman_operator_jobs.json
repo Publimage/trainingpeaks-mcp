@@ -914,6 +914,14 @@
       "scope": "trainingpeaks:plan:685173:repair-11-swim-duration-w01-w04",
       "script": "scripts/ironman_jobs/chasing_swim_duration_first4.py",
       "test": "tests/test_chasing_swim_duration_first4.py"
+    },
+    {
+      "name": "chasing_swim_duration_distance_gate",
+      "mode": "READ_ONLY",
+      "owner_id": 2116886,
+      "scope": "trainingpeaks:library:3891872:plan:685173:swim-meters-duration-read",
+      "script": "scripts/ironman_jobs/chasing_swim_duration_distance_gate.py",
+      "test": "tests/test_chasing_swim_duration_distance_gate.py"
     }
   ]
 }
