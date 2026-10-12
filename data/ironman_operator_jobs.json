@@ -786,6 +786,14 @@
       "scope": "trainingpeaks:plan:684484:date-move-restoration-audit:read",
       "script": "scripts/ironman_jobs/chasing_lab_restore_audit.py",
       "test": "tests/test_chasing_lab_restore_audit.py"
+    },
+    {
+      "name": "chasing_w02_run_to_monday",
+      "mode": "GUARDED_WRITE",
+      "owner_id": 2116886,
+      "scope": "trainingpeaks:plan:685173:move-one-45min-w02-run-fri-to-mon",
+      "script": "scripts/ironman_jobs/chasing_w02_run_to_monday.py",
+      "test": "tests/test_chasing_w02_run_to_monday.py"
     }
   ]
 }
