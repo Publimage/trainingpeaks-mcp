@@ -8,7 +8,9 @@ async def main():
   p=await c.get("/plans/v1/plans/685173")
   if u.get("personId")!=2116886 or p.is_error:return 2
   d=p.data
-  print(json.dumps({"plan":d.get("planId"),"title":d.get("title"),"count":d.get("workoutCount"),"public":d.get("isPublic"),"price":d.get("price"),"start":d.get("startDate"),"calendarId":d.get("calendarId"),"keys":[k for k in d if "calendar" in k.lower() or "id" in k.lower()]}),flush=True)
+  print(json.dumps({"plan":d.get("planId"),"title":d.get("title"),"count":d.get("workoutCount"),"public":d.get("isPublic"),"price":d.get("price"),"start":d.get("startDate"),"calendarId":d.get("calendarId"),"planPersonId":d.get("planPersonId"),"ownerPersonId":d.get("ownerPersonId"),"keys":[k for k in d if "calendar" in k.lower() or "id" in k.lower()]}),flush=True)
+  lab=await c.get("/plans/v1/plans/684543")
+  if not lab.is_error:print(json.dumps({"labPlanPersonId":lab.data.get("planPersonId"),"labOwnerPersonId":lab.data.get("ownerPersonId")}),flush=True)
   _,token,err=await _access(c)
   if err:return 3
   async with httpx.AsyncClient(timeout=25,follow_redirects=False) as h:
