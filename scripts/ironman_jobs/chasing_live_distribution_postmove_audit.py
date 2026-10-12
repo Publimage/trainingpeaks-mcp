@@ -90,7 +90,7 @@ async def run():
                 for w in r.json():
                     dt=str(w.get("prescribedDate") or "")[:10]
                     observed[(dt,"ST")]+=1
-                    native.append({"day":dt,"id":w.get("id")})
+                    native.append({"day":dt,"id":w.get("id"),"title":w.get("title") or w.get("name"),"duration_field":w.get("plannedDuration") or w.get("duration") or w.get("totalTimePlanned")})
                     reports[dt].append("ST")
     missing=[{"date":d,"sport":s,"n":v} for (d,s),v in (expected-observed).items()]
     extra=[{"date":d,"sport":s,"n":v} for (d,s),v in (observed-expected).items()]
@@ -104,7 +104,7 @@ async def run():
     output={"stage":"CHASING_POSTMOVE_24W_QA","plan":PLAN,"private":True,
             "date_anchor":ANCHOR.isoformat(),"expected":sum(expected.values()),
             "observed":sum(observed.values()),"endurance":sum(v for (d,s),v in observed.items() if s!="ST"),
-            "strength_native":len(native),"calendar_notes":notes_count,
+            "strength_native":len(native),"strength_slots":native,"calendar_notes":notes_count,
             "missing":missing,"extra":extra,
             "duplicate_date_sport":[{"date":d,"sport":s,"n":n} for (d,s),n in observed.items() if n>1],
             "monday_active_weeks":mon,"sunday_active_weeks":sun_active,
