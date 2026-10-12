@@ -20,6 +20,7 @@ async def main():
    items=data if isinstance(data,list) else data.get("data") or []
    if len(items)!=7 or {str(x.get("id")) for x in items}!=IDS:raise RuntimeError("LIBRARY_SCOPE_DRIFT")
    for item in sorted(items,key=lambda x:x["title"]):
+    if str(item.get("id")) not in {"330618","330621"}:continue
     w=item.get("workout") or {}
     blocks=[]
     for n,b in enumerate(w.get("blocks") or []):
@@ -27,7 +28,7 @@ async def main():
      for p in b.get("prescriptions") or []:
       x=p.get("exercise") or {}
       exercises.append({"id":str(x.get("id")),"title":x.get("title"),"sets":len(p.get("sets") or []),
-       "coachNotes":p.get("coachNotes"),"set_samples":[{v.get("parameter"):v.get("prescribedValue") for v in (set_.get("parameterValues") or [])} for set_ in (p.get("sets") or [])[:2]]})
+       "coachNotes":p.get("coachNotes")})
      blocks.append({"index":n,"type":b.get("blockType"),"name":b.get("title"),"coachNotes":b.get("coachNotes"),"exercises":exercises})
     print(json.dumps({"id":item.get("id"),"title":item.get("title"),"workout_duration":w.get("prescribedDurationInSeconds"),
      "instructions":w.get("instructions"),"blocks":blocks},ensure_ascii=False),flush=True)
