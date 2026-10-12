@@ -722,6 +722,14 @@
       "scope": "trainingpeaks:plan:685173:native-strength-w01-a60-one-only",
       "script": "scripts/ironman_jobs/chasing_strength_w01_a60_canary.py",
       "test": "tests/test_chasing_strength_w01_a60_canary.py"
+    },
+    {
+      "name": "chasing_strength_batch_w01_w08",
+      "mode": "GUARDED_WRITE",
+      "owner_id": 2116886,
+      "scope": "trainingpeaks:plan:685173:native-strength-w01-w08-only",
+      "script": "scripts/ironman_jobs/chasing_strength_batch_w01_w08.py",
+      "test": "tests/test_chasing_strength_batch_w01_w08.py"
     }
   ]
 }
