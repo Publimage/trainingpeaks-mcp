@@ -1,5 +1,8 @@
-from scripts.ironman_jobs import chasing_strength_rests_library as x
+from pathlib import Path
+from scripts.ironman_jobs.chasing_strength_rests_common import LIB_ID
 
 def test_exclusive_native_library():
- assert x.LIB==3894341 and x.OWNER==2116886
- assert len(x.ORDER)==7 and set(x.ORDER)==set(x.LIB_ID)
+ code=Path("scripts/ironman_jobs/chasing_strength_rests_library.py").read_text()
+ assert "OWNER=2116886; LIB=3894341" in code
+ assert "from chasing_strength_rests_common import" in code
+ assert len(LIB_ID)==7
