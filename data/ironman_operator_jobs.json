@@ -922,6 +922,14 @@
       "scope": "trainingpeaks:library:3891872:plan:685173:swim-meters-duration-read",
       "script": "scripts/ironman_jobs/chasing_swim_duration_distance_gate.py",
       "test": "tests/test_chasing_swim_duration_distance_gate.py"
+    },
+    {
+      "name": "chasing_strength_rests_inspect",
+      "mode": "READ_ONLY",
+      "owner_id": 2116886,
+      "scope": "trainingpeaks:library:3894341:strength-rest-notes:read",
+      "script": "scripts/ironman_jobs/chasing_strength_rests_inspect.py",
+      "test": "tests/test_chasing_strength_rests_inspect.py"
     }
   ]
 }
