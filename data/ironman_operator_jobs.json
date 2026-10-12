@@ -978,6 +978,14 @@
       "scope": "trainingpeaks:plan:685173:existing-strength-recovery-notes-w17-w21",
       "script": "scripts/ironman_jobs/chasing_strength_rests_plan_w17_w21.py",
       "test": "tests/test_chasing_strength_rests_plan_w17_w21.py"
+    },
+    {
+      "name": "chasing_strength_rests_global_audit",
+      "mode": "READ_ONLY",
+      "owner_id": 2116886,
+      "scope": "trainingpeaks:plan:685173:library:3894341:strength-recovery-qa:read",
+      "script": "scripts/ironman_jobs/chasing_strength_rests_global_audit.py",
+      "test": "tests/test_chasing_strength_rests_global_audit.py"
     }
   ]
 }
