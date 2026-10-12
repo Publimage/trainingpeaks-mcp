@@ -490,6 +490,14 @@
       "scope": "trainingpeaks:plan:685173:fill-w11-swim-bike-run-only",
       "script": "scripts/ironman_jobs/chasing_plan_w11_complete.py",
       "test": "tests/test_chasing_plan_w11_complete.py"
+    },
+    {
+      "name": "chasing_w12_candidates",
+      "mode": "READ_ONLY",
+      "owner_id": 2116886,
+      "scope": "trainingpeaks:plan:685173:w12-candidates:read",
+      "script": "scripts/ironman_jobs/chasing_w12_candidates.py",
+      "test": "tests/test_chasing_w12_candidates.py"
     }
   ]
 }
