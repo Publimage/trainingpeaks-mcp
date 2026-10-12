@@ -330,6 +330,14 @@
       "scope": "trainingpeaks:library:3894341:rename-native-7-titles-and-folder",
       "script": "scripts/ironman_jobs/chasing_strength_final_naming.py",
       "test": "tests/test_chasing_strength_final_naming.py"
+    },
+    {
+      "name": "rename_shared_it_libraries",
+      "mode": "GUARDED_WRITE",
+      "owner_id": 2116886,
+      "scope": "trainingpeaks:coach:2116886:rename-shared-it-libraries-5",
+      "script": "scripts/ironman_jobs/rename_shared_it_libraries.py",
+      "test": "tests/test_rename_shared_it_libraries.py"
     }
   ]
 }
