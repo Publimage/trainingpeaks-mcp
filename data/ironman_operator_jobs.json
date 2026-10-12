@@ -842,6 +842,14 @@
       "scope": "trainingpeaks:plan:685173:inplace-run-distribution-w21-w23",
       "script": "scripts/ironman_jobs/chasing_distribute_w21_w23.py",
       "test": "tests/test_chasing_distribute_w21_w23.py"
+    },
+    {
+      "name": "chasing_lab_plan_anchor_probe",
+      "mode": "GUARDED_WRITE",
+      "owner_id": 2116886,
+      "scope": "trainingpeaks:plan:684484:probe-startDate-july5-to-july4-and-restore",
+      "script": "scripts/ironman_jobs/chasing_lab_plan_anchor_probe.py",
+      "test": "tests/test_chasing_lab_plan_anchor_probe.py"
     }
   ]
 }
