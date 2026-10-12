@@ -1,0 +1,1278 @@
+{
+  "schema": "CHASING_24W_CANONICAL_DAY_LEDGER_V1",
+  "source": "27_CHASING_THE_SLOT_24W_PRODUCT_MASTER",
+  "note": "Original day budgets. Strength overlays sections 38-40 supersede original ST; race W24 separate. This is not the full structured workout manifest.",
+  "weeks": [
+    {
+      "week": 1,
+      "title": "W01 — BASELINE; ECONOMIA; FORZA TECNICA A+B",
+      "days": [
+        {
+          "day": "LUN",
+          "SW": 0,
+          "BI": 0,
+          "RU": 0,
+          "ST": 0
+        },
+        {
+          "day": "MAR",
+          "SW": 55,
+          "BI": 95,
+          "RU": 0,
+          "ST": 40
+        },
+        {
+          "day": "MER",
+          "SW": 55,
+          "BI": 0,
+          "RU": 65,
+          "ST": 0
+        },
+        {
+          "day": "GIO",
+          "SW": 0,
+          "BI": 85,
+          "RU": 35,
+          "ST": 0
+        },
+        {
+          "day": "VEN",
+          "SW": 55,
+          "BI": 0,
+          "RU": 40,
+          "ST": 40
+        },
+        {
+          "day": "SAB",
+          "SW": 0,
+          "BI": 190,
+          "RU": 0,
+          "ST": 0
+        },
+        {
+          "day": "DOM",
+          "SW": 0,
+          "BI": 0,
+          "RU": 55,
+          "ST": 0
+        }
+      ]
+    },
+    {
+      "week": 2,
+      "title": "W02 — BASE SOTTO LT1 E PROGRESSIONE DEL CARICO",
+      "days": [
+        {
+          "day": "LUN",
+          "SW": 0,
+          "BI": 0,
+          "RU": 0,
+          "ST": 0
+        },
+        {
+          "day": "MAR",
+          "SW": 60,
+          "BI": 100,
+          "RU": 0,
+          "ST": 40
+        },
+        {
+          "day": "MER",
+          "SW": 55,
+          "BI": 0,
+          "RU": 75,
+          "ST": 0
+        },
+        {
+          "day": "GIO",
+          "SW": 0,
+          "BI": 110,
+          "RU": 35,
+          "ST": 0
+        },
+        {
+          "day": "VEN",
+          "SW": 60,
+          "BI": 0,
+          "RU": 45,
+          "ST": 40
+        },
+        {
+          "day": "SAB",
+          "SW": 0,
+          "BI": 215,
+          "RU": 0,
+          "ST": 0
+        },
+        {
+          "day": "DOM",
+          "SW": 0,
+          "BI": 0,
+          "RU": 35,
+          "ST": 0
+        }
+      ]
+    },
+    {
+      "week": 3,
+      "title": "W03 — QUALITA BI SELETTIVA E PROTEZIONE RUN",
+      "days": [
+        {
+          "day": "LUN",
+          "SW": 0,
+          "BI": 0,
+          "RU": 0,
+          "ST": 0
+        },
+        {
+          "day": "MAR",
+          "SW": 60,
+          "BI": 115,
+          "RU": 0,
+          "ST": 40
+        },
+        {
+          "day": "MER",
+          "SW": 60,
+          "BI": 0,
+          "RU": 85,
+          "ST": 0
+        },
+        {
+          "day": "GIO",
+          "SW": 0,
+          "BI": 105,
+          "RU": 35,
+          "ST": 0
+        },
+        {
+          "day": "VEN",
+          "SW": 60,
+          "BI": 0,
+          "RU": 60,
+          "ST": 40
+        },
+        {
+          "day": "SAB",
+          "SW": 0,
+          "BI": 240,
+          "RU": 0,
+          "ST": 0
+        },
+        {
+          "day": "DOM",
+          "SW": 0,
+          "BI": 0,
+          "RU": 0,
+          "ST": 0
+        }
+      ]
+    },
+    {
+      "week": 4,
+      "title": "W04 — ASSORBIMENTO E TECNICA RECUPERABILE",
+      "days": [
+        {
+          "day": "LUN",
+          "SW": 0,
+          "BI": 0,
+          "RU": 0,
+          "ST": 0
+        },
+        {
+          "day": "MAR",
+          "SW": 50,
+          "BI": 95,
+          "RU": 0,
+          "ST": 40
+        },
+        {
+          "day": "MER",
+          "SW": 50,
+          "BI": 0,
+          "RU": 70,
+          "ST": 0
+        },
+        {
+          "day": "GIO",
+          "SW": 0,
+          "BI": 105,
+          "RU": 35,
+          "ST": 0
+        },
+        {
+          "day": "VEN",
+          "SW": 50,
+          "BI": 0,
+          "RU": 35,
+          "ST": 0
+        },
+        {
+          "day": "SAB",
+          "SW": 0,
+          "BI": 155,
+          "RU": 0,
+          "ST": 0
+        },
+        {
+          "day": "DOM",
+          "SW": 0,
+          "BI": 0,
+          "RU": 35,
+          "ST": 0
+        }
+      ]
+    },
+    {
+      "week": 5,
+      "title": "W05 — ECONOMIA RUN E LAVORO CONTROLLATO SUBLT2",
+      "days": [
+        {
+          "day": "LUN",
+          "SW": 0,
+          "BI": 0,
+          "RU": 0,
+          "ST": 0
+        },
+        {
+          "day": "MAR",
+          "SW": 60,
+          "BI": 105,
+          "RU": 0,
+          "ST": 40
+        },
+        {
+          "day": "MER",
+          "SW": 60,
+          "BI": 0,
+          "RU": 85,
+          "ST": 0
+        },
+        {
+          "day": "GIO",
+          "SW": 0,
+          "BI": 95,
+          "RU": 50,
+          "ST": 0
+        },
+        {
+          "day": "VEN",
+          "SW": 60,
+          "BI": 0,
+          "RU": 35,
+          "ST": 40
+        },
+        {
+          "day": "SAB",
+          "SW": 0,
+          "BI": 220,
+          "RU": 0,
+          "ST": 0
+        },
+        {
+          "day": "DOM",
+          "SW": 0,
+          "BI": 0,
+          "RU": 20,
+          "ST": 0
+        }
+      ]
+    },
+    {
+      "week": 6,
+      "title": "W06 — PRIMA DURABILITY BI, AERO E FUELING",
+      "days": [
+        {
+          "day": "LUN",
+          "SW": 0,
+          "BI": 0,
+          "RU": 0,
+          "ST": 0
+        },
+        {
+          "day": "MAR",
+          "SW": 60,
+          "BI": 115,
+          "RU": 0,
+          "ST": 40
+        },
+        {
+          "day": "MER",
+          "SW": 60,
+          "BI": 0,
+          "RU": 70,
+          "ST": 0
+        },
+        {
+          "day": "GIO",
+          "SW": 0,
+          "BI": 120,
+          "RU": 40,
+          "ST": 0
+        },
+        {
+          "day": "VEN",
+          "SW": 60,
+          "BI": 0,
+          "RU": 40,
+          "ST": 40
+        },
+        {
+          "day": "SAB",
+          "SW": 0,
+          "BI": 255,
+          "RU": 0,
+          "ST": 0
+        },
+        {
+          "day": "DOM",
+          "SW": 0,
+          "BI": 0,
+          "RU": 30,
+          "ST": 0
+        }
+      ]
+    },
+    {
+      "week": 7,
+      "title": "W07 — ASSESTAMENTO E TRANSIZIONE BI-RU BREVE",
+      "days": [
+        {
+          "day": "LUN",
+          "SW": 0,
+          "BI": 0,
+          "RU": 0,
+          "ST": 0
+        },
+        {
+          "day": "MAR",
+          "SW": 60,
+          "BI": 120,
+          "RU": 0,
+          "ST": 40
+        },
+        {
+          "day": "MER",
+          "SW": 60,
+          "BI": 0,
+          "RU": 75,
+          "ST": 0
+        },
+        {
+          "day": "GIO",
+          "SW": 0,
+          "BI": 130,
+          "RU": 40,
+          "ST": 0
+        },
+        {
+          "day": "VEN",
+          "SW": 60,
+          "BI": 0,
+          "RU": 45,
+          "ST": 35
+        },
+        {
+          "day": "SAB",
+          "SW": 0,
+          "BI": 220,
+          "RU": 15,
+          "ST": 0
+        },
+        {
+          "day": "DOM",
+          "SW": 0,
+          "BI": 0,
+          "RU": 0,
+          "ST": 0
+        }
+      ]
+    },
+    {
+      "week": 8,
+      "title": "W08 — CHECKPOINT E ASSORBIMENTO",
+      "days": [
+        {
+          "day": "LUN",
+          "SW": 0,
+          "BI": 0,
+          "RU": 0,
+          "ST": 0
+        },
+        {
+          "day": "MAR",
+          "SW": 50,
+          "BI": 100,
+          "RU": 0,
+          "ST": 40
+        },
+        {
+          "day": "MER",
+          "SW": 50,
+          "BI": 0,
+          "RU": 65,
+          "ST": 0
+        },
+        {
+          "day": "GIO",
+          "SW": 0,
+          "BI": 115,
+          "RU": 35,
+          "ST": 0
+        },
+        {
+          "day": "VEN",
+          "SW": 50,
+          "BI": 0,
+          "RU": 35,
+          "ST": 0
+        },
+        {
+          "day": "SAB",
+          "SW": 0,
+          "BI": 175,
+          "RU": 0,
+          "ST": 0
+        },
+        {
+          "day": "DOM",
+          "SW": 0,
+          "BI": 0,
+          "RU": 35,
+          "ST": 0
+        }
+      ]
+    },
+    {
+      "week": 9,
+      "title": "W09 — DURABILITY BI E PRIMO COMBINATO MISURABILE",
+      "days": [
+        {
+          "day": "LUN",
+          "SW": 0,
+          "BI": 0,
+          "RU": 0,
+          "ST": 0
+        },
+        {
+          "day": "MAR",
+          "SW": 60,
+          "BI": 130,
+          "RU": 0,
+          "ST": 30
+        },
+        {
+          "day": "MER",
+          "SW": 60,
+          "BI": 0,
+          "RU": 85,
+          "ST": 0
+        },
+        {
+          "day": "GIO",
+          "SW": 0,
+          "BI": 130,
+          "RU": 45,
+          "ST": 0
+        },
+        {
+          "day": "VEN",
+          "SW": 60,
+          "BI": 0,
+          "RU": 40,
+          "ST": 30
+        },
+        {
+          "day": "SAB",
+          "SW": 0,
+          "BI": 270,
+          "RU": 20,
+          "ST": 0
+        },
+        {
+          "day": "DOM",
+          "SW": 0,
+          "BI": 0,
+          "RU": 0,
+          "ST": 0
+        }
+      ]
+    },
+    {
+      "week": 10,
+      "title": "W10 — RUN ROBUSTNESS E GARA DOPO SFORZO",
+      "days": [
+        {
+          "day": "LUN",
+          "SW": 0,
+          "BI": 0,
+          "RU": 0,
+          "ST": 0
+        },
+        {
+          "day": "MAR",
+          "SW": 60,
+          "BI": 130,
+          "RU": 0,
+          "ST": 30
+        },
+        {
+          "day": "MER",
+          "SW": 60,
+          "BI": 0,
+          "RU": 95,
+          "ST": 0
+        },
+        {
+          "day": "GIO",
+          "SW": 0,
+          "BI": 140,
+          "RU": 40,
+          "ST": 0
+        },
+        {
+          "day": "VEN",
+          "SW": 60,
+          "BI": 0,
+          "RU": 40,
+          "ST": 30
+        },
+        {
+          "day": "SAB",
+          "SW": 0,
+          "BI": 265,
+          "RU": 0,
+          "ST": 0
+        },
+        {
+          "day": "DOM",
+          "SW": 0,
+          "BI": 0,
+          "RU": 25,
+          "ST": 0
+        }
+      ]
+    },
+    {
+      "week": 11,
+      "title": "W11 — BRICK SPECIFICO, FUELING E COSTO INTERNO",
+      "days": [
+        {
+          "day": "LUN",
+          "SW": 0,
+          "BI": 0,
+          "RU": 0,
+          "ST": 0
+        },
+        {
+          "day": "MAR",
+          "SW": 60,
+          "BI": 135,
+          "RU": 0,
+          "ST": 45
+        },
+        {
+          "day": "MER",
+          "SW": 60,
+          "BI": 0,
+          "RU": 70,
+          "ST": 0
+        },
+        {
+          "day": "GIO",
+          "SW": 0,
+          "BI": 120,
+          "RU": 40,
+          "ST": 0
+        },
+        {
+          "day": "VEN",
+          "SW": 60,
+          "BI": 0,
+          "RU": 40,
+          "ST": 0
+        },
+        {
+          "day": "SAB",
+          "SW": 0,
+          "BI": 285,
+          "RU": 30,
+          "ST": 0
+        },
+        {
+          "day": "DOM",
+          "SW": 0,
+          "BI": 0,
+          "RU": 0,
+          "ST": 0
+        }
+      ]
+    },
+    {
+      "week": 12,
+      "title": "W12 — ASSORBIMENTO E GATE SPECIFICITA",
+      "days": [
+        {
+          "day": "LUN",
+          "SW": 0,
+          "BI": 0,
+          "RU": 0,
+          "ST": 0
+        },
+        {
+          "day": "MAR",
+          "SW": 50,
+          "BI": 110,
+          "RU": 0,
+          "ST": 45
+        },
+        {
+          "day": "MER",
+          "SW": 50,
+          "BI": 0,
+          "RU": 65,
+          "ST": 0
+        },
+        {
+          "day": "GIO",
+          "SW": 0,
+          "BI": 110,
+          "RU": 35,
+          "ST": 0
+        },
+        {
+          "day": "VEN",
+          "SW": 50,
+          "BI": 0,
+          "RU": 35,
+          "ST": 0
+        },
+        {
+          "day": "SAB",
+          "SW": 0,
+          "BI": 200,
+          "RU": 0,
+          "ST": 0
+        },
+        {
+          "day": "DOM",
+          "SW": 0,
+          "BI": 0,
+          "RU": 30,
+          "ST": 0
+        }
+      ]
+    },
+    {
+      "week": 13,
+      "title": "W13 — SVILUPPO SPECIFICITA GARA AERO/RACE PACE E GI",
+      "days": [
+        {
+          "day": "LUN",
+          "SW": 0,
+          "BI": 0,
+          "RU": 0,
+          "ST": 0
+        },
+        {
+          "day": "MAR",
+          "SW": 60,
+          "BI": 130,
+          "RU": 0,
+          "ST": 45
+        },
+        {
+          "day": "MER",
+          "SW": 60,
+          "BI": 0,
+          "RU": 100,
+          "ST": 0
+        },
+        {
+          "day": "GIO",
+          "SW": 0,
+          "BI": 175,
+          "RU": 50,
+          "ST": 0
+        },
+        {
+          "day": "VEN",
+          "SW": 60,
+          "BI": 0,
+          "RU": 55,
+          "ST": 0
+        },
+        {
+          "day": "SAB",
+          "SW": 0,
+          "BI": 290,
+          "RU": 25,
+          "ST": 0
+        },
+        {
+          "day": "DOM",
+          "SW": 0,
+          "BI": 0,
+          "RU": 0,
+          "ST": 0
+        }
+      ]
+    },
+    {
+      "week": 14,
+      "title": "W14 — ECONOMIA RU PRIMA DEL PICCO; NON SECONDO MASSIMO",
+      "days": [
+        {
+          "day": "LUN",
+          "SW": 0,
+          "BI": 0,
+          "RU": 0,
+          "ST": 0
+        },
+        {
+          "day": "MAR",
+          "SW": 65,
+          "BI": 130,
+          "RU": 0,
+          "ST": 45
+        },
+        {
+          "day": "MER",
+          "SW": 60,
+          "BI": 0,
+          "RU": 95,
+          "ST": 0
+        },
+        {
+          "day": "GIO",
+          "SW": 0,
+          "BI": 165,
+          "RU": 55,
+          "ST": 0
+        },
+        {
+          "day": "VEN",
+          "SW": 65,
+          "BI": 0,
+          "RU": 45,
+          "ST": 0
+        },
+        {
+          "day": "SAB",
+          "SW": 0,
+          "BI": 240,
+          "RU": 20,
+          "ST": 0
+        },
+        {
+          "day": "DOM",
+          "SW": 0,
+          "BI": 50,
+          "RU": 0,
+          "ST": 0
+        }
+      ]
+    },
+    {
+      "week": 15,
+      "title": "W15 — PICCO 1 20H REALI: VOLUME BI FACILE E REHEARSAL PARZIALE",
+      "days": [
+        {
+          "day": "LUN",
+          "SW": 0,
+          "BI": 0,
+          "RU": 0,
+          "ST": 0
+        },
+        {
+          "day": "MAR",
+          "SW": 65,
+          "BI": 120,
+          "RU": 0,
+          "ST": 45
+        },
+        {
+          "day": "MER",
+          "SW": 65,
+          "BI": 0,
+          "RU": 90,
+          "ST": 0
+        },
+        {
+          "day": "GIO",
+          "SW": 0,
+          "BI": 175,
+          "RU": 50,
+          "ST": 0
+        },
+        {
+          "day": "VEN",
+          "SW": 65,
+          "BI": 0,
+          "RU": 55,
+          "ST": 0
+        },
+        {
+          "day": "SAB",
+          "SW": 0,
+          "BI": 300,
+          "RU": 30,
+          "ST": 0
+        },
+        {
+          "day": "DOM",
+          "SW": 0,
+          "BI": 140,
+          "RU": 0,
+          "ST": 0
+        }
+      ]
+    },
+    {
+      "week": 16,
+      "title": "W16 — ASSORBIMENTO DEL PRIMO PICCO",
+      "days": [
+        {
+          "day": "LUN",
+          "SW": 0,
+          "BI": 0,
+          "RU": 0,
+          "ST": 0
+        },
+        {
+          "day": "MAR",
+          "SW": 55,
+          "BI": 120,
+          "RU": 0,
+          "ST": 35
+        },
+        {
+          "day": "MER",
+          "SW": 55,
+          "BI": 0,
+          "RU": 80,
+          "ST": 0
+        },
+        {
+          "day": "GIO",
+          "SW": 0,
+          "BI": 140,
+          "RU": 35,
+          "ST": 0
+        },
+        {
+          "day": "VEN",
+          "SW": 55,
+          "BI": 0,
+          "RU": 45,
+          "ST": 0
+        },
+        {
+          "day": "SAB",
+          "SW": 0,
+          "BI": 190,
+          "RU": 0,
+          "ST": 0
+        },
+        {
+          "day": "DOM",
+          "SW": 0,
+          "BI": 0,
+          "RU": 30,
+          "ST": 0
+        }
+      ]
+    },
+    {
+      "week": 17,
+      "title": "W17 — SPECIFICITA BI/AERO/DURABILITY E PACE GI",
+      "days": [
+        {
+          "day": "LUN",
+          "SW": 0,
+          "BI": 0,
+          "RU": 0,
+          "ST": 0
+        },
+        {
+          "day": "MAR",
+          "SW": 65,
+          "BI": 130,
+          "RU": 0,
+          "ST": 45
+        },
+        {
+          "day": "MER",
+          "SW": 65,
+          "BI": 0,
+          "RU": 85,
+          "ST": 0
+        },
+        {
+          "day": "GIO",
+          "SW": 0,
+          "BI": 170,
+          "RU": 45,
+          "ST": 0
+        },
+        {
+          "day": "VEN",
+          "SW": 65,
+          "BI": 0,
+          "RU": 45,
+          "ST": 0
+        },
+        {
+          "day": "SAB",
+          "SW": 0,
+          "BI": 290,
+          "RU": 30,
+          "ST": 0
+        },
+        {
+          "day": "DOM",
+          "SW": 0,
+          "BI": 45,
+          "RU": 0,
+          "ST": 0
+        }
+      ]
+    },
+    {
+      "week": 18,
+      "title": "W18 — PONTE SPECIFICO PIU LEGGERO VERSO REHEARSAL W19",
+      "days": [
+        {
+          "day": "LUN",
+          "SW": 0,
+          "BI": 0,
+          "RU": 0,
+          "ST": 0
+        },
+        {
+          "day": "MAR",
+          "SW": 65,
+          "BI": 125,
+          "RU": 0,
+          "ST": 45
+        },
+        {
+          "day": "MER",
+          "SW": 60,
+          "BI": 0,
+          "RU": 85,
+          "ST": 0
+        },
+        {
+          "day": "GIO",
+          "SW": 0,
+          "BI": 165,
+          "RU": 50,
+          "ST": 0
+        },
+        {
+          "day": "VEN",
+          "SW": 65,
+          "BI": 0,
+          "RU": 55,
+          "ST": 0
+        },
+        {
+          "day": "SAB",
+          "SW": 0,
+          "BI": 255,
+          "RU": 25,
+          "ST": 0
+        },
+        {
+          "day": "DOM",
+          "SW": 0,
+          "BI": 40,
+          "RU": 0,
+          "ST": 0
+        }
+      ]
+    },
+    {
+      "week": 19,
+      "title": "W19 — 18h30 REALI | ultima grande rehearsal; due giornate OFF consecutive a cavallo di W20",
+      "days": [
+        {
+          "day": "LUN"
+        },
+        {
+          "day": "MAR",
+          "SW": 65,
+          "BI": 130,
+          "RU": 0,
+          "ST": 40
+        },
+        {
+          "day": "MER",
+          "SW": 65,
+          "BI": 45,
+          "RU": 100,
+          "ST": 0
+        },
+        {
+          "day": "GIO",
+          "SW": 0,
+          "BI": 150,
+          "RU": 55,
+          "ST": 0
+        },
+        {
+          "day": "VEN",
+          "SW": 65,
+          "BI": 0,
+          "RU": 60,
+          "ST": 0
+        },
+        {
+          "day": "SAB",
+          "SW": 0,
+          "BI": 295,
+          "RU": 40,
+          "ST": 0
+        },
+        {
+          "day": "DOM"
+        }
+      ]
+    },
+    {
+      "week": 20,
+      "title": "W20 — 16h30 REALI | assorbimento post rehearsal; abbassare stress interno più delle sole ore",
+      "days": [
+        {
+          "day": "LUN"
+        },
+        {
+          "day": "MAR",
+          "SW": 60,
+          "BI": 115,
+          "RU": 0,
+          "ST": 30
+        },
+        {
+          "day": "MER",
+          "SW": 60,
+          "BI": 50,
+          "RU": 80,
+          "ST": 0
+        },
+        {
+          "day": "GIO",
+          "SW": 0,
+          "BI": 130,
+          "RU": 45,
+          "ST": 0
+        },
+        {
+          "day": "VEN",
+          "SW": 60,
+          "BI": 0,
+          "RU": 50,
+          "ST": 0
+        },
+        {
+          "day": "SAB",
+          "SW": 0,
+          "BI": 240,
+          "RU": 0,
+          "ST": 0
+        },
+        {
+          "day": "DOM",
+          "SW": 0,
+          "BI": 40,
+          "RU": 30,
+          "ST": 0
+        }
+      ]
+    },
+    {
+      "week": 21,
+      "title": "W21 — 20h00 REALI | secondo picco di tempo totale, prevalentemente BI sub-LT1; non nuova rehearsal",
+      "days": [
+        {
+          "day": "LUN"
+        },
+        {
+          "day": "MAR",
+          "SW": 65,
+          "BI": 130,
+          "RU": 0,
+          "ST": 30
+        },
+        {
+          "day": "MER",
+          "SW": 65,
+          "BI": 60,
+          "RU": 80,
+          "ST": 0
+        },
+        {
+          "day": "GIO",
+          "SW": 0,
+          "BI": 160,
+          "RU": 55,
+          "ST": 0
+        },
+        {
+          "day": "VEN",
+          "SW": 65,
+          "BI": 0,
+          "RU": 45,
+          "ST": 0
+        },
+        {
+          "day": "SAB",
+          "SW": 0,
+          "BI": 330,
+          "RU": 30,
+          "ST": 0
+        },
+        {
+          "day": "DOM",
+          "SW": 0,
+          "BI": 85,
+          "RU": 0,
+          "ST": 0
+        }
+      ]
+    },
+    {
+      "week": 22,
+      "title": "W22 — SPECIFICITÀ CONTROLLATA GIÀ IN RIDUZIONE, NON UNA TERZA REHEARSAL",
+      "days": [
+        {
+          "day": "LUN"
+        },
+        {
+          "day": "MAR",
+          "SW": 60,
+          "BI": 125,
+          "RU": 0
+        },
+        {
+          "day": "MER",
+          "SW": 60,
+          "BI": 35,
+          "RU": 70
+        },
+        {
+          "day": "GIO",
+          "SW": 0,
+          "BI": 115,
+          "RU": 45
+        },
+        {
+          "day": "VEN",
+          "SW": 60,
+          "BI": 0,
+          "RU": 40
+        },
+        {
+          "day": "SAB",
+          "SW": 0,
+          "BI": 225,
+          "RU": 25
+        },
+        {
+          "day": "DOM",
+          "SW": 0,
+          "BI": 70,
+          "RU": 0
+        }
+      ]
+    },
+    {
+      "week": 23,
+      "title": "W23 — TAPER SOSTANZIALE, POCHI RICHIAMI A RITMO GARA SENZA STANCHEZZA RESIDUA",
+      "days": [
+        {
+          "day": "LUN"
+        },
+        {
+          "day": "MAR",
+          "SW": 45,
+          "BI": 75,
+          "RU": 0
+        },
+        {
+          "day": "MER",
+          "SW": 45,
+          "BI": 0,
+          "RU": 70
+        },
+        {
+          "day": "GIO",
+          "SW": 0,
+          "BI": 65,
+          "RU": 35
+        },
+        {
+          "day": "VEN",
+          "SW": 45,
+          "BI": 0,
+          "RU": 30
+        },
+        {
+          "day": "SAB",
+          "SW": 0,
+          "BI": 125,
+          "RU": 15
+        },
+        {
+          "day": "DOM",
+          "SW": 0,
+          "BI": 50,
+          "RU": 0
+        }
+      ]
+    },
+    {
+      "week": 24,
+      "title": "W24 — ATTIVAZIONI BREVI, MATERIALI FAMILIARI E RECUPERO; DOMENICA GARA",
+      "days": [
+        {
+          "day": "LUN",
+          "SW": 30,
+          "BI": 0,
+          "RU": 0
+        },
+        {
+          "day": "MAR",
+          "SW": 0,
+          "BI": 45,
+          "RU": 15
+        },
+        {
+          "day": "MER",
+          "SW": 30,
+          "BI": 0,
+          "RU": 0
+        },
+        {
+          "day": "GIO",
+          "SW": 0,
+          "BI": 40,
+          "RU": 15
+        },
+        {
+          "day": "VEN",
+          "SW": 0,
+          "BI": 20,
+          "RU": 15
+        },
+        {
+          "day": "SAB"
+        },
+        {
+          "day": "DOM"
+        }
+      ]
+    }
+  ]
+}
