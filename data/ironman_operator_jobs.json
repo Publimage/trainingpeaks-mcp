@@ -770,6 +770,14 @@
       "scope": "trainingpeaks:plan:685173:distribution-diagnostic:read",
       "script": "scripts/ironman_jobs/chasing_distribution_diagnostic.py",
       "test": "tests/test_chasing_distribution_diagnostic.py"
+    },
+    {
+      "name": "chasing_lab_date_move_canary",
+      "mode": "GUARDED_WRITE",
+      "owner_id": 2116886,
+      "scope": "trainingpeaks:plan:684484:single-native-workout-date-move-and-restore",
+      "script": "scripts/ironman_jobs/chasing_lab_date_move_canary.py",
+      "test": "tests/test_chasing_lab_date_move_canary.py"
     }
   ]
 }
