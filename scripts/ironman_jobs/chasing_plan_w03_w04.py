@@ -95,7 +95,7 @@ async def main():
   latest=await read(start,end)
   if latest is None:log(stage="STOP_FINAL_READ");return 7
   found=[x for x in latest if when(3,0).isoformat()<=(x.get("workoutDay") or "")[:10]<when(5,0).isoformat()]
-  actual={(x.get("workoutDay") or "")[:10],x.get("workoutTypeValueId"),x.get("title")) for x in found}
+  actual={((x.get("workoutDay") or "")[:10],x.get("workoutTypeValueId"),x.get("title")) for x in found}
   if len(found)!=len(ITEMS) or actual!=allowed:
    log(stage="STOP_FINAL_SET",got=len(found),expect=len(ITEMS));return 7
   log(stage="W03_W04_PASS",plan=PLAN,expected=len(ITEMS),observed=len(found),
