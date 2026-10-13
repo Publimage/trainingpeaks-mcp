@@ -1082,6 +1082,14 @@
       "scope": "trainingpeaks:plan:685173:all-24-weeks-native-builder-audit:read",
       "script": "scripts/ironman_jobs/chasing_full_native_builder_audit_20261013.py",
       "test": "tests/test_chasing_w01_w04_swim_mwf.py"
+    },
+    {
+      "name": "lab_builder_target_polyline_canary_20261013",
+      "mode": "GUARDED_WRITE",
+      "owner_id": 2116886,
+      "scope": "trainingpeaks:plan:684206:lab-native-target-polyline-save-restore-only",
+      "script": "scripts/ironman_jobs/lab_builder_target_polyline_canary_20261013.py",
+      "test": "tests/test_chasing_w01_w04_swim_mwf.py"
     }
   ]
 }
