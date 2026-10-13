@@ -1066,6 +1066,14 @@
       "scope": "trainingpeaks:plan:685173:w09-w16:balanced-run-long-replacements-and-w13-sunday-long",
       "script": "scripts/ironman_jobs/chasing_w09_w16_longrun_balance.py",
       "test": "tests/test_chasing_w01_w04_swim_mwf.py"
+    },
+    {
+      "name": "chasing_w17_w24_two_long_peaks",
+      "mode": "GUARDED_WRITE",
+      "owner_id": 2116886,
+      "scope": "trainingpeaks:plan:685173:w17-w24:two-150min-long-runs-with-volume-balance-weekend-rotation-and-taper",
+      "script": "scripts/ironman_jobs/chasing_w17_w24_two_long_peaks.py",
+      "test": "tests/test_chasing_w01_w04_swim_mwf.py"
     }
   ]
 }
