@@ -2,7 +2,7 @@
 import asyncio,json,collections
 from tp_mcp.client import TPClient
 PLANS={685173:249,684602:229}
-RANGES=[("2027-01-04","2027-02-28"),("2027-03-01","2027-04-25"),("2027-04-26","2027-06-20")]
+RANGES_BY_PLAN={685173:[("2027-01-04","2027-02-28"),("2027-03-01","2027-04-25"),("2027-04-26","2027-06-20")],684602:[("2026-10-05","2026-11-29"),("2026-11-30","2027-01-24"),("2027-01-25","2027-03-21")]}
 async def main():
  async with TPClient() as c:
   u=await c._get_user_data()
@@ -11,7 +11,7 @@ async def main():
    h=await c.get(f"/plans/v1/plans/{pid}")
    if h.is_error or h.data.get("planId")!=pid or h.data.get("isPublic") is not False:raise RuntimeError("PLAN_SCOPE")
    rows=[]
-   for start,end in RANGES:
+   for start,end in RANGES_BY_PLAN[pid]:
     r=await c.get(f"/plans/v1/plans/{pid}/workouts/{start}/{end}")
     if r.is_error or not isinstance(r.data,list):raise RuntimeError("READ_SCOPE")
     rows.extend(r.data)
