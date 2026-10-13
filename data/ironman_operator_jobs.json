@@ -1122,6 +1122,14 @@
       "scope": "trainingpeaks:plan:685173:read-power-pace-golden-schema",
       "script": "scripts/ironman_jobs/chasing_golden_first_probe.py",
       "test": "tests/test_chasing_w01_w04_swim_mwf.py"
+    },
+    {
+      "name": "chasing_golden_first_two_workouts",
+      "mode": "GUARDED_WRITE",
+      "owner_id": 2116886,
+      "scope": "trainingpeaks:plan:685173:relative-w21-thu:two-golden-power-pace-prototypes",
+      "script": "scripts/ironman_jobs/chasing_golden_first_two_workouts.py",
+      "test": "tests/test_chasing_w01_w04_swim_mwf.py"
     }
   ]
 }
