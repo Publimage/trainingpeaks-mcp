@@ -1050,6 +1050,14 @@
       "scope": "trainingpeaks:plan:685173:w05:rename-two-bike-workouts-and-replace-wed-steady-with-sun-long-85",
       "script": "scripts/ironman_jobs/chasing_w05_title_longrun_fix.py",
       "test": "tests/test_chasing_w01_w04_swim_mwf.py"
+    },
+    {
+      "name": "chasing_w09_w16_weekend_arch",
+      "mode": "GUARDED_WRITE",
+      "owner_id": 2116886,
+      "scope": "trainingpeaks:plan:685173:w09-w16:two-bike-replacements-and-nineteen-inplace-date-moves",
+      "script": "scripts/ironman_jobs/chasing_w09_w16_weekend_arch.py",
+      "test": "tests/test_chasing_w01_w04_swim_mwf.py"
     }
   ]
 }
