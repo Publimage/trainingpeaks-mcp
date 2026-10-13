@@ -53,6 +53,10 @@ async def main():
         if met=="duration" and isinstance(d.get("last_end"),(float,int)) and abs(d["last_end"]-dur)>2:
           issues.append({"id":w.get("workoutId"),"week":wd,"sport":sport,"title":w.get("title"),"error":"BUILDER_DURATION_MISMATCH","builder_s":d["last_end"],"planned_s":dur})
         if d.get("targets")==0:stat[(sport,"all_targets_empty")]+=1
+        empty_active=[z for z in d.get("steps_detail",[]) if z.get("intensityClass")=="active" and not z.get("targets")]
+        if empty_active:
+          stat[(sport,"empty_active_workouts")]+=1
+          issues.append({"id":w.get("workoutId"),"week":wd,"sport":sport,"title":w.get("title"),"error":"ACTIVE_BLOCK_WITHOUT_TARGET","steps":[z.get("name") for z in empty_active]})
         if sport==1 and (not w.get("distancePlanned") or not w.get("totalTimePlanned")):issues.append({"id":w.get("workoutId"),"week":wd,"sport":sport,"title":w.get("title"),"error":"SWIM_METERS_OR_DURATION_MISSING"})
       if w.get("workoutId") in FOCUS:
         print(json.dumps({"stage":"FOCUS","id":w.get("workoutId"),"date":day(w),"week":wd,
