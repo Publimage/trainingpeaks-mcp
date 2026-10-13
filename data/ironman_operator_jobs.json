@@ -1074,6 +1074,14 @@
       "scope": "trainingpeaks:plan:685173:w17-w24:two-150min-long-runs-with-volume-balance-weekend-rotation-and-taper",
       "script": "scripts/ironman_jobs/chasing_w17_w24_two_long_peaks.py",
       "test": "tests/test_chasing_w01_w04_swim_mwf.py"
+    },
+    {
+      "name": "chasing_full_native_builder_audit_20261013",
+      "mode": "READ_ONLY",
+      "owner_id": 2116886,
+      "scope": "trainingpeaks:plan:685173:all-24-weeks-native-builder-audit:read",
+      "script": "scripts/ironman_jobs/chasing_full_native_builder_audit_20261013.py",
+      "test": "tests/test_chasing_w01_w04_swim_mwf.py"
     }
   ]
 }
