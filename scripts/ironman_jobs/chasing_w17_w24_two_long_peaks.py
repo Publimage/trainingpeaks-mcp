@@ -76,7 +76,7 @@ async def main():
    v=byid.get(wid)
    must(v is not None and "W24" in v.get("title","") and v.get("workoutTypeValueId")==1,"SWIM_TITLE_PREFLIGHT")
    patch=dict(v);patch["title"]=title;patched[wid]=patch
-  must(len(patched)==22,"WRONG_PATCH_COUNT_"+str(len(patched)))
+  must(len(patched)==20,"WRONG_PATCH_COUNT_"+str(len(patched)))
   must(not BACKUP.exists(),"BACKUP_EXISTS_CHECK_PROVIDER_NO_BLIND_RETRY")
   BACKUP.parent.mkdir(parents=True,exist_ok=True)
   BACKUP.write_text(json.dumps({"plan":PLAN,"before":base,"notes_hash":notes,"patched_ids":sorted(patched)},ensure_ascii=False,indent=2)+"\n")
