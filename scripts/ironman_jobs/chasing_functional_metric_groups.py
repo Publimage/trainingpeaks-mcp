@@ -48,5 +48,5 @@ async def main():
    "unique":{str(k):len(v) for k,v in uniques.items()}},ensure_ascii=False),flush=True)
   for k,v in uniques.items():
    print(json.dumps({"stage":"GROUP","sport":k[0],"profile":k[1],
-    "entries":[{"title":x["title"],"count":len(x["ids"]),"weeks":[z[0] for z in x["relative"]],"steps":[[z[0],z[1],z[2]] for z in x["outline"]]} for x in v.values()]},ensure_ascii=False),flush=True)
+    "entries":[{"title":x["title"],"count":len(x["ids"]),"weeks":[z[0] for z in x["relative"]]} for x in list(v.values())[:6]]},ensure_ascii=False),flush=True)
 if __name__=="__main__":asyncio.run(main())
