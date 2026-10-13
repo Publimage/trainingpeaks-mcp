@@ -67,7 +67,7 @@ async def main():
    must(w is not None and day(w)==e["source"] and w.get("workoutTypeValueId")==1 and
         w.get("title")==e["title"] and
         abs((w.get("totalTimePlanned") or 0)*60-e["minutes"])<0.02 and
-        abs((w.get("distancePlanned") or 0)*1000-e["metres"])<0.02,
+        abs((w.get("distancePlanned") or 0)-e["metres"])<0.02,
         f"SOURCE_SWIM_INVARIANT_FAILED_W{e['week']}")
    must(isinstance(w.get("structure"),dict),"SWIM_BUILDER_MISSING")
    must(not any(x.get("workoutTypeValueId")==1 and day(x)==e["target"] for x in initial),
