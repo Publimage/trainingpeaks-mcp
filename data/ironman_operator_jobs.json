@@ -1098,6 +1098,14 @@
       "scope": "trainingpeaks:plan:685173:repair-35-native-builder-gaps-from-neutral-verified-libraries",
       "script": "scripts/ironman_jobs/chasing_native_builder_repair_35.py",
       "test": "tests/test_chasing_w01_w04_swim_mwf.py"
+    },
+    {
+      "name": "chasing_native_builder_postrepair_qa_20261013",
+      "mode": "READ_ONLY",
+      "owner_id": 2116886,
+      "scope": "trainingpeaks:plan:685173:249-native-builders-and-35-repair-backup-read-qa",
+      "script": "scripts/ironman_jobs/chasing_native_builder_postrepair_qa_20261013.py",
+      "test": "tests/test_chasing_w01_w04_swim_mwf.py"
     }
   ]
 }
