@@ -10,10 +10,10 @@ import re,json
 from datetime import date
 from tp_mcp.tools.library import _ensure_structure_preview
 PLAN_START_TRANSPORT=date(2027,1,4)
-RACE=re.compile(r"(?i)(?:\\bIM\\s*(?:Bike|Run)?\\s*Pace\\b|\\bIronman\\s*(?:Bike|Run)?\\s*Pace\\b|\\brace execution\\b|\\britmo gara\\b|\\bpasso im\\b|\\britmo im\\b|\\bdiagnostic[oa]\\b|\\bdiagnostico\\b)")
-QUALITY=re.compile(r"(?i)(?:\\b(?:soglia|threshold|vo2|steady|tempo controllato|tempo alto|intervalli|over-under|fartlek|ripetute|qualit[aà])\\b)")
-TEST=re.compile(r"(?i)^(?:Test|Retest)\\s*\\|")
-WEEKNAME=re.compile(r"(?i)\\b(?:W(?:0?[1-9]|1[0-9]|2[0-4])|SETTIMANA|CHASING)\\b")
+RACE=re.compile(r"(?i)(?:\bIM\s*(?:Bike|Run)?\s*Pace\b|\bIronman\s*(?:Bike|Run)?\s*Pace\b|\brace execution\b|\britmo gara\b|\bpasso im\b|\britmo im\b|\bdiagnostic[oa]\b|\bdiagnostico\b)")
+QUALITY=re.compile(r"(?i)(?:\b(?:soglia|threshold|vo2|steady|tempo controllato|tempo alto|intervalli|over-under|fartlek|ripetute|qualit[aà])\b)")
+TEST=re.compile(r"(?i)^(?:Test|Retest)\s*\|")
+WEEKNAME=re.compile(r"(?i)\b(?:W(?:0?[1-9]|1[0-9]|2[0-4])|SETTIMANA|CHASING)\b")
 def relative(w):
  d=date.fromisoformat(str(w.get("workoutDay") or "")[:10]);delta=(d-PLAN_START_TRANSPORT).days
  if delta<0 or delta>=168:raise ValueError("OUTSIDE_RELATIVE_PLAN_SCOPE")
@@ -41,7 +41,7 @@ def target_for(w,step):
   if cl=="coolDown":return (45,55,"BI_COOLDOWN_INTERMEDIATE_EXAMPLE")
   if cl=="rest":return (55,65,"BI_EASY_REST")
   if cl!="active":raise ValueError("UNKNOWN_BIKE_STEP_CLASS")
-  if re.search(r"\\baero\\b",s):return (65,72,"BI_AERO_ENDURANCE")
+  if re.search(r"\baero\b",s):return (65,72,"BI_AERO_ENDURANCE")
   if "recupero" in title and "endurance" not in s and "fondo" not in s:return (45,54,"BI_RECOVERY")
   if any(p in s for p in ("endurance","lungo","fondo","lt1","aerobico")):return (60,65,"BI_ENDURANCE_INTERMEDIATE_EXAMPLE")
   if any(p in s for p in ("facile","agile","circolazione")):return (55,65,"BI_EASY_INTERMEDIATE_EXAMPLE")
