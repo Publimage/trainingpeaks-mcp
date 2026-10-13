@@ -1114,6 +1114,14 @@
       "scope": "trainingpeaks:plans:685173,684602:read-native-bike-run-metrics-only",
       "script": "scripts/ironman_jobs/chasing_dual_metric_audit.py",
       "test": "tests/test_chasing_w01_w04_swim_mwf.py"
+    },
+    {
+      "name": "chasing_golden_first_probe",
+      "mode": "READ_ONLY",
+      "owner_id": 2116886,
+      "scope": "trainingpeaks:plan:685173:read-power-pace-golden-schema",
+      "script": "scripts/ironman_jobs/chasing_golden_first_probe.py",
+      "test": "tests/test_chasing_w01_w04_swim_mwf.py"
     }
   ]
 }
