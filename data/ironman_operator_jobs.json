@@ -1026,6 +1026,14 @@
       "scope": "trainingpeaks:plan:685173:resume-verified-week-01-partial-restore-monday-anchor",
       "script": "scripts/ironman_jobs/chasing_w01_partial_resume.py",
       "test": "tests/test_chasing_w01_partial_resume.py"
+    },
+    {
+      "name": "chasing_w01_w04_swim_mwf",
+      "mode": "GUARDED_WRITE",
+      "owner_id": 2116886,
+      "scope": "trainingpeaks:plan:685173:move-three-swims-tue-to-mon-w02-w04-preserve-w01-tests",
+      "script": "scripts/ironman_jobs/chasing_w01_w04_swim_mwf.py",
+      "test": "tests/test_chasing_w01_w04_swim_mwf.py"
     }
   ]
 }
