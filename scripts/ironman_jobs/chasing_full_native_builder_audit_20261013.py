@@ -18,12 +18,12 @@ def ssummary(w):
     for k,t in enumerate(g.get("steps") or []):
       steps.append({"group":j,"step":k,"name":t.get("name"),
                     "length":t.get("length"),
-                    "target":t.get("target"),
-                    "intensity":t.get("intensity"),
+                    "targets":t.get("targets"),
+                    "intensityClass":t.get("intensityClass"),"openDuration":t.get("openDuration"),
                     "keys":list(t)})
   last=(seg[-1].get("end") if seg else None)
-  target=sum(bool(z.get("target")) for z in steps)
-  missing=[z["name"] for z in steps if not z.get("target")]
+  target=sum(bool(z.get("targets")) for z in steps)
+  missing=[z["name"] for z in steps if not z.get("targets")]
   return {"native":bool(seg),"kind":"structured","segments":len(seg),"steps":len(steps),
           "last_end":last,"primaryLengthMetric":st.get("primaryLengthMetric"),
           "primaryIntensityMetric":st.get("primaryIntensityMetric"),
