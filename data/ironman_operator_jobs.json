@@ -1034,6 +1034,14 @@
       "scope": "trainingpeaks:plan:685173:move-three-swims-tue-to-mon-w02-w04-preserve-w01-tests",
       "script": "scripts/ironman_jobs/chasing_w01_w04_swim_mwf.py",
       "test": "tests/test_chasing_w01_w04_swim_mwf.py"
+    },
+    {
+      "name": "chasing_w05_w08_latest_volumes_weekends",
+      "mode": "GUARDED_WRITE",
+      "owner_id": 2116886,
+      "scope": "trainingpeaks:plan:685173:w05-w08:two-bike-template-replacements-six-run-date-moves",
+      "script": "scripts/ironman_jobs/chasing_w05_w08_latest_volumes_weekends.py",
+      "test": "tests/test_chasing_w01_w04_swim_mwf.py"
     }
   ]
 }
