@@ -1130,6 +1130,14 @@
       "scope": "trainingpeaks:plan:685173:relative-w21-thu:two-golden-power-pace-prototypes",
       "script": "scripts/ironman_jobs/chasing_golden_first_two_workouts.py",
       "test": "tests/test_chasing_w01_w04_swim_mwf.py"
+    },
+    {
+      "name": "chasing_functional_metric_groups",
+      "mode": "READ_ONLY",
+      "owner_id": 2116886,
+      "scope": "trainingpeaks:plan:685173:read-functional-RPE-groups-relative-weeks",
+      "script": "scripts/ironman_jobs/chasing_functional_metric_groups.py",
+      "test": "tests/test_chasing_w01_w04_swim_mwf.py"
     }
   ]
 }
