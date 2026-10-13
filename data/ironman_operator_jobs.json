@@ -1058,6 +1058,14 @@
       "scope": "trainingpeaks:plan:685173:w09-w16:two-bike-replacements-and-nineteen-inplace-date-moves",
       "script": "scripts/ironman_jobs/chasing_w09_w16_weekend_arch.py",
       "test": "tests/test_chasing_w01_w04_swim_mwf.py"
+    },
+    {
+      "name": "chasing_w09_w16_longrun_balance",
+      "mode": "GUARDED_WRITE",
+      "owner_id": 2116886,
+      "scope": "trainingpeaks:plan:685173:w09-w16:balanced-run-long-replacements-and-w13-sunday-long",
+      "script": "scripts/ironman_jobs/chasing_w09_w16_longrun_balance.py",
+      "test": "tests/test_chasing_w01_w04_swim_mwf.py"
     }
   ]
 }
