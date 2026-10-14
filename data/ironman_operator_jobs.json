@@ -1226,6 +1226,14 @@
       "scope": "trainingpeaks:plan:685173:nine-approved-bike-mixed-ironman-pace-and-paceplus-76-80-fixed-durations-only",
       "script": "scripts/ironman_jobs/chasing_paceplus_nine_20261014.py",
       "test": "tests/test_chasing_paceplus_nine_20261014.py"
+    },
+    {
+      "name": "chasing_paceplus_resume_eight_20261014",
+      "mode": "GUARDED_WRITE",
+      "owner_id": 2116886,
+      "scope": "trainingpeaks:plan:685173:exact-eight-bike-paceplus-pending-after-verified-w10-only",
+      "script": "scripts/ironman_jobs/chasing_paceplus_resume_eight_20261014.py",
+      "test": "tests/test_chasing_paceplus_resume_eight_20261014.py"
     }
   ]
 }
