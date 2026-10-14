@@ -96,16 +96,18 @@ async def main():
   patches={}
   for w in pool:
    if w["workoutId"] in EXCEPT:continue
-   if (w.get("structure") or {}).get("primaryIntensityMetric")!="rpe":
-    raise RuntimeError("UNEXPECTED_EXISTING_METRIC_"+str(w["workoutId"]))
+   metric=(w.get("structure") or {}).get("primaryIntensityMetric")
+   if metric!="rpe":
+    must(metric==("percentOfFtp" if w["workoutTypeValueId"]==2 else "percentOfThresholdPace"),"UNEXPECTED_NONRPE_METRIC_"+str(w["workoutId"]))
+    continue
    patches[w["workoutId"]]=patch(w)
-  must(len(patches)==47,"PATCH_COUNT_NOT_47_"+str(len(patches)))
+  must(35<=len(patches)<=47,"PATCH_COUNT_OUTSIDE_EXPECTED_RANGE_"+str(len(patches)))
   must(not BACKUP.exists(),"BACKUP_EXISTS_RECONCILE_FIRST")
   BACKUP.parent.mkdir(parents=True,exist_ok=True)
   BACKUP.write_text(json.dumps({"plan":P,"original":original,"notes_hash":notes,
    "exceptions":EXCEPT,"patched_ids":list(patches)},indent=2,ensure_ascii=False)+"\n")
   expected={w["workoutId"]:stable(w) for w in original}
-  print(json.dumps({"stage":"PREFLIGHT_PASS","total":55,"patch":47,"exemptions":EXCEPT}),flush=True)
+  print(json.dumps({"stage":"PREFLIGHT_PASS","total":55,"patch":len(patches),"already_quantitative":47-len(patches),"exemptions":EXCEPT}),flush=True)
   for index,(wid,q) in enumerate(patches.items(),1):
    before,note=await fetch(c); bm={w["workoutId"]:w for w in before}
    must(note==notes and stable(bm[wid])==expected[wid],"PREWRITE_DRIFT_"+str(wid))
@@ -117,7 +119,7 @@ async def main():
    if index%5==0:print(json.dumps({"stage":"VERIFIED_PROGRESS","n":index,"last_id":wid}),flush=True)
   after,nh=await fetch(c)
   must(nh==notes and all(stable(w)==expected[w["workoutId"]] for w in after),"FINAL_DRIFT")
-  print(json.dumps({"stage":"PASS_47_TARGET_ONLY","written":47,"exemptions":list(EXCEPT),"unchanged_others":32,"no_athlete_or_library_writes":True}),flush=True)
+  print(json.dumps({"stage":"PASS_TARGET_ONLY","written":len(patches),"already_quantitative":47-len(patches),"exemptions":list(EXCEPT),"no_athlete_or_library_writes":True}),flush=True)
 if __name__=="__main__":
  try:asyncio.run(main())
  except Exception as e:
