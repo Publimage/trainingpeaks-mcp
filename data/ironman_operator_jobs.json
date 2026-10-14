@@ -1234,6 +1234,22 @@
       "scope": "trainingpeaks:plan:685173:exact-eight-bike-paceplus-pending-after-verified-w10-only",
       "script": "scripts/ironman_jobs/chasing_paceplus_resume_eight_20261014.py",
       "test": "tests/test_chasing_paceplus_resume_eight_20261014.py"
+    },
+    {
+      "name": "chasing_paceplus_ledger_seed_20261014",
+      "mode": "GUARDED_WRITE",
+      "owner_id": 2116886,
+      "scope": "digitalocean:ironman-tp-mcp:sqlite-ledger-v1:seed-verified-chasing-685173-paceplus-9-no-provider-writes",
+      "script": "scripts/ironman_jobs/chasing_paceplus_ledger_seed_20261014.py",
+      "test": "tests/test_ironman_state_store_v1.py"
+    },
+    {
+      "name": "chasing_paceplus_ledger_read_20261014",
+      "mode": "READ_ONLY",
+      "owner_id": 2116886,
+      "scope": "digitalocean:ironman-tp-mcp:sqlite-ledger-v1:read-verified-chasing-685173-paceplus-9",
+      "script": "scripts/ironman_jobs/chasing_paceplus_ledger_read_20261014.py",
+      "test": "tests/test_ironman_state_store_v1.py"
     }
   ]
 }
