@@ -25,16 +25,10 @@ async def main():
       "tg":z.get("targets",[])} for g in s.get("structure") or [] for z in g.get("steps") or []]})
   from collections import Counter
   a=Counter((x["sp"],x["metric"]) for x in out)
-  groups=Counter()
-  unexpected=[];plus=[];race=[]
-  for x in out:
-   names=[z["n"] or "" for z in x["steps"]]
-   if x["sp"]==2 and any("pace+" in n.lower() or "pace +" in n.lower() for n in names):plus.append({"wk":x["wk"],"id":x["id"],"names":names})
-   if x["sp"]==2 and any("im pace" in n.lower() or "ironman pace" in n.lower() for n in names):race.append({"wk":x["wk"],"id":x["id"],"metric":x["metric"],"steps":[{"n":z["n"],"c":z["cl"],"t":z["tg"]} for z in x["steps"]]})
-   if x["metric"]=="rpe":
-    types=set((z["cl"],z["n"]) for z in x["steps"])
-    groups[(x["sp"],tuple(sorted(z["cl"] or "" for z in x["steps"])))]+=1
-    for z in x["steps"]:
-     if not z["tg"]:unexpected.append({"id":x["id"],"wk":x["wk"],"sp":x["sp"],"name":z["n"],"cl":z["cl"]})
-  print(json.dumps({"count":len(out),"metrics":{str(k):v for k,v in a.items()},"plus":plus,"race":race,"empty":unexpected,"step_names":sorted(set(z["n"] or "" for x in out if x["metric"]=="rpe" for z in x["steps"]))},ensure_ascii=False),flush=True)
+  b=Counter((x["sp"],x["metric"],z["cl"],z["n"]) for x in out for z in x["steps"])
+  selected=[x for x in out if x["metric"]=="rpe" and (x["sp"]==2 and any(any(k in (z["n"] or "").lower() for k in ("pace","tempo","aero","soglia","steady","rpe gara")) for z in x["steps"]) or x["sp"]==3 and (any(any(k in (z["n"] or "").lower() for k in ("pace","gara","veloce","test","transizione","scioltezza")) for z in x["steps"]) or "test" in x["t"].lower()))]
+  print(json.dumps({"metrics":{str(k):v for k,v in a.items()},
+    "special":[{"w":x["wk"],"id":x["id"],"sp":x["sp"],"t":x["t"],"steps":[{"n":z["n"],"cl":z["cl"],"t":z["tg"]} for z in x["steps"] if any(k in (z["n"] or "").lower() for k in ("pace","tempo","aero","soglia","steady","gara","veloce","test","transizione","scioltezza"))]} for x in selected],
+    "rpe_run_titles":[{"w":x["wk"],"id":x["id"],"t":x["t"]} for x in out if x["metric"]=="rpe" and x["sp"]==3 and any(k in x["t"].lower() for k in ("specifico","test","brick","attivazione"))],
+    "percent_bi":[{"w":x["wk"],"id":x["id"],"t":x["t"],"steps":[{"n":z["n"],"t":z["tg"]} for z in x["steps"] if "pace" in (z["n"] or "").lower()]} for x in out if x["sp"]==2 and x["metric"]=="percentOfFtp"]},ensure_ascii=False),flush=True)
 if __name__=="__main__":asyncio.run(main())
