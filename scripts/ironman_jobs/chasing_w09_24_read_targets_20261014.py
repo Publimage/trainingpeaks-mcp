@@ -23,5 +23,18 @@ async def main():
     "t":w.get("title"),"metric":s.get("primaryIntensityMetric"),
     "steps":[{"n":z.get("name"),"cl":z.get("intensityClass"),"d":z.get("length",{}).get("value"),
       "tg":z.get("targets",[])} for g in s.get("structure") or [] for z in g.get("steps") or []]})
-  print(json.dumps({"count":len(out),"items":out},ensure_ascii=False),flush=True)
+  from collections import Counter
+  a=Counter((x["sp"],x["metric"]) for x in out)
+  groups=Counter()
+  unexpected=[];plus=[];race=[]
+  for x in out:
+   names=[z["n"] or "" for z in x["steps"]]
+   if x["sp"]==2 and any("pace+" in n.lower() or "pace +" in n.lower() for n in names):plus.append({"wk":x["wk"],"id":x["id"],"names":names})
+   if x["sp"]==2 and any("im pace" in n.lower() or "ironman pace" in n.lower() for n in names):race.append({"wk":x["wk"],"id":x["id"],"metric":x["metric"],"steps":[{"n":z["n"],"c":z["cl"],"t":z["tg"]} for z in x["steps"]]})
+   if x["metric"]=="rpe":
+    types=set((z["cl"],z["n"]) for z in x["steps"])
+    groups[(x["sp"],tuple(sorted(z["cl"] or "" for z in x["steps"])))]+=1
+    for z in x["steps"]:
+     if not z["tg"]:unexpected.append({"id":x["id"],"wk":x["wk"],"sp":x["sp"],"name":z["n"],"cl":z["cl"]})
+  print(json.dumps({"count":len(out),"metrics":{str(k):v for k,v in a.items()},"plus":plus,"race":race,"empty":unexpected,"step_names":sorted(set(z["n"] or "" for x in out if x["metric"]=="rpe" for z in x["steps"]))},ensure_ascii=False),flush=True)
 if __name__=="__main__":asyncio.run(main())
