@@ -1162,6 +1162,14 @@
       "scope": "trainingpeaks:plan:685173:relative-w01-w08:native-builder-shape-readonly",
       "script": "scripts/ironman_jobs/chasing_first8_builder_shape_audit_20261014.py",
       "test": "tests/test_chasing_w01_w04_swim_mwf.py"
+    },
+    {
+      "name": "chasing_w01_w08_builder_percent_only_20261014",
+      "mode": "GUARDED_WRITE",
+      "owner_id": 2116886,
+      "scope": "trainingpeaks:plan:685173:relative-w01-w08:47-approved-bike-run-native-builder-targets-only",
+      "script": "scripts/ironman_jobs/chasing_w01_w08_builder_percent_only_20261014.py",
+      "test": "tests/test_chasing_w01_w08_builder_percent_only_20261014.py"
     }
   ]
 }
