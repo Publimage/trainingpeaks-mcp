@@ -1194,6 +1194,14 @@
       "scope": "trainingpeaks:plan:685173:rename-42-bike-run-rpe-titles-only-preserve-everything-else",
       "script": "scripts/ironman_jobs/chasing_only_rename_rpe_titles_20261014.py",
       "test": "tests/test_chasing_only_rename_rpe_titles_20261014.py"
+    },
+    {
+      "name": "chasing_w09_thu_tempo_ftp_only_20261014",
+      "mode": "GUARDED_WRITE",
+      "owner_id": 2116886,
+      "scope": "trainingpeaks:plan:685173:relative-w09-thu:workout-4001048439-tempo-builder-ftp-only",
+      "script": "scripts/ironman_jobs/chasing_w09_thu_tempo_ftp_only_20261014.py",
+      "test": "tests/test_chasing_w09_thu_tempo_ftp_only_20261014.py"
     }
   ]
 }
