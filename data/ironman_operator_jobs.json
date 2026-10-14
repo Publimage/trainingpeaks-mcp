@@ -1202,6 +1202,14 @@
       "scope": "trainingpeaks:plan:685173:relative-w09-thu:workout-4001048439-tempo-builder-ftp-only",
       "script": "scripts/ironman_jobs/chasing_w09_thu_tempo_ftp_only_20261014.py",
       "test": "tests/test_chasing_w09_thu_tempo_ftp_only_20261014.py"
+    },
+    {
+      "name": "chasing_w09_24_read_targets_20261014",
+      "mode": "READ_ONLY",
+      "owner_id": 2116886,
+      "scope": "trainingpeaks:plan:685173:relative-w09-w24:read-bike-run-builder-original-targets",
+      "script": "scripts/ironman_jobs/chasing_w09_24_read_targets_20261014.py",
+      "test": "tests/test_chasing_w09_thu_tempo_ftp_only_20261014.py"
     }
   ]
 }
