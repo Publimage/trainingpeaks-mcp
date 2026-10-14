@@ -1154,6 +1154,14 @@
       "scope": "trainingpeaks:plan:685173:remove-exact-trailing-code-field-172-endurance-instances-only",
       "script": "scripts/ironman_jobs/chasing_strip_codes_plan_20261014.py",
       "test": "tests/test_chasing_strip_codes_plan_20261014.py"
+    },
+    {
+      "name": "chasing_first8_builder_shape_audit_20261014",
+      "mode": "READ_ONLY",
+      "owner_id": 2116886,
+      "scope": "trainingpeaks:plan:685173:relative-w01-w08:native-builder-shape-readonly",
+      "script": "scripts/ironman_jobs/chasing_first8_builder_shape_audit_20261014.py",
+      "test": "tests/test_chasing_w01_w04_swim_mwf.py"
     }
   ]
 }
