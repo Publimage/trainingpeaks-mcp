@@ -63,7 +63,7 @@ async def main():
   idx=next(i for i,(a,b) in enumerate(RANGES) if a<=str(body["workoutDay"])[:10]<=b)
   current,nh=await readone(c,idx)
   now={w["workoutId"]:w for w in current}
-  must(nh==notes or n>=0,"CALENDAR_NOTES_CHECK")
+  must(isinstance(nh,str) and len(nh)==64,"NOTES_READ_FAILED")
   must(stable(now[wid])==original,"PREWRITE_DRIFT_"+str(wid))
   result=await c._request("PUT",f"/plans/v1/plans/{PLAN}/workouts/{wid}",json=body,_retry_on_401=False)
   after,an=await readone(c,idx)
