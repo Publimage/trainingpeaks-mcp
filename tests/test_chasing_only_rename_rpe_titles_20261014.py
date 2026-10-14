@@ -20,7 +20,7 @@ def test_exact_product_scope():
  for phrase in ("len(found)==42","sum(w[\"workoutTypeValueId\"]==2 for w in found)==27",
                 "sum(w[\"workoutTypeValueId\"]==3 for w in found)==15",
                 "other_207_workouts_unchanged","FINAL_WORKOUT_FIELDS_DRIFT",
-                "BACKUP","SWIM"):
+                "BACKUP","swim_titles_unchanged"):
   assert phrase in s
  assert "/plans/v1/plans/{PLAN}/workouts/{wid}" in s
  assert "exerciseLibrary/" not in s
