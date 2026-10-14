@@ -1250,6 +1250,14 @@
       "scope": "digitalocean:ironman-tp-mcp:sqlite-ledger-v1:read-verified-chasing-685173-paceplus-9",
       "script": "scripts/ironman_jobs/chasing_paceplus_ledger_read_20261014.py",
       "test": "tests/test_ironman_state_store_v1.py"
+    },
+    {
+      "name": "ledger_crash_restart_canary_20261014",
+      "mode": "GUARDED_WRITE",
+      "owner_id": 2116886,
+      "scope": "digitalocean:ironman-tp-mcp:sqlite-ledger-v1:isolated-crash-test-tempdb-no-provider-writes",
+      "script": "scripts/ironman_jobs/ledger_crash_restart_canary_20261014.py",
+      "test": "tests/test_ledger_crash_restart_canary_20261014.py"
     }
   ]
 }
