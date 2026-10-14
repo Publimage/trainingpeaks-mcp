@@ -1186,6 +1186,14 @@
       "scope": "trainingpeaks:plan:685173:relative-w07-thu:read-native-builder-only",
       "script": "scripts/ironman_jobs/chasing_w07_verify_native_copy_vs_library.py",
       "test": "tests/test_chasing_w07_thu_steady_ftp_only_20261014.py"
+    },
+    {
+      "name": "chasing_only_rename_rpe_titles_20261014",
+      "mode": "GUARDED_WRITE",
+      "owner_id": 2116886,
+      "scope": "trainingpeaks:plan:685173:rename-42-bike-run-rpe-titles-only-preserve-everything-else",
+      "script": "scripts/ironman_jobs/chasing_only_rename_rpe_titles_20261014.py",
+      "test": "tests/test_chasing_only_rename_rpe_titles_20261014.py"
     }
   ]
 }
