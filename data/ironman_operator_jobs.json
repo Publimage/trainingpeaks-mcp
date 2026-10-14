@@ -1146,6 +1146,14 @@
       "scope": "trainingpeaks:plan:685173:relative-w01-thu-sat-sun:exact-three-native-builder-targets-only",
       "script": "scripts/ironman_jobs/chasing_w01_three_builder_only_20261014.py",
       "test": "tests/test_chasing_w01_three_builder_only_20261014.py"
+    },
+    {
+      "name": "chasing_strip_codes_plan_20261014",
+      "mode": "GUARDED_WRITE",
+      "owner_id": 2116886,
+      "scope": "trainingpeaks:plan:685173:remove-exact-trailing-code-field-172-endurance-instances-only",
+      "script": "scripts/ironman_jobs/chasing_strip_codes_plan_20261014.py",
+      "test": "tests/test_chasing_strip_codes_plan_20261014.py"
     }
   ]
 }
