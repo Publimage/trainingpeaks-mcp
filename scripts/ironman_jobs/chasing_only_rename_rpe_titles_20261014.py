@@ -63,7 +63,7 @@ def checksum(obj):
 def newtitle(t):
  if t==STEADY: return STEADY_NEW
  z=TRAIL.sub("",t)
- require(z!=t and not re.search(r"\bRPE\b",z,re.I),"UNHANDLED_RPE_TITLE:"+t)
+ require(z!=t and not re.search(r"\bRPE",z,re.I),"UNHANDLED_RPE_TITLE:"+t)
  require(z.count("|")==1 and all(z.split("|")) and "CHASING" not in z and "W0" not in z,"BAD_NAMING:"+z)
  return z
 
@@ -92,7 +92,7 @@ async def main():
           and h.get("isPublic") is False and h.get("workoutCount")==276
           and "BOZZA" in (h.get("title") or ""),"WRONG_PLAN")
   rows,notes=await snapshot(c)
-  found=[w for w in rows if w.get("workoutTypeValueId") in (2,3) and re.search(r"\bRPE\b",w.get("title") or "",re.I)]
+  found=[w for w in rows if w.get("workoutTypeValueId") in (2,3) and re.search(r"\bRPE",w.get("title") or "",re.I)]
   if BACKUP.exists():
    bak=json.loads(BACKUP.read_text())
    require(bak.get("plan")==PLAN and len(bak.get("original",[]))==249,"BACKUP_NOT_VALID")
@@ -144,7 +144,7 @@ async def main():
   final,nfinal=await snapshot(c)
   require(nfinal==notes,"FINAL_NOTES_CHANGED")
   require(all(cleanobj(w)==desired[w["workoutId"]] for w in final),"FINAL_WORKOUT_FIELDS_DRIFT")
-  require(not [w for w in final if w.get("workoutTypeValueId") in (2,3) and re.search(r"\bRPE\b",w.get("title") or "",re.I)],"RPE_TITLE_REMAINS")
+  require(not [w for w in final if w.get("workoutTypeValueId") in (2,3) and re.search(r"\bRPE",w.get("title") or "",re.I)],"RPE_TITLE_REMAINS")
   print(json.dumps({"stage":"PASS_42_TITLE_ONLY","total_renamed":42,"changed_this_run":len(pending),
                     "plan":PLAN,"other_207_workouts_unchanged":True,
                     "swim_titles_unchanged":True,"native_builders_unchanged":True,
