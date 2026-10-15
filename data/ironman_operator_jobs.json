@@ -1266,6 +1266,38 @@
       "scope": "digitalocean:ironman-tp-mcp:sqlite-ledger-v1:isolated-partial-resume-tempdb-no-provider-writes",
       "script": "scripts/ironman_jobs/ledger_partial_resume_canary_20261015.py",
       "test": "tests/test_ledger_partial_resume_canary_20261015.py"
+    },
+    {
+      "name": "chasing_native_notes_golden_20261015",
+      "mode": "GUARDED_WRITE",
+      "owner_id": 2116886,
+      "scope": "trainingpeaks:private-plan:685173:native-calendar-notes:01-01:no-workouts",
+      "script": "scripts/ironman_jobs/chasing_native_notes_golden_20261015.py",
+      "test": "tests/test_chasing_native_notes_20261015.py"
+    },
+    {
+      "name": "chasing_native_notes_batch02_20261015",
+      "mode": "GUARDED_WRITE",
+      "owner_id": 2116886,
+      "scope": "trainingpeaks:private-plan:685173:native-calendar-notes:02-11:no-workouts",
+      "script": "scripts/ironman_jobs/chasing_native_notes_batch02_20261015.py",
+      "test": "tests/test_chasing_native_notes_20261015.py"
+    },
+    {
+      "name": "chasing_native_notes_batch03_20261015",
+      "mode": "GUARDED_WRITE",
+      "owner_id": 2116886,
+      "scope": "trainingpeaks:private-plan:685173:native-calendar-notes:12-21:no-workouts",
+      "script": "scripts/ironman_jobs/chasing_native_notes_batch03_20261015.py",
+      "test": "tests/test_chasing_native_notes_20261015.py"
+    },
+    {
+      "name": "chasing_native_notes_batch04_20261015",
+      "mode": "GUARDED_WRITE",
+      "owner_id": 2116886,
+      "scope": "trainingpeaks:private-plan:685173:native-calendar-notes:22-31:no-workouts",
+      "script": "scripts/ironman_jobs/chasing_native_notes_batch04_20261015.py",
+      "test": "tests/test_chasing_native_notes_20261015.py"
     }
   ]
 }
