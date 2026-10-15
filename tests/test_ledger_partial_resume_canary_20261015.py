@@ -1,7 +1,11 @@
 """Offline acceptance for partial checkpoint recovery on simulated backend."""
 from pathlib import Path
 import tempfile
+import sys
 import pytest
+
+SCRIPTS = Path(__file__).resolve().parents[1] / "scripts" / "ironman_jobs"
+sys.path.insert(0, str(SCRIPTS))
 from ironman_state_store_v1 import DB_PATH
 from ledger_partial_resume_canary_20261015 import (
     PREFIX, lab_paths, register, external_create, resume, state,
