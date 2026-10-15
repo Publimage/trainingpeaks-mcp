@@ -35,12 +35,12 @@ jobs:
       PREFECT_CLOUD_ENABLE_ORCHESTRATION_TELEMETRY: "false"
     steps:
       - name: Checkout source, no credentials for external providers
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           persist-credentials: false
 
       - name: Python 3.12
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v6
         with:
           python-version: "3.12"
 
@@ -54,7 +54,7 @@ jobs:
       - name: Install upstream Prefect and test runner only
         shell: bash
         run: |
-          python -m pip install --disable-pip-version-check "prefect>=3.0,<4.0" "pytest>=8,<10"
+          python -m pip install --disable-pip-version-check "prefect==3.8.8" "pytest>=8,<10"
 
       - name: Test actual Prefect execution and isolated recovery
         shell: bash
