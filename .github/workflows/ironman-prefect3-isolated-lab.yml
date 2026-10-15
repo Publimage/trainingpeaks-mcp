@@ -1,18 +1,6 @@
 name: IRONMAN Prefect 3 Isolated LAB
 
 on:
-  push:
-    branches:
-      - lab/ironman-prefect-20261015
-    paths:
-      - ".github/workflows/ironman-prefect3-isolated-lab.yml"
-      - "scripts/ironman_jobs/prefect3_isolated_resume_pilot_20261015.py"
-      - "scripts/ironman_jobs/ledger_partial_resume_canary_20261015.py"
-      - "scripts/ironman_jobs/ironman_state_store_v1.py"
-      - "tests/test_prefect3_isolated_resume_pilot_20261015.py"
-      - "scripts/ironman_jobs/prefect3_worker_resume_flow_20261015.py"
-      - "scripts/ironman_jobs/prefect3_worker_lifecycle_canary_20261015.py"
-      - "tests/test_prefect3_worker_restart_lab_20261015.py"
   pull_request:
     branches:
       - feat/mcp-test-training-plan-lab
