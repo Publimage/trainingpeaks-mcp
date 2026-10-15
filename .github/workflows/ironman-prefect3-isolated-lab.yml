@@ -10,6 +10,13 @@ on:
       - "scripts/ironman_jobs/ledger_partial_resume_canary_20261015.py"
       - "scripts/ironman_jobs/ironman_state_store_v1.py"
       - "tests/test_prefect3_isolated_resume_pilot_20261015.py"
+  pull_request:
+    branches:
+      - feat/mcp-test-training-plan-lab
+    paths:
+      - ".github/workflows/ironman-prefect3-isolated-lab.yml"
+      - "scripts/ironman_jobs/prefect3_isolated_resume_pilot_20261015.py"
+      - "tests/test_prefect3_isolated_resume_pilot_20261015.py"
   workflow_dispatch:
 
 permissions:
@@ -19,6 +26,7 @@ jobs:
   isolated-prefect:
     name: Prefect 3 / readback + crash recovery / no provider access
     runs-on: ubuntu-latest
+    if: github.event_name != 'pull_request' || github.head_ref == 'lab/ironman-prefect-20261015'
     timeout-minutes: 15
     env:
       IRONMAN_ISOLATED_PREFECT_LAB: "1"
