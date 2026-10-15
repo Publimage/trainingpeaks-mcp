@@ -44,4 +44,5 @@ def test_versioned_deployment_confined_to_process_lab(tmp_path):
     assert FLOW_ENTRYPOINT in text
     assert "git_clone" not in text
     assert "docker" not in text
-    assert "trainingpeaks" not in text.lower()
+    assert "tp_client" not in text.lower()
+    assert "http://" not in text.lower() and "https://" not in text.lower()
