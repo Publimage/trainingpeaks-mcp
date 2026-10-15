@@ -195,6 +195,11 @@ def run_worker_lifecycle_lab() -> dict:
                "PREFECT_CLOUD_ENABLE_ORCHESTRATION_TELEMETRY": "false",
                "PREFECT_WORKER_QUERY_SECONDS": "2",
                FLAG: "1"}
+        # The CLI/worker subprocesses use env explicitly; the SDK client
+        # in THIS supervising process must use the same API, otherwise
+        # get_client() launches an unrelated ephemeral Prefect server.
+        os.environ["PREFECT_HOME"] = str(home)
+        os.environ["PREFECT_API_URL"] = url
         server_log = root / "server.log"
         worker_log = root / "worker.log"
         server2_log = root / "server_restarted.log"
