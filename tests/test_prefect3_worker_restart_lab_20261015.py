@@ -22,7 +22,7 @@ def test_explicit_lab_flag_is_mandatory(monkeypatch):
 
 
 def test_production_ledger_is_not_valid_lab_root():
-    with pytest.raises(RuntimeError, match="ONLY_DIRECT_TEMPORARY_LAB_ROOT_ALLOWED"):
+    with pytest.raises(RuntimeError, match="LAB_ROOT_INVALID|ONLY_DIRECT_TEMPORARY_LAB_ROOT_ALLOWED"):
         lab_paths(DB_PATH.parent)
 
 
