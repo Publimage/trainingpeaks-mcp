@@ -1258,6 +1258,14 @@
       "scope": "digitalocean:ironman-tp-mcp:sqlite-ledger-v1:isolated-crash-test-tempdb-no-provider-writes",
       "script": "scripts/ironman_jobs/ledger_crash_restart_canary_20261014.py",
       "test": "tests/test_ledger_crash_restart_canary_20261014.py"
+    },
+    {
+      "name": "ledger_partial_resume_canary_20261015",
+      "mode": "GUARDED_WRITE",
+      "owner_id": 2116886,
+      "scope": "digitalocean:ironman-tp-mcp:sqlite-ledger-v1:isolated-partial-resume-tempdb-no-provider-writes",
+      "script": "scripts/ironman_jobs/ledger_partial_resume_canary_20261015.py",
+      "test": "tests/test_ledger_partial_resume_canary_20261015.py"
     }
   ]
 }
