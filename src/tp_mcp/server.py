@@ -49,6 +49,7 @@ from tp_mcp.tools import (
     tp_create_library_item,
     tp_create_note,
     tp_batch_add_intermediate_strength,
+    tp_batch_add_beginner_strength,
     tp_create_strength_plan_lab_probe,
     tp_create_strength_workout,
     tp_create_workout,
@@ -1537,6 +1538,34 @@ TOOLS = [
         },
     ),
     Tool(
+        name="tp_batch_add_beginner_strength",
+        description=(
+            "Add 1-8 native StructuredStrength Builder twins to the public "
+            "First Ironman Beginner Training Plan 679801 only. Each item is "
+            "anchored to one exact approved classic Strength source workout ID. "
+            "The source classic workout is not deleted by this tool. Requires "
+            "exact expected plan count; defaults to dry-run; POST once per "
+            "workout with native membership/detail/video readback."
+        ),
+        input_schema={
+            "type": "object",
+            "properties": {
+                "items": {
+                    "type": "array",
+                    "items": {"type": "object"},
+                    "description": (
+                        "Each {source_workout_id,title,instructions,blocks}; "
+                        "source_workout_id must be one of the 36 approved "
+                        "Beginner classic Strength IDs."
+                    ),
+                },
+                "expected_plan_count": {"type": "integer"},
+                "dry_run": {"type": "boolean", "default": True},
+            },
+            "required": ["items", "expected_plan_count"],
+        },
+    ),
+    Tool(
         name="tp_create_strength_plan_lab_probe",
         description=(
             "LAB ONLY. Dry-run checks a known native Strength Builder in "
@@ -1784,6 +1813,7 @@ _ATHLETE_EXEMPT_TOOLS = {
     # Hard-locked pilot, not athlete-scoped and never accepts override.
     "tp_create_strength_plan_lab_probe",
     "tp_batch_add_intermediate_strength",
+    "tp_batch_add_beginner_strength",
     "tp_sync_intermediate_native_notes",
     # Coach-scoped (groups belong to the coach, not a targeted athlete).
     "tp_list_groups", "tp_list_athletes_in_group",
@@ -1867,6 +1897,7 @@ _NON_IDEMPOTENT_WRITES = {
     "tp_sync_intermediate_native_notes",
     "tp_create_note",
     "tp_batch_add_intermediate_strength",
+    "tp_batch_add_beginner_strength",
     "tp_create_strength_plan_lab_probe",
     "tp_create_strength_workout",
     "tp_create_workout",
@@ -2110,6 +2141,12 @@ async def _h_search_exercises(args):
 @_handler("tp_batch_add_intermediate_strength")
 async def _h_batch_add_intermediate_strength(args):
     return await tp_batch_add_intermediate_strength(
+        items=args["items"], expected_plan_count=args["expected_plan_count"],
+        dry_run=args.get("dry_run", True))
+
+@_handler("tp_batch_add_beginner_strength")
+async def _h_batch_add_beginner_strength(args):
+    return await tp_batch_add_beginner_strength(
         items=args["items"], expected_plan_count=args["expected_plan_count"],
         dry_run=args.get("dry_run", True))
 
