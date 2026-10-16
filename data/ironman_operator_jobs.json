@@ -1490,6 +1490,14 @@
       "scope": "server:ironman-tp-mcp:coaching-radar-result:2932097:read",
       "script": "scripts/ironman_jobs/coaching_radar_result_audit_20261016.py",
       "test": "tests/test_coaching_radar_result_audit_20261016.py"
+    },
+    {
+      "name": "mcp_runtime_inventory_20261016",
+      "mode": "READ_ONLY",
+      "owner_id": 2116886,
+      "scope": "server:ironman-tp-mcp:runtime-process-manager-read",
+      "script": "scripts/ironman_jobs/mcp_runtime_inventory_20261016.py",
+      "test": "tests/test_mcp_runtime_inventory_20261016.py"
     }
   ]
 }
