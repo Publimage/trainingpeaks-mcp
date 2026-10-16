@@ -82,10 +82,18 @@ async def main():
             result["sport"]="RUN" if sport==3 else "BIKE"
             report.append(result)
         flag=[{"week":w["week"],"id":w["workout_id"],"issues":w["problems"]} for w in report if w["problems"]]
+        compact=[{"week":w["week"],"id":w["workout_id"],"sport":w["sport"],
+                  "minutes":w["planned_minutes"],"metric":w["primaryIntensityMetric"],
+                  "builder_seconds":w["native_seconds"],"step_count":len(w["steps"]),
+                  "polyline_points":w["polyline_points"],
+                  "active":[{"name":step["name"],"sec":step["length"].get("value"),
+                             "repeats":step["repeats"],"targets":step["targets"]}
+                            for step in w["steps"] if step["class"]=="active"],
+                  "issues":w["problems"]} for w in report]
         print(json.dumps({"stage":"READ_ONLY_NATIVE_BUILDER_AUDIT","plan":P,
             "target_count":len(report),"full_plan_workouts_seen":len(observed),
             "native_pass":len(report)-len(flag),"native_issues":flag,
-            "workouts":report,"provider_writes":0},ensure_ascii=False,default=str),flush=True)
+            "workouts":compact,"provider_writes":0},ensure_ascii=False,default=str),flush=True)
         return 0 if not flag else 2
 if __name__=="__main__":
     raise SystemExit(asyncio.run(main()))
