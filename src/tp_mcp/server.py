@@ -50,6 +50,7 @@ from tp_mcp.tools import (
     tp_create_note,
     tp_batch_add_intermediate_strength,
     tp_batch_add_beginner_strength,
+    tp_batch_delete_beginner_classic_strength,
     tp_create_strength_plan_lab_probe,
     tp_create_strength_workout,
     tp_create_workout,
@@ -1566,6 +1567,31 @@ TOOLS = [
         },
     ),
     Tool(
+        name="tp_batch_delete_beginner_classic_strength",
+        description=(
+            "Delete 1-8 exact classic text Strength sources from public "
+            "First Ironman Beginner plan 679801 only, but only after an exact "
+            "native StructuredStrength twin exists at the same date/title. "
+            "Defaults to dry-run; provider readback after every delete."
+        ),
+        input_schema={
+            "type": "object",
+            "properties": {
+                "items": {
+                    "type": "array",
+                    "items": {"type": "object"},
+                    "description": (
+                        "Each {source_workout_id,native_title,date}; source ID "
+                        "must be one of the 36 approved Beginner Strength sources."
+                    ),
+                },
+                "expected_plan_count": {"type": "integer"},
+                "dry_run": {"type": "boolean", "default": True},
+            },
+            "required": ["items", "expected_plan_count"],
+        },
+    ),
+    Tool(
         name="tp_create_strength_plan_lab_probe",
         description=(
             "LAB ONLY. Dry-run checks a known native Strength Builder in "
@@ -1814,6 +1840,7 @@ _ATHLETE_EXEMPT_TOOLS = {
     "tp_create_strength_plan_lab_probe",
     "tp_batch_add_intermediate_strength",
     "tp_batch_add_beginner_strength",
+    "tp_batch_delete_beginner_classic_strength",
     "tp_sync_intermediate_native_notes",
     # Coach-scoped (groups belong to the coach, not a targeted athlete).
     "tp_list_groups", "tp_list_athletes_in_group",
@@ -1850,6 +1877,7 @@ _READ_ONLY_EXTRA = {"tp_auth_status"}
 # these writes to the account selected by the authenticated session; the
 # Publishing Gate additionally restricts real-athlete mutations.
 _DESTRUCTIVE_TOOLS = {
+    "tp_batch_delete_beginner_classic_strength",
     "tp_delete_availability",
     "tp_delete_equipment",
     "tp_delete_event",
@@ -2147,6 +2175,12 @@ async def _h_batch_add_intermediate_strength(args):
 @_handler("tp_batch_add_beginner_strength")
 async def _h_batch_add_beginner_strength(args):
     return await tp_batch_add_beginner_strength(
+        items=args["items"], expected_plan_count=args["expected_plan_count"],
+        dry_run=args.get("dry_run", True))
+
+@_handler("tp_batch_delete_beginner_classic_strength")
+async def _h_batch_delete_beginner_classic_strength(args):
+    return await tp_batch_delete_beginner_classic_strength(
         items=args["items"], expected_plan_count=args["expected_plan_count"],
         dry_run=args.get("dry_run", True))
 
