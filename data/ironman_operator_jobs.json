@@ -1439,7 +1439,7 @@
       "name": "beginner_strength_native_migration_20261016",
       "mode": "GUARDED_WRITE",
       "owner_id": 2116886,
-      "scope": "trainingpeaks:public-plan:679801:migrate-36-classic-strength-to-native-structuredstrength-only",
+      "scope": "trainingpeaks:public-plan:679801:create-36-native-structuredstrength-twins-only",
       "script": "scripts/ironman_jobs/beginner_strength_native_migration_20261016.py",
       "test": "tests/test_beginner_strength_native_migration_20261016.py"
     },
