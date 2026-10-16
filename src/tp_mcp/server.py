@@ -27,6 +27,7 @@ from mcp.types import (
 from tp_mcp import __version__, apps
 from tp_mcp.auth import get_credential, validate_auth
 from tp_mcp.client.context import athlete_override
+from tp_mcp.private_bridge import maybe_start_private_bridge
 from tp_mcp.tools import (
     tp_add_athletes_to_group,
     tp_add_note_comment,
@@ -2556,12 +2557,22 @@ async def run_server_async() -> None:
     if os.environ.get("TP_MCP_SKIP_STARTUP_VALIDATION") != "1":
         await _validate_auth_on_startup()
 
-    async with stdio_server() as (read_stream, write_stream):
-        await server.run(
-            read_stream,
-            write_stream,
-            server.create_initialization_options(),
-        )
+    private_bridge = None
+    try:
+        private_bridge = maybe_start_private_bridge()
+        if private_bridge is not None:
+            host, port = private_bridge.server.server_address
+            logger.info("IRONMAN private read-only bridge listening on %s:%s", host, port)
+
+        async with stdio_server() as (read_stream, write_stream):
+            await server.run(
+                read_stream,
+                write_stream,
+                server.create_initialization_options(),
+            )
+    finally:
+        if private_bridge is not None:
+            private_bridge.close()
 
 
 def run_server() -> int:
