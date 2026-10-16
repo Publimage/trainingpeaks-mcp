@@ -1466,6 +1466,14 @@
       "scope": "server:ironman-tp-mcp:prefect-admin-result-read",
       "script": "scripts/ironman_jobs/prefect_admin_result_read_20261016.py",
       "test": "tests/test_prefect_admin_result_read_20261016.py"
+    },
+    {
+      "name": "prefect_admin_bridge_code_audit_20261016",
+      "mode": "READ_ONLY",
+      "owner_id": 2116886,
+      "scope": "server:ironman-tp-mcp:prefect-admin-result-sink-local-audit",
+      "script": "scripts/ironman_jobs/prefect_admin_bridge_code_audit_20261016.py",
+      "test": "tests/test_private_bridge.py"
     }
   ]
 }
