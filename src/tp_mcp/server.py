@@ -91,6 +91,7 @@ from tp_mcp.tools import (
     tp_get_weekly_summary,
     tp_get_workout,
     tp_get_workout_comments,
+    tp_get_workout_fit_data,
     tp_get_workout_note,
     tp_get_workout_prs,
     tp_get_workout_types,
@@ -485,6 +486,52 @@ TOOLS = [
                 "output_path": {"type": "string", "description": "Directory or full path to save file"},
             },
             "required": ["workout_id", "file_id"],
+        },
+    ),
+    Tool(
+        name="tp_get_workout_fit_data",
+        description=(
+            "Read and decode the original .FIT/.FIT.gz file attached to a completed workout. "
+            "Read-only fallback when TrainingPeaks chart analysis is unavailable. "
+            "Returns session/lap/length/event messages plus sampled record time-series."
+        ),
+        input_schema={
+            "type": "object",
+            "properties": {
+                "workout_id": {"type": "string", "description": "Workout ID"},
+                "file_id": {
+                    "type": "string",
+                    "description": (
+                        "Optional FIT file ID from tp_get_workout. If omitted, the tool auto-selects "
+                        "when exactly one FIT file exists."
+                    ),
+                },
+                "sample_seconds": {
+                    "type": "integer",
+                    "enum": [1, 5, 10, 30, 60],
+                    "default": 10,
+                    "description": "Downsample record messages by elapsed-time bucket.",
+                },
+                "start_seconds": {
+                    "type": "number",
+                    "minimum": 0,
+                    "default": 0,
+                    "description": "Start of returned time window in elapsed seconds.",
+                },
+                "end_seconds": {
+                    "type": "number",
+                    "minimum": 0,
+                    "description": "Optional end of returned time window in elapsed seconds.",
+                },
+                "max_records": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 5000,
+                    "default": 1800,
+                    "description": "Maximum sampled record messages returned to the caller.",
+                },
+            },
+            "required": ["workout_id"],
         },
     ),
     Tool(
@@ -1980,6 +2027,17 @@ async def _h_download_workout_file(args):
         workout_id=args["workout_id"],
         file_id=args["file_id"],
         output_path=args.get("output_path"),
+    )
+
+@_handler("tp_get_workout_fit_data")
+async def _h_get_workout_fit_data(args):
+    return await tp_get_workout_fit_data(
+        workout_id=args["workout_id"],
+        file_id=args.get("file_id"),
+        sample_seconds=args.get("sample_seconds", 10),
+        start_seconds=args.get("start_seconds", 0.0),
+        end_seconds=args.get("end_seconds"),
+        max_records=args.get("max_records", 1800),
     )
 
 @_handler("tp_delete_workout_file")
