@@ -168,6 +168,7 @@ def _sample_time_series(
 
     return selected, False
 
+
 def _stop_timestamp(start_iso: str | None, elapsed_seconds: Any) -> str | None:
     """v2's summary endpoint only gives ``startTimestamp`` — derive the stop
     from ``TotalElapsedTime`` (wall-clock elapsed, includes any pauses), to
@@ -357,7 +358,7 @@ async def tp_analyze_workout(
         sample_seconds=sample_seconds,
         max_points=max_time_series_points,
     )
-    totals_out = {t.name: {"value": t.value, "unit": t.unit} for t in analysis.totals
+    totals_out = {t.name: {"value": t.value, "unit": t.unit} for t in analysis.totals}
 
     channels = [
         {
