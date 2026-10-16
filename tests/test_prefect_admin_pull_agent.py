@@ -36,3 +36,10 @@ def test_installer_has_no_public_listener():
     assert "OnUnitActiveSec=30s" in text
     assert "ListenStream" not in text
     assert "0.0.0.0" not in text
+
+
+def test_agent_source_contains_no_reexecute_recovery_guard():
+    text = Path("scripts/ironman_jobs/prefect_admin_pull_agent.py").read_text()
+    assert "AMBIGUOUS_PREVIOUS_START_NO_REEXECUTE" in text
+    assert '"result_posted"' in text
+    assert "RESULT_DELIVERY_PENDING_BUT_RESULT_FILE_MISSING" in text
