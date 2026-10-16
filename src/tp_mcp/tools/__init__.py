@@ -29,6 +29,7 @@ from tp_mcp.tools.events import (
 )
 from tp_mcp.tools.fit_reader import tp_get_workout_fit_data
 from tp_mcp.tools.fitness import tp_get_fitness
+from tp_mcp.tools.radar import tp_get_coaching_radar
 from tp_mcp.tools.groups import (
     tp_add_athletes_to_group,
     tp_create_group,
@@ -148,6 +149,7 @@ __all__ = [
     "tp_get_equipment",
     "tp_get_events",
     "tp_get_fitness",
+    "tp_get_coaching_radar",
     "tp_get_workout_fit_data",
     "tp_get_focus_event",
     "tp_get_libraries",
