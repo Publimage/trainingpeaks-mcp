@@ -15,6 +15,7 @@ def test_config_requires_private_bind(tmp_path: Path):
         "port": 8787,
         "allowed_sources": ["10.114.0.3"],
         "allowed_athletes": ["2932097"],
+        "result_writer_sources": ["10.114.0.3"],
         "max_window_days": 21,
     }))
     with pytest.raises(RuntimeError, match="PRIVATE_BIND_REQUIRED"):
@@ -28,6 +29,7 @@ def test_config_accepts_exact_staging_shape(tmp_path: Path):
         "port": 8787,
         "allowed_sources": ["10.114.0.2", "10.114.0.3"],
         "allowed_athletes": ["2932097"],
+        "result_writer_sources": ["10.114.0.3"],
         "max_window_days": 21,
     }))
     cfg = _load_config(p)
