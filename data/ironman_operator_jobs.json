@@ -1370,6 +1370,14 @@
       "scope": "trainingpeaks:public-plan:679801:14-approved-run-bike-duration-rebalance-only",
       "script": "scripts/ironman_jobs/beginner_run_bike_balance_write_20261016.py",
       "test": "tests/test_beginner_14_native_builder_readonly_20261016.py"
+    },
+    {
+      "name": "fit_reader_bootstrap_canary",
+      "mode": "GUARDED_WRITE",
+      "owner_id": 2116886,
+      "scope": "server:ironman-tp-mcp:install-fitdecode-0.11.0-and-live-fit-read-canary",
+      "script": "scripts/ironman_jobs/fit_reader_bootstrap_canary.py",
+      "test": "tests/test_fit_reader_bootstrap_canary.py"
     }
   ]
 }
