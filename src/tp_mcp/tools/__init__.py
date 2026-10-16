@@ -78,6 +78,7 @@ from tp_mcp.tools.settings import (
 )
 from tp_mcp.tools.strength import (
     tp_batch_add_intermediate_strength,
+    tp_batch_add_beginner_strength,
     tp_create_strength_plan_lab_probe,
     tp_create_strength_workout,
     tp_delete_strength_workout,
@@ -203,6 +204,7 @@ __all__ = [
     "tp_validate_structure",
     "tp_search_exercises",
     "tp_batch_add_intermediate_strength",
+    "tp_batch_add_beginner_strength",
     "tp_create_strength_plan_lab_probe",
     "tp_create_strength_workout",
     "tp_get_strength_summary",
