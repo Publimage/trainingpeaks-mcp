@@ -236,38 +236,14 @@ async def main():
             print(json.dumps({"stage":"ALL_36_NATIVE_VERIFIED_BEFORE_DELETE","native_strength":36,
               "plan_count":ph2.data.get("workoutCount")}),flush=True)
 
-            # Delete classic text Strength only after all native replacements exist.
-            deleted=0
-            originals={str(wid(w)):stable(w) for w in source}
-            for z in manifest:
-                current=await classic_all(c,start,end)
-                by={wid(x):x for x in current}
-                sid=z["source_id"]
-                if sid not in by:
-                    continue
-                need(stable(by[sid])==originals[str(sid)],"CLASSIC_SOURCE_DRIFT_"+str(sid))
-                # Confirm native twin at same relative slot immediately before destructive call.
-                now=await native_all(h,access,start,end)
-                need(len([x for x in now if native_key(x)==(z["title"],z["date"])])==1,"NATIVE_TWIN_MISSING_"+str(sid))
-                res=await c._request("DELETE",f"/plans/v1/plans/{P}/workouts/{sid}",_retry_on_401=False)
-                after=await classic_all(c,start,end)
-                ids={wid(x) for x in after}
-                need(sid not in ids,"CLASSIC_DELETE_UNVERIFIED_"+str(sid))
-                # No blind repeat even if HTTP result is odd: provider readback is authority.
-                deleted+=1
-                print(json.dumps({"stage":"CLASSIC_STRENGTH_DELETE_VERIFIED","n":deleted,"source_id":sid}),flush=True)
-
-            final_classic=await classic_all(c,start,end)
-            final_native=await native_all(h,access,start,end)
-            need(not any(wid(x) in SOURCE_IDS for x in final_classic),"CLASSIC_STRENGTH_REMAINS")
-            need(len(final_classic)==189,"CLASSIC_FINAL_COUNT")
-            need(len(final_native)==36 and {native_key(x) for x in final_native}==expected_keys,"FINAL_NATIVE_SET")
-            pf=await c.get(f"/plans/v1/plans/{P}")
-            need(not pf.is_error and pf.data.get("workoutCount")==225 and pf.data.get("isPublic") is True,"FINAL_PLAN_META")
-            print(json.dumps({"stage":"BEGINNER_STRENGTH_NATIVE_MIGRATION_VERIFIED","plan":P,
-              "native_strength":36,"classic_strength":0,"classic_nonstrength":189,
-              "provider_workout_count":225,"public_state_preserved":True,
-              "videos_verified":True}),flush=True)
+            all_native=await native_all(h,access,start,end)
+            need(len(all_native)==36 and {native_key(x) for x in all_native}==expected_keys,"FINAL_NATIVE_36_NOT_EXACT")
+            ph3=await c.get(f"/plans/v1/plans/{P}")
+            need(not ph3.is_error and ph3.data.get("workoutCount")==EXPECTED_META_COUNT+36 and ph3.data.get("isPublic") is True,"FINAL_PLAN_META_AFTER_NATIVE")
+            print(json.dumps({"stage":"BEGINNER_STRENGTH_NATIVE_CREATE_VERIFIED","plan":P,
+              "native_strength":36,"classic_strength_still_present":36,
+              "provider_workout_count":ph3.data.get("workoutCount"),
+              "public_state_preserved":True,"videos_verified":True}),flush=True)
 
 if __name__=="__main__":
     try: asyncio.run(main())
