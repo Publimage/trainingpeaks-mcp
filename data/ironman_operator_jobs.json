@@ -1514,6 +1514,14 @@
       "scope": "server:ironman-tp-mcp:beginner-strength-catalog-audit",
       "script": "scripts/ironman_jobs/beginner_strength_catalog_audit_20261016.py",
       "test": "tests/test_beginner_strength_catalog_audit_20261016.py"
+    },
+    {
+      "name": "mcp_catalog_reload_20261016",
+      "mode": "GUARDED_WRITE",
+      "owner_id": 2116886,
+      "scope": "server:ironman-tp-mcp:reload-trainingpeaks-tunnel-current-pinned-checkout-only",
+      "script": "scripts/ironman_jobs/mcp_catalog_reload_20261016.py",
+      "test": "tests/test_mcp_catalog_reload_20261016.py"
     }
   ]
 }
