@@ -1338,6 +1338,30 @@
       "scope": "trainingpeaks:public-plan:679801:41-bike-native-ftp-to-rpe-full-compiler-preview:read-only",
       "script": "scripts/ironman_jobs/beginner_rpe_native_preview_20261016.py",
       "test": "tests/test_beginner_rpe_native_preview_20261016.py"
+    },
+    {
+      "name": "beginner_rpe_w01_w05_20261016",
+      "mode": "GUARDED_WRITE",
+      "owner_id": 2116886,
+      "scope": "trainingpeaks:public-plan:679801:beginner-rpe-bike-builder-only:relative-w01-w05:native-metric-and-targets",
+      "script": "scripts/ironman_jobs/beginner_rpe_w01_w05_20261016.py",
+      "test": "tests/test_beginner_rpe_w01_w05_20261016.py"
+    },
+    {
+      "name": "beginner_rpe_w06_w10_20261016",
+      "mode": "GUARDED_WRITE",
+      "owner_id": 2116886,
+      "scope": "trainingpeaks:public-plan:679801:beginner-rpe-bike-builder-only:relative-w06-w10:native-metric-and-targets",
+      "script": "scripts/ironman_jobs/beginner_rpe_w06_w10_20261016.py",
+      "test": "tests/test_beginner_rpe_w06_w10_20261016.py"
+    },
+    {
+      "name": "beginner_rpe_w11_w15_20261016",
+      "mode": "GUARDED_WRITE",
+      "owner_id": 2116886,
+      "scope": "trainingpeaks:public-plan:679801:beginner-rpe-bike-builder-only:relative-w11-w15:native-metric-and-targets",
+      "script": "scripts/ironman_jobs/beginner_rpe_w11_w15_20261016.py",
+      "test": "tests/test_beginner_rpe_w11_w15_20261016.py"
     }
   ]
 }
