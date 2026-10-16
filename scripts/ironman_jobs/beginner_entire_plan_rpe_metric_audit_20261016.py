@@ -57,7 +57,12 @@ async def main():
                 mismatch.append({"id":w["workoutId"],"sport":key,"why":"MISSING_STEPS_OR_POLYLINE"})
         print(json.dumps({"type":"BEGINNER_RPE_AUDIT","plan":PLAN,"all_workouts":len(allw),
            "metric_counts":[{"sport":k[0],"metric":k[1],"count":v} for k,v in sorted(counts.items())],
-           "bike_run_non_rpe_count":len(non_rpe),"non_rpe":non_rpe,
+           "bike_run_non_rpe_count":len(non_rpe),
+           "non_rpe":[{"id":x["id"],"week":x["week"],"sport":x["sport"],"title":x["title"],
+                       "metric":x["metric"],"mins":x["totalTimePlanned"],
+                       "active_targets":[{"name":s["name"],"targets":s["targets"]}
+                                         for s in x["steps"] if s["class"]=="active"][:3]}
+                       for x in non_rpe],
            "bike_run_missing_builder":mismatch,
            "provider_writes":0},ensure_ascii=False,default=str),flush=True)
         return 0
