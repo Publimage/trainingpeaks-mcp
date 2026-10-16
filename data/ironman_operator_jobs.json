@@ -1418,6 +1418,14 @@
       "scope": "trainingpeaks:disposable-plan:684484:single-other-workout-delete-route-canary",
       "script": "scripts/ironman_jobs/plan_workout_delete_route_canary_20261016.py",
       "test": "tests/test_plan_workout_delete_route_canary_20261016.py"
+    },
+    {
+      "name": "beginner_other_to_native_notes_20261016",
+      "mode": "GUARDED_WRITE",
+      "owner_id": 2116886,
+      "scope": "trainingpeaks:public-plan:679801:migrate-29-other-annotations-to-native-calendar-notes-only",
+      "script": "scripts/ironman_jobs/beginner_other_to_native_notes_20261016.py",
+      "test": "tests/test_beginner_other_to_native_notes_20261016.py"
     }
   ]
 }
