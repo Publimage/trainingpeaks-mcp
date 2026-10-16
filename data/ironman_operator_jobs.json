@@ -1378,6 +1378,14 @@
       "scope": "server:ironman-tp-mcp:install-fitdecode-0.11.0-and-live-fit-read-canary",
       "script": "scripts/ironman_jobs/fit_reader_bootstrap_canary.py",
       "test": "tests/test_fit_reader_bootstrap_canary.py"
+    },
+    {
+      "name": "fit_reader_catalog_audit",
+      "mode": "READ_ONLY",
+      "owner_id": 2116886,
+      "scope": "server:ironman-tp-mcp:mcp-catalog-fit-reader:read",
+      "script": "scripts/ironman_jobs/fit_reader_catalog_audit.py",
+      "test": "tests/test_fit_reader_catalog_audit.py"
     }
   ]
 }
