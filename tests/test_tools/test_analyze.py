@@ -240,6 +240,10 @@ class TestTpAnalyzeWorkout:
         assert len(result["dataChannels"]) == 2
         assert result["dataChannels"][0]["identifier"] == "Power"
         assert result["time_series_points"] == 3
+        assert result["time_series_sample_seconds"] == 30
+        assert result["time_series_points_returned"] == 1
+        assert result["time_series_truncated"] is False
+        assert result["data"] == [{"time": 0, "Power": 150, "HeartRate": 120}]
         assert len(result["lapData"]) == 1
         assert result["lapData"][0]["Name"] == "Lap 1"
         assert "data_file" in result
@@ -260,6 +264,34 @@ class TestTpAnalyzeWorkout:
             assert c.kwargs["json"] == {"workoutId": 3553733903}
 
     @pytest.mark.asyncio
+    async def test_inline_time_series_sampling(self):
+        mock_client = _mock_tp_client()
+
+        with patch("tp_mcp.tools.analyze.TPClient") as mock_tp:
+            mock_tp.return_value.__aenter__.return_value = mock_client
+            with patch("tp_mcp.tools.analyze.httpx.AsyncClient") as mock_httpx:
+                mock_http_client = _mock_post_sequence()
+                mock_httpx.return_value.__aenter__.return_value = mock_http_client
+
+                result = await tp_analyze_workout(
+                    "3553733903",
+                    sample_seconds=5,
+                    max_time_series_points=10,
+                )
+
+        assert result["time_series_points"] == 3
+        assert result["time_series_sample_seconds"] == 5
+        assert result["time_series_points_returned"] == 2
+        assert [point["time"] for point in result["data"]] == [0, 8]
+        assert result["time_series_truncated"] is False
+
+    @pytest.mark.asyncio
+    async def test_invalid_time_series_sampling(self):
+        result = await tp_analyze_workout("3553733903", sample_seconds=7)
+        assert result["isError"] is True
+        assert result["error_code"] == "VALIDATION_ERROR"
+
+    @pytest.mark.asyncio
     async def test_charts_and_laps_404_degrade_gracefully(self):
         """A workout with totals but no device file (e.g. manual entry) still
         returns a usable result — charts/laps 404 is soft, summary 404 is not."""
@@ -278,6 +310,8 @@ class TestTpAnalyzeWorkout:
         assert result["dataChannels"] == []
         assert result["lapData"] == []
         assert result["time_series_points"] == 0
+        assert result["time_series_points_returned"] == 0
+        assert result["data"] == []
 
     @pytest.mark.asyncio
     async def test_401_expired_auth_on_summary(self):
