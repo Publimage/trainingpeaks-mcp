@@ -39,6 +39,7 @@ def _load_config(path: Path | None = None) -> dict[str, Any] | None:
     port = int(raw.get("port") or 0)
     allowed_sources = {str(x).strip() for x in raw.get("allowed_sources", []) if str(x).strip()}
     allowed_athletes = {str(x).strip() for x in raw.get("allowed_athletes", []) if str(x).strip()}
+    result_writer_sources = {str(x).strip() for x in raw.get("result_writer_sources", []) if str(x).strip()}
     max_window_days = int(raw.get("max_window_days") or 0)
     if not host.startswith("10.") or not (1024 <= port <= 65535):
         raise BridgeConfigError("PRIVATE_BIND_REQUIRED")
@@ -46,6 +47,8 @@ def _load_config(path: Path | None = None) -> dict[str, Any] | None:
         raise BridgeConfigError("PRIVATE_SOURCE_ALLOWLIST_REQUIRED")
     if not allowed_athletes or not all(x.isdigit() for x in allowed_athletes):
         raise BridgeConfigError("ATHLETE_ALLOWLIST_REQUIRED")
+    if not result_writer_sources or not all(x.startswith("10.") for x in result_writer_sources):
+        raise BridgeConfigError("RESULT_WRITER_ALLOWLIST_REQUIRED")
     if not 1 <= max_window_days <= 31:
         raise BridgeConfigError("INVALID_MAX_WINDOW_DAYS")
     return {
@@ -53,6 +56,7 @@ def _load_config(path: Path | None = None) -> dict[str, Any] | None:
         "port": port,
         "allowed_sources": allowed_sources,
         "allowed_athletes": allowed_athletes,
+        "result_writer_sources": result_writer_sources,
         "max_window_days": max_window_days,
     }
 
@@ -119,6 +123,39 @@ async def _build_radar_input(
         athlete_override.reset(token)
 
 
+RADAR_RESULT_DIR = Path("/home/ironman/.local/state/ironman-radar")
+MAX_RESULT_BYTES = 1024 * 1024
+
+
+def _persist_radar_result(payload: dict[str, Any], config: dict[str, Any]) -> dict[str, Any]:
+    if payload.get("schema") != "IRONMAN_COACHING_RADAR_V1":
+        raise ValueError("RADAR_RESULT_SCHEMA_MISMATCH")
+    athlete_id = str(payload.get("athlete_id") or "")
+    if athlete_id not in config["allowed_athletes"]:
+        raise ValueError("RADAR_RESULT_ATHLETE_NOT_ALLOWED")
+    if payload.get("trainingpeaks_writes") != 0:
+        raise ValueError("RADAR_RESULT_WRITE_GUARD_FAILED")
+    as_of = str(payload.get("as_of") or "")
+    if len(as_of) != 10:
+        raise ValueError("RADAR_RESULT_AS_OF_REQUIRED")
+    RADAR_RESULT_DIR.mkdir(parents=True, exist_ok=True)
+    os.chmod(RADAR_RESULT_DIR, 0o700)
+    history = RADAR_RESULT_DIR / f"radar_{athlete_id}_{as_of}.json"
+    latest = RADAR_RESULT_DIR / f"latest_{athlete_id}.json"
+    raw = json.dumps(payload, indent=2, ensure_ascii=False) + "\n"
+    temp = history.with_suffix(".tmp")
+    temp.write_text(raw, encoding="utf-8")
+    os.chmod(temp, 0o600)
+    temp.replace(history)
+    os.chmod(history, 0o600)
+    latest_tmp = latest.with_suffix(".tmp")
+    latest_tmp.write_text(raw, encoding="utf-8")
+    os.chmod(latest_tmp, 0o600)
+    latest_tmp.replace(latest)
+    os.chmod(latest, 0o600)
+    return {"stored": True, "athlete_id": int(athlete_id), "as_of": as_of}
+
+
 def _handler_factory(config: dict[str, Any]):
     class Handler(BaseHTTPRequestHandler):
         server_version = "IRONMANPrivateBridge/1"
@@ -156,14 +193,23 @@ def _handler_factory(config: dict[str, Any]):
             if not self._source_allowed():
                 self._write_json(403, {"error": "SOURCE_NOT_ALLOWED"})
                 return
-            if urlparse(self.path).path != "/v1/radar-input":
+            path = urlparse(self.path).path
+            if path not in {"/v1/radar-input", "/v1/radar-result"}:
                 self._write_json(404, {"error": "NOT_FOUND"})
                 return
             try:
                 length = int(self.headers.get("Content-Length") or "0")
-                if length <= 0 or length > MAX_BODY_BYTES:
+                limit = MAX_RESULT_BYTES if path == "/v1/radar-result" else MAX_BODY_BYTES
+                if length <= 0 or length > limit:
                     raise ValueError("INVALID_BODY_SIZE")
                 payload = json.loads(self.rfile.read(length))
+                if path == "/v1/radar-result":
+                    if str(self.client_address[0]) not in config["result_writer_sources"]:
+                        self._write_json(403, {"error": "RESULT_WRITER_NOT_ALLOWED"})
+                        return
+                    stored = _persist_radar_result(payload, config)
+                    self._write_json(200, {**stored, "trainingpeaks_writes": 0})
+                    return
                 athlete_id = str(payload["athlete_id"])
                 if athlete_id not in config["allowed_athletes"]:
                     self._write_json(403, {"error": "ATHLETE_NOT_ALLOWED"})
