@@ -1,7 +1,7 @@
 """Read-only full-plan preview of 41 Beginner FTP->RPE Builder edits."""
 import asyncio,json
 from tp_mcp.client import TPClient
-from scripts.ironman_jobs.beginner_rpe_native_common_20261016 import preflight
+from beginner_rpe_native_common_20261016 import preflight
 async def main():
  async with TPClient() as c:
   before,notes,compiled,anchor=await preflight(c)
