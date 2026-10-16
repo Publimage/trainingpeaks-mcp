@@ -598,10 +598,28 @@ TOOLS = [
     ),
     Tool(
         name="tp_analyze_workout",
-        description="Get workout analysis: metrics, zones, laps. Saves full time-series to JSON file.",
+        description=(
+            "Get workout analysis: metrics, zones, laps and sampled time-series. "
+            "Full chart data is also saved to a JSON file."
+        ),
         input_schema={
             "type": "object",
-            "properties": {"workout_id": {"type": "string"}},
+            "properties": {
+                "workout_id": {"type": "string"},
+                "sample_seconds": {
+                    "type": "integer",
+                    "enum": [1, 5, 10, 30, 60],
+                    "default": 30,
+                    "description": "Inline time-series sampling interval in elapsed seconds.",
+                },
+                "max_time_series_points": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 5000,
+                    "default": 2000,
+                    "description": "Safety cap for inline sampled chart points.",
+                },
+            },
             "required": ["workout_id"],
         },
     ),
@@ -2059,7 +2077,12 @@ async def _h_get_peaks(args):
     return await tp_get_peaks(sport=args["sport"], pr_type=args["pr_type"], days=args.get("days", 3650))
 
 @_handler("tp_analyze_workout")
-async def _h_analyze(args): return await tp_analyze_workout(workout_id=args["workout_id"])
+async def _h_analyze(args):
+    return await tp_analyze_workout(
+        workout_id=args["workout_id"],
+        sample_seconds=args.get("sample_seconds", 30),
+        max_time_series_points=args.get("max_time_series_points", 2000),
+    )
 
 # --- Structured strength / gym ---
 @_handler("tp_search_exercises")
