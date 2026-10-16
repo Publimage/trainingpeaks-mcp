@@ -66,6 +66,7 @@ from tp_mcp.tools import (
     tp_get_athlete_settings,
     tp_get_atp,
     tp_get_availability,
+    tp_get_coaching_radar,
     tp_get_equipment,
     tp_get_events,
     tp_get_fitness,
@@ -622,6 +623,20 @@ TOOLS = [
                 },
             },
             "required": ["workout_id"],
+        },
+    ),
+    Tool(
+        name="tp_get_coaching_radar",
+        description=(
+            "Read the latest persisted IRONMAN Coaching Radar report for an athlete. "
+            "The report is produced by the private Prefect staging pipeline; this tool performs no TrainingPeaks write."
+        ),
+        input_schema={
+            "type": "object",
+            "properties": {
+                "athlete_id": {"type": "string", "description": "TrainingPeaks athlete ID"}
+            },
+            "required": ["athlete_id"],
         },
     ),
     # --- Fitness & Summary ---
@@ -2133,6 +2148,10 @@ async def _h_update_strength(args):
 @_handler("tp_delete_strength_workout")
 async def _h_delete_strength(args):
     return await tp_delete_strength_workout(workout_id=args["workout_id"])
+
+@_handler("tp_get_coaching_radar")
+async def _h_get_coaching_radar(args):
+    return await tp_get_coaching_radar(athlete_id=args["athlete_id"])
 
 # --- Fitness & Summary ---
 @_handler("tp_get_fitness")
