@@ -181,16 +181,58 @@ def main() -> int:
     command = validate_manifest(fetch_json(MANIFEST_URL))
     job_id = command["job_id"]
     receipt = STATE_DIR / "receipt.json"
+    result_path = STATE_DIR / f"{job_id}.json"
+
     if receipt.exists():
         previous = json.loads(receipt.read_text(encoding="utf-8"))
         if previous.get("job_id") == job_id:
-            return 0
+            previous_state = previous.get("state")
+            if previous_state == "STARTED":
+                ambiguous = {
+                    "schema": "IRONMAN_PREFECT_ADMIN_RESULT_V1",
+                    "job_id": job_id,
+                    "operation": command["operation"],
+                    "state": "FAILED",
+                    "source_host": HOSTNAME_REQUIRED,
+                    "started_at_utc": previous.get("started_at_utc"),
+                    "finished_at_utc": utcnow(),
+                    "exit_code": 99,
+                    "revision": command["params"].get("revision"),
+                    "details": {"stage": "recovery", "reason": "AMBIGUOUS_PREVIOUS_START_NO_REEXECUTE"},
+                    "output": "Previous execution started without a terminal receipt; operation was not retried.",
+                    "trainingpeaks_writes": 0,
+                }
+                atomic_write(result_path, ambiguous)
+                try:
+                    post_result(ambiguous)
+                    posted = True
+                except Exception:
+                    posted = False
+                atomic_write(receipt, {
+                    "job_id": job_id,
+                    "operation": command["operation"],
+                    "state": "FAILED",
+                    "result_posted": posted,
+                    "finished_at_utc": ambiguous["finished_at_utc"],
+                })
+                return 1
+            if previous_state in {"COMPLETED", "FAILED"}:
+                if previous.get("result_posted") is True:
+                    return 0
+                if not result_path.exists():
+                    raise RuntimeError("RESULT_DELIVERY_PENDING_BUT_RESULT_FILE_MISSING")
+                stored = json.loads(result_path.read_text(encoding="utf-8"))
+                post_result(stored)
+                previous["result_posted"] = True
+                atomic_write(receipt, previous)
+                return 0
 
     started = utcnow()
     atomic_write(receipt, {
         "job_id": job_id,
         "operation": command["operation"],
         "state": "STARTED",
+        "result_posted": False,
         "started_at_utc": started,
     })
 
@@ -222,14 +264,19 @@ def main() -> int:
         "output": output[-MAX_OUTPUT:],
         "trainingpeaks_writes": 0,
     }
-    atomic_write(STATE_DIR / f"{job_id}.json", result)
-    atomic_write(receipt, {
-        "job_id": job_id,
-        "operation": command["operation"],
-        "state": state,
-        "finished_at_utc": result["finished_at_utc"],
-    })
-    post_result(result)
+    atomic_write(result_path, result)
+    posted = False
+    try:
+        post_result(result)
+        posted = True
+    finally:
+        atomic_write(receipt, {
+            "job_id": job_id,
+            "operation": command["operation"],
+            "state": state,
+            "result_posted": posted,
+            "finished_at_utc": result["finished_at_utc"],
+        })
     return 0 if state == "COMPLETED" else 1
 
 
