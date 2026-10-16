@@ -1402,6 +1402,14 @@
       "scope": "server:ironman-tp-mcp:private-readonly-bridge-live-selftest",
       "script": "scripts/ironman_jobs/private_bridge_live_selftest_20261016.py",
       "test": "tests/test_private_bridge_live_selftest_20261016.py"
+    },
+    {
+      "name": "private_bridge_configure_v2_20261016",
+      "mode": "GUARDED_WRITE",
+      "owner_id": 2116886,
+      "scope": "server:ironman-tp-mcp:private-readonly-bridge-config-v2-result-sink",
+      "script": "scripts/ironman_jobs/private_bridge_configure_v2_20261016.py",
+      "test": "tests/test_private_bridge_configure_v2_20261016.py"
     }
   ]
 }
