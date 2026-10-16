@@ -124,7 +124,11 @@ async def _build_radar_input(
 
 
 RADAR_RESULT_DIR = Path("/home/ironman/.local/state/ironman-radar")
+ADMIN_RESULT_DIR = Path("/home/ironman/.local/state/ironman-prefect-admin-results")
 MAX_RESULT_BYTES = 1024 * 1024
+ADMIN_RESULT_MAX_BYTES = 128 * 1024
+ADMIN_OPERATIONS = {"status", "deploy_coaching_radar"}
+ADMIN_STATES = {"COMPLETED", "FAILED", "NOOP"}
 
 
 def _persist_radar_result(payload: dict[str, Any], config: dict[str, Any]) -> dict[str, Any]:
@@ -154,6 +158,63 @@ def _persist_radar_result(payload: dict[str, Any], config: dict[str, Any]) -> di
     latest_tmp.replace(latest)
     os.chmod(latest, 0o600)
     return {"stored": True, "athlete_id": int(athlete_id), "as_of": as_of}
+
+
+def _redact_admin_text(value: str) -> str:
+    import re
+    return re.sub(
+        r"(?i)(authorization|bearer|cookie|password|secret|token)\\s*[:=]\\s*\\S+",
+        "[redacted]",
+        value[:12000],
+    )
+
+
+def _persist_admin_result(payload: dict[str, Any], config: dict[str, Any]) -> dict[str, Any]:
+    import re
+
+    if payload.get("schema") != "IRONMAN_PREFECT_ADMIN_RESULT_V1":
+        raise ValueError("ADMIN_RESULT_SCHEMA_MISMATCH")
+    job_id = str(payload.get("job_id") or "")
+    if not re.fullmatch(r"[a-z0-9][a-z0-9_-]{7,95}", job_id):
+        raise ValueError("ADMIN_RESULT_JOB_ID_INVALID")
+    operation = str(payload.get("operation") or "")
+    if operation not in ADMIN_OPERATIONS:
+        raise ValueError("ADMIN_RESULT_OPERATION_INVALID")
+    state = str(payload.get("state") or "")
+    if state not in ADMIN_STATES:
+        raise ValueError("ADMIN_RESULT_STATE_INVALID")
+    if payload.get("trainingpeaks_writes") != 0:
+        raise ValueError("ADMIN_RESULT_WRITE_GUARD_FAILED")
+    if str(payload.get("source_host") or "") != "ironman-prefect-staging":
+        raise ValueError("ADMIN_RESULT_SOURCE_HOST_INVALID")
+
+    clean = {
+        "schema": "IRONMAN_PREFECT_ADMIN_RESULT_V1",
+        "job_id": job_id,
+        "operation": operation,
+        "state": state,
+        "source_host": "ironman-prefect-staging",
+        "started_at_utc": payload.get("started_at_utc"),
+        "finished_at_utc": payload.get("finished_at_utc"),
+        "exit_code": payload.get("exit_code"),
+        "revision": payload.get("revision"),
+        "details": payload.get("details") if isinstance(payload.get("details"), dict) else {},
+        "output": _redact_admin_text(str(payload.get("output") or "")),
+        "trainingpeaks_writes": 0,
+    }
+
+    ADMIN_RESULT_DIR.mkdir(parents=True, exist_ok=True)
+    os.chmod(ADMIN_RESULT_DIR, 0o700)
+    history = ADMIN_RESULT_DIR / f"{job_id}.json"
+    latest = ADMIN_RESULT_DIR / "latest.json"
+    raw = json.dumps(clean, indent=2, ensure_ascii=False) + "\n"
+    for path in (history, latest):
+        tmp = path.with_suffix(".tmp")
+        tmp.write_text(raw, encoding="utf-8")
+        os.chmod(tmp, 0o600)
+        tmp.replace(path)
+        os.chmod(path, 0o600)
+    return {"stored": True, "job_id": job_id, "operation": operation, "state": state}
 
 
 def _handler_factory(config: dict[str, Any]):
@@ -194,20 +255,28 @@ def _handler_factory(config: dict[str, Any]):
                 self._write_json(403, {"error": "SOURCE_NOT_ALLOWED"})
                 return
             path = urlparse(self.path).path
-            if path not in {"/v1/radar-input", "/v1/radar-result"}:
+            if path not in {"/v1/radar-input", "/v1/radar-result", "/v1/admin-result"}:
                 self._write_json(404, {"error": "NOT_FOUND"})
                 return
             try:
                 length = int(self.headers.get("Content-Length") or "0")
-                limit = MAX_RESULT_BYTES if path == "/v1/radar-result" else MAX_BODY_BYTES
+                if path == "/v1/radar-result":
+                    limit = MAX_RESULT_BYTES
+                elif path == "/v1/admin-result":
+                    limit = ADMIN_RESULT_MAX_BYTES
+                else:
+                    limit = MAX_BODY_BYTES
                 if length <= 0 or length > limit:
                     raise ValueError("INVALID_BODY_SIZE")
                 payload = json.loads(self.rfile.read(length))
-                if path == "/v1/radar-result":
+                if path in {"/v1/radar-result", "/v1/admin-result"}:
                     if str(self.client_address[0]) not in config["result_writer_sources"]:
                         self._write_json(403, {"error": "RESULT_WRITER_NOT_ALLOWED"})
                         return
-                    stored = _persist_radar_result(payload, config)
+                    if path == "/v1/radar-result":
+                        stored = _persist_radar_result(payload, config)
+                    else:
+                        stored = _persist_admin_result(payload, config)
                     self._write_json(200, {**stored, "trainingpeaks_writes": 0})
                     return
                 athlete_id = str(payload["athlete_id"])
