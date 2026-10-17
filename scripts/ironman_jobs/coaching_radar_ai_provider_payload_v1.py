@@ -173,14 +173,27 @@ def build_provider_payload(
         athlete_name.lower(),
         str(athlete_id),
         "/var/lib/ironman-prefect",
-        "document_id",
-        "athlete_name",
-        "athlete_id",
     ]
     lower = serialized.lower()
     leaked = [x for x in forbidden_literals if x and x in lower]
-    if leaked:
-        raise ValueError("PROVIDER_PAYLOAD_IDENTIFIER_LEAK:" + ",".join(leaked))
+
+    forbidden_keys = {"athlete_id", "athlete_name", "document_id", "workout_id", "user_id"}
+    leaked_keys: set[str] = set()
+
+    def inspect_keys(value: Any) -> None:
+        if isinstance(value, dict):
+            for key, item in value.items():
+                if str(key).lower() in forbidden_keys:
+                    leaked_keys.add(str(key).lower())
+                inspect_keys(item)
+        elif isinstance(value, list):
+            for item in value:
+                inspect_keys(item)
+
+    inspect_keys(payload)
+    if leaked or leaked_keys:
+        details = leaked + sorted(leaked_keys)
+        raise ValueError("PROVIDER_PAYLOAD_IDENTIFIER_LEAK:" + ",".join(details))
 
     payload["provider_payload_sha256"] = hashlib.sha256(serialized.encode("utf-8")).hexdigest()
     return payload
