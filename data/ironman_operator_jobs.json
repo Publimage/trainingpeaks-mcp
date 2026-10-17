@@ -1602,6 +1602,14 @@
       "scope": "digitalocean:spaces:ironman-assets:brand-logo-v1.0:put-readback",
       "script": "scripts/ironman_jobs/spaces_brand_logo_canary_20261017.py",
       "test": "tests/test_spaces_brand_logo_canary_20261017.py"
+    },
+    {
+      "name": "spaces_brand_logo_public_check_20261017",
+      "mode": "READ_ONLY",
+      "owner_id": 2116886,
+      "scope": "digitalocean:spaces:ironman-assets:brand-logo-v1.0:public-read",
+      "script": "scripts/ironman_jobs/spaces_brand_logo_public_check_20261017.py",
+      "test": "tests/test_spaces_brand_logo_public_check_20261017.py"
     }
   ]
 }
