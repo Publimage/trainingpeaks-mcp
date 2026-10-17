@@ -46,7 +46,7 @@ on:
       - "tests/test_materialize_coaching_radar_ai_provider_payloads_v1.py"
       - "scripts/ironman_jobs/materialize_coaching_radar_ai_provider_payloads_v1.py"
       - "data/coaching_radar_ai_provider_candidates_v1.json"
-      - "data/coaching_radar_ai_provider_review_schema_v1.json"
+      - "data/coaching_radar_ai_provider_review_schema_v1.json"\n      - "data/coaching_radar_ai_behavior_taxonomy_v1.json"
       - "tests/test_coaching_radar_ai_provider_payload_v1.py"
       - "scripts/ironman_jobs/coaching_radar_ai_provider_payload_v1.py"
       - "tests/test_materialize_coaching_radar_ai_private_benchmark_v1.py"
