@@ -26,7 +26,7 @@ TITLE = "ALBERTO FAZI ENDURANCE | First Ironman | 24 settimane | Beginner | Smar
 START = "2026-09-21"
 EXPECTED_COUNT = 225
 EXPECTED_NATIVE = 36
-EXPECTED_MINUTES = 894
+EXPECTED_MINUTES = 895
 BACKUP = Path.home() / ".trainingpeaks-mcp" / "beginner679801_strength_builder_20261016_before.json"
 
 def must(v, msg):
@@ -114,11 +114,23 @@ async def main():
                     m = re.search(r"(\d+)(?:-(\d+))?'", title)
                     must(m, f"TITLE_DURATION_MISSING_{title}")
                     minutes = int(m.group(2) or m.group(1))
+                    # Historical planned-duration exception retained from the
+                    # classic source: W22 Activation 15-20' was planned as 18'.
+                    if title == "Forza | Attivazione 15-20'":
+                        minutes = 18
                     expected[(title, dt)] = {"minutes": minutes}
                 source = "native_title_duration_labels"
 
             total_expected = sum(v["minutes"] for v in expected.values())
             must(total_expected == EXPECTED_MINUTES, f"EXPECTED_MINUTES_DRIFT_{total_expected}")
+            weekly_expected = [50,50,60,50,60,60,60,50,55,55,50,20,45,45,25,20,25,25,20,20,20,18,12,0]
+            weekly_actual = [0] * 24
+            anchor = date.fromisoformat(START)
+            for (title, dt), row in expected.items():
+                week = ((date.fromisoformat(dt) - anchor).days // 7)
+                must(0 <= week < 24, f"DURATION_WEEK_RANGE_{dt}")
+                weekly_actual[week] += row["minutes"]
+            must(weekly_actual == weekly_expected, f"WEEKLY_DURATION_DRIFT_{weekly_actual}")
 
             changed = 0
             already = 0
