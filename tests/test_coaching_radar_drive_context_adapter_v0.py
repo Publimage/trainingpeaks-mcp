@@ -224,3 +224,23 @@ def test_private_source_routing_requires_exact_roster(tmp_path):
     path.chmod(0o644)
     with pytest.raises(RuntimeError, match="KB_SOURCE_CONFIG_PERMISSIONS_TOO_OPEN"):
         load_private_source_config(path, active_athlete_ids={2932097, 4480273})
+
+
+def test_bundle_fails_if_athlete_card_provider_id_is_wrong():
+    class WrongCardReader(BundleReader):
+        def read_document(self, spec):
+            entry, content = super().read_document(spec)
+            if spec.role == "athlete_card":
+                content = "# athlete\\nTrainingPeaks ID: 9999999\\n"
+            return entry, content
+
+    with pytest.raises(ValueError, match="KB_ATHLETE_CARD_PROVIDER_ID_MISMATCH"):
+        build_context_bundle(
+            WrongCardReader(),
+            athlete_id=2932097,
+            documents=_bundle_specs(),
+            specialist_documents=[
+                ContextDocumentSpec("specialist_training", "doc-specialist", "specialist")
+            ],
+            now_utc=NOW,
+        )
