@@ -2,7 +2,7 @@
   "schema": "IRONMAN_INFRA_RUNTIME_STATE_V1",
   "purpose": "Small non-canonical execution/resume checkpoint for infrastructure work. Canonical decisions and workstream state remain in Google Drive IRONMAN — KNOWLEDGE BASE.",
   "workstream": "TrainingPeaks MCP / Prefect / Coaching Radar",
-  "updated_at_utc": "2026-10-17T16:53:00Z",
+  "updated_at_utc": "2026-10-17T17:05:00Z",
   "canonical_titles": [
     "00_IRONMAN_CORE_INDEX",
     "01_MASTER_COACHING_CONTEXT",
@@ -13,7 +13,7 @@
     "21_TRAININGPEAKS_MCP_INTEGRATION_STATE",
     "00C_IRONMAN_PROVEN_PATHS_REGISTRY"
   ],
-  "current_objective": "Add selective, versioned, read-only Google Drive Knowledge Base context to Coaching Radar without changing the verified Radar V2 live schedule and without enabling automatic coaching decisions.",
+  "current_objective": "Build the model-agnostic AI interpretation layer for Coaching Radar in shadow read-only mode, without changing the verified Radar V2 live deployment and without calling any paid AI provider.",
   "last_verified_checkpoint": {
     "radar_v2_multiathlete_gate": "PASS",
     "verified_date": "2026-10-17",
@@ -76,7 +76,7 @@
     "Do not rerun a live write or deploy merely because chat delivery failed; verify provider/server state first.",
     "This file never overrides Google Drive canonical documents."
   ],
-  "next_safe_action": "Do not rerun Google admin auth, key upload, credential build, preflight, or Drive canary. The selective Google Drive Knowledge Base access gate is closed/PASS. Next workstream step is the distinct AI-context interpretation layer, which must remain read-only and must not alter the verified Radar V2 schedule until separately designed and approved.",
+  "next_safe_action": "Wait for CI run 39055140067. If green, record Gate AI-1 PASS in canonical Drive state and build Gate AI-2: a deterministic selective context compiler/evaluation harness for historical cases. Do not connect any paid model/provider before an explicit cost/privacy/model decision and coach confirmation.",
   "safety_constraints": {
     "google_drive_scope": "drive.readonly",
     "drive_writes": 0,
@@ -155,5 +155,29 @@
     "trainingpeaks_writes": 0,
     "ai_calls": 0,
     "temp_human_auth_cleanup": "PASS"
+  },
+  "ai_context_layer": {
+    "status": "GATE_AI_1_IMPLEMENTED_CI_PENDING",
+    "module": "scripts/ironman_jobs/coaching_radar_ai_context_contract_v0.py",
+    "tests": "tests/test_coaching_radar_ai_context_contract_v0.py",
+    "input_schema": "IRONMAN_COACHING_RADAR_AI_INPUT_V1",
+    "output_schema": "IRONMAN_COACHING_RADAR_AI_REVIEW_V1",
+    "mode": "SHADOW_READ_ONLY",
+    "guardrails": [
+      "coach is final decision maker",
+      "TrainingPeaks writes forbidden",
+      "Drive writes forbidden",
+      "workout mutations forbidden",
+      "publishing forbidden",
+      "evidence refs required",
+      "uncertainty required",
+      "absence of data is not positive evidence"
+    ],
+    "ai_calls": 0,
+    "paid_services_activated": 0,
+    "live_deployment_changed": false,
+    "workflow_revision": "2844e2e5e8d7f810da7c7a6b7d97a80c8fde4a41",
+    "ci_run_id": 39055140067,
+    "ci_status": "IN_PROGRESS"
   }
 }
