@@ -70,6 +70,7 @@ def build_provider_payload(
     private_case: dict[str, Any],
     *,
     output_schema: dict[str, Any],
+    behavior_taxonomy: dict[str, Any],
 ) -> dict[str, Any]:
     if private_case.get("schema") != "IRONMAN_RADAR_AI_PRIVATE_BENCHMARK_CASE_V1":
         raise ValueError("PROVIDER_PAYLOAD_PRIVATE_CASE_SCHEMA_MISMATCH")
@@ -80,9 +81,10 @@ def build_provider_payload(
 
     radar = private_case.get("radar")
     selective = private_case.get("selective_context")
-    expectations = private_case.get("benchmark_expectations")
-    if not isinstance(radar, dict) or not isinstance(selective, dict) or not isinstance(expectations, dict):
+    if not isinstance(radar, dict) or not isinstance(selective, dict):
         raise ValueError("PROVIDER_PAYLOAD_CASE_INCOMPLETE")
+    if behavior_taxonomy.get("schema") != "IRONMAN_RADAR_AI_BEHAVIOR_TAXONOMY_V1":
+        raise ValueError("PROVIDER_PAYLOAD_TAXONOMY_SCHEMA_MISMATCH")
 
     evidence_sha = str(radar.get("evidence_sha256") or "")
     if len(evidence_sha) != 64:
@@ -146,11 +148,9 @@ def build_provider_payload(
             "compiled_fingerprint_sha256": selective.get("compiled_fingerprint_sha256"),
             "excerpts": excerpts,
         },
-        "benchmark_contract": {
-            "required_behavior_codes": expectations.get("required_behavior_codes") or [],
-            "forbidden_behavior_codes": expectations.get("forbidden_behavior_codes") or [],
-            "acceptable_attention": expectations.get("acceptable_attention") or [],
+        "output_contract": {
             "output_schema": output_schema,
+            "behavior_taxonomy": behavior_taxonomy,
         },
         "instructions": {
             "purpose": "analysis_for_coach_review_only",
