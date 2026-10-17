@@ -10,6 +10,7 @@ from __future__ import annotations
 import asyncio
 import copy
 import json
+import re
 from pathlib import Path
 from datetime import date, timedelta
 
@@ -194,3 +195,11 @@ async def main():
             }, ensure_ascii=False), flush=True)
             return 0
 
+
+
+if __name__ == "__main__":
+    try:
+        raise SystemExit(asyncio.run(main()))
+    except Exception as exc:
+        print(json.dumps({"stage": "SAFE_STOP", "reason": str(exc)[:500]}, ensure_ascii=False), flush=True)
+        raise
