@@ -51,6 +51,14 @@ from tp_mcp.tools.library import (
     tp_update_library_item,
 )
 from tp_mcp.tools.ironman_operator import tp_ironman_operator
+from tp_mcp.tools.organization import (
+    tp_create_plan_folder,
+    tp_list_plan_folders,
+    tp_move_athletes_between_groups,
+    tp_move_training_plans,
+    tp_rename_plan_folder,
+    tp_rename_training_plan,
+)
 from tp_mcp.tools.native_note_library import tp_sync_intermediate_native_notes
 from tp_mcp.tools.metrics import tp_get_metrics, tp_get_nutrition, tp_log_metrics
 from tp_mcp.tools.peaks import tp_get_peaks, tp_get_workout_prs
@@ -161,6 +169,12 @@ __all__ = [
     "tp_get_library_item",
     "tp_get_library_items",
     "tp_ironman_operator",
+    "tp_list_plan_folders",
+    "tp_create_plan_folder",
+    "tp_rename_plan_folder",
+    "tp_move_training_plans",
+    "tp_rename_training_plan",
+    "tp_move_athletes_between_groups",
     "tp_sync_intermediate_native_notes",
     "tp_get_metrics",
     "tp_get_next_event",
