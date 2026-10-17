@@ -4,6 +4,7 @@ from tp_mcp.client.http import APIResponse
 from tp_mcp.tools.organization import (
     tp_list_plan_folders, tp_create_plan_folder, tp_rename_plan_folder,
     tp_move_training_plans, tp_rename_training_plan,
+    tp_copy_training_plan, tp_delete_training_plan,
     tp_rename_library, tp_move_library_items, tp_delete_library_items,
 )
 
@@ -139,6 +140,64 @@ async def test_plan_rename_changes_title_only_and_reads_back():
     assert r["verified"]
     assert c._request.call_args.kwargs["json"]=={"planId":1,"title":"New"}
     assert c._request.call_args.kwargs["_retry_on_401"] is False
+
+
+@pytest.mark.asyncio
+async def test_copy_training_plan_native_command_status_and_readback():
+    import tp_mcp.tools.organization as org
+    source_row={"planId":1,"title":"Source","weekCount":2,"workoutCount":3,"isPublic":False,"price":0}
+    source_detail={**source_row,"dayCount":14,"description":"x"}
+    copied_detail={**source_detail,"planId":99,"title":"Copy"}
+    c=AsyncMock()
+    c.get=AsyncMock(side_effect=[
+        APIResponse(success=True,data=[source_row]),             # inventory before
+        APIResponse(success=True,data=source_detail),           # source detail
+        APIResponse(success=True,data={"status":1}),             # copy status
+        APIResponse(success=True,data={"status":2}),             # copy status
+        APIResponse(success=True,data=copied_detail),            # copied detail
+    ])
+    c._request=AsyncMock(return_value=APIResponse(success=True,data={"planId":99}))
+    p=_patch(c)
+    with patch.object(org.asyncio,"sleep",AsyncMock()):
+        try:r=await tp_copy_training_plan(1,"Copy")
+        finally:p.stop()
+    assert r["verified"] and r["plan_id"]==99
+    assert r["copy_status_seen"]==[1,2]
+    assert c._request.call_args.args[:2]==("POST","/plans/v1/commands/copyplan")
+    assert c._request.call_args.kwargs["_retry_on_401"] is False
+    assert c._request.call_args.kwargs["json"]["planId"]==1
+    assert c._request.call_args.kwargs["json"]["title"]=="Copy"
+    assert c._request.call_args.kwargs["json"]["planData"]==source_detail
+
+
+@pytest.mark.asyncio
+async def test_delete_training_plan_private_unpriced_uses_inventory_readback():
+    before={"planId":1,"title":"Disposable","weekCount":1,"workoutCount":0,"isPublic":False,"price":0}
+    c=AsyncMock()
+    c.get=AsyncMock(side_effect=[
+        APIResponse(success=True,data=[before]),
+        APIResponse(success=True,data=[]),
+    ])
+    c._request=AsyncMock(return_value=APIResponse(success=True,data={}))
+    p=_patch(c)
+    try:r=await tp_delete_training_plan(1,"Disposable")
+    finally:p.stop()
+    assert r["verified"] and r["deleted"] is True
+    assert c._request.call_args.args[:2]==("DELETE","/plans/v1/plans/1")
+    assert c._request.call_args.kwargs["_retry_on_401"] is False
+
+
+@pytest.mark.asyncio
+async def test_delete_training_plan_blocks_public_plan_without_mutation():
+    before={"planId":1,"title":"Commercial","isPublic":True,"price":179.0}
+    c=AsyncMock()
+    c.get=AsyncMock(return_value=APIResponse(success=True,data=[before]))
+    c._request=AsyncMock()
+    p=_patch(c)
+    try:r=await tp_delete_training_plan(1,"Commercial")
+    finally:p.stop()
+    assert r["isError"] and r["error_code"]=="FORBIDDEN"
+    c._request.assert_not_called()
 
 
 @pytest.mark.asyncio
