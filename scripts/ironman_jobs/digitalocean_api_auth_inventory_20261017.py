@@ -13,7 +13,6 @@ CANDIDATE_ENV = [
 ]
 CANDIDATE_FILES = [
     "/home/ironman/.config/doctl/config.yaml",
-    "/root/.config/doctl/config.yaml",
     "/home/ironman/.config/digitalocean/token",
 ]
 
@@ -24,10 +23,14 @@ def main() -> int:
     }
     for raw in CANDIDATE_FILES:
         p=Path(raw)
-        item={"path":raw,"exists":p.exists()}
-        if p.exists():
-            st=p.stat()
-            item.update({"mode":oct(st.st_mode & 0o777),"uid":st.st_uid,"gid":st.st_gid,"size":st.st_size})
+        try:
+            exists=p.exists()
+            item={"path":raw,"exists":exists}
+            if exists:
+                st=p.stat()
+                item.update({"mode":oct(st.st_mode & 0o777),"uid":st.st_uid,"gid":st.st_gid,"size":st.st_size})
+        except OSError as exc:
+            item={"path":raw,"exists":None,"error_type":type(exc).__name__}
         result["files"].append(item)
     print("DIGITALOCEAN_API_AUTH_INVENTORY")
     print(json.dumps(result, sort_keys=True))
