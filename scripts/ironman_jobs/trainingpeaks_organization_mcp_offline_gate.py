@@ -5,6 +5,7 @@ EXPECTED={
  "tp_list_plan_folders","tp_create_plan_folder","tp_rename_plan_folder",
  "tp_move_training_plans","tp_rename_training_plan",
  "tp_move_athletes_between_groups",
+ "tp_rename_library","tp_copy_library_items","tp_move_library_items","tp_delete_library_items",
 }
 names={x.name for x in TOOLS}
 missing=sorted(EXPECTED-names)
