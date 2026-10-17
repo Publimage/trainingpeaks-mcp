@@ -19,12 +19,16 @@ async def go():
         p=r.data
         must((p.get("planId"),p.get("title"),p.get("weekCount"),p.get("workoutCount"))==(PLAN,TITLE,EXPECTED_WEEKS,EXPECTED_WORKOUTS),"PLAN_SCOPE_MISMATCH")
         must(p.get("isPublic") is False and p.get("price") in (None,0),"PLAN_VISIBILITY_DRIFT")
+        for k in ("author","planEmail","planLanguage"):
+            must(p.get(k) not in (None,""),"PLAN_METADATA_MISSING:"+k)
         before={k:v for k,v in p.items() if k!="description"}
         if p.get("description")==HTML:
             print("INTERMEDIATE_HTML_ALREADY_PRESENT_VERIFIED")
             return 0
         put=await c._request("PUT",f"/plans/v1/plans/{PLAN}",
-            json={"planId":PLAN,"title":TITLE,"description":HTML},_retry_on_401=False)
+            json={"planId":PLAN,"title":TITLE,"description":HTML,
+                  "author":p["author"],"planEmail":p["planEmail"],"planLanguage":p["planLanguage"]},
+            _retry_on_401=False)
         if put.is_error:
             print("STOP_WRITE_RESULT_UNCLEAR",put.error_code,str(put.message)[:120],flush=True)
             return 2
