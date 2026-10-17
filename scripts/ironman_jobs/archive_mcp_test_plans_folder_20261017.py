@@ -54,12 +54,12 @@ def plan_snapshot(rows: list[dict[str, Any]]) -> dict[int, dict[str, Any]]:
 def folder_title(row: dict[str, Any]) -> str:
     return str(row.get("title") or row.get("folderName") or row.get("name") or "")
 
-def folder_id(row: dict[str, Any]) -> int | None:
+def folder_id(row: dict[str, Any]) -> str | None:
     value = row.get("folderId", row.get("id"))
-    try:
-        return int(value)
-    except (TypeError, ValueError):
+    if value is None:
         return None
+    text = str(value).strip()
+    return text or None
 
 def folder_plan_ids(row: dict[str, Any]) -> set[int]:
     raw = row.get("planIds") or []
