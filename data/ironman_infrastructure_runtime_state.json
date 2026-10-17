@@ -2,7 +2,7 @@
   "schema": "IRONMAN_INFRA_RUNTIME_STATE_V1",
   "purpose": "Small non-canonical execution/resume checkpoint for infrastructure work. Canonical decisions and workstream state remain in Google Drive IRONMAN — KNOWLEDGE BASE.",
   "workstream": "TrainingPeaks MCP / Prefect / Coaching Radar",
-  "updated_at_utc": "2026-10-17T16:45:00Z",
+  "updated_at_utc": "2026-10-17T16:53:00Z",
   "canonical_titles": [
     "00_IRONMAN_CORE_INDEX",
     "01_MASTER_COACHING_CONTEXT",
@@ -52,7 +52,7 @@
   },
   "kb_context_layer": {
     "source_gate": "SOURCE_READY",
-    "live_drive_access": "PENDING",
+    "live_drive_access": "PASS",
     "ai_context": "NOT_CONNECTED",
     "implemented": [
       "fail-closed canonical-role manifest",
@@ -64,7 +64,11 @@
       "full-roster metadata-only Drive context canary"
     ],
     "source_map_drive_checkpoint": "PRIVATE RUNTIME SOURCE MAP — RADAR KB CONTEXT V1 stored in 21_TRAININGPEAKS_MCP_INTEGRATION_STATE; 10/10 Athlete Card provider-ID bindings verified.",
-    "specialist_source": "13_ATHLETE_COACHING_PROTOCOL"
+    "specialist_source": "13_ATHLETE_COACHING_PROTOCOL",
+    "live_drive_roster_canary": "PASS_10_OF_10",
+    "drive_writes": 0,
+    "trainingpeaks_writes": 0,
+    "ai_calls": 0
   },
   "recovery_rules": [
     "On a new chat/session, read this small runtime state first, then only the targeted canonical Drive sections needed for the current objective.",
@@ -72,7 +76,7 @@
     "Do not rerun a live write or deploy merely because chat delivery failed; verify provider/server state first.",
     "This file never overrides Google Drive canonical documents."
   ],
-  "next_safe_action": "Use tmux on ironman-prefect-staging for the temporary gcloud admin flow so DigitalOcean web-console disconnects do not kill the interactive auth. Recreate only the temporary CLOUDSDK_CONFIG, authenticate, verify/enable iam.googleapis.com and drive.googleapis.com, upload the existing public certificate once, capture KEY_ID, build the local service-account JSON, validate, run preflight and Drive roster canary, then revoke/delete temporary human auth.",
+  "next_safe_action": "Do not rerun Google admin auth, key upload, credential build, preflight, or Drive canary. The selective Google Drive Knowledge Base access gate is closed/PASS. Next workstream step is the distinct AI-context interpretation layer, which must remain read-only and must not alter the verified Radar V2 schedule until separately designed and approved.",
   "safety_constraints": {
     "google_drive_scope": "drive.readonly",
     "drive_writes": 0,
@@ -84,12 +88,12 @@
   "prefect_drive_preflight": {
     "checked_at_local": "2026-10-17T15:08:00+02:00",
     "checkout_revision": "bcbdcac314addb079ee0ae988e655807911d7d93",
-    "credentials": "MISSING",
+    "credentials": "READY",
     "google_auth_dependency": "READY",
     "private_sources": "READY",
     "source_roster_count": 10,
     "specialist_document_count": 1,
-    "ready_for_live_canary": false,
+    "ready_for_live_canary": true,
     "drive_writes": 0,
     "trainingpeaks_writes": 0,
     "ai_calls": 0
@@ -136,12 +140,20 @@
     ]
   },
   "last_incident_recovery": {
-    "temp_gcloud_config": "MISSING_AFTER_CLEANUP",
-    "active_gcloud_processes": 0,
-    "private_key": "PRESENT_0600",
-    "public_cert": "PRESENT_0600",
-    "private_source_map": "PRESENT_0600",
-    "service_account_json": "MISSING",
-    "conclusion": "Previous foreground auth flow ended cleanly; no local partial credential state. Resume with a persistent terminal session."
+    "conclusion": "The tmux-protected admin flow completed successfully before the later diagnostic started a redundant second tmux run. The later `invalid_grant Malformed auth code` belongs only to that redundant second login attempt and does not invalidate the completed Drive live gate.",
+    "redundant_second_login": "FAILED_INVALID_GRANT_NO_SIDE_EFFECT",
+    "no_rerun_required": true
+  },
+  "live_drive_gate": {
+    "completed_at_local": "2026-10-17T18:50:00+02:00",
+    "final_marker": "RADAR_DRIVE_LIVE_GATE_SEQUENCE_PASS",
+    "credential_validation": "PASS",
+    "runtime_preflight": "PASS",
+    "roster_canary": "PASS",
+    "athlete_count": 10,
+    "drive_writes": 0,
+    "trainingpeaks_writes": 0,
+    "ai_calls": 0,
+    "temp_human_auth_cleanup": "PASS"
   }
 }
