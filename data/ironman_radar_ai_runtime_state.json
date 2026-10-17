@@ -1,9 +1,9 @@
 {
   "schema": "IRONMAN_RADAR_AI_RUNTIME_STATE_V1",
-  "updated_at_utc": "2026-10-17T19:20:00Z",
+  "updated_at_utc": "2026-10-17T19:28:00Z",
   "workstream": "Coaching Radar AI contextual interpretation",
   "current_gate": "AI_4_PROVIDER_SELECTION_AND_PRIVACY",
-  "status": "PRIVACY_CODE_CI_PASS_PAYLOAD_MATERIALIZATION_PENDING",
+  "status": "PAYLOAD_PASS_PROVIDER_SELECTION_READY_CONFIRMATION_REQUIRED",
   "live_radar_changed": false,
   "paid_ai_provider_connected": false,
   "ai_calls": 0,
@@ -83,7 +83,21 @@
     "ai4_provider_payload": "scripts/ironman_jobs/coaching_radar_ai_provider_payload_v1.py",
     "ai4_provider_payload_materializer": "scripts/ironman_jobs/materialize_coaching_radar_ai_provider_payloads_v1.py",
     "ai4_provider_review_reconciler": "scripts/ironman_jobs/reconcile_coaching_radar_ai_provider_review_v1.py",
-    "ai4_candidate_matrix": "data/coaching_radar_ai_provider_candidates_v1.json"
+    "ai4_candidate_matrix": "data/coaching_radar_ai_provider_candidates_v1.json",
+    "ai4_provider_payload_materialization": {
+      "gate": "PASS",
+      "case_count": 10,
+      "total_chars": 295955,
+      "total_bytes": 343878,
+      "input_tokens_typical_estimate": 73989,
+      "input_tokens_conservative_estimate": 98652,
+      "summary_sha256": "f38dfecce7e85999aa894a3ba9fbf8b07abf99e0691913bfd10fea7a7165f0e4",
+      "trainingpeaks_writes": 0,
+      "drive_writes": 0,
+      "ai_calls": 0,
+      "worktree_cleanup": "PASS"
+    },
+    "ai4_provider_selection_file": "data/coaching_radar_ai_provider_selection_v1.json"
   },
   "guardrails": [
     "coach is final decision maker",
@@ -95,7 +109,7 @@
     "uncertainty required",
     "absence of data is not positive evidence"
   ],
-  "next_safe_action": "Pin Prefect isolated worktree to a0e87c59df01b21e779efca4a299ea08d31e2f3c and materialize privacy-minimized provider payloads from /var/lib/ironman-prefect/ai-benchmark/2026-10-17-v1 into a new private 0700 directory. Read only summary.json token-size bounds. No provider/API call or paid activation.",
+  "next_safe_action": "Stop before any paid provider activation. Present the measured 3-model benchmark plan and privacy/cost tradeoffs to the coach. If the coach explicitly authorizes paid provider activation, provision isolated API projects/keys and run the same 10-case benchmark once per approved model, recording actual token usage, cost and deterministic benchmark score.",
   "privacy_gate": {
     "status": "CODE_CI_PASS",
     "direct_identifiers_removed": [
@@ -125,5 +139,29 @@
     "final_ci_revision": "a0e87c59df01b21e779efca4a299ea08d31e2f3c",
     "final_ci_run_id": 39061836123,
     "final_ci_result": "SUCCESS"
-  }
+  },
+  "provider_shortlist": [
+    {
+      "provider": "Anthropic",
+      "model": "claude-sonnet-5-5",
+      "route": "first-party Claude API",
+      "estimated_10_case_run_usd_typical": 0.247978,
+      "estimated_10_case_run_usd_conservative": 0.297304
+    },
+    {
+      "provider": "OpenAI",
+      "model": "gpt-6.1-sol",
+      "route": "EU regional processing",
+      "estimated_10_case_run_usd_typical": 0.272776,
+      "estimated_10_case_run_usd_conservative": 0.327034
+    },
+    {
+      "provider": "Google",
+      "model": "gemini-4-argon",
+      "route": "Vertex AI EU/non-global",
+      "estimated_10_case_run_usd_typical": 0.272776,
+      "estimated_10_case_run_usd_conservative": 0.327034
+    }
+  ],
+  "provider_activation_authorized": false
 }
