@@ -23,6 +23,12 @@ on:
       - "scripts/ironman_jobs/install_coaching_radar_staging_20261016.sh"
       - "scripts/ironman_jobs/verify_coaching_radar_staging_20261016.py"
       - "prefect/ironman-coaching-radar-v1.yaml"
+      - "tests/test_coaching_radar_prefect_v2.py"
+      - "scripts/ironman_jobs/install_coaching_radar_group_staging_20261017.sh"
+      - "scripts/ironman_jobs/verify_coaching_radar_group_staging_20261017.py"
+      - "prefect/ironman-coaching-radar-v2.yaml"
+      - "scripts/ironman_jobs/coaching_radar_prefect_v2.py"
+      - "data/coaching_radar_alberto_group_v1.json"
   workflow_dispatch:
 
 permissions:
@@ -65,7 +71,7 @@ jobs:
       - name: Test actual Prefect execution and isolated recovery
         shell: bash
         run: |
-          python -m pytest -q tests/test_prefect3_isolated_resume_pilot_20261015.py tests/test_prefect3_worker_restart_lab_20261015.py tests/test_coaching_radar_polverari_v0.py tests/test_coaching_radar_prefect_v1.py tests/test_coaching_radar_staging_deploy.py tests/test_prefect_admin_pull_agent.py
+          python -m pytest -q tests/test_prefect3_isolated_resume_pilot_20261015.py tests/test_prefect3_worker_restart_lab_20261015.py tests/test_coaching_radar_polverari_v0.py tests/test_coaching_radar_prefect_v1.py tests/test_coaching_radar_staging_deploy.py tests/test_prefect_admin_pull_agent.py tests/test_coaching_radar_prefect_v2.py
 
       - name: Exercise real Prefect server + process worker queue after worker and server restart
         shell: bash
