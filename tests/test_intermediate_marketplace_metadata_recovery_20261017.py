@@ -4,6 +4,7 @@ def test_contract():
     t=P.read_text()
     assert "TARGET=684602" in t
     assert "SOURCE=684463" in t
-    assert '"planLanguage":src["planLanguage"]' in t
+    assert "LANG_SOURCE=679801" in t
+    assert '"planLanguage":lang["planLanguage"]' in t
     assert '"description":p["description"]' in t
     assert "_retry_on_401=False" in t
