@@ -2,7 +2,7 @@
   "schema": "IRONMAN_INFRA_RUNTIME_STATE_V1",
   "purpose": "Small non-canonical execution/resume checkpoint for infrastructure work. Canonical decisions and workstream state remain in Google Drive IRONMAN — KNOWLEDGE BASE.",
   "workstream": "TrainingPeaks MCP / Prefect / Coaching Radar",
-  "updated_at_utc": "2026-10-17T13:02:00Z",
+  "updated_at_utc": "2026-10-17T13:08:00Z",
   "canonical_titles": [
     "00_IRONMAN_CORE_INDEX",
     "01_MASTER_COACHING_CONTEXT",
@@ -69,7 +69,7 @@
     "Do not rerun a live write or deploy merely because chat delivery failed; verify provider/server state first.",
     "This file never overrides Google Drive canonical documents."
   ],
-  "next_safe_action": "Prepare the isolated Google Auth runtime and the private 0600 Radar source-map file on Prefect staging, then rerun the read-only preflight. Do not create/replace credentials yet and do not alter the live Radar V2 deployment. Expected next preflight: google_auth_dependency=READY, sources=READY with source_roster_count=10, credentials=MISSING.",
+  "next_safe_action": "Resolve a dedicated Google service-account identity for read-only Drive access. Before creating anything, search canonical Drive/GitHub for an existing approved Google Cloud project/service account. If none exists, create one with no broad IAM roles, generate a JSON key only for this reader, store it only at /var/lib/ironman-prefect/credentials/radar-drive-reader.json mode 0600, and share only the required IRONMAN Knowledge Base folder/docs as Viewer. Then rerun the preflight and metadata-only Drive canary.",
   "safety_constraints": {
     "google_drive_scope": "drive.readonly",
     "drive_writes": 0,
@@ -79,11 +79,13 @@
     "no_service_restart_for_drive_reader_prepare": true
   },
   "prefect_drive_preflight": {
-    "checked_at_local": "2026-10-17T15:01:00+02:00",
-    "checkout_revision": "7f3dc46da8475e17196d909698e1886af91a5ac4",
+    "checked_at_local": "2026-10-17T15:08:00+02:00",
+    "checkout_revision": "bcbdcac314addb079ee0ae988e655807911d7d93",
     "credentials": "MISSING",
-    "google_auth_dependency": "MISSING",
-    "private_sources": "MISSING",
+    "google_auth_dependency": "READY",
+    "private_sources": "READY",
+    "source_roster_count": 10,
+    "specialist_document_count": 1,
     "ready_for_live_canary": false,
     "drive_writes": 0,
     "trainingpeaks_writes": 0,
