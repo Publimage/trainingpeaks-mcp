@@ -1962,6 +1962,14 @@
       "scope": "trainingpeaks:private-plan:684602:restore-author-email-language-preserve-marketplace-html",
       "script": "scripts/ironman_jobs/intermediate_marketplace_metadata_recovery_20261017.py",
       "test": "tests/test_intermediate_marketplace_metadata_recovery_20261017.py"
+    },
+    {
+      "name": "whole_training_plan_lifecycle_canary_20261017",
+      "mode": "GUARDED_WRITE",
+      "owner_id": 2116886,
+      "scope": "trainingpeaks:disposable-whole-plan-lifecycle:source-684484:create-delete-copy-cleanup",
+      "script": "scripts/ironman_jobs/whole_training_plan_lifecycle_canary_20261017.py",
+      "test": "tests/test_whole_training_plan_lifecycle_canary_20261017.py"
     }
   ]
 }
