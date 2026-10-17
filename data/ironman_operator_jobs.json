@@ -1954,6 +1954,14 @@
       "scope": "trainingpeaks:private-plan:685173:remove-bozza-title-and-marketplace-description-html-only",
       "script": "scripts/ironman_jobs/chasing_release_copy_20261017.py",
       "test": "tests/test_chasing_release_copy_20261017.py"
+    },
+    {
+      "name": "intermediate_marketplace_metadata_recovery_20261017",
+      "mode": "GUARDED_WRITE",
+      "owner_id": 2116886,
+      "scope": "trainingpeaks:private-plan:684602:restore-author-email-language-preserve-marketplace-html",
+      "script": "scripts/ironman_jobs/intermediate_marketplace_metadata_recovery_20261017.py",
+      "test": "tests/test_intermediate_marketplace_metadata_recovery_20261017.py"
     }
   ]
 }
