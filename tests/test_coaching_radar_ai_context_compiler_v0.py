@@ -91,7 +91,7 @@ def test_tss_and_if_signals_select_data_quality_context():
 
 def test_completion_signal_adds_absence_feedback_terms():
     compiled = compile_selective_context(_packet(["COMPLETION_UNCONFIRMED"]), max_total_chars=6000)
-    assert "completion_unconfirmed" in compiled["signal_categories"]
+    assert "COMPLETION_UNCONFIRMED" in compiled["signal_categories"]
     terms = set(compiled["selection_terms"])
     assert "feedback" in terms
     assert "assenza" in terms
