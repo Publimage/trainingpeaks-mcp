@@ -12,4 +12,4 @@ def test_public_readonly():
     assert '"_buildUrl"' in s
     for bad in ("TPClient", "Authorization", "Bearer ", "h.post(", "h.put(", "h.delete("):
         assert bad not in s
-    assert '"provider_writes": 0' in s
+    assert '"provider_writes":0' in s
