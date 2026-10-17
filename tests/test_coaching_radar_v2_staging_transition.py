@@ -34,3 +34,10 @@ def test_v2_verifiers_use_actual_prefect_flow_name():
     assert expected + "/alberto-group-readonly-daily" in pilot
     assert "ironman-coaching-radar-v2/alberto-group-readonly-daily" not in group
     assert "ironman-coaching-radar-v2/polverari-readonly-daily-v2" not in pilot
+
+
+def test_v2_verifiers_create_idempotent_manual_runs():
+    group = Path("scripts/ironman_jobs/verify_coaching_radar_group_staging_20261017.py").read_text()
+    pilot = Path("scripts/ironman_jobs/verify_coaching_radar_v2_pilot_staging_20261017.py").read_text()
+    assert 'idempotency_key=f"ironman-radar-group-v2:{deployment.id}:{as_of}"' in group
+    assert 'idempotency_key=f"ironman-radar-pilot-v2:{deployment.id}:{as_of}"' in pilot
