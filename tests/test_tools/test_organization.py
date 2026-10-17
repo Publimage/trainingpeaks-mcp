@@ -1,6 +1,6 @@
 import pytest
 from unittest.mock import AsyncMock, patch
-from tp_mcp.client.models import APIResponse
+from tp_mcp.client.http import APIResponse
 from tp_mcp.tools.organization import (
     tp_list_plan_folders, tp_create_plan_folder, tp_rename_plan_folder,
     tp_move_training_plans, tp_rename_training_plan,
