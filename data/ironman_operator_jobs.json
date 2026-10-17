@@ -1522,6 +1522,14 @@
       "scope": "server:ironman-tp-mcp:reload-trainingpeaks-tunnel-current-pinned-checkout-only",
       "script": "scripts/ironman_jobs/mcp_catalog_reload_20261016.py",
       "test": "tests/test_mcp_catalog_reload_20261016.py"
+    },
+    {
+      "name": "beginner_strength_native_duration_20261017",
+      "mode": "GUARDED_WRITE",
+      "owner_id": 2116886,
+      "scope": "trainingpeaks:public-plan:679801:set-prescribed-duration-on-36-native-structuredstrength-from-pre-migration-backup-only",
+      "script": "scripts/ironman_jobs/beginner_strength_native_duration_20261017.py",
+      "test": "tests/test_beginner_strength_native_duration_20261017.py"
     }
   ]
 }
