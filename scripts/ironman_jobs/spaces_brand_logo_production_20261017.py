@@ -5,7 +5,7 @@ import httpx
 from PIL import Image
 from tp_mcp.tools.assets import _secure_config, _signed_put_headers, _validate_object_key
 
-SOURCE_URL="https://sdmntprpolandcentral.oaiusercontent.com/files/00000000-dcb8-820a-8930-9a0e1a955f6b/raw?se=2026-10-17T20%3A19%3A40Z&sp=r&sv=2026-02-06&sr=b&scid=10217c0b-7a34-5686-8518-484c722b72a9&skoid=b5d2651b-fef3-4bb0-a03b-ca59cc22929b&sktid=a48cca56-e6da-484e-a814-9c849652bcb3&skt=2026-10-17T18%3A22%3A23Z&ske=2026-10-18T18%3A22%3A23Z&sks=b&skv=2026-02-06&sig=GcyKqpKzX/Y4fntmUoSksGYWSAfN0kGFdOg3rWLAUUk%3D"
+SOURCE_URL="https://sdmntprpolandcentral.oaiusercontent.com/files/00000000-19bc-820a-8d4e-28a6faab6ce8/raw?se=2026-10-17T20%3A20%3A10Z&sp=r&sv=2026-02-06&sr=b&scid=d4cca4c5-a93d-5bfc-a913-36ecadb3ad37&skoid=b5d2651b-fef3-4bb0-a03b-ca59cc22929b&sktid=a48cca56-e6da-484e-a814-9c849652bcb3&skt=2026-10-17T19%3A35%3A51Z&ske=2026-10-18T19%3A35%3A51Z&sks=b&skv=2026-02-06&sig=TloVlEXLg/AQxB2fIj4lUmleODY8y1tmZfXq%2BKCBzJg%3D"
 MASTER_SIZE=352781
 MASTER_SHA="ad2710edac3834c467331d2497716c45f8e4cdaf37eaeb658203d531ea9ceea6"
 OBJECT_KEY="brand/logo/alberto-fazi-endurance-logo-v1.0.png"
@@ -50,4 +50,9 @@ async def run():
     return 0
 
 if __name__=="__main__":
-    raise SystemExit(asyncio.run(run()))
+    try:
+        raise SystemExit(asyncio.run(run()))
+    except Exception as exc:
+        print("SPACES_BRAND_LOGO_PRODUCTION_FAIL")
+        print(json.dumps({"error_type":type(exc).__name__,"message":str(exc)[:300]},sort_keys=True))
+        raise
