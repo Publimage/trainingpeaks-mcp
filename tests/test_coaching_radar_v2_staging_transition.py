@@ -14,3 +14,11 @@ def test_v2_pilot_verifier_is_single_athlete():
     assert "2932097" in text
     assert "athlete_count_completed" in text
     assert "trainingpeaks_writes" in text
+
+
+def test_v2_pilot_verifier_checks_schedule_states():
+    text = Path("scripts/ironman_jobs/verify_coaching_radar_v2_pilot_staging_20261017.py").read_text()
+    assert "RADAR_V2_PILOT_SCHEDULE_NOT_ACTIVE" in text
+    assert "RADAR_V2_GROUP_SCHEDULE_NOT_INACTIVE" in text
+    assert '"30 5 * * *"' in text
+    assert '"Europe/Rome"' in text
