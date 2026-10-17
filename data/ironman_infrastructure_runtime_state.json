@@ -2,7 +2,7 @@
   "schema": "IRONMAN_INFRA_RUNTIME_STATE_V1",
   "purpose": "Small non-canonical execution/resume checkpoint for infrastructure work. Canonical decisions and workstream state remain in Google Drive IRONMAN — KNOWLEDGE BASE.",
   "workstream": "TrainingPeaks MCP / Prefect / Coaching Radar",
-  "updated_at_utc": "2026-10-17T16:38:00Z",
+  "updated_at_utc": "2026-10-17T16:45:00Z",
   "canonical_titles": [
     "00_IRONMAN_CORE_INDEX",
     "01_MASTER_COACHING_CONTEXT",
@@ -72,7 +72,7 @@
     "Do not rerun a live write or deploy merely because chat delivery failed; verify provider/server state first.",
     "This file never overrides Google Drive canonical documents."
   ],
-  "next_safe_action": "Reconnect to the DigitalOcean web console and run the read-only recovery diagnostic: verify gcloud installation, temp CLOUDSDK_CONFIG/auth presence, any surviving gcloud process, local credential artifacts, enabled iam/drive APIs if auth remains, and existing service-account keys. Resume from the first missing checkpoint only.",
+  "next_safe_action": "Use tmux on ironman-prefect-staging for the temporary gcloud admin flow so DigitalOcean web-console disconnects do not kill the interactive auth. Recreate only the temporary CLOUDSDK_CONFIG, authenticate, verify/enable iam.googleapis.com and drive.googleapis.com, upload the existing public certificate once, capture KEY_ID, build the local service-account JSON, validate, run preflight and Drive roster canary, then revoke/delete temporary human auth.",
   "safety_constraints": {
     "google_drive_scope": "drive.readonly",
     "drive_writes": 0,
@@ -134,5 +134,14 @@
       "gcloud iam service-accounts keys upload",
       "live Drive canary"
     ]
+  },
+  "last_incident_recovery": {
+    "temp_gcloud_config": "MISSING_AFTER_CLEANUP",
+    "active_gcloud_processes": 0,
+    "private_key": "PRESENT_0600",
+    "public_cert": "PRESENT_0600",
+    "private_source_map": "PRESENT_0600",
+    "service_account_json": "MISSING",
+    "conclusion": "Previous foreground auth flow ended cleanly; no local partial credential state. Resume with a persistent terminal session."
   }
 }
