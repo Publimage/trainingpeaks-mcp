@@ -1690,6 +1690,14 @@
       "scope": "server:ironman-tp-mcp:digitalocean-api-auth-metadata-read",
       "script": "scripts/ironman_jobs/digitalocean_api_auth_inventory_20261017.py",
       "test": "tests/test_digitalocean_api_auth_inventory_20261017.py"
+    },
+    {
+      "name": "training_plan_folder_symbol_scan_20261017",
+      "mode": "READ_ONLY",
+      "owner_id": 2116886,
+      "scope": "public:trainingpeaks:frontend:training-plan-folder-symbols:read",
+      "script": "scripts/ironman_jobs/training_plan_folder_symbol_scan_20261017.py",
+      "test": "tests/test_training_plan_folder_symbol_scan_20261017.py"
     }
   ]
 }
