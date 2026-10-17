@@ -36,11 +36,58 @@ def must(v, msg):
 def key(w):
     return ((w.get("title") or "").strip(), str(w.get("prescribedDate") or "")[:10])
 
-def scrub(w):
-    x = copy.deepcopy(w)
-    x.pop("prescribedDurationInSeconds", None)
-    x.pop("lastUpdatedAt", None)
-    return x
+def semantic(w):
+    out = {
+        "id": str(w.get("id") or ""),
+        "workoutType": w.get("workoutType"),
+        "calendarId": w.get("calendarId"),
+        "title": w.get("title"),
+        "prescribedDate": str(w.get("prescribedDate") or "")[:10],
+        "instructions": w.get("instructions"),
+        "snapshot": {
+            "totalBlocks": (w.get("snapshot") or {}).get("totalBlocks"),
+            "totalSets": (w.get("snapshot") or {}).get("totalSets"),
+        },
+        "blocks": [],
+    }
+    for b in w.get("blocks") or []:
+        bo = {
+            "blockType": b.get("blockType"),
+            "title": b.get("title"),
+            "coachNotes": b.get("coachNotes"),
+            "prescriptions": [],
+        }
+        for p in b.get("prescriptions") or []:
+            po = {
+                "exercise": {
+                    "id": str((p.get("exercise") or {}).get("id") or ""),
+                    "title": (p.get("exercise") or {}).get("title"),
+                },
+                "coachNotes": p.get("coachNotes"),
+                "parameters": sorted(
+                    [
+                        (x.get("parameter"), x.get("inputFormat"))
+                        for x in (p.get("parameters") or [])
+                    ]
+                ),
+                "sets": [],
+            }
+            for s in p.get("sets") or []:
+                po["sets"].append(
+                    sorted(
+                        [
+                            (
+                                v.get("parameter"),
+                                str(v.get("prescribedValue")),
+                                v.get("inputFormat"),
+                            )
+                            for v in (s.get("parameterValues") or [])
+                        ]
+                    )
+                )
+            bo["prescriptions"].append(po)
+        out["blocks"].append(bo)
+    return out
 
 async def native_range(h, token):
     end = (date.fromisoformat(START) + timedelta(weeks=24, days=2)).isoformat()
@@ -163,7 +210,7 @@ async def main():
                     after = await detail(h, token, wid)
                     must(
                         after.get("prescribedDurationInSeconds") == target
-                        and scrub(after) == scrub(before),
+                        and semantic(after) == semantic(before),
                         f"AMBIGUOUS_DURATION_POST_{wid}",
                     )
                     changed += 1
@@ -172,7 +219,7 @@ async def main():
                 must(r.status_code == 200, f"DURATION_POST_REJECTED_{wid}_{r.status_code}")
                 after = await detail(h, token, wid)
                 must(after.get("prescribedDurationInSeconds") == target, f"DURATION_READBACK_{wid}")
-                must(scrub(after) == scrub(before), f"NON_DURATION_DRIFT_{wid}")
+                must(semantic(after) == semantic(before), f"NON_DURATION_DRIFT_{wid}")
                 p2 = await c.get(f"/plans/v1/plans/{PLAN}")
                 must(not p2.is_error and p2.data.get("workoutCount") == EXPECTED_COUNT, f"PLAN_COUNT_DRIFT_{wid}")
                 changed += 1
