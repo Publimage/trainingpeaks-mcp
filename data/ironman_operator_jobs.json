@@ -1810,6 +1810,14 @@
       "scope": "digitalocean:spaces:ironman-assets:shared-canary-canonical-logo-v1.0:put-readback",
       "script": "scripts/ironman_jobs/spaces_canonical_logo_e2e_20261017.py",
       "test": "tests/test_spaces_canonical_logo_e2e_20261017.py"
+    },
+    {
+      "name": "spaces_brand_logo_production_20261017",
+      "mode": "GUARDED_WRITE",
+      "owner_id": 2116886,
+      "scope": "digitalocean:spaces:ironman-assets:brand-logo-v1.0:deterministic-production-put-readback",
+      "script": "scripts/ironman_jobs/spaces_brand_logo_production_20261017.py",
+      "test": "tests/test_spaces_brand_logo_production_20261017.py"
     }
   ]
 }
