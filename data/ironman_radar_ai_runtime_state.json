@@ -1,0 +1,33 @@
+{
+  "schema": "IRONMAN_RADAR_AI_RUNTIME_STATE_V1",
+  "updated_at_utc": "2026-10-17T17:12:00Z",
+  "workstream": "Coaching Radar AI contextual interpretation",
+  "current_gate": "AI_1_SHADOW_CONTRACT",
+  "status": "PASS",
+  "live_radar_changed": false,
+  "paid_ai_provider_connected": false,
+  "ai_calls": 0,
+  "trainingpeaks_writes": 0,
+  "drive_writes": 0,
+  "implementation": {
+    "module": "scripts/ironman_jobs/coaching_radar_ai_context_contract_v0.py",
+    "tests": "tests/test_coaching_radar_ai_context_contract_v0.py",
+    "input_schema": "IRONMAN_COACHING_RADAR_AI_INPUT_V1",
+    "output_schema": "IRONMAN_COACHING_RADAR_AI_REVIEW_V1",
+    "mode": "SHADOW_READ_ONLY",
+    "workflow_revision": "2844e2e5e8d7f810da7c7a6b7d97a80c8fde4a41",
+    "ci_run_id": 39055140067,
+    "ci_status": "COMPLETED_SUCCESS"
+  },
+  "guardrails": [
+    "coach is final decision maker",
+    "TrainingPeaks writes forbidden",
+    "Drive writes forbidden",
+    "workout mutations forbidden",
+    "publishing forbidden",
+    "evidence references required",
+    "uncertainty required",
+    "absence of data is not positive evidence"
+  ],
+  "next_safe_action": "AI-2: deterministic selective context compiler plus historical evaluation harness. Keep live Radar unchanged. Model/provider/cost/privacy remains a separate approval gate before any paid AI connection."
+}
