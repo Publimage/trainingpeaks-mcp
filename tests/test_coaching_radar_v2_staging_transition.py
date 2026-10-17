@@ -22,3 +22,15 @@ def test_v2_pilot_verifier_checks_schedule_states():
     assert "RADAR_V2_GROUP_SCHEDULE_NOT_INACTIVE" in text
     assert '"30 5 * * *"' in text
     assert '"Europe/Rome"' in text
+
+
+def test_v2_verifiers_use_actual_prefect_flow_name():
+    group = Path("scripts/ironman_jobs/verify_coaching_radar_group_staging_20261017.py").read_text()
+    pilot = Path("scripts/ironman_jobs/verify_coaching_radar_v2_pilot_staging_20261017.py").read_text()
+    expected = "ironman-coaching-radar-group-v2"
+    assert expected + "/alberto-group-readonly-daily" in group
+    assert expected + "/polverari-readonly-daily-v2" in group
+    assert expected + "/polverari-readonly-daily-v2" in pilot
+    assert expected + "/alberto-group-readonly-daily" in pilot
+    assert "ironman-coaching-radar-v2/alberto-group-readonly-daily" not in group
+    assert "ironman-coaching-radar-v2/polverari-readonly-daily-v2" not in pilot
