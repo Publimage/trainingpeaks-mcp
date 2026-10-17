@@ -1938,6 +1938,22 @@
       "scope": "trainingpeaks:disposable-plan:684484:description-put-revert",
       "script": "scripts/ironman_jobs/plan_description_canary_20261017.py",
       "test": "tests/test_plan_description_canary_20261017.py"
+    },
+    {
+      "name": "intermediate_marketplace_html_20261017",
+      "mode": "GUARDED_WRITE",
+      "owner_id": 2116886,
+      "scope": "trainingpeaks:private-plan:684602:marketplace-description-html-only",
+      "script": "scripts/ironman_jobs/intermediate_marketplace_html_20261017.py",
+      "test": "tests/test_intermediate_marketplace_html_20261017.py"
+    },
+    {
+      "name": "chasing_release_copy_20261017",
+      "mode": "GUARDED_WRITE",
+      "owner_id": 2116886,
+      "scope": "trainingpeaks:private-plan:685173:remove-bozza-title-and-marketplace-description-html-only",
+      "script": "scripts/ironman_jobs/chasing_release_copy_20261017.py",
+      "test": "tests/test_chasing_release_copy_20261017.py"
     }
   ]
 }
