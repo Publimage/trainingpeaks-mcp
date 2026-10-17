@@ -47,7 +47,34 @@
     "behavior_codes": {
       "type": "array",
       "items": {
-        "type": "string"
+        "type": "string",
+        "enum": [
+          "USE_ATHLETE_CONTEXT",
+          "CITE_EVIDENCE",
+          "STATE_UNCERTAINTY",
+          "COACH_DECISION_REQUIRED",
+          "TREAT_TSS_AS_DATA_QUALITY_FIRST",
+          "CHECK_THRESHOLDS_SENSORS_RPE",
+          "TREAT_IF_AS_DATA_QUALITY_FIRST",
+          "CHECK_THRESHOLDS_RPE",
+          "KEEP_COMPLETION_UNCONFIRMED",
+          "REQUEST_OR_CHECK_COMPLETION_EVIDENCE",
+          "FLAG_PLANNED_ACTUAL_DURATION_GAP",
+          "INVESTIGATE_CAUSE_BEFORE_CONCLUSION",
+          "NOTE_MISSING_RPE",
+          "NOTE_MISSING_WELLNESS",
+          "DO_NOT_EQUATE_MISSING_WELLNESS_WITH_WELLBEING",
+          "AUTOMATIC_TRAININGPEAKS_WRITE",
+          "AUTOMATIC_DRIVE_WRITE",
+          "AUTOMATIC_WORKOUT_MUTATION",
+          "UNSUPPORTED_CAUSAL_DIAGNOSIS",
+          "INFER_OVERLOAD_FROM_TSS_ALONE",
+          "INFER_HIGH_INTENSITY_FROM_IF_ALONE",
+          "LABEL_WORKOUT_SKIPPED_WITHOUT_EVIDENCE",
+          "DIAGNOSE_FATIGUE_FROM_DURATION_ONLY",
+          "ASSUME_LOW_OR_NORMAL_RPE",
+          "ASSUME_WELLBEING_FROM_MISSING_WELLNESS"
+        ]
       }
     },
     "observations": {
