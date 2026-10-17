@@ -115,6 +115,7 @@ def main() -> int:
             expected_categories=expected_categories,
             expected_role_families=expected_roles,
             max_chars=args.max_total_chars,
+            expected_data_quality_flags=list(case.get("data_quality") or []),
         )
         if not evaluation["pass"]:
             raise RuntimeError(
