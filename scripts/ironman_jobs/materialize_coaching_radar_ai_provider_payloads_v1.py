@@ -30,7 +30,12 @@ def _write_private(path: Path, value) -> int:
     return len(payload)
 
 
-def materialize(private_dir: Path, output_dir: Path, schema_file: Path) -> dict:
+def materialize(
+    private_dir: Path,
+    output_dir: Path,
+    schema_file: Path,
+    taxonomy_file: Path,
+) -> dict:
     if output_dir.exists():
         raise RuntimeError("PROVIDER_PAYLOAD_OUTPUT_DIR_ALREADY_EXISTS")
     manifest_path = private_dir / "manifest.json"
@@ -41,6 +46,9 @@ def materialize(private_dir: Path, output_dir: Path, schema_file: Path) -> dict:
         raise RuntimeError("PRIVATE_BENCHMARK_GATE_NOT_PASS")
 
     output_schema = json.loads(schema_file.read_text(encoding="utf-8"))
+    behavior_taxonomy = json.loads(taxonomy_file.read_text(encoding="utf-8"))
+    if behavior_taxonomy.get("schema") != "IRONMAN_RADAR_AI_BEHAVIOR_TAXONOMY_V1":
+        raise RuntimeError("PROVIDER_PAYLOAD_TAXONOMY_SCHEMA_MISMATCH")
     output_dir.mkdir(parents=True, mode=0o700)
     os.chmod(output_dir, 0o700)
 
@@ -50,7 +58,11 @@ def materialize(private_dir: Path, output_dir: Path, schema_file: Path) -> dict:
     for item in manifest["cases"]:
         src = private_dir / item["filename"]
         case = json.loads(src.read_text(encoding="utf-8"))
-        payload = build_provider_payload(case, output_schema=output_schema)
+        payload = build_provider_payload(
+            case,
+            output_schema=output_schema,
+            behavior_taxonomy=behavior_taxonomy,
+        )
         filename = f"provider_{payload['case_ref']}.json"
         text = json.dumps(payload, ensure_ascii=False, sort_keys=True)
         char_count = len(text)
@@ -89,11 +101,13 @@ def main() -> int:
     parser.add_argument("--private-benchmark-dir", required=True)
     parser.add_argument("--output-dir", required=True)
     parser.add_argument("--review-schema-file", required=True)
+    parser.add_argument("--behavior-taxonomy-file", required=True)
     args = parser.parse_args()
     result = materialize(
         Path(args.private_benchmark_dir),
         Path(args.output_dir),
         Path(args.review_schema_file),
+        Path(args.behavior_taxonomy_file),
     )
     print("RADAR_AI_PROVIDER_PAYLOAD_MATERIALIZE_PASS")
     print(json.dumps({
