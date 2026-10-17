@@ -178,6 +178,8 @@ def build_provider_payload(
             str(item.get("excerpt") or ""),
             athlete_name=athlete_name,
             athlete_id=athlete_id,
+            additional_names=additional_names,
+            additional_ids=additional_ids,
         )
         excerpts.append({
             "source_role": _role_label(role),
@@ -208,6 +210,8 @@ def build_provider_payload(
                 radar.get("data_quality") or {},
                 athlete_name=athlete_name,
                 athlete_id=athlete_id,
+                additional_names=additional_names,
+                additional_ids=additional_ids,
             ),
             "evidence_sha256": evidence_sha,
         },
