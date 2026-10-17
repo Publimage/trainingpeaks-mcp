@@ -138,3 +138,29 @@ def test_short_term_if_does_not_match_inside_verificare():
     decision = [x for x in compiled["excerpts"] if x["role"] == "decision_log"]
     if decision:
         assert "if" not in decision[0]["matched_terms"]
+
+
+def test_eval_requires_missing_rpe_context_when_flagged():
+    compiled = compile_selective_context(_packet([], missing_rpe=True, wellness=4), max_total_chars=6000)
+    result = evaluate_compiled_context(
+        compiled,
+        expected_categories=[],
+        expected_role_families=["athlete_card", "master_coaching_context", "specialist"],
+        max_chars=6000,
+        expected_data_quality_flags=["MISSING_RPE", "WELLNESS_PRESENT"],
+    )
+    assert result["pass"] is True
+    assert result["data_quality_routing_misses"] == {}
+
+
+def test_eval_fails_unsupported_data_quality_flag():
+    compiled = compile_selective_context(_packet([], missing_rpe=True, wellness=0), max_total_chars=6000)
+    result = evaluate_compiled_context(
+        compiled,
+        expected_categories=[],
+        expected_role_families=["athlete_card", "master_coaching_context", "specialist"],
+        max_chars=6000,
+        expected_data_quality_flags=["UNKNOWN_FLAG"],
+    )
+    assert result["pass"] is False
+    assert result["data_quality_routing_misses"]["UNKNOWN_FLAG"] == ["UNSUPPORTED_FLAG"]
