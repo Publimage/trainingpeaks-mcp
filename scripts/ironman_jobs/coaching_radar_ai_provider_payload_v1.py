@@ -24,11 +24,26 @@ def _replace_literal(text: str, value: str, replacement: str) -> str:
     return re.sub(re.escape(value), replacement, text, flags=re.IGNORECASE)
 
 
-def _redact_text(text: str, *, athlete_name: str, athlete_id: int) -> str:
+def _redact_text(
+    text: str,
+    *,
+    athlete_name: str,
+    athlete_id: int,
+    additional_names: tuple[str, ...] = (),
+    additional_ids: tuple[int, ...] = (),
+) -> str:
     out = text
-    out = _replace_literal(out, athlete_name, "<ATHLETE>")
+    all_names = tuple(dict.fromkeys((athlete_name, *additional_names)))
+    all_ids = tuple(dict.fromkeys((athlete_id, *additional_ids)))
+    for name in all_names:
+        out = _replace_literal(out, name, "<ATHLETE>")
+    name_tokens = {
+        part.strip(".,;:()[]{}")
+        for name in all_names
+        for part in name.split()
+    }
     for token in sorted(
-        {part.strip(".,;:()[]{}") for part in athlete_name.split()},
+        name_tokens,
         key=len,
         reverse=True,
     ):
@@ -38,7 +53,8 @@ def _redact_text(text: str, *, athlete_name: str, athlete_id: int) -> str:
                 "<ATHLETE_NAME_PART>",
                 out,
             )
-    out = re.sub(rf"(?<!\d){re.escape(str(athlete_id))}(?!\d)", "<ATHLETE_ID>", out)
+    for private_id in all_ids:
+        out = re.sub(rf"(?<!\d){re.escape(str(private_id))}(?!\d)", "<ATHLETE_ID>", out)
     out = _EMAIL_RE.sub("<EMAIL>", out)
     out = _PHONE_RE.sub("<PHONE>", out)
     out = _URL_RE.sub("<URL>", out)
@@ -51,7 +67,14 @@ def _role_label(role: str) -> str:
     return role
 
 
-def _sanitize_data_quality(value: dict[str, Any], *, athlete_name: str, athlete_id: int) -> dict[str, Any]:
+def _sanitize_data_quality(
+    value: dict[str, Any],
+    *,
+    athlete_name: str,
+    athlete_id: int,
+    additional_names: tuple[str, ...] = (),
+    additional_ids: tuple[int, ...] = (),
+) -> dict[str, Any]:
     out: dict[str, Any] = {}
     for key, item in value.items():
         lower = key.lower()
@@ -61,16 +84,34 @@ def _sanitize_data_quality(value: dict[str, Any], *, athlete_name: str, athlete_
             out[key[:-4] + "_count"] = len(item)
             continue
         if isinstance(item, str):
-            out[key] = _redact_text(item, athlete_name=athlete_name, athlete_id=athlete_id)
+            out[key] = _redact_text(
+                item,
+                athlete_name=athlete_name,
+                athlete_id=athlete_id,
+                additional_names=additional_names,
+                additional_ids=additional_ids,
+            )
         elif isinstance(item, dict):
-            out[key] = _sanitize_data_quality(item, athlete_name=athlete_name, athlete_id=athlete_id)
+            out[key] = _sanitize_data_quality(
+                item,
+                athlete_name=athlete_name,
+                athlete_id=athlete_id,
+                additional_names=additional_names,
+                additional_ids=additional_ids,
+            )
         elif isinstance(item, list):
             sanitized = []
             for sub in item:
                 if isinstance(sub, str):
-                    sanitized.append(_redact_text(sub, athlete_name=athlete_name, athlete_id=athlete_id))
+                    sanitized.append(_redact_text(sub, athlete_name=athlete_name, athlete_id=athlete_id, additional_names=additional_names, additional_ids=additional_ids))
                 elif isinstance(sub, dict):
-                    sanitized.append(_sanitize_data_quality(sub, athlete_name=athlete_name, athlete_id=athlete_id))
+                    sanitized.append(_sanitize_data_quality(
+                        sub,
+                        athlete_name=athlete_name,
+                        athlete_id=athlete_id,
+                        additional_names=additional_names,
+                        additional_ids=additional_ids,
+                    ))
                 else:
                     sanitized.append(sub)
             out[key] = sanitized
@@ -84,6 +125,7 @@ def build_provider_payload(
     *,
     output_schema: dict[str, Any],
     behavior_taxonomy: dict[str, Any],
+    additional_private_bindings: list[dict[str, Any]] | None = None,
 ) -> dict[str, Any]:
     if private_case.get("schema") != "IRONMAN_RADAR_AI_PRIVATE_BENCHMARK_CASE_V1":
         raise ValueError("PROVIDER_PAYLOAD_PRIVATE_CASE_SCHEMA_MISMATCH")
@@ -91,6 +133,17 @@ def build_provider_payload(
     athlete_name = str(private_case.get("athlete_name") or "")
     if athlete_id <= 0 or not athlete_name:
         raise ValueError("PROVIDER_PAYLOAD_ATHLETE_BINDING_MISSING")
+    additional_private_bindings = additional_private_bindings or []
+    additional_names = tuple(
+        str(x.get("athlete_name") or "")
+        for x in additional_private_bindings
+        if str(x.get("athlete_name") or "") and str(x.get("athlete_name") or "") != athlete_name
+    )
+    additional_ids = tuple(
+        int(x.get("athlete_id") or 0)
+        for x in additional_private_bindings
+        if int(x.get("athlete_id") or 0) > 0 and int(x.get("athlete_id") or 0) != athlete_id
+    )
 
     radar = private_case.get("radar")
     selective = private_case.get("selective_context")
@@ -116,7 +169,7 @@ def build_provider_payload(
             item.pop("athlete_id", None)
             for key, value in list(item.items()):
                 if isinstance(value, str):
-                    item[key] = _redact_text(value, athlete_name=athlete_name, athlete_id=athlete_id)
+                    item[key] = _redact_text(value, athlete_name=athlete_name, athlete_id=athlete_id, additional_names=additional_names, additional_ids=additional_ids)
 
     excerpts = []
     for item in selective.get("excerpts") or []:
@@ -132,6 +185,8 @@ def build_provider_payload(
                 str(item.get("section_heading") or ""),
                 athlete_name=athlete_name,
                 athlete_id=athlete_id,
+                additional_names=additional_names,
+                additional_ids=additional_ids,
             ),
             "matched_terms": list(item.get("matched_terms") or []),
             "excerpt": excerpt,
@@ -183,8 +238,8 @@ def build_provider_payload(
     }
     serialized = json.dumps(payload, ensure_ascii=False, sort_keys=True, separators=(",", ":"))
     forbidden_literals = [
-        athlete_name.lower(),
-        str(athlete_id),
+        *(name.lower() for name in (athlete_name, *additional_names)),
+        *(str(value) for value in (athlete_id, *additional_ids)),
         "/var/lib/ironman-prefect",
     ]
     lower = serialized.lower()
