@@ -17,6 +17,7 @@ here because the TP UI contract deletes every plan inside the folder.
 from __future__ import annotations
 
 from typing import Any
+import asyncio
 import copy
 
 import httpx
@@ -354,6 +355,173 @@ async def tp_rename_training_plan(plan_id: int | str, title: str) -> dict[str, A
             return _error("PROVIDER_DRIFT", "Training Plan metadata changed beyond the requested title.")
         return {"verified": True, "changed": True, "plan_id": pid,
                 "old_title": old_title, "title": title}
+
+
+async def tp_copy_training_plan(
+    plan_id: int | str,
+    title: str,
+) -> dict[str, Any]:
+    """Copy one Training Plan with the provider-native async copy command.
+
+    The mutation is never blindly retried. A missing/ambiguous POST response is
+    reconciled against the provider inventory by the exact requested title.
+    """
+    try:
+        pid = int(plan_id)
+    except (TypeError, ValueError):
+        return _error("VALIDATION_ERROR", "plan_id must be numeric.")
+    title = (title or "").strip()
+    if not title:
+        return _error("VALIDATION_ERROR", "title must not be empty.")
+    if len(title) > 100:
+        return _error("VALIDATION_ERROR", "title must be at most 100 characters.")
+
+    async with TPClient() as client:
+        plans_before, err = await _read_plans(client)
+        if err:
+            return err
+        source_row = next((p for p in plans_before if p.get("planId") == pid), None)
+        if source_row is None:
+            return _error("NOT_FOUND", f"Training Plan {pid} was not found.")
+        if any((p.get("title") or "").strip() == title for p in plans_before):
+            return _error("ALREADY_EXISTS", f"A Training Plan is already named {title!r}.")
+
+        source = await client.get(f"/plans/v1/plans/{pid}")
+        if source.is_error or not isinstance(source.data, dict):
+            return _error("NOT_FOUND", f"Training Plan {pid} details could not be read.")
+
+        payload = {"planId": pid, "title": title, "planData": source.data}
+        try:
+            response = await client._request(
+                "POST", "/plans/v1/commands/copyplan",
+                json=payload, _retry_on_401=False,
+            )
+        except Exception:
+            response = None
+
+        async def copied_row() -> dict[str, Any] | None:
+            rows, read_err = await _read_plans(client)
+            if read_err:
+                return None
+            matches = [p for p in rows if (p.get("title") or "").strip() == title]
+            if len(matches) != 1:
+                return None
+            return matches[0]
+
+        new_id: int | None = None
+        if response is not None and not response.is_error and isinstance(response.data, dict):
+            candidate = response.data.get("planId") or response.data.get("id")
+            if isinstance(candidate, int) and candidate > 0:
+                new_id = candidate
+        if new_id is None:
+            row = await copied_row()
+            if row is None:
+                return _error(
+                    "AMBIGUOUS_WRITE",
+                    "Training Plan copy outcome could not be reconciled; do not retry blindly.",
+                )
+            candidate = row.get("planId")
+            if isinstance(candidate, int) and candidate > 0:
+                new_id = candidate
+        if new_id is None or new_id == pid:
+            return _error("READBACK_FAILED", "Copied Training Plan ID was not trustworthy.")
+
+        status_seen: list[Any] = []
+        for _ in range(10):
+            status_response = await client.get(f"/plans/v1/plans/{new_id}/planCopyStatus")
+            if not status_response.is_error:
+                data = status_response.data
+                status = data.get("status") if isinstance(data, dict) else data
+                status_seen.append(status)
+                if status == 2:
+                    break
+            await asyncio.sleep(1)
+
+        copied = await client.get(f"/plans/v1/plans/{new_id}")
+        if copied.is_error or not isinstance(copied.data, dict):
+            return _error("READBACK_FAILED", "Copied Training Plan details could not be read.")
+        data = copied.data
+        if data.get("planId") != new_id or data.get("title") != title:
+            return _error("READBACK_FAILED", "Copied Training Plan identity/title mismatch.")
+        if data.get("weekCount") != source.data.get("weekCount"):
+            return _error("PROVIDER_DRIFT", "Copied Training Plan week count differs from source.")
+        if data.get("workoutCount") != source.data.get("workoutCount"):
+            return _error("PROVIDER_DRIFT", "Copied Training Plan workout count differs from source.")
+        if data.get("isPublic") is not False or data.get("price") not in (None, 0, 0.0):
+            return _error("PROVIDER_DRIFT", "Copied Training Plan is not private and unpriced.")
+
+        return {
+            "verified": True,
+            "source_plan_id": pid,
+            "plan_id": new_id,
+            "title": title,
+            "copy_status_seen": status_seen,
+            "route": "/plans/v1/commands/copyplan",
+            "status_route": "/plans/v1/plans/{plan_id}/planCopyStatus",
+        }
+
+
+async def tp_delete_training_plan(
+    plan_id: int | str,
+    expected_title: str,
+) -> dict[str, Any]:
+    """Delete one private, unpriced Training Plan after exact-title preflight.
+
+    Whole-plan detail GET can remain stale immediately after deletion on the
+    provider, so the authoritative readback is absence from /plans/v1/plans.
+    """
+    try:
+        pid = int(plan_id)
+    except (TypeError, ValueError):
+        return _error("VALIDATION_ERROR", "plan_id must be numeric.")
+    title = (expected_title or "").strip()
+    if not title:
+        return _error("VALIDATION_ERROR", "expected_title must not be empty.")
+
+    async with TPClient() as client:
+        before, err = await _read_plans(client)
+        if err:
+            return err
+        row = next((p for p in before if p.get("planId") == pid), None)
+        if row is None:
+            return {"verified": True, "deleted": False, "already_absent": True, "plan_id": pid}
+        if (row.get("title") or "").strip() != title:
+            return _error(
+                "PRECONDITION_FAILED",
+                "Training Plan title does not match expected_title; deletion blocked.",
+                actual_title=row.get("title"),
+            )
+        if row.get("isPublic") is not False:
+            return _error("FORBIDDEN", "Public Training Plans cannot be deleted by this generic tool.")
+        if row.get("price") not in (None, 0, 0.0):
+            return _error("FORBIDDEN", "Priced Training Plans cannot be deleted by this generic tool.")
+
+        try:
+            response = await client._request(
+                "DELETE", f"/plans/v1/plans/{pid}", _retry_on_401=False,
+            )
+        except Exception:
+            response = None
+
+        after, read_err = await _read_plans(client)
+        if read_err:
+            return _error(
+                "AMBIGUOUS_WRITE",
+                "Training Plan delete outcome could not be read back; do not retry blindly.",
+            )
+        survivor = next((p for p in after if p.get("planId") == pid), None)
+        if survivor is not None:
+            code = "AMBIGUOUS_WRITE" if response is None else "READBACK_FAILED"
+            return _error(code, "Training Plan still appears in provider inventory; do not retry blindly.")
+
+        return {
+            "verified": True,
+            "deleted": True,
+            "plan_id": pid,
+            "title": title,
+            "recovered_from_ambiguous_response": bool(response is None or response.is_error),
+            "route": "/plans/v1/plans/{plan_id}",
+        }
 
 
 async def tp_move_athletes_between_groups(
