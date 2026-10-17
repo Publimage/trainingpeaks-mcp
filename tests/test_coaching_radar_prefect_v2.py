@@ -30,15 +30,15 @@ def test_group_pipeline_is_read_only_and_sequential():
     assert "delete_workout" not in text
 
 
-def test_schedule_transition_is_daily_rome_0530():
+def test_final_schedule_is_group_active_pilot_inactive_daily_rome_0530():
     text = Path("prefect/ironman-coaching-radar-v2.yaml").read_text()
     assert text.count('cron: "30 5 * * *"') == 2
     assert text.count('timezone: "Europe/Rome"') == 2
-    assert "polverari-readonly-daily-v2" in text
-    assert "alberto-group-readonly-daily" in text
-    assert "active: true" in text
-    assert "active: false" in text
-    assert "2932097" in text
+    pilot = text.split("name: polverari-readonly-daily-v2", 1)[1].split("name: alberto-group-readonly-daily", 1)[0]
+    group = text.split("name: alberto-group-readonly-daily", 1)[1]
+    assert "active: false" in pilot
+    assert "active: true" in group
+    assert "2932097" in pilot
 
 
 def test_as_of_defaults_to_local_date():
