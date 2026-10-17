@@ -2,7 +2,7 @@
   "schema": "IRONMAN_INFRA_RUNTIME_STATE_V1",
   "purpose": "Small non-canonical execution/resume checkpoint for infrastructure work. Canonical decisions and workstream state remain in Google Drive IRONMAN — KNOWLEDGE BASE.",
   "workstream": "TrainingPeaks MCP / Prefect / Coaching Radar",
-  "updated_at_utc": "2026-10-17T13:12:00Z",
+  "updated_at_utc": "2026-10-17T15:42:00Z",
   "canonical_titles": [
     "00_IRONMAN_CORE_INDEX",
     "01_MASTER_COACHING_CONTEXT",
@@ -45,7 +45,10 @@
     "recovered_branch_head_with_resume_state": "b825cf04b672d42462a6441f3b33a4488498f06d",
     "code_revision_verified": "7f3dc46da8475e17196d909698e1886af91a5ac4",
     "preflight_added": true,
-    "preflight_script": "scripts/ironman_jobs/radar_drive_runtime_preflight_20261017.py"
+    "preflight_script": "scripts/ironman_jobs/radar_drive_runtime_preflight_20261017.py",
+    "credential_validator_revision": "7d635b885940571ff86538e6078b7cd7fbe82ffe",
+    "credential_validator_ci_run": 39036522724,
+    "credential_validator_ci_status": "COMPLETED_SUCCESS"
   },
   "kb_context_layer": {
     "source_gate": "SOURCE_READY",
@@ -69,7 +72,7 @@
     "Do not rerun a live write or deploy merely because chat delivery failed; verify provider/server state first.",
     "This file never overrides Google Drive canonical documents."
   ],
-  "next_safe_action": "Resolve a dedicated Google service-account identity for read-only Drive access. Before creating anything, search canonical Drive/GitHub for an existing approved Google Cloud project/service account. If none exists, create one with no broad IAM roles, generate a JSON key only for this reader, store it only at /var/lib/ironman-prefect/credentials/radar-drive-reader.json mode 0600, and share only the required IRONMAN Knowledge Base folder/docs as Viewer. Then rerun the preflight and metadata-only Drive canary.",
+  "next_safe_action": "On Prefect staging, generate a local RSA private key and X.509 v3 certificate. Keep the private key only on the server with mode 0600. Return only the public certificate text. Upload that public certificate to the dedicated service account, capture the Google key ID, then construct the local service-account JSON around the existing private key and validate it before any live Drive call.",
   "safety_constraints": {
     "google_drive_scope": "drive.readonly",
     "drive_writes": 0,
@@ -94,16 +97,17 @@
   "google_drive_root": {
     "title": "IRONMAN — KNOWLEDGE BASE",
     "folder_id": "1cC7aPJEXfGIQg54b2jd9XlqtgjOzZ3x2",
-    "current_user_can_share": true,
-    "shared": false,
-    "sharing_strategy": "Prefer a single Viewer share on the KB root folder once the dedicated service-account email exists, so inherited access covers current and future canonical docs. Do not broaden access beyond this dedicated identity."
+    "service_account_access": "VIEWER",
+    "link_sharing": "NOT_ENABLED",
+    "public": false
   },
   "google_cloud": {
-    "inspected_profile": "DigitalOcean IRONMAN browser profile",
-    "candidate_project_name": "Publimage varie",
-    "candidate_project_id": "publimage-varie",
-    "candidate_project_number": "570133601651",
-    "project_selection_reason": "Generic non-client project visible to the signed-in account; avoids reusing client-specific Google Cloud projects.",
-    "service_account_identity": "PENDING"
+    "project_name": "Publimage varie",
+    "project_id": "publimage-varie",
+    "project_number": "570133601651",
+    "drive_api": "ENABLED",
+    "service_account_email": "ironman-radar-drive-reader@publimage-varie.iam.gserviceaccount.com",
+    "service_account_project_roles": "NONE",
+    "service_account_key_status": "PENDING_PUBLIC_KEY_UPLOAD"
   }
 }
