@@ -35,14 +35,37 @@ async def main():
 
         folder_read=await c.get("/planfolder/v1/folder/all")
         if folder_read.is_error:
-            print(json.dumps({"stage":"FOLDERS","error":True,"status":getattr(folder_read,"status_code",None),"writes":0}),flush=True)
+            print(json.dumps({"stage":"FOLDERS","error":True,
+                              "status":getattr(folder_read,"status_code",None),
+                              "message":str(folder_read.message)[:200],
+                              "writes":0}),flush=True)
         else:
-            folders=folder_read.data if isinstance(folder_read.data,list) else []
-            print(json.dumps({"stage":"FOLDERS","error":False,"count":len(folders),
-                              "folders":[{"folderId":x.get("folderId"),"title":x.get("title"),
-                                          "planIds":x.get("planIds"),"keys":sorted(x)}
-                                         for x in folders if isinstance(x,dict)],
-                              "writes":0},ensure_ascii=False),flush=True)
+            raw=folder_read.data
+            envelope={"stage":"FOLDERS","error":False,
+                      "data_type":type(raw).__name__,"shape":shape(raw),"writes":0}
+            if isinstance(raw,list):
+                envelope["folders"]=[{"folderId":x.get("folderId"),"title":x.get("title"),
+                                      "planIds":x.get("planIds"),"keys":sorted(x)}
+                                     for x in raw if isinstance(x,dict)]
+            elif isinstance(raw,dict):
+                envelope["top_keys"]=sorted(raw)
+                envelope["scalar_fields"]={k:v for k,v in raw.items()
+                                             if not isinstance(v,(dict,list))
+                                             and not re.search(r"(email|token|cookie|secret|password)",str(k),re.I)}
+                envelope["collections"]={}
+                for k,v in raw.items():
+                    if isinstance(v,list):
+                        envelope["collections"][k]={
+                            "count":len(v),
+                            "rows":[{"folderId":x.get("folderId"),"title":x.get("title"),
+                                     "planIds":x.get("planIds"),"keys":sorted(x)}
+                                    for x in v[:50] if isinstance(x,dict)]
+                        }
+                    elif isinstance(v,dict):
+                        envelope["collections"][k]={"type":"dict","keys":sorted(v)}
+            else:
+                envelope["repr"]=str(raw)[:500]
+            print(json.dumps(envelope,ensure_ascii=False),flush=True)
 
         for endpoint in ("/plans/v1/plans","/plans/v1/plansWithAccess"):
             r=await c.get(endpoint)
