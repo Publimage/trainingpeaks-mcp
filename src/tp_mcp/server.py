@@ -69,6 +69,7 @@ from tp_mcp.tools import (
     tp_get_atp,
     tp_get_availability,
     tp_get_coaching_radar,
+    tp_publish_public_asset,
     tp_get_equipment,
     tp_get_events,
     tp_get_fitness,
@@ -639,6 +640,33 @@ TOOLS = [
                 "athlete_id": {"type": "string", "description": "TrainingPeaks athlete ID"}
             },
             "required": ["athlete_id"],
+        },
+    ),
+    Tool(
+        name="tp_publish_public_asset",
+        description=(
+            "Publish one approved IRONMAN image asset to the configured DigitalOcean Space. "
+            "Accepts only allowlisted temporary HTTPS source hosts and safe versioned object prefixes. "
+            "Never overwrites different existing bytes; performs public hash readback after upload."
+        ),
+        input_schema={
+            "type": "object",
+            "properties": {
+                "source_url": {
+                    "type": "string",
+                    "description": "Temporary HTTPS URL for the approved image bytes.",
+                },
+                "object_key": {
+                    "type": "string",
+                    "description": "Versioned object path under brand/, trainingpeaks/, shared/, or web/.",
+                },
+                "content_type": {
+                    "type": "string",
+                    "enum": ["image/png", "image/jpeg", "image/webp"],
+                    "default": "image/png",
+                },
+            },
+            "required": ["source_url", "object_key"],
         },
     ),
     # --- Fitness & Summary ---
@@ -1832,6 +1860,7 @@ TOOLS = [
 _ATHLETE_EXEMPT_TOOLS = {
     "tp_auth_status", "tp_refresh_auth", "tp_validate_structure",
     "tp_list_athletes", "tp_get_workout_types",
+    "tp_publish_public_asset",
     # Coach-scoped — enumerates methods under the caller's own user, not an athlete.
     "tp_get_zone_methods",
     # Offline exercise-library search — not athlete-scoped.
@@ -1941,7 +1970,7 @@ _NON_IDEMPOTENT_WRITES = {
 # an action destination. Per OpenAI's MCP annotation guidance, this is a
 # closed-world workspace even though the API is hosted outside the Mac.
 # For a future open-ended/web/public publishing tool, add it explicitly here.
-_OPEN_WORLD_TOOLS: set[str] = set()
+_OPEN_WORLD_TOOLS: set[str] = {"tp_publish_public_asset"}
 
 _TITLE_ACRONYMS = {"atp": "ATP", "ftp": "FTP", "hr": "HR", "prs": "PRs"}
 _TITLE_OVERRIDES = {
@@ -2223,6 +2252,14 @@ async def _h_delete_strength(args):
 @_handler("tp_get_coaching_radar")
 async def _h_get_coaching_radar(args):
     return await tp_get_coaching_radar(athlete_id=args["athlete_id"])
+
+@_handler("tp_publish_public_asset")
+async def _h_publish_public_asset(args):
+    return await tp_publish_public_asset(
+        source_url=args["source_url"],
+        object_key=args["object_key"],
+        content_type=args.get("content_type", "image/png"),
+    )
 
 # --- Fitness & Summary ---
 @_handler("tp_get_fitness")
