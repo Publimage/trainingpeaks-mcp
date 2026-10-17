@@ -4,8 +4,8 @@ P=Path(__file__).resolve().parents[1]/"scripts/ironman_jobs/workout_library_orga
 def test_public_readonly():
     s=P.read_text();ast.parse(s)
     assert "https://app.trainingpeaks.com/" in s
-    assert "workoutLibrary" in s
-    assert "/rx/activity/v1/" in s
+    assert "MOVE_WORKOUT_TO_LIBRARY" in s
+    assert "ActivityWorkoutTemplate" in s
     for bad in ("TPClient","Authorization","Bearer ","h.post(","h.put(","h.delete("):
         assert bad not in s
     assert '"provider_writes":0' in s
