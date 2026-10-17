@@ -2,7 +2,7 @@
   "schema": "IRONMAN_INFRA_RUNTIME_STATE_V1",
   "purpose": "Small non-canonical execution/resume checkpoint for infrastructure work. Canonical decisions and workstream state remain in Google Drive IRONMAN — KNOWLEDGE BASE.",
   "workstream": "TrainingPeaks MCP / Prefect / Coaching Radar",
-  "updated_at_utc": "2026-10-17T12:06:00Z",
+  "updated_at_utc": "2026-10-17T13:02:00Z",
   "canonical_titles": [
     "00_IRONMAN_CORE_INDEX",
     "01_MASTER_COACHING_CONTEXT",
@@ -69,7 +69,7 @@
     "Do not rerun a live write or deploy merely because chat delivery failed; verify provider/server state first.",
     "This file never overrides Google Drive canonical documents."
   ],
-  "next_safe_action": "Run the read-only Prefect staging preflight at verified code revision 7f3dc46da8475e17196d909698e1886af91a5ac4. It must only inspect local Drive-reader dependency, private source config and service-account credential presence/permissions; no Drive API call, provider write, service restart or Radar deployment change.",
+  "next_safe_action": "Prepare the isolated Google Auth runtime and the private 0600 Radar source-map file on Prefect staging, then rerun the read-only preflight. Do not create/replace credentials yet and do not alter the live Radar V2 deployment. Expected next preflight: google_auth_dependency=READY, sources=READY with source_roster_count=10, credentials=MISSING.",
   "safety_constraints": {
     "google_drive_scope": "drive.readonly",
     "drive_writes": 0,
@@ -77,5 +77,16 @@
     "ai_calls": 0,
     "no_public_drive_document_ids_or_credentials_in_repo": true,
     "no_service_restart_for_drive_reader_prepare": true
+  },
+  "prefect_drive_preflight": {
+    "checked_at_local": "2026-10-17T15:01:00+02:00",
+    "checkout_revision": "7f3dc46da8475e17196d909698e1886af91a5ac4",
+    "credentials": "MISSING",
+    "google_auth_dependency": "MISSING",
+    "private_sources": "MISSING",
+    "ready_for_live_canary": false,
+    "drive_writes": 0,
+    "trainingpeaks_writes": 0,
+    "ai_calls": 0
   }
 }
