@@ -1,10 +1,11 @@
-"""READ ONLY: inspect public current UI around calls to apiProxy.moveWorkoutToLibrary."""
+"""READ ONLY: trace current frontend native ActivityWorkoutTemplate library item formatting."""
 from __future__ import annotations
 import asyncio,json,re
 from urllib.parse import urljoin,urlparse
 import httpx
 BASE="https://app.trainingpeaks.com/"
-TERMS=("apiProxy.moveWorkoutToLibrary","moveWorkoutToLibrary(e","moveWorkoutToLibrary(")
+TERMS=("getAllActivitiesForLibrary","getActivityFromLibrary","ActivityWorkoutTemplate",
+       "exerciseLibraryItemId","workoutLibraryItemType","copyBetweenFolders")
 def trusted(url):
     h=(urlparse(url).hostname or "").lower()
     return h=="app.trainingpeaks.com" or h.endswith(".trainingpeaks.com")
@@ -22,22 +23,24 @@ async def main()->int:
                     if r.status_code!=200 or len(r.content)>14000000:return []
                     src=r.text;rows=[]
                     for term in TERMS:
-                        for m in list(re.finditer(re.escape(term),src))[:30]:
-                            a,b=max(0,m.start()-7000),min(len(src),m.end()+9000)
-                            rows.append({"asset":urlparse(url).path,"term":term,"offset":m.start(),
-                                         "context":src[a:b].replace("\n"," ").replace("\r"," ")[:16000]})
+                        for m in list(re.finditer(re.escape(term),src,re.I))[:24]:
+                            a,b=max(0,m.start()-5200),min(len(src),m.end()+7600)
+                            ctx=src[a:b].replace("\n"," ").replace("\r"," ")
+                            if ("getAllActivitiesForLibrary" in ctx or "copyBetweenFolders" in ctx) and (
+                                "exerciseLibraryItemId" in ctx or "ActivityWorkoutTemplate" in ctx):
+                                rows.append({"asset":urlparse(url).path,"term":term,"offset":m.start(),"context":ctx[:12600]})
                     return rows
                 except Exception:return []
         chunks=await asyncio.gather(*(inspect(u) for u in urls))
         rows=[x for ch in chunks for x in ch]
         seen=set();out=[]
         for x in rows:
-            key=(x["asset"],x["offset"]//100)
+            key=(x["asset"],x["offset"]//300)
             if key in seen:continue
             seen.add(key);out.append(x)
         print(json.dumps({"stage":"SUMMARY","hits":len(out),"writes":0}),flush=True)
-        for row in out[:10]:
-            print(json.dumps({"stage":"CALL_CONTEXT",**row,"writes":0},ensure_ascii=False),flush=True)
+        for row in out[:14]:
+            print(json.dumps({"stage":"NATIVE_FORMAT_CONTEXT",**row,"writes":0},ensure_ascii=False),flush=True)
         print(json.dumps({"stage":"COMPLETE","provider_writes":0}),flush=True)
         return 0
 if __name__=="__main__":
