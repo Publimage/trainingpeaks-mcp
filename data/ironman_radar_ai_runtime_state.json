@@ -1,9 +1,9 @@
 {
   "schema": "IRONMAN_RADAR_AI_RUNTIME_STATE_V1",
-  "updated_at_utc": "2026-10-17T18:50:00Z",
+  "updated_at_utc": "2026-10-17T18:55:00Z",
   "workstream": "Coaching Radar AI contextual interpretation",
   "current_gate": "AI_2_SELECTIVE_CONTEXT_COMPILER",
-  "status": "CI_PASS_LIVE_CANARY_PENDING",
+  "status": "PASS",
   "live_radar_changed": false,
   "paid_ai_provider_connected": false,
   "ai_calls": 0,
@@ -29,7 +29,15 @@
     "evaluation_validator": "scripts/ironman_jobs/validate_coaching_radar_ai_context_eval_cases_v1.py",
     "live_canary": "scripts/ironman_jobs/coaching_radar_ai_context_live_canary_20261017.py",
     "frozen_eval_as_of": "2026-10-17",
-    "frozen_case_count": 10
+    "frozen_case_count": 10,
+    "ai2_live_canary": {
+      "revision": "1e774be97e3ebfae931f639526fd3b8c31e74c99",
+      "as_of": "2026-10-17",
+      "athlete_count": 10,
+      "exit_code": 0,
+      "final_marker": "RADAR_AI_SELECTIVE_CONTEXT_LIVE_CANARY_PASS",
+      "worktree_cleanup": "PASS"
+    }
   },
   "guardrails": [
     "coach is final decision maker",
@@ -41,5 +49,5 @@
     "uncertainty required",
     "absence of data is not positive evidence"
   ],
-  "next_safe_action": "Run the AI-2 live read-only canary on Prefect staging pinned to code revision 1e774be97e3ebfae931f639526fd3b8c31e74c99 against report_2026-10-17.json for all 10 athletes and the frozen evidence-hash case manifest. Expected marker: RADAR_AI_SELECTIVE_CONTEXT_LIVE_CANARY_PASS. No AI/provider calls and no writes."
+  "next_safe_action": "AI-3: build provider-neutral review-quality benchmark and deterministic scorer over the same frozen 10-case evidence snapshot. No model/provider call yet."
 }
