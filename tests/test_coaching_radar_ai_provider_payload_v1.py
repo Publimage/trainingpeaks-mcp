@@ -55,7 +55,7 @@ def _case():
                 "source_version": "999",
                 "section_heading": "Profilo Massimiliano Polverari",
                 "matched_terms": ["rpe"],
-                "excerpt": "Massimiliano Polverari\nTrainingPeaks ID: 2932097\nEmail max@example.com\nTelefono +39 333 123 4567",
+                "excerpt": "Massimiliano Polverari\nMassimiliano\nPolverari\nTrainingPeaks ID: 2932097\nEmail max@example.com\nTelefono +39 333 123 4567\nLink https://example.com/private",
                 "excerpt_sha256": "d" * 64,
             }],
         },
@@ -72,6 +72,8 @@ def test_provider_payload_removes_direct_identifiers_and_private_metadata():
     payload = _payload()
     text = json.dumps(payload, ensure_ascii=False).lower()
     assert "massimiliano polverari" not in text
+    assert "massimiliano" not in text
+    assert "polverari" not in text
     assert "2932097" not in text
     assert "private-drive-id" not in text
     assert '"document_id"' not in text
@@ -79,6 +81,7 @@ def test_provider_payload_removes_direct_identifiers_and_private_metadata():
     assert '"athlete_id"' not in text
     assert "max@example.com" not in text
     assert "333 123 4567" not in text
+    assert "https://example.com/private" not in text
     assert "12345" not in text
     assert "67890" not in text
     assert payload["radar"]["data_quality"]["missing_rpe_workout_count"] == 2
@@ -87,6 +90,8 @@ def test_provider_payload_removes_direct_identifiers_and_private_metadata():
     assert "<athlete_id>" in text
     assert "<email>" in text
     assert "<phone>" in text
+    assert "<url>" in text
+    assert "<athlete_name_part>" in text
 
 
 def test_provider_payload_strips_workout_ids_and_source_titles():
