@@ -15,12 +15,23 @@ def _roster(path: Path):
     }))
 
 
+def _case(athlete_id, categories, data_quality, expected_topics, *, status="YELLOW"):
+    return {
+        "athlete_id": athlete_id,
+        "categories": categories,
+        "data_quality": data_quality,
+        "expected_topics": expected_topics,
+        "radar_evidence_sha256": ("%064x" % athlete_id)[-64:],
+        "radar_status": status,
+    }
+
+
 def _cases(path: Path):
     path.write_text(json.dumps({
         "schema": "IRONMAN_RADAR_AI_CONTEXT_EVAL_CASES_V1",
         "cases": [
-            {"athlete_id": 1, "categories": ["TSS_DATA_QUALITY"], "data_quality": ["WELLNESS_PRESENT"], "expected_topics": ["TSS"]},
-            {"athlete_id": 2, "categories": [], "data_quality": ["MISSING_RPE"], "expected_topics": ["feedback"]},
+            _case(1, ["TSS_DATA_QUALITY"], ["WELLNESS_PRESENT"], ["TSS"]),
+            _case(2, [], ["MISSING_RPE"], ["feedback"], status="GREEN"),
         ],
         "trainingpeaks_writes": 0,
         "drive_writes": 0,
@@ -46,7 +57,7 @@ def test_eval_case_manifest_fails_missing_athlete(tmp_path):
     _roster(roster)
     raw = {
         "schema": "IRONMAN_RADAR_AI_CONTEXT_EVAL_CASES_V1",
-        "cases": [{"athlete_id": 1, "categories": [], "data_quality": ["MISSING_RPE"], "expected_topics": ["feedback"]}],
+        "cases": [_case(1, [], ["MISSING_RPE"], ["feedback"])],
         "trainingpeaks_writes": 0,
         "drive_writes": 0,
         "ai_calls": 0,
@@ -63,8 +74,8 @@ def test_eval_case_manifest_rejects_unsupported_category(tmp_path):
     raw = {
         "schema": "IRONMAN_RADAR_AI_CONTEXT_EVAL_CASES_V1",
         "cases": [
-            {"athlete_id": 1, "categories": ["UNKNOWN"], "data_quality": ["WELLNESS_PRESENT"], "expected_topics": ["x"]},
-            {"athlete_id": 2, "categories": [], "data_quality": ["MISSING_RPE"], "expected_topics": ["feedback"]},
+            _case(1, ["UNKNOWN"], ["WELLNESS_PRESENT"], ["x"]),
+            _case(2, [], ["MISSING_RPE"], ["feedback"]),
         ],
         "trainingpeaks_writes": 0,
         "drive_writes": 0,
@@ -99,8 +110,8 @@ def test_eval_case_manifest_rejects_unsupported_data_quality(tmp_path):
     raw = {
         "schema": "IRONMAN_RADAR_AI_CONTEXT_EVAL_CASES_V1",
         "cases": [
-            {"athlete_id": 1, "categories": [], "data_quality": ["UNKNOWN_FLAG"], "expected_topics": ["x"]},
-            {"athlete_id": 2, "categories": [], "data_quality": ["MISSING_RPE"], "expected_topics": ["feedback"]},
+            _case(1, [], ["UNKNOWN_FLAG"], ["x"]),
+            _case(2, [], ["MISSING_RPE"], ["feedback"]),
         ],
         "trainingpeaks_writes": 0,
         "drive_writes": 0,
