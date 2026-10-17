@@ -53,6 +53,11 @@ def validate_cases(path: Path, roster_path: Path = ROSTER) -> dict:
         for flag in flags:
             if flag not in DATA_QUALITY_FLAG_TERMS:
                 unsupported_data_quality.add(str(flag))
+        evidence = str(item.get("radar_evidence_sha256") or "")
+        if len(evidence) != 64 or any(ch not in "0123456789abcdef" for ch in evidence):
+            raise ValueError("AI_CONTEXT_EVAL_EVIDENCE_SHA_INVALID")
+        if item.get("radar_status") not in {"GREEN", "YELLOW"}:
+            raise ValueError("AI_CONTEXT_EVAL_RADAR_STATUS_INVALID")
         if not isinstance(item.get("expected_topics"), list) or not item["expected_topics"]:
             raise ValueError("AI_CONTEXT_EVAL_EXPECTED_TOPICS_MISSING")
 
