@@ -1770,6 +1770,14 @@
       "scope": "trainingpeaks:training-plan-library:folder-get-candidates:read",
       "script": "scripts/ironman_jobs/training_plan_folder_get_candidates_20261017.py",
       "test": "tests/test_training_plan_folder_get_candidates_20261017.py"
+    },
+    {
+      "name": "training_plan_folder_options_discovery_20261017",
+      "mode": "READ_ONLY",
+      "owner_id": 2116886,
+      "scope": "trainingpeaks:training-plan-library:folder-options:read",
+      "script": "scripts/ironman_jobs/training_plan_folder_options_discovery_20261017.py",
+      "test": "tests/test_training_plan_folder_options_discovery_20261017.py"
     }
   ]
 }
