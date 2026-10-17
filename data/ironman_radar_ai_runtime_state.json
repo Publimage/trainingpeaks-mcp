@@ -1,9 +1,9 @@
 {
   "schema": "IRONMAN_RADAR_AI_RUNTIME_STATE_V1",
-  "updated_at_utc": "2026-10-17T19:02:00Z",
+  "updated_at_utc": "2026-10-17T19:08:00Z",
   "workstream": "Coaching Radar AI contextual interpretation",
   "current_gate": "AI_3_PROVIDER_NEUTRAL_REVIEW_BENCHMARK",
-  "status": "CI_PASS_PRIVATE_MATERIALIZATION_PENDING",
+  "status": "PASS",
   "live_radar_changed": false,
   "paid_ai_provider_connected": false,
   "ai_calls": 0,
@@ -56,6 +56,17 @@
       "coach_restraint_points": 10,
       "pass_threshold": 85,
       "forbidden_behavior_is_hard_fail": true
+    },
+    "ai3_private_benchmark": {
+      "as_of": "2026-10-17",
+      "case_count": 10,
+      "gate": "PASS",
+      "manifest_sha256": "736790f2919ab98a55c48051f564402e983c1dad1fb396b7b6b1e15d087e484f",
+      "private_path": "/var/lib/ironman-prefect/ai-benchmark/2026-10-17-v1",
+      "trainingpeaks_writes": 0,
+      "drive_writes": 0,
+      "ai_calls": 0,
+      "worktree_cleanup": "PASS"
     }
   },
   "guardrails": [
@@ -68,5 +79,5 @@
     "uncertainty required",
     "absence of data is not positive evidence"
   ],
-  "next_safe_action": "Materialize the private reproducible AI-3 benchmark pack on Prefect staging at a dedicated 0700 directory from the frozen 2026-10-17 Radar evidence snapshot and canonical Drive context. Then record the manifest SHA and case hashes. Still no AI provider/model call."
+  "next_safe_action": "AI-4 provider/model selection: compare current official pricing, privacy/data-retention controls, structured-output reliability and API availability for candidate providers. Do not activate or purchase any provider yet. Use the frozen private benchmark only after provider approval."
 }
