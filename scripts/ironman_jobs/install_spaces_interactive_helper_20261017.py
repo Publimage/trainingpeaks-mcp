@@ -103,10 +103,20 @@ def main() -> int:
     access_key = getpass.getpass("Spaces access key ID (input hidden): ").strip()
     secret_key = getpass.getpass("Spaces secret access key (input hidden): ").strip()
 
+    id_shape = {
+        "length": len(access_key),
+        "ascii": access_key.isascii(),
+        "alnum": access_key.isalnum(),
+        "starts_do": access_key.startswith("DO"),
+    }
     ok, reason = validate_pair(access_key, secret_key)
     if not ok:
         print("SPACES_CREDENTIAL_SETUP_REJECTED")
-        print(json.dumps({"reason": reason, "existing_config_preserved": TARGET.exists()}, sort_keys=True))
+        print(json.dumps({
+            "reason": reason,
+            "existing_config_preserved": TARGET.exists(),
+            "access_key_id_shape": id_shape,
+        }, sort_keys=True))
         return 2
 
     TARGET.parent.mkdir(parents=True, exist_ok=True)
