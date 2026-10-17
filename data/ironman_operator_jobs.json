@@ -1970,6 +1970,14 @@
       "scope": "trainingpeaks:disposable-whole-plan-lifecycle:source-684484:create-delete-copy-cleanup",
       "script": "scripts/ironman_jobs/whole_training_plan_lifecycle_canary_20261017.py",
       "test": "tests/test_whole_training_plan_lifecycle_canary_20261017.py"
+    },
+    {
+      "name": "whole_training_plan_copy_canary_v2_20261017",
+      "mode": "GUARDED_WRITE",
+      "owner_id": 2116886,
+      "scope": "trainingpeaks:disposable-whole-plan-copy:source-684484:copy-verify-delete",
+      "script": "scripts/ironman_jobs/whole_training_plan_copy_canary_v2_20261017.py",
+      "test": "tests/test_whole_training_plan_copy_canary_v2_20261017.py"
     }
   ]
 }
