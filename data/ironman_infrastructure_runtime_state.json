@@ -2,7 +2,7 @@
   "schema": "IRONMAN_INFRA_RUNTIME_STATE_V1",
   "purpose": "Small non-canonical execution/resume checkpoint for infrastructure work. Canonical decisions and workstream state remain in Google Drive IRONMAN — KNOWLEDGE BASE.",
   "workstream": "TrainingPeaks MCP / Prefect / Coaching Radar",
-  "updated_at_utc": "2026-10-17T12:02:00Z",
+  "updated_at_utc": "2026-10-17T12:06:00Z",
   "canonical_titles": [
     "00_IRONMAN_CORE_INDEX",
     "01_MASTER_COACHING_CONTEXT",
@@ -40,9 +40,12 @@
     "failure": "CI test_bundle_requires_all_canonical_roles_and_specialist_and_passes_gate failed with KB_ATHLETE_CARD_PROVIDER_ID_MISMATCH because the Athlete Card binding regex double-escaped whitespace and word-boundary tokens.",
     "working_revision": "69e2e032f9d3211de18636586052537ae1844688",
     "working_change": "Correct Athlete Card TrainingPeaks ID regex to use real regex whitespace and word-boundary tokens.",
-    "ci_run_id": 39030754914,
+    "ci_run_id": 39031060648,
     "ci_status": "COMPLETED_SUCCESS",
-    "recovered_branch_head_with_resume_state": "b825cf04b672d42462a6441f3b33a4488498f06d"
+    "recovered_branch_head_with_resume_state": "b825cf04b672d42462a6441f3b33a4488498f06d",
+    "code_revision_verified": "7f3dc46da8475e17196d909698e1886af91a5ac4",
+    "preflight_added": true,
+    "preflight_script": "scripts/ironman_jobs/radar_drive_runtime_preflight_20261017.py"
   },
   "kb_context_layer": {
     "source_gate": "SOURCE_READY",
@@ -66,7 +69,7 @@
     "Do not rerun a live write or deploy merely because chat delivery failed; verify provider/server state first.",
     "This file never overrides Google Drive canonical documents."
   ],
-  "next_safe_action": "Prefect live gate: inspect whether /opt/ironman-prefect/drive-reader and /var/lib/ironman-prefect/credentials already contain a prior runtime/config. If absent, install the isolated read-only Drive reader runtime and materialize the private source map locally with mode 0600. Service-account credentials with Viewer/read-only access are still required before the live Drive canary; do not alter the verified Radar V2 deployment.",
+  "next_safe_action": "Run the read-only Prefect staging preflight at verified code revision 7f3dc46da8475e17196d909698e1886af91a5ac4. It must only inspect local Drive-reader dependency, private source config and service-account credential presence/permissions; no Drive API call, provider write, service restart or Radar deployment change.",
   "safety_constraints": {
     "google_drive_scope": "drive.readonly",
     "drive_writes": 0,
