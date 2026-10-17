@@ -1634,6 +1634,14 @@
       "scope": "server:ironman-tp-mcp:install-local-hidden-input-spaces-credential-helper",
       "script": "scripts/ironman_jobs/install_spaces_interactive_helper_20261017.py",
       "test": "tests/test_install_spaces_interactive_helper_20261017.py"
+    },
+    {
+      "name": "spaces_signed_auth_diagnostic_20261017",
+      "mode": "READ_ONLY",
+      "owner_id": 2116886,
+      "scope": "digitalocean:spaces:ironman-assets:signed-auth-readonly-diagnostic",
+      "script": "scripts/ironman_jobs/spaces_signed_auth_diagnostic_20261017.py",
+      "test": "tests/test_spaces_signed_auth_diagnostic_20261017.py"
     }
   ]
 }
