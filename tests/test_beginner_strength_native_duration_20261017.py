@@ -12,3 +12,12 @@ def test_beginner_strength_duration_job_is_bounded():
     assert "scrub(after) == scrub(before)" in code
     assert "h.delete(" not in code
     assert "tp_update_workout" not in code
+
+
+def test_job_has_executable_entrypoint_and_recovery_guard():
+    code = Path("scripts/ironman_jobs/beginner_strength_native_duration_20261017.py").read_text()
+    assert "import re" in code
+    assert 'if __name__ == "__main__":' in code
+    assert "asyncio.run(main())" in code
+    assert "EXPECTED_MINUTES_DRIFT_" in code
+    assert 'source = "native_title_duration_labels"' in code
