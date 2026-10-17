@@ -24,7 +24,7 @@ async def go():
         plans=await c.get("/plans/v1/plans")
         must(not plans.is_error and isinstance(plans.data,list),"PLAN_LIST_FAIL")
         must(not any(x.get("planId")!=PLAN and (x.get("title") or "").casefold()==NEW_TITLE.casefold() for x in plans.data),"TITLE_COLLISION")
-        for k in ("author","planEmail","planLanguage"):
+        for k in ("author","planEmail"):
             must(p.get(k) not in (None,""),"PLAN_METADATA_MISSING:"+k)
         baseline={k:v for k,v in p.items() if k not in ("title","description")}
         if p.get("title")==NEW_TITLE and p.get("description")==HTML:
@@ -32,7 +32,7 @@ async def go():
             return 0
         put=await c._request("PUT",f"/plans/v1/plans/{PLAN}",
             json={"planId":PLAN,"title":NEW_TITLE,"description":HTML,
-                  "author":p["author"],"planEmail":p["planEmail"],"planLanguage":p["planLanguage"]},
+                  "author":p["author"],"planEmail":p["planEmail"]},
             _retry_on_401=False)
         if put.is_error:
             print("STOP_WRITE_RESULT_UNCLEAR",put.error_code,str(put.message)[:120],flush=True)
