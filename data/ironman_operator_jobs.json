@@ -1626,6 +1626,14 @@
       "scope": "server:ironman-tp-mcp:spaces-config-path-metadata-read",
       "script": "scripts/ironman_jobs/spaces_config_path_inventory_20261017.py",
       "test": "tests/test_spaces_config_path_inventory_20261017.py"
+    },
+    {
+      "name": "install_spaces_interactive_helper_20261017",
+      "mode": "GUARDED_WRITE",
+      "owner_id": 2116886,
+      "scope": "server:ironman-tp-mcp:install-local-hidden-input-spaces-credential-helper",
+      "script": "scripts/ironman_jobs/install_spaces_interactive_helper_20261017.py",
+      "test": "tests/test_install_spaces_interactive_helper_20261017.py"
     }
   ]
 }
