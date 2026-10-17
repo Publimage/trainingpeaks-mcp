@@ -76,8 +76,11 @@ def test_provider_payload_strips_workout_ids_and_source_titles():
     assert "workout_id" not in payload["radar"]["upcoming"][0]
     excerpt = payload["context"]["excerpts"][0]
     assert set(excerpt) == {
-        "source_role", "section_heading", "matched_terms", "excerpt", "excerpt_sha256"
+        "source_role", "section_heading", "matched_terms", "excerpt",
+        "source_excerpt_sha256", "provider_excerpt_sha256"
     }
+    assert excerpt["source_excerpt_sha256"] == "d" * 64
+    assert excerpt["provider_excerpt_sha256"] != excerpt["source_excerpt_sha256"]
     assert excerpt["source_role"] == "athlete_card"
 
 
