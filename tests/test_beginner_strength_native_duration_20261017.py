@@ -9,7 +9,7 @@ def test_beginner_strength_duration_job_is_bounded():
     assert "beginner679801_strength_builder_20261016_before.json" in code
     assert 'payload["prescribedDurationInSeconds"] = target' in code
     assert "/rx/activity/v1/plans/{PLAN}/workouts/save" in code
-    assert "scrub(after) == scrub(before)" in code
+    assert "semantic(after) == semantic(before)" in code
     assert "h.delete(" not in code
     assert "tp_update_workout" not in code
 
@@ -43,3 +43,12 @@ def test_historical_duration_guards():
     assert 'title == "Forza | Attivazione 15-20\'"' in code
     assert "minutes = 18" in code
     assert "weekly_expected = [50,50,60,50,60,60,60,50,55,55,50,20,45,45,25,20,25,25,20,20,20,18,12,0]" in code
+
+
+def test_semantic_guard_checks_strength_content():
+    code = Path("scripts/ironman_jobs/beginner_strength_native_duration_20261017.py").read_text()
+    assert "def semantic(w):" in code
+    assert '"blockType": b.get("blockType")' in code
+    assert '"exercise": {' in code
+    assert '"prescribedValue"' in code
+    assert '"totalSets"' in code
