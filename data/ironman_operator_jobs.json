@@ -1527,7 +1527,7 @@
       "name": "beginner_strength_native_duration_20261017",
       "mode": "GUARDED_WRITE",
       "owner_id": 2116886,
-      "scope": "trainingpeaks:public-plan:679801:set-prescribed-duration-on-36-native-structuredstrength-from-pre-migration-backup-only",
+      "scope": "trainingpeaks:public-plan:679801:set-prescribed-duration-on-36-native-structuredstrength-from-verified-classic-duration-evidence-only",
       "script": "scripts/ironman_jobs/beginner_strength_native_duration_20261017.py",
       "test": "tests/test_beginner_strength_native_duration_20261017.py"
     }
