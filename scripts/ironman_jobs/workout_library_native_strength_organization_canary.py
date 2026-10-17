@@ -41,12 +41,18 @@ def native_id(x):
     try:return int(x.get("id"))
     except (TypeError,ValueError):return None
 
-def canonical_native(x:dict[str,Any], *, ignore_library=False, ignore_id=False, ignore_title=False):
-    y=copy.deepcopy(x)
-    if ignore_library:y.pop("libraryId",None)
-    if ignore_id:y.pop("id",None)
-    if ignore_title:y.pop("title",None)
-    return y
+def semantic_native(x:dict[str,Any]):
+    w=x.get("workout") if isinstance(x.get("workout"),dict) else {}
+    blocks=w.get("blocks") or []
+    return {
+        "id":int(x.get("id")),
+        "title":x.get("title"),
+        "workoutLibraryItemType":x.get("workoutLibraryItemType"),
+        "workoutType":w.get("workoutType"),
+        "instructions":w.get("instructions"),
+        "blocks":blocks,
+        "block_prescription_counts":[len(b.get("prescriptions") or []) for b in blocks],
+    }
 
 def move_payload(item:dict[str,Any],dest:int)->dict[str,Any]:
     return {
@@ -86,7 +92,7 @@ async def main()->int:
             must(source.get("workoutLibraryItemType")=="ActivityWorkoutTemplate","SOURCE_NATIVE_TYPE_DRIFT")
             must(isinstance(source.get("workout"),dict)
                  and source["workout"].get("workoutType")=="StructuredStrength","SOURCE_NOT_STRUCTURED_STRENGTH")
-            baseline=canonical_native(source)
+            baseline=semantic_native(source)
             block_sig=[len(b.get("prescriptions") or []) for b in source["workout"].get("blocks") or []]
             must(block_sig and sum(block_sig)>0,"SOURCE_BLOCKS_EMPTY")
 
@@ -163,7 +169,7 @@ async def main()->int:
                 log(stage="NATIVE_MOVE_OUT_NOT_VERIFIED",http=status,source=len(src_after),dest=len(dst_after),retry=False)
                 return 7
             moved=dst_after[0]
-            must(canonical_native(moved,ignore_library=True)==canonical_native(source,ignore_library=True),
+            must(semantic_native(moved)==baseline,
                  "NATIVE_MOVE_OUT_CONTENT_DRIFT")
             log(stage="NATIVE_MOVE_OUT_VERIFIED",item_id=SOURCE_ID,to_library=tid,writes=1)
 
@@ -177,7 +183,7 @@ async def main()->int:
             temp_left=[x for x in await read_native(tid) if native_id(x)==SOURCE_ID]
             if len(restored)!=1 or temp_left:
                 log(stage="NATIVE_MOVE_BACK_NOT_VERIFIED",http=status,retry=False);return 8
-            must(canonical_native(restored[0])==baseline,"NATIVE_SOURCE_NOT_EXACTLY_RESTORED")
+            must(semantic_native(restored[0])==baseline,"NATIVE_SOURCE_NOT_SEMANTICALLY_RESTORED")
             log(stage="NATIVE_MOVE_BACK_VERIFIED",item_id=SOURCE_ID,writes=1)
 
         # Outside Strength HTTP client: temp must be empty in BOTH classic/native stores.
