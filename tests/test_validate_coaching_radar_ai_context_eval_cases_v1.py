@@ -73,3 +73,20 @@ def test_eval_case_manifest_rejects_unsupported_category(tmp_path):
     cases.write_text(json.dumps(raw))
     with pytest.raises(ValueError, match="AI_CONTEXT_EVAL_UNSUPPORTED_CATEGORY"):
         validate_cases(cases, roster)
+
+
+def test_committed_live_snapshot_covers_current_active_roster():
+    out = validate_cases(
+        Path("data/coaching_radar_ai_context_eval_cases_v1.json"),
+        Path("data/coaching_radar_alberto_group_v1.json"),
+    )
+    assert out["gate"] == "PASS"
+    assert out["case_count"] == 10
+    assert out["active_roster_count"] == 10
+    assert out["zero_alert_cases"] == 1
+    assert out["category_counts"] == {
+        "COMPLETION_UNCONFIRMED": 6,
+        "DURATION_SHORT": 1,
+        "IF_DATA_QUALITY": 4,
+        "TSS_DATA_QUALITY": 3,
+    }
