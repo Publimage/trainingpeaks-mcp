@@ -147,3 +147,20 @@ def test_provider_payload_rejects_wrong_taxonomy_schema():
             output_schema={"type": "object"},
             behavior_taxonomy={"schema": "WRONG"},
         )
+
+
+def test_provider_payload_redacts_other_roster_identity_from_global_context():
+    case = _case()
+    case["selective_context"]["excerpts"][0]["excerpt"] += "\nCesare Bertuccelli TrainingPeaks ID: 6133559"
+    payload = build_provider_payload(
+        case,
+        output_schema={"type": "object"},
+        behavior_taxonomy=_taxonomy(),
+        additional_private_bindings=[
+            {"athlete_name": "Cesare Bertuccelli", "athlete_id": 6133559},
+        ],
+    )
+    text = json.dumps(payload, ensure_ascii=False).lower()
+    assert "cesare" not in text
+    assert "bertuccelli" not in text
+    assert "6133559" not in text
