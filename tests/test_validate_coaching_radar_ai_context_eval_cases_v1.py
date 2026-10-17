@@ -1,0 +1,75 @@
+import json
+from pathlib import Path
+
+import pytest
+
+from scripts.ironman_jobs.validate_coaching_radar_ai_context_eval_cases_v1 import validate_cases
+
+
+def _roster(path: Path):
+    path.write_text(json.dumps({
+        "athletes": [
+            {"athlete_id": 1, "name": "A", "enabled": True},
+            {"athlete_id": 2, "name": "B", "enabled": True},
+        ]
+    }))
+
+
+def _cases(path: Path):
+    path.write_text(json.dumps({
+        "schema": "IRONMAN_RADAR_AI_CONTEXT_EVAL_CASES_V1",
+        "cases": [
+            {"athlete_id": 1, "categories": ["TSS_DATA_QUALITY"], "expected_topics": ["TSS"]},
+            {"athlete_id": 2, "categories": [], "expected_topics": ["feedback"]},
+        ],
+        "trainingpeaks_writes": 0,
+        "drive_writes": 0,
+        "ai_calls": 0,
+    }))
+
+
+def test_eval_case_manifest_passes_complete_roster(tmp_path):
+    roster = tmp_path / "roster.json"
+    cases = tmp_path / "cases.json"
+    _roster(roster)
+    _cases(cases)
+    out = validate_cases(cases, roster)
+    assert out["gate"] == "PASS"
+    assert out["case_count"] == 2
+    assert out["zero_alert_cases"] == 1
+    assert out["category_counts"] == {"TSS_DATA_QUALITY": 1}
+
+
+def test_eval_case_manifest_fails_missing_athlete(tmp_path):
+    roster = tmp_path / "roster.json"
+    cases = tmp_path / "cases.json"
+    _roster(roster)
+    raw = {
+        "schema": "IRONMAN_RADAR_AI_CONTEXT_EVAL_CASES_V1",
+        "cases": [{"athlete_id": 1, "categories": [], "expected_topics": ["feedback"]}],
+        "trainingpeaks_writes": 0,
+        "drive_writes": 0,
+        "ai_calls": 0,
+    }
+    cases.write_text(json.dumps(raw))
+    with pytest.raises(ValueError, match="AI_CONTEXT_EVAL_ROSTER_INCOMPLETE"):
+        validate_cases(cases, roster)
+
+
+def test_eval_case_manifest_rejects_unsupported_category(tmp_path):
+    roster = tmp_path / "roster.json"
+    cases = tmp_path / "cases.json"
+    _roster(roster)
+    raw = {
+        "schema": "IRONMAN_RADAR_AI_CONTEXT_EVAL_CASES_V1",
+        "cases": [
+            {"athlete_id": 1, "categories": ["UNKNOWN"], "expected_topics": ["x"]},
+            {"athlete_id": 2, "categories": [], "expected_topics": ["feedback"]},
+        ],
+        "trainingpeaks_writes": 0,
+        "drive_writes": 0,
+        "ai_calls": 0,
+    }
+    cases.write_text(json.dumps(raw))
+    with pytest.raises(ValueError, match="AI_CONTEXT_EVAL_UNSUPPORTED_CATEGORY"):
+        validate_cases(cases, roster)
