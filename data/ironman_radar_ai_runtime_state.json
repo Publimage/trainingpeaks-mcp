@@ -1,9 +1,9 @@
 {
   "schema": "IRONMAN_RADAR_AI_RUNTIME_STATE_V1",
-  "updated_at_utc": "2026-10-17T19:15:00Z",
+  "updated_at_utc": "2026-10-17T19:20:00Z",
   "workstream": "Coaching Radar AI contextual interpretation",
   "current_gate": "AI_4_PROVIDER_SELECTION_AND_PRIVACY",
-  "status": "PRIVACY_PAYLOAD_CI_IN_PROGRESS",
+  "status": "PRIVACY_CODE_CI_PASS_PAYLOAD_MATERIALIZATION_PENDING",
   "live_radar_changed": false,
   "paid_ai_provider_connected": false,
   "ai_calls": 0,
@@ -76,8 +76,14 @@
     "ai4_payload_materializer": "scripts/ironman_jobs/materialize_coaching_radar_ai_provider_payloads_v1.py",
     "ai4_cost_estimator": "scripts/ironman_jobs/estimate_coaching_radar_ai_provider_costs_v1.py",
     "ai4_ci_revision": "d75daf84284ce6775df1bb29aac8eb3da3da4f51",
-    "ai4_ci_run_id": 39061299402,
-    "ai4_ci_status": "IN_PROGRESS"
+    "ai4_ci_run_id": 39061836123,
+    "ai4_ci_status": "COMPLETED_SUCCESS",
+    "ai4_tested_revision": "a0e87c59df01b21e779efca4a299ea08d31e2f3c",
+    "ai4_behavior_taxonomy": "data/coaching_radar_ai_behavior_taxonomy_v1.json",
+    "ai4_provider_payload": "scripts/ironman_jobs/coaching_radar_ai_provider_payload_v1.py",
+    "ai4_provider_payload_materializer": "scripts/ironman_jobs/materialize_coaching_radar_ai_provider_payloads_v1.py",
+    "ai4_provider_review_reconciler": "scripts/ironman_jobs/reconcile_coaching_radar_ai_provider_review_v1.py",
+    "ai4_candidate_matrix": "data/coaching_radar_ai_provider_candidates_v1.json"
   },
   "guardrails": [
     "coach is final decision maker",
@@ -89,24 +95,35 @@
     "uncertainty required",
     "absence of data is not positive evidence"
   ],
-  "next_safe_action": "Wait for CI run 39061299402. If green, materialize the privacy-minimized provider payload pack locally on Prefect staging and read only summary.json to obtain exact size estimates. Then calculate candidate benchmark/daily/monthly costs. Do not activate any provider/API account yet.",
+  "next_safe_action": "Pin Prefect isolated worktree to a0e87c59df01b21e779efca4a299ea08d31e2f3c and materialize privacy-minimized provider payloads from /var/lib/ironman-prefect/ai-benchmark/2026-10-17-v1 into a new private 0700 directory. Read only summary.json token-size bounds. No provider/API call or paid activation.",
   "privacy_gate": {
+    "status": "CODE_CI_PASS",
     "direct_identifiers_removed": [
-      "athlete_name",
-      "TrainingPeaks athlete_id",
-      "workout_id",
-      "Google Drive document_id",
-      "email",
-      "phone",
+      "all active-roster athlete names and name parts",
+      "TrainingPeaks athlete IDs",
+      "workout IDs and ID lists",
+      "Google Drive document IDs",
+      "email addresses",
+      "phone numbers",
+      "URLs",
       "server paths"
     ],
     "provider_identity": "pseudonymous case_ref",
-    "data_quality_identifier_lists": "converted_to_counts",
-    "excerpt_audit": "separate source_excerpt_sha256 and provider_excerpt_sha256",
+    "benchmark_gold_labels": "SERVER_SIDE_ONLY_NOT_SENT_TO_PROVIDER",
+    "behavior_taxonomy": "FULL_PUBLIC_TAXONOMY_ONLY",
+    "provider_response_reconciliation": "SERVER_SIDE_CASE_REF_TO_PRIVATE_CASE",
+    "excerpt_audit": "source_excerpt_sha256 plus provider_excerpt_sha256",
     "no_free_tier_for_athlete_data": true,
     "no_web_search": true,
     "no_external_tools": true,
     "no_provider_file_uploads": true,
-    "provider_activation_authorized": false
+    "paid_provider_activation_authorized": false
+  },
+  "ci_recovery": {
+    "incident": "Literal backslash-n in workflow paths made YAML invalid and stopped new runs.",
+    "recovery": "Read workflow source, replace literal escape with real newline, add concurrency cancel-in-progress for obsolete PR runs.",
+    "final_ci_revision": "a0e87c59df01b21e779efca4a299ea08d31e2f3c",
+    "final_ci_run_id": 39061836123,
+    "final_ci_result": "SUCCESS"
   }
 }
