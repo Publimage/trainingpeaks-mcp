@@ -13,6 +13,12 @@ from datetime import datetime, timezone
 from typing import Any
 from urllib.parse import quote
 
+from scripts.ironman_jobs.coaching_radar_kb_context_v0 import (
+    REQUIRED_ROLES,
+    SOURCE_OF_TRUTH,
+    validate_kb_context_manifest,
+)
+
 DRIVE_READONLY_SCOPE = "https://www.googleapis.com/auth/drive.readonly"
 GOOGLE_DOC_MIME = "application/vnd.google-apps.document"
 EXPORT_MIME = "text/markdown"
@@ -102,3 +108,57 @@ def service_account_session(credentials_file: str):
         scopes=[DRIVE_READONLY_SCOPE],
     )
     return AuthorizedSession(credentials)
+
+
+def build_context_bundle(
+    reader: GoogleDriveContextReader,
+    *,
+    athlete_id: int,
+    documents: dict[str, ContextDocumentSpec],
+    specialist_documents: list[ContextDocumentSpec],
+    now_utc: datetime | None = None,
+    max_age_hours: float = 24.0,
+) -> dict[str, Any]:
+    """Read current canonical docs, validate manifest, and return a private in-memory bundle."""
+    missing = [role for role in REQUIRED_ROLES if role not in documents]
+    if missing:
+        raise ValueError("KB_CONTEXT_SPEC_ROLE_MISSING:" + ",".join(missing))
+    if not specialist_documents:
+        raise ValueError("KB_CONTEXT_SPECIALIST_SPEC_MISSING")
+
+    entries: dict[str, dict[str, Any]] = {}
+    contents: dict[str, str] = {}
+    for role in REQUIRED_ROLES:
+        spec = documents[role]
+        if spec.role != role:
+            raise ValueError(f"KB_CONTEXT_SPEC_ROLE_MISMATCH:{role}")
+        entry, content = reader.read_document(spec)
+        entries[role] = entry
+        contents[role] = content
+
+    specialist_entries: list[dict[str, Any]] = []
+    for index, spec in enumerate(specialist_documents):
+        entry, content = reader.read_document(spec)
+        specialist_entries.append(entry)
+        contents[f"specialist:{index}"] = content
+
+    generated_at = (now_utc or datetime.now(timezone.utc)).astimezone(timezone.utc)
+    manifest = {
+        "schema": "IRONMAN_KB_CONTEXT_MANIFEST_V1",
+        "source_of_truth": SOURCE_OF_TRUTH,
+        "athlete_id": int(athlete_id),
+        "generated_at_utc": generated_at.isoformat(),
+        "documents": entries,
+        "specialist_documents": specialist_entries,
+    }
+    validation = validate_kb_context_manifest(
+        manifest,
+        athlete_id=athlete_id,
+        now_utc=generated_at,
+        max_age_hours=max_age_hours,
+    )
+    return {
+        "manifest": manifest,
+        "validation": validation,
+        "contents": contents,
+    }
