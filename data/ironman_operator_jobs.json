@@ -1826,6 +1826,14 @@
       "scope": "trainingpeaks:coach:2116886:training-plan-organization-metadata:read",
       "script": "scripts/ironman_jobs/training_plan_organization_metadata_readonly.py",
       "test": "tests/test_training_plan_organization_metadata_readonly.py"
+    },
+    {
+      "name": "image_runtime_capability_inventory_20261017",
+      "mode": "READ_ONLY",
+      "owner_id": 2116886,
+      "scope": "server:ironman-tp-mcp:image-runtime-capability-read",
+      "script": "scripts/ironman_jobs/image_runtime_capability_inventory_20261017.py",
+      "test": "tests/test_image_runtime_capability_inventory_20261017.py"
     }
   ]
 }
