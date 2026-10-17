@@ -1586,6 +1586,14 @@
       "scope": "trainingpeaks:private-plan:685173:start-note:2664007:three-guide-pdf-postflight-read",
       "script": "scripts/ironman_jobs/chasing_readme_pdf_postflight_20261017.py",
       "test": "tests/test_chasing_readme_pdf_postflight_20261017.py"
+    },
+    {
+      "name": "public_asset_catalog_audit_20261017",
+      "mode": "READ_ONLY",
+      "owner_id": 2116886,
+      "scope": "server:ironman-tp-mcp:public-asset-publisher-catalog-read",
+      "script": "scripts/ironman_jobs/public_asset_catalog_audit_20261017.py",
+      "test": "tests/test_public_assets_20261017.py"
     }
   ]
 }
