@@ -1,0 +1,110 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "IRONMAN Radar AI Provider Review V1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "mode",
+    "case_ref",
+    "as_of",
+    "attention",
+    "behavior_codes",
+    "observations",
+    "questions_for_coach",
+    "trainingpeaks_writes",
+    "drive_writes",
+    "workout_mutations",
+    "published"
+  ],
+  "properties": {
+    "schema": {
+      "type": "string",
+      "enum": [
+        "IRONMAN_RADAR_AI_PROVIDER_REVIEW_V1"
+      ]
+    },
+    "mode": {
+      "type": "string",
+      "enum": [
+        "SHADOW_READ_ONLY"
+      ]
+    },
+    "case_ref": {
+      "type": "string"
+    },
+    "as_of": {
+      "type": "string"
+    },
+    "attention": {
+      "type": "string",
+      "enum": [
+        "NO_REVIEW",
+        "COACH_REVIEW",
+        "PRIORITY_REVIEW"
+      ]
+    },
+    "behavior_codes": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "observations": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "observation",
+          "evidence_refs",
+          "uncertainty"
+        ],
+        "properties": {
+          "observation": {
+            "type": "string"
+          },
+          "evidence_refs": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "uncertainty": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "questions_for_coach": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "trainingpeaks_writes": {
+      "type": "integer",
+      "enum": [
+        0
+      ]
+    },
+    "drive_writes": {
+      "type": "integer",
+      "enum": [
+        0
+      ]
+    },
+    "workout_mutations": {
+      "type": "boolean",
+      "enum": [
+        false
+      ]
+    },
+    "published": {
+      "type": "boolean",
+      "enum": [
+        false
+      ]
+    }
+  }
+}
