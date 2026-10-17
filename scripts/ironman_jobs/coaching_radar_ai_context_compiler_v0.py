@@ -76,6 +76,12 @@ DATA_ABSENCE_TERMS = (
     "non equivale",
 )
 
+DATA_QUALITY_FLAG_TERMS = {
+    "MISSING_RPE": ("rpe", "feedback", "mancante", "missing", "assenza"),
+    "WELLNESS_MISSING": ("wellness", "feedback", "assenza", "mancante", "missing", "non equivale"),
+    "WELLNESS_PRESENT": (),
+}
+
 ROLE_BASE_WEIGHT = {
     "athlete_card": 7,
     "master_coaching_context": 5,
@@ -334,6 +340,7 @@ def evaluate_compiled_context(
     expected_categories: list[str],
     expected_role_families: list[str],
     max_chars: int,
+    expected_data_quality_flags: list[str] | None = None,
 ) -> dict[str, Any]:
     if compiled.get("schema") != SCHEMA:
         raise ValueError("CONTEXT_EVAL_SCHEMA_MISMATCH")
@@ -360,6 +367,14 @@ def evaluate_compiled_context(
         if candidates and not any(_norm(term) in matched_terms for term in candidates):
             category_routing_misses[category] = list(candidates)
 
+    data_quality_routing_misses = {}
+    for flag in expected_data_quality_flags or []:
+        candidates = DATA_QUALITY_FLAG_TERMS.get(flag)
+        if candidates is None:
+            data_quality_routing_misses[flag] = ["UNSUPPORTED_FLAG"]
+        elif candidates and not any(_norm(term) in matched_terms for term in candidates):
+            data_quality_routing_misses[flag] = list(candidates)
+
     chars = int(compiled.get("selected_char_count") or 0)
     duplicate_text_count = len(excerpts) - len({x["excerpt_sha256"] for x in excerpts})
 
@@ -367,6 +382,7 @@ def evaluate_compiled_context(
         not missing_categories
         and not missing_roles
         and not category_routing_misses
+        and not data_quality_routing_misses
         and chars <= max_chars
         and compiled.get("trainingpeaks_writes") == 0
         and compiled.get("drive_writes") == 0
@@ -378,6 +394,7 @@ def evaluate_compiled_context(
         "missing_categories": missing_categories,
         "missing_role_families": missing_roles,
         "category_routing_misses": category_routing_misses,
+        "data_quality_routing_misses": data_quality_routing_misses,
         "matched_terms": sorted(matched_terms),
         "selected_char_count": chars,
         "max_chars": max_chars,
