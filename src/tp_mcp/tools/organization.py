@@ -17,8 +17,12 @@ here because the TP UI contract deletes every plan inside the folder.
 from __future__ import annotations
 
 from typing import Any
+import copy
+
+import httpx
 
 from tp_mcp.client import TPClient
+from tp_mcp.tools.strength import _access, _headers, STRENGTH_API_BASE
 
 _PLAN_FOLDER_LIST = "/planfolder/v1/folder/all"
 _PLAN_FOLDER_CREATE = "/planfolder/v1/folder"
@@ -448,3 +452,595 @@ async def tp_move_athletes_between_groups(
         return {"verified": True, "athlete_ids": ids,
                 "from_group_id": source_id, "to_group_id": dest_id,
                 "added_to_destination": added_now, "removed_from_source": removed}
+
+
+# ---------------------------------------------------------------------------
+# Workout Library organization
+# ---------------------------------------------------------------------------
+
+_CLASSIC_LIBS = "/exerciselibrary/v2/libraries"
+_CLASSIC_ITEMS_READ = "/exerciselibrary/v2/libraries/{library_id}/items"
+_CLASSIC_LIBRARY_NAME = "/exerciselibrary/v1/libraries/{library_id}/name"
+_CLASSIC_ITEM = "/exerciselibrary/v1/libraries/{library_id}/items/{item_id}"
+_CLASSIC_ITEMS_CREATE = "/exerciselibrary/v1/libraries/{library_id}/items"
+
+_NATIVE_READ = "/rx/activity/v1/libraryContent/workoutLibrary/{library_id}"
+_NATIVE_COPY = "/rx/activity/v1/LibraryContent/workoutLibrary/items/copy"
+_NATIVE_SAVE = "/rx/activity/v1/libraryContent/workoutLibrary/save"
+_NATIVE_DELETE = "/rx/activity/v1/libraryContent/workoutLibrary/items/{item_id}"
+
+
+def _library_id(row: dict[str, Any]) -> int | None:
+    value = row.get("exerciseLibraryId", row.get("id"))
+    try:
+        return int(value)
+    except (TypeError, ValueError):
+        return None
+
+
+def _classic_item_id(row: dict[str, Any]) -> int | None:
+    value = row.get("exerciseLibraryItemId", row.get("id"))
+    try:
+        return int(value)
+    except (TypeError, ValueError):
+        return None
+
+
+def _native_item_id(row: dict[str, Any]) -> int | None:
+    try:
+        return int(row.get("id"))
+    except (TypeError, ValueError):
+        return None
+
+
+def _native_items(raw: Any) -> list[dict[str, Any]]:
+    data = raw.get("data") if isinstance(raw, dict) else raw
+    return [x for x in data if isinstance(x, dict)] if isinstance(data, list) else []
+
+
+def _native_semantic(item: dict[str, Any]) -> dict[str, Any]:
+    workout = item.get("workout") if isinstance(item.get("workout"), dict) else {}
+    blocks = workout.get("blocks") or []
+    return {
+        "id": _native_item_id(item),
+        "title": item.get("title"),
+        "workoutLibraryItemType": item.get("workoutLibraryItemType"),
+        "workoutType": workout.get("workoutType"),
+        "instructions": workout.get("instructions"),
+        "blocks": blocks,
+        "block_prescription_counts": [
+            len(block.get("prescriptions") or [])
+            for block in blocks
+            if isinstance(block, dict)
+        ],
+    }
+
+
+async def _read_library_inventory(
+    client: TPClient,
+) -> tuple[list[dict[str, Any]] | None, dict[str, Any] | None]:
+    response = await client.get(_CLASSIC_LIBS)
+    if response.is_error or not isinstance(response.data, list):
+        return None, _error("API_ERROR", "Could not read Workout Libraries.")
+    return [x for x in response.data if isinstance(x, dict)], None
+
+
+def _owned_library(
+    libraries: list[dict[str, Any]],
+    library_id: int,
+    owner_id: int,
+) -> dict[str, Any] | None:
+    return next(
+        (
+            x for x in libraries
+            if _library_id(x) == library_id
+            and x.get("ownerId") == owner_id
+            and not x.get("isDefaultContent", False)
+        ),
+        None,
+    )
+
+
+async def _read_classic_items(
+    client: TPClient,
+    library_id: int,
+) -> tuple[list[dict[str, Any]] | None, dict[str, Any] | None]:
+    response = await client.get(_CLASSIC_ITEMS_READ.format(library_id=library_id))
+    if response.is_error or not isinstance(response.data, list):
+        return None, _error("API_ERROR", f"Could not read Workout Library {library_id}.")
+    return [x for x in response.data if isinstance(x, dict)], None
+
+
+async def tp_rename_library(library_id: int | str, name: str) -> dict[str, Any]:
+    """Rename one coach-owned Workout Library with provider readback."""
+    try:
+        lid = int(library_id)
+    except (TypeError, ValueError):
+        return _error("VALIDATION_ERROR", "library_id must be numeric.")
+    name = (name or "").strip()
+    if not name:
+        return _error("VALIDATION_ERROR", "Library name must not be empty.")
+
+    async with TPClient() as client:
+        user = await client._get_user_data()
+        if not user or not user.get("personId"):
+            return _error("AUTH_INVALID", "Could not resolve coach account.")
+        owner = int(user["personId"])
+        libraries, err = await _read_library_inventory(client)
+        if err:
+            return err
+        source = _owned_library(libraries, lid, owner)
+        if source is None:
+            return _error("FORBIDDEN_OR_NOT_FOUND", "Library is not a mutable coach-owned library.")
+        old = str(source.get("libraryName") or "")
+        if old == name:
+            return {"verified": True, "changed": False, "library_id": lid, "name": name}
+        if any(
+            x.get("ownerId") == owner
+            and _library_id(x) != lid
+            and str(x.get("libraryName") or "") == name
+            for x in libraries
+        ):
+            return _error("ALREADY_EXISTS", f"Another coach-owned library is already named {name!r}.")
+
+        try:
+            response = await client._request(
+                "PUT",
+                _CLASSIC_LIBRARY_NAME.format(library_id=lid),
+                json={"value": name},
+                _retry_on_401=False,
+            )
+        except Exception:
+            response = None
+
+        after, read_err = await _read_library_inventory(client)
+        if read_err:
+            return _error("AMBIGUOUS_WRITE", "Library rename outcome could not be read back; do not retry blindly.")
+        updated = next((x for x in after if _library_id(x) == lid), None)
+        if updated is None or str(updated.get("libraryName") or "") != name:
+            return _error(
+                "AMBIGUOUS_WRITE" if response is None else "READBACK_FAILED",
+                "Library rename was not verified; do not retry blindly.",
+            )
+        return {"verified": True, "changed": True, "library_id": lid, "old_name": old, "name": name}
+
+
+async def _native_session(
+    client: TPClient,
+) -> tuple[httpx.AsyncClient | None, dict[str, str] | None, dict[str, Any] | None]:
+    _, token, error = await _access(client)
+    if error or not token:
+        return None, None, _error("AUTH_INVALID", "Could not authenticate the native Strength library service.")
+    http = httpx.AsyncClient(timeout=25, follow_redirects=False)
+    return http, _headers(token), None
+
+
+async def _read_native_items_http(
+    http: httpx.AsyncClient,
+    headers: dict[str, str],
+    library_id: int,
+) -> tuple[list[dict[str, Any]] | None, dict[str, Any] | None]:
+    try:
+        response = await http.get(
+            STRENGTH_API_BASE + _NATIVE_READ.format(library_id=library_id),
+            headers=headers,
+        )
+    except httpx.RequestError:
+        return None, _error("NETWORK_ERROR", f"Could not read native Strength library {library_id}.")
+    if response.status_code != 200:
+        return None, _error(
+            "API_ERROR",
+            f"Native Strength library read failed with HTTP {response.status_code}.",
+        )
+    try:
+        return _native_items(response.json()), None
+    except ValueError:
+        return None, _error("API_ERROR", "Native Strength library returned invalid JSON.")
+
+
+async def _resolve_library_item(
+    client: TPClient,
+    http: httpx.AsyncClient,
+    headers: dict[str, str],
+    library_id: int,
+    item_id: int,
+) -> tuple[str | None, dict[str, Any] | None, dict[str, Any] | None]:
+    classic, err = await _read_classic_items(client, library_id)
+    if err:
+        return None, None, err
+    classic_matches = [x for x in classic if _classic_item_id(x) == item_id]
+
+    native, native_err = await _read_native_items_http(http, headers, library_id)
+    if native_err:
+        return None, None, native_err
+    native_matches = [x for x in native if _native_item_id(x) == item_id]
+
+    if classic_matches and native_matches:
+        return None, None, _error("PROVIDER_DRIFT", f"Item {item_id} appears as both classic and native.")
+    if len(classic_matches) == 1:
+        return "classic", classic_matches[0], None
+    if len(native_matches) == 1:
+        return "native_strength", native_matches[0], None
+    if len(classic_matches) > 1 or len(native_matches) > 1:
+        return None, None, _error("PROVIDER_DRIFT", f"Item {item_id} is duplicated in library {library_id}.")
+    return None, None, _error("NOT_FOUND", f"Item {item_id} was not found in library {library_id}.")
+
+
+def _classic_copy_payload(
+    source: dict[str, Any],
+    destination_library_id: int,
+    title: str,
+) -> dict[str, Any]:
+    payload = copy.deepcopy(source)
+    payload.pop("exerciseLibraryItemId", None)
+    payload.pop("id", None)
+    payload["exerciseLibraryId"] = destination_library_id
+    if "itemName" in payload or "title" not in payload:
+        payload["itemName"] = title
+    if "title" in payload:
+        payload["title"] = title
+    return payload
+
+
+def _classic_move_payload(
+    source: dict[str, Any],
+    destination_library_id: int,
+) -> dict[str, Any]:
+    payload = copy.deepcopy(source)
+    payload["exerciseLibraryId"] = destination_library_id
+    return payload
+
+
+def _classic_semantic(
+    item: dict[str, Any],
+    *,
+    ignore_library: bool = False,
+    ignore_id: bool = False,
+    ignore_title: bool = False,
+) -> dict[str, Any]:
+    value = copy.deepcopy(item)
+    for key in ("loaded", "shared", "selected", "expanded"):
+        value.pop(key, None)
+    if ignore_library:
+        value.pop("exerciseLibraryId", None)
+    if ignore_id:
+        value.pop("exerciseLibraryItemId", None)
+        value.pop("id", None)
+    if ignore_title:
+        value.pop("itemName", None)
+        value.pop("title", None)
+    return value
+
+
+async def tp_copy_library_items(
+    source_library_id: int | str,
+    to_library_id: int | str,
+    item_ids: list[int],
+) -> dict[str, Any]:
+    """Copy classic or native StructuredStrength templates between coach-owned libraries.
+
+    Item type is discovered provider-side. Classic items use the classic
+    exerciselibrary POST; ActivityWorkoutTemplate/StructuredStrength uses the
+    native Activity Builder copy endpoint. Existing title collisions fail
+    closed to keep retries idempotent.
+    """
+    try:
+        source_id = int(source_library_id)
+        destination_id = int(to_library_id)
+        ids = [int(x) for x in item_ids]
+    except (TypeError, ValueError):
+        return _error("VALIDATION_ERROR", "Library and item IDs must be numeric.")
+    ids = list(dict.fromkeys(ids))
+    if not ids:
+        return _error("VALIDATION_ERROR", "item_ids must be non-empty.")
+    if source_id == destination_id:
+        return _error("VALIDATION_ERROR", "Source and destination libraries must differ.")
+
+    async with TPClient() as client:
+        user = await client._get_user_data()
+        if not user or not user.get("personId"):
+            return _error("AUTH_INVALID", "Could not resolve coach account.")
+        owner = int(user["personId"])
+        libraries, err = await _read_library_inventory(client)
+        if err:
+            return err
+        if _owned_library(libraries, source_id, owner) is None or _owned_library(libraries, destination_id, owner) is None:
+            return _error("FORBIDDEN_OR_NOT_FOUND", "Both libraries must be mutable coach-owned libraries.")
+
+        http, headers, native_err = await _native_session(client)
+        if native_err or http is None or headers is None:
+            return native_err or _error("AUTH_INVALID", "Native library session unavailable.")
+        results: list[dict[str, Any]] = []
+        try:
+            for iid in ids:
+                kind, source, resolve_err = await _resolve_library_item(
+                    client, http, headers, source_id, iid
+                )
+                if resolve_err or source is None or kind is None:
+                    return resolve_err or _error("NOT_FOUND", f"Item {iid} not found.")
+
+                if kind == "classic":
+                    title = str(source.get("itemName") or source.get("title") or "")
+                    destination_items, read_err = await _read_classic_items(client, destination_id)
+                    if read_err:
+                        return read_err
+                    collisions = [x for x in destination_items if str(x.get("itemName") or x.get("title") or "") == title]
+                    if collisions:
+                        return _error("ALREADY_EXISTS", f"Destination already contains a classic item titled {title!r}.")
+                    payload = _classic_copy_payload(source, destination_id, title)
+                    try:
+                        response = await client._request(
+                            "POST",
+                            _CLASSIC_ITEMS_CREATE.format(library_id=destination_id),
+                            json=payload,
+                            _retry_on_401=False,
+                        )
+                    except Exception:
+                        response = None
+                    after, rb_err = await _read_classic_items(client, destination_id)
+                    if rb_err:
+                        return _error("AMBIGUOUS_WRITE", "Classic copy readback failed; do not retry blindly.")
+                    matches = [x for x in after if str(x.get("itemName") or x.get("title") or "") == title]
+                    if len(matches) != 1:
+                        return _error(
+                            "AMBIGUOUS_WRITE" if response is None else "READBACK_FAILED",
+                            f"Classic copy of item {iid} was not uniquely verified; do not retry blindly.",
+                        )
+                    copied = matches[0]
+                    if _classic_semantic(copied, ignore_library=True, ignore_id=True, ignore_title=True) != _classic_semantic(
+                        source, ignore_library=True, ignore_id=True, ignore_title=True
+                    ):
+                        return _error("PROVIDER_DRIFT", f"Classic copy of item {iid} changed workout content.")
+                    results.append({
+                        "source_item_id": iid,
+                        "copied_item_id": _classic_item_id(copied),
+                        "kind": kind,
+                        "verified": True,
+                    })
+                else:
+                    title = str(source.get("title") or "")
+                    destination_items, rb_err = await _read_native_items_http(http, headers, destination_id)
+                    if rb_err:
+                        return rb_err
+                    if any(str(x.get("title") or "") == title for x in destination_items):
+                        return _error("ALREADY_EXISTS", f"Destination already contains a native item titled {title!r}.")
+                    try:
+                        response = await http.post(
+                            STRENGTH_API_BASE + _NATIVE_COPY,
+                            json={
+                                "libraryId": destination_id,
+                                "workoutLibraryItemId": iid,
+                                "title": title,
+                            },
+                            headers=headers,
+                        )
+                    except httpx.RequestError:
+                        response = None
+                    after, rb_err = await _read_native_items_http(http, headers, destination_id)
+                    if rb_err:
+                        return _error("AMBIGUOUS_WRITE", "Native copy readback failed; do not retry blindly.")
+                    matches = [x for x in after if str(x.get("title") or "") == title]
+                    if len(matches) != 1:
+                        return _error(
+                            "AMBIGUOUS_WRITE" if response is None else "READBACK_FAILED",
+                            f"Native copy of item {iid} was not uniquely verified; do not retry blindly.",
+                        )
+                    copied = matches[0]
+                    source_sem = _native_semantic(source)
+                    copied_sem = _native_semantic(copied)
+                    for key in ("id", "title"):
+                        source_sem.pop(key, None)
+                        copied_sem.pop(key, None)
+                    if copied_sem != source_sem:
+                        return _error("PROVIDER_DRIFT", f"Native StructuredStrength copy of item {iid} changed prescribed structure.")
+                    results.append({
+                        "source_item_id": iid,
+                        "copied_item_id": _native_item_id(copied),
+                        "kind": kind,
+                        "verified": True,
+                    })
+            return {
+                "verified": True,
+                "source_library_id": source_id,
+                "destination_library_id": destination_id,
+                "items": results,
+            }
+        finally:
+            await http.aclose()
+
+
+async def tp_move_library_items(
+    source_library_id: int | str,
+    to_library_id: int | str,
+    item_ids: list[int],
+) -> dict[str, Any]:
+    """Move classic or native StructuredStrength templates without recreating them."""
+    try:
+        source_id = int(source_library_id)
+        destination_id = int(to_library_id)
+        ids = [int(x) for x in item_ids]
+    except (TypeError, ValueError):
+        return _error("VALIDATION_ERROR", "Library and item IDs must be numeric.")
+    ids = list(dict.fromkeys(ids))
+    if not ids:
+        return _error("VALIDATION_ERROR", "item_ids must be non-empty.")
+    if source_id == destination_id:
+        return {"verified": True, "moved": [], "no_op_item_ids": ids}
+
+    async with TPClient() as client:
+        user = await client._get_user_data()
+        if not user or not user.get("personId"):
+            return _error("AUTH_INVALID", "Could not resolve coach account.")
+        owner = int(user["personId"])
+        libraries, err = await _read_library_inventory(client)
+        if err:
+            return err
+        if _owned_library(libraries, source_id, owner) is None or _owned_library(libraries, destination_id, owner) is None:
+            return _error("FORBIDDEN_OR_NOT_FOUND", "Both libraries must be mutable coach-owned libraries.")
+
+        http, headers, native_err = await _native_session(client)
+        if native_err or http is None or headers is None:
+            return native_err or _error("AUTH_INVALID", "Native library session unavailable.")
+        moved: list[dict[str, Any]] = []
+        try:
+            for iid in ids:
+                kind, source, resolve_err = await _resolve_library_item(
+                    client, http, headers, source_id, iid
+                )
+                if resolve_err or source is None or kind is None:
+                    # Idempotent retry support: if no longer in source but already
+                    # exists with same ID in destination, treat it as verified no-op.
+                    dest_kind, dest_item, _ = await _resolve_library_item(
+                        client, http, headers, destination_id, iid
+                    )
+                    if dest_item is not None and dest_kind is not None:
+                        moved.append({"item_id": iid, "kind": dest_kind, "verified": True, "already_moved": True})
+                        continue
+                    return resolve_err or _error("NOT_FOUND", f"Item {iid} not found.")
+
+                if kind == "classic":
+                    baseline = _classic_semantic(source, ignore_library=True)
+                    payload = _classic_move_payload(source, destination_id)
+                    try:
+                        response = await client._request(
+                            "PUT",
+                            _CLASSIC_ITEM.format(library_id=destination_id, item_id=iid),
+                            json=payload,
+                            _retry_on_401=False,
+                        )
+                    except Exception:
+                        response = None
+                    source_after, source_err = await _read_classic_items(client, source_id)
+                    dest_after, dest_err = await _read_classic_items(client, destination_id)
+                    if source_err or dest_err:
+                        return _error("AMBIGUOUS_WRITE", "Classic move readback failed; do not retry blindly.")
+                    still_source = [x for x in source_after if _classic_item_id(x) == iid]
+                    destination = [x for x in dest_after if _classic_item_id(x) == iid]
+                    if still_source or len(destination) != 1:
+                        return _error(
+                            "AMBIGUOUS_WRITE" if response is None else "READBACK_FAILED",
+                            f"Classic move of item {iid} was not verified; do not retry blindly.",
+                        )
+                    if _classic_semantic(destination[0], ignore_library=True) != baseline:
+                        return _error("PROVIDER_DRIFT", f"Classic move of item {iid} changed workout content.")
+                    moved.append({"item_id": iid, "kind": kind, "verified": True})
+                else:
+                    baseline = _native_semantic(source)
+                    payload = {
+                        "id": source["id"],
+                        "libraryId": destination_id,
+                        "title": source["title"],
+                        "workout": source["workout"],
+                        "workoutLibraryItemType": source["workoutLibraryItemType"],
+                    }
+                    try:
+                        response = await http.post(
+                            STRENGTH_API_BASE + _NATIVE_SAVE,
+                            json=payload,
+                            headers=headers,
+                        )
+                    except httpx.RequestError:
+                        response = None
+                    source_after, source_err = await _read_native_items_http(http, headers, source_id)
+                    dest_after, dest_err = await _read_native_items_http(http, headers, destination_id)
+                    if source_err or dest_err:
+                        return _error("AMBIGUOUS_WRITE", "Native move readback failed; do not retry blindly.")
+                    still_source = [x for x in source_after if _native_item_id(x) == iid]
+                    destination = [x for x in dest_after if _native_item_id(x) == iid]
+                    if still_source or len(destination) != 1:
+                        return _error(
+                            "AMBIGUOUS_WRITE" if response is None else "READBACK_FAILED",
+                            f"Native move of item {iid} was not verified; do not retry blindly.",
+                        )
+                    if _native_semantic(destination[0]) != baseline:
+                        return _error("PROVIDER_DRIFT", f"Native move of item {iid} changed prescribed structure.")
+                    moved.append({"item_id": iid, "kind": kind, "verified": True})
+            return {
+                "verified": True,
+                "source_library_id": source_id,
+                "destination_library_id": destination_id,
+                "moved": moved,
+            }
+        finally:
+            await http.aclose()
+
+
+async def tp_delete_library_items(
+    library_id: int | str,
+    item_ids: list[int],
+) -> dict[str, Any]:
+    """Delete exact classic or native StructuredStrength library items, with readback.
+
+    This deletes reusable templates only, never athlete calendar workouts.
+    """
+    try:
+        lid = int(library_id)
+        ids = [int(x) for x in item_ids]
+    except (TypeError, ValueError):
+        return _error("VALIDATION_ERROR", "Library and item IDs must be numeric.")
+    ids = list(dict.fromkeys(ids))
+    if not ids:
+        return _error("VALIDATION_ERROR", "item_ids must be non-empty.")
+
+    async with TPClient() as client:
+        user = await client._get_user_data()
+        if not user or not user.get("personId"):
+            return _error("AUTH_INVALID", "Could not resolve coach account.")
+        owner = int(user["personId"])
+        libraries, err = await _read_library_inventory(client)
+        if err:
+            return err
+        if _owned_library(libraries, lid, owner) is None:
+            return _error("FORBIDDEN_OR_NOT_FOUND", "Library is not a mutable coach-owned library.")
+
+        http, headers, native_err = await _native_session(client)
+        if native_err or http is None or headers is None:
+            return native_err or _error("AUTH_INVALID", "Native library session unavailable.")
+        deleted: list[dict[str, Any]] = []
+        try:
+            for iid in ids:
+                kind, source, resolve_err = await _resolve_library_item(client, http, headers, lid, iid)
+                if resolve_err or source is None or kind is None:
+                    # Deletion is convergent: absent item is already at target state.
+                    if resolve_err and resolve_err.get("error_code") == "NOT_FOUND":
+                        deleted.append({"item_id": iid, "verified": True, "already_absent": True})
+                        continue
+                    return resolve_err or _error("NOT_FOUND", f"Item {iid} not found.")
+
+                if kind == "classic":
+                    try:
+                        response = await client._request(
+                            "DELETE",
+                            _CLASSIC_ITEM.format(library_id=lid, item_id=iid),
+                            _retry_on_401=False,
+                        )
+                    except Exception:
+                        response = None
+                    after, rb_err = await _read_classic_items(client, lid)
+                    if rb_err:
+                        return _error("AMBIGUOUS_WRITE", "Classic delete readback failed; do not retry blindly.")
+                    if any(_classic_item_id(x) == iid for x in after):
+                        return _error(
+                            "AMBIGUOUS_WRITE" if response is None else "READBACK_FAILED",
+                            f"Classic deletion of item {iid} was not verified; do not retry blindly.",
+                        )
+                else:
+                    try:
+                        response = await http.delete(
+                            STRENGTH_API_BASE + _NATIVE_DELETE.format(item_id=iid),
+                            headers=headers,
+                        )
+                    except httpx.RequestError:
+                        response = None
+                    after, rb_err = await _read_native_items_http(http, headers, lid)
+                    if rb_err:
+                        return _error("AMBIGUOUS_WRITE", "Native delete readback failed; do not retry blindly.")
+                    if any(_native_item_id(x) == iid for x in after):
+                        return _error(
+                            "AMBIGUOUS_WRITE" if response is None else "READBACK_FAILED",
+                            f"Native deletion of item {iid} was not verified; do not retry blindly.",
+                        )
+                deleted.append({"item_id": iid, "kind": kind, "verified": True})
+            return {"verified": True, "library_id": lid, "deleted": deleted}
+        finally:
+            await http.aclose()
