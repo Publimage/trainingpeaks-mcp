@@ -8,6 +8,7 @@ lazily so isolated CI requires no Google credentials.
 from __future__ import annotations
 
 import hashlib
+import re
 from dataclasses import dataclass
 from datetime import datetime, timezone
 from typing import Any
@@ -141,6 +142,11 @@ def build_context_bundle(
         entry, content = reader.read_document(spec)
         specialist_entries.append(entry)
         contents[f"specialist:{index}"] = content
+
+    card_text = contents["athlete_card"]
+    binding = re.compile(rf"TrainingPeaks\\s+ID\\s*:\\s*{int(athlete_id)}\\b", re.IGNORECASE)
+    if not binding.search(card_text):
+        raise ValueError("KB_ATHLETE_CARD_PROVIDER_ID_MISMATCH")
 
     generated_at = (now_utc or datetime.now(timezone.utc)).astimezone(timezone.utc)
     manifest = {
