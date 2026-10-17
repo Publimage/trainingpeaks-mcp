@@ -1906,6 +1906,14 @@
       "scope": "trainingpeaks:lab-library:3890637:native-strength-organization-roundtrip-item-330612",
       "script": "scripts/ironman_jobs/workout_library_native_strength_organization_canary.py",
       "test": "tests/test_workout_library_native_strength_organization_canary.py"
+    },
+    {
+      "name": "native_strength_move_recovery_readonly",
+      "mode": "READ_ONLY",
+      "owner_id": 2116886,
+      "scope": "trainingpeaks:strength-native:recovery:3890637,3902999:item-330612:read",
+      "script": "scripts/ironman_jobs/native_strength_move_recovery_readonly.py",
+      "test": "tests/test_native_strength_move_recovery_readonly.py"
     }
   ]
 }
