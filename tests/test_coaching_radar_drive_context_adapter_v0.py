@@ -115,7 +115,11 @@ class BundleReader:
             "retrieved_at_utc": NOW.isoformat(),
             "content_sha256": marker * 64,
             "source": "GOOGLE_DRIVE",
-        }, f"# {spec.expected_title}\n")
+        }, (
+            f"# {spec.expected_title}\nTrainingPeaks ID: 2932097\n"
+            if spec.role == "athlete_card"
+            else f"# {spec.expected_title}\n"
+        ))
 
 
 def _bundle_specs():
