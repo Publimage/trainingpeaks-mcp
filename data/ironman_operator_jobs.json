@@ -1802,6 +1802,14 @@
       "scope": "trainingpeaks:training-plan-library:planfolder-route-shape:read",
       "script": "scripts/ironman_jobs/training_plan_folder_get_route_shape_20261017.py",
       "test": "tests/test_training_plan_folder_get_route_shape_20261017.py"
+    },
+    {
+      "name": "spaces_canonical_logo_e2e_20261017",
+      "mode": "GUARDED_WRITE",
+      "owner_id": 2116886,
+      "scope": "digitalocean:spaces:ironman-assets:shared-canary-canonical-logo-v1.0:put-readback",
+      "script": "scripts/ironman_jobs/spaces_canonical_logo_e2e_20261017.py",
+      "test": "tests/test_spaces_canonical_logo_e2e_20261017.py"
     }
   ]
 }
