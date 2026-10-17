@@ -1,9 +1,9 @@
 {
   "schema": "IRONMAN_RADAR_AI_RUNTIME_STATE_V1",
-  "updated_at_utc": "2026-10-17T17:12:00Z",
+  "updated_at_utc": "2026-10-17T18:50:00Z",
   "workstream": "Coaching Radar AI contextual interpretation",
-  "current_gate": "AI_1_SHADOW_CONTRACT",
-  "status": "PASS",
+  "current_gate": "AI_2_SELECTIVE_CONTEXT_COMPILER",
+  "status": "CI_PASS_LIVE_CANARY_PENDING",
   "live_radar_changed": false,
   "paid_ai_provider_connected": false,
   "ai_calls": 0,
@@ -17,7 +17,19 @@
     "mode": "SHADOW_READ_ONLY",
     "workflow_revision": "2844e2e5e8d7f810da7c7a6b7d97a80c8fde4a41",
     "ci_run_id": 39055140067,
-    "ci_status": "COMPLETED_SUCCESS"
+    "ci_status": "COMPLETED_SUCCESS",
+    "ai1_contract_revision": "2844e2e5e8d7f810da7c7a6b7d97a80c8fde4a41",
+    "ai1_ci_run_id": 39055140067,
+    "ai1_ci_status": "COMPLETED_SUCCESS",
+    "ai2_code_revision": "1e774be97e3ebfae931f639526fd3b8c31e74c99",
+    "ai2_ci_run_id": 39059404788,
+    "ai2_ci_status": "COMPLETED_SUCCESS",
+    "compiler": "scripts/ironman_jobs/coaching_radar_ai_context_compiler_v0.py",
+    "evaluation_cases": "data/coaching_radar_ai_context_eval_cases_v1.json",
+    "evaluation_validator": "scripts/ironman_jobs/validate_coaching_radar_ai_context_eval_cases_v1.py",
+    "live_canary": "scripts/ironman_jobs/coaching_radar_ai_context_live_canary_20261017.py",
+    "frozen_eval_as_of": "2026-10-17",
+    "frozen_case_count": 10
   },
   "guardrails": [
     "coach is final decision maker",
@@ -29,5 +41,5 @@
     "uncertainty required",
     "absence of data is not positive evidence"
   ],
-  "next_safe_action": "AI-2: deterministic selective context compiler plus historical evaluation harness. Keep live Radar unchanged. Model/provider/cost/privacy remains a separate approval gate before any paid AI connection."
+  "next_safe_action": "Run the AI-2 live read-only canary on Prefect staging pinned to code revision 1e774be97e3ebfae931f639526fd3b8c31e74c99 against report_2026-10-17.json for all 10 athletes and the frozen evidence-hash case manifest. Expected marker: RADAR_AI_SELECTIVE_CONTEXT_LIVE_CANARY_PASS. No AI/provider calls and no writes."
 }
