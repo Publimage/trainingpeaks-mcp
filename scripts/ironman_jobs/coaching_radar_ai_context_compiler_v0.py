@@ -139,9 +139,18 @@ def _terms_for_radar(radar: dict[str, Any]) -> tuple[str, ...]:
     return tuple(dict.fromkeys(_norm(x) for x in terms if str(x).strip()))
 
 
+def _term_matches(term: str, hay: str) -> bool:
+    term = _norm(term)
+    if not term:
+        return False
+    if re.fullmatch(r"[a-z0-9]+", term) and len(term) <= 3:
+        return re.search(rf"(?<![a-z0-9]){re.escape(term)}(?![a-z0-9])", hay) is not None
+    return term in hay
+
+
 def _matched_terms(section: Section, terms: tuple[str, ...]) -> tuple[str, ...]:
     hay = _norm(section.heading + "\n" + section.text)
-    return tuple(term for term in terms if term in hay)
+    return tuple(term for term in terms if _term_matches(term, hay))
 
 
 def _score(section: Section, terms: tuple[str, ...], *, role: str) -> tuple[int, int, int]:
