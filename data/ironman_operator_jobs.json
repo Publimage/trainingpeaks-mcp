@@ -1570,6 +1570,14 @@
       "scope": "trainingpeaks:private-plan:684602:set-prescribed-duration-on-30-native-structuredstrength-from-canonical-title-minutes-only",
       "script": "scripts/ironman_jobs/intermediate_strength_native_duration_20261017.py",
       "test": "tests/test_intermediate_strength_native_duration_20261017.py"
+    },
+    {
+      "name": "chasing_readme_three_pdfs_20261017",
+      "mode": "GUARDED_WRITE",
+      "owner_id": 2116886,
+      "scope": "trainingpeaks:private-plan:685173:start-note:2664007:attach-exact-three-chasing-guide-pdfs-only",
+      "script": "scripts/ironman_jobs/chasing_readme_three_pdfs_20261017.py",
+      "test": "tests/test_chasing_readme_three_pdfs_20261017.py"
     }
   ]
 }
