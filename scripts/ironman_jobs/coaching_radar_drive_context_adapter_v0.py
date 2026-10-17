@@ -144,7 +144,7 @@ def build_context_bundle(
         contents[f"specialist:{index}"] = content
 
     card_text = contents["athlete_card"]
-    binding = re.compile(rf"TrainingPeaks\\s+ID\\s*:\\s*{int(athlete_id)}\\b", re.IGNORECASE)
+    binding = re.compile(rf"TrainingPeaks\s+ID\s*:\s*{int(athlete_id)}\b", re.IGNORECASE)
     if not binding.search(card_text):
         raise ValueError("KB_ATHLETE_CARD_PROVIDER_ID_MISMATCH")
 
