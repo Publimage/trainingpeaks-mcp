@@ -1730,6 +1730,14 @@
       "scope": "trainingpeaks:training-plan-library:planswithaccess:read",
       "script": "scripts/ironman_jobs/training_plan_planswithaccess_probe_20261017.py",
       "test": "tests/test_training_plan_planswithaccess_probe_20261017.py"
+    },
+    {
+      "name": "training_plan_imported_module_scan_20261017",
+      "mode": "READ_ONLY",
+      "owner_id": 2116886,
+      "scope": "public:trainingpeaks:frontend:training-plan-imported-modules:read",
+      "script": "scripts/ironman_jobs/training_plan_imported_module_scan_20261017.py",
+      "test": "tests/test_training_plan_imported_module_scan_20261017.py"
     }
   ]
 }
