@@ -1,0 +1,165 @@
+{
+  "schema": "IRONMAN_RADAR_AI_CONTEXT_EVAL_CASES_V1",
+  "as_of": "2026-10-17",
+  "source": "live Coaching Radar category snapshot; no workout payloads or KB contents",
+  "expected_role_families": [
+    "athlete_card",
+    "master_coaching_context",
+    "specialist"
+  ],
+  "cases": [
+    {
+      "athlete_id": 6133559,
+      "categories": [
+        "TSS_DATA_QUALITY"
+      ],
+      "data_quality": [
+        "WELLNESS_PRESENT"
+      ],
+      "expected_topics": [
+        "TSS",
+        "threshold/soglia",
+        "RPE",
+        "data quality"
+      ]
+    },
+    {
+      "athlete_id": 3657374,
+      "categories": [
+        "COMPLETION_UNCONFIRMED",
+        "IF_DATA_QUALITY",
+        "TSS_DATA_QUALITY"
+      ],
+      "data_quality": [
+        "WELLNESS_PRESENT"
+      ],
+      "expected_topics": [
+        "completion",
+        "IF",
+        "TSS",
+        "threshold/soglia",
+        "RPE"
+      ]
+    },
+    {
+      "athlete_id": 5590716,
+      "categories": [
+        "COMPLETION_UNCONFIRMED"
+      ],
+      "data_quality": [
+        "MISSING_RPE"
+      ],
+      "expected_topics": [
+        "completion",
+        "feedback",
+        "absence of data"
+      ]
+    },
+    {
+      "athlete_id": 5976093,
+      "categories": [],
+      "data_quality": [
+        "MISSING_RPE"
+      ],
+      "expected_topics": [
+        "feedback",
+        "absence of data",
+        "coach review policy"
+      ]
+    },
+    {
+      "athlete_id": 4732548,
+      "categories": [
+        "COMPLETION_UNCONFIRMED"
+      ],
+      "data_quality": [
+        "MISSING_RPE"
+      ],
+      "expected_topics": [
+        "completion",
+        "feedback",
+        "upcoming load context"
+      ]
+    },
+    {
+      "athlete_id": 6605664,
+      "categories": [
+        "COMPLETION_UNCONFIRMED"
+      ],
+      "data_quality": [
+        "WELLNESS_MISSING"
+      ],
+      "expected_topics": [
+        "completion",
+        "wellness absence",
+        "feedback"
+      ]
+    },
+    {
+      "athlete_id": 2932097,
+      "categories": [
+        "IF_DATA_QUALITY",
+        "TSS_DATA_QUALITY"
+      ],
+      "data_quality": [
+        "WELLNESS_MISSING"
+      ],
+      "expected_topics": [
+        "IF",
+        "TSS",
+        "threshold/soglia",
+        "RPE",
+        "wellness absence"
+      ]
+    },
+    {
+      "athlete_id": 6583514,
+      "categories": [
+        "COMPLETION_UNCONFIRMED",
+        "IF_DATA_QUALITY"
+      ],
+      "data_quality": [
+        "WELLNESS_PRESENT"
+      ],
+      "expected_topics": [
+        "completion",
+        "IF",
+        "RPE",
+        "threshold/soglia"
+      ]
+    },
+    {
+      "athlete_id": 6610602,
+      "categories": [
+        "DURATION_SHORT"
+      ],
+      "data_quality": [
+        "MISSING_RPE"
+      ],
+      "expected_topics": [
+        "planned vs actual duration",
+        "feedback",
+        "recovery"
+      ]
+    },
+    {
+      "athlete_id": 4480273,
+      "categories": [
+        "COMPLETION_UNCONFIRMED",
+        "IF_DATA_QUALITY"
+      ],
+      "data_quality": [
+        "MISSING_RPE"
+      ],
+      "expected_topics": [
+        "completion",
+        "IF",
+        "RPE",
+        "feedback"
+      ]
+    }
+  ],
+  "trainingpeaks_writes": 0,
+  "drive_writes": 0,
+  "ai_calls": 0
+}
