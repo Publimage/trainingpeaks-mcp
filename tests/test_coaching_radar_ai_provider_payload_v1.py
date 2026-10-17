@@ -21,7 +21,10 @@ def _case():
                 "detail": "Massimiliano Polverari TrainingPeaks ID 2932097",
             }],
             "upcoming": [{"workout_id": "678", "title": "Massimiliano Polverari bike"}],
-            "data_quality": {"missing_rpe_workout_ids": ["12345"]},
+            "data_quality": {
+                "missing_rpe_workout_ids": ["12345", "67890"],
+                "wellness_metrics_count": 0,
+            },
         },
         "selective_context": {
             "context_fingerprint_sha256": "b" * 64,
@@ -57,6 +60,10 @@ def test_provider_payload_removes_direct_identifiers_and_private_metadata():
     assert "athlete_id" not in text
     assert "max@example.com" not in text
     assert "333 123 4567" not in text
+    assert "12345" not in text
+    assert "67890" not in text
+    assert payload["radar"]["data_quality"]["missing_rpe_workout_count"] == 2
+    assert "missing_rpe_workout_ids" not in payload["radar"]["data_quality"]
     assert "<athlete>" in text
     assert "<athlete_id>" in text
     assert "<email>" in text
