@@ -55,6 +55,7 @@ async def create_run(as_of: str) -> str:
         run = await client.create_flow_run_from_deployment(
             deployment.id,
             parameters={"as_of": as_of},
+            idempotency_key=f"ironman-radar-group-v2:{deployment.id}:{as_of}",
         )
         return str(run.id)
 
