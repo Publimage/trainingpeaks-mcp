@@ -53,9 +53,13 @@ from tp_mcp.tools.library import (
 from tp_mcp.tools.ironman_operator import tp_ironman_operator
 from tp_mcp.tools.organization import (
     tp_create_plan_folder,
+    tp_copy_library_items,
+    tp_delete_library_items,
     tp_list_plan_folders,
     tp_move_athletes_between_groups,
+    tp_move_library_items,
     tp_move_training_plans,
+    tp_rename_library,
     tp_rename_plan_folder,
     tp_rename_training_plan,
 )
@@ -175,6 +179,10 @@ __all__ = [
     "tp_move_training_plans",
     "tp_rename_training_plan",
     "tp_move_athletes_between_groups",
+    "tp_rename_library",
+    "tp_copy_library_items",
+    "tp_move_library_items",
+    "tp_delete_library_items",
     "tp_sync_intermediate_native_notes",
     "tp_get_metrics",
     "tp_get_next_event",
