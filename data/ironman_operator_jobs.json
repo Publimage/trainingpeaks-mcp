@@ -1858,6 +1858,14 @@
       "scope": "public:trainingpeaks:frontend:training-plan-folder-actions:read",
       "script": "scripts/ironman_jobs/training_plan_folder_actions_frontend_readonly.py",
       "test": "tests/test_training_plan_folder_actions_frontend_readonly.py"
+    },
+    {
+      "name": "archive_mcp_test_plans_folder_20261017",
+      "mode": "GUARDED_WRITE",
+      "owner_id": 2116886,
+      "scope": "trainingpeaks:coach:2116886:planfolder:ARCHIVIATI-TEST-MCP:assign-exact-684762,684463,684555,684543,684484,684206",
+      "script": "scripts/ironman_jobs/archive_mcp_test_plans_folder_20261017.py",
+      "test": "tests/test_archive_mcp_test_plans_folder_20261017.py"
     }
   ]
 }
