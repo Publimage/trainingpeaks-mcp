@@ -2,7 +2,7 @@
   "schema": "IRONMAN_INFRA_RUNTIME_STATE_V1",
   "purpose": "Small non-canonical execution/resume checkpoint for infrastructure work. Canonical decisions and workstream state remain in Google Drive IRONMAN — KNOWLEDGE BASE.",
   "workstream": "TrainingPeaks MCP / Prefect / Coaching Radar",
-  "updated_at_utc": "2026-10-17T11:57:00Z",
+  "updated_at_utc": "2026-10-17T12:02:00Z",
   "canonical_titles": [
     "00_IRONMAN_CORE_INDEX",
     "01_MASTER_COACHING_CONTEXT",
@@ -56,7 +56,9 @@
       "private source-routing validator",
       "Athlete Card to TrainingPeaks athlete-ID binding",
       "full-roster metadata-only Drive context canary"
-    ]
+    ],
+    "source_map_drive_checkpoint": "PRIVATE RUNTIME SOURCE MAP — RADAR KB CONTEXT V1 stored in 21_TRAININGPEAKS_MCP_INTEGRATION_STATE; 10/10 Athlete Card provider-ID bindings verified.",
+    "specialist_source": "13_ATHLETE_COACHING_PROTOCOL"
   },
   "recovery_rules": [
     "On a new chat/session, read this small runtime state first, then only the targeted canonical Drive sections needed for the current objective.",
@@ -64,7 +66,7 @@
     "Do not rerun a live write or deploy merely because chat delivery failed; verify provider/server state first.",
     "This file never overrides Google Drive canonical documents."
   ],
-  "next_safe_action": "Inspect Prefect staging for existing Drive-reader runtime, credentials and private source configuration before creating or replacing anything. If absent, prepare only the isolated Drive-reader runtime; credential provisioning remains a separate explicit access step. Do not change the live Radar V2 deployment.",
+  "next_safe_action": "Prefect live gate: inspect whether /opt/ironman-prefect/drive-reader and /var/lib/ironman-prefect/credentials already contain a prior runtime/config. If absent, install the isolated read-only Drive reader runtime and materialize the private source map locally with mode 0600. Service-account credentials with Viewer/read-only access are still required before the live Drive canary; do not alter the verified Radar V2 deployment.",
   "safety_constraints": {
     "google_drive_scope": "drive.readonly",
     "drive_writes": 0,
