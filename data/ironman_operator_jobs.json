@@ -1890,6 +1890,14 @@
       "scope": "offline:trainingpeaks-mcp:organization-pytest:diagnostic",
       "script": "scripts/ironman_jobs/trainingpeaks_organization_test_diagnostic.py",
       "test": "tests/test_trainingpeaks_organization_test_diagnostic.py"
+    },
+    {
+      "name": "workout_library_classic_organization_canary",
+      "mode": "GUARDED_WRITE",
+      "owner_id": 2116886,
+      "scope": "trainingpeaks:lab-library:3890637:classic-organization-roundtrip-item-14935062",
+      "script": "scripts/ironman_jobs/workout_library_classic_organization_canary.py",
+      "test": "tests/test_workout_library_classic_organization_canary.py"
     }
   ]
 }
