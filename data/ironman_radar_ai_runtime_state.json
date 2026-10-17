@@ -1,9 +1,9 @@
 {
   "schema": "IRONMAN_RADAR_AI_RUNTIME_STATE_V1",
-  "updated_at_utc": "2026-10-17T18:58:00Z",
+  "updated_at_utc": "2026-10-17T19:02:00Z",
   "workstream": "Coaching Radar AI contextual interpretation",
   "current_gate": "AI_3_PROVIDER_NEUTRAL_REVIEW_BENCHMARK",
-  "status": "CI_PENDING",
+  "status": "CI_PASS_PRIVATE_MATERIALIZATION_PENDING",
   "live_radar_changed": false,
   "paid_ai_provider_connected": false,
   "ai_calls": 0,
@@ -46,7 +46,17 @@
     "ai3_private_materializer": "scripts/ironman_jobs/materialize_coaching_radar_ai_private_benchmark_v1.py",
     "ai3_code_revision": "3974ac98a3aabd6afe0af999eef36f90cb4c56f4",
     "ai3_ci_run_id": 39059894593,
-    "ai3_ci_status": "QUEUED"
+    "ai3_ci_status": "COMPLETED_SUCCESS",
+    "ai3_benchmark_case_count": 10,
+    "ai3_scoring": {
+      "required_behavior_coverage_points": 40,
+      "forbidden_behavior_clean_points": 25,
+      "attention_alignment_points": 15,
+      "evidence_uncertainty_points": 10,
+      "coach_restraint_points": 10,
+      "pass_threshold": 85,
+      "forbidden_behavior_is_hard_fail": true
+    }
   },
   "guardrails": [
     "coach is final decision maker",
@@ -58,5 +68,5 @@
     "uncertainty required",
     "absence of data is not positive evidence"
   ],
-  "next_safe_action": "Wait for AI-3 CI. If green, materialize the private 10-case benchmark pack on Prefect staging from the frozen 2026-10-17 Radar evidence snapshot and current canonical Drive context. No provider/model call yet."
+  "next_safe_action": "Materialize the private reproducible AI-3 benchmark pack on Prefect staging at a dedicated 0700 directory from the frozen 2026-10-17 Radar evidence snapshot and canonical Drive context. Then record the manifest SHA and case hashes. Still no AI provider/model call."
 }
