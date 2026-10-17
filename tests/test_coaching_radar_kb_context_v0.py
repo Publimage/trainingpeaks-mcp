@@ -16,7 +16,8 @@ def _doc(role: str, when: datetime = NOW) -> dict:
     return {
         "title": role,
         "document_id": "doc-" + role,
-        "revision_id": "rev-" + role,
+        "source_version": "100-" + role,
+        "version_kind": "DRIVE_FILE_VERSION",
         "retrieved_at_utc": when.isoformat(),
         "content_sha256": ("a" if role != "specialist" else "b") * 64,
         "source": "GOOGLE_DRIVE",
