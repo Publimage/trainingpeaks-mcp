@@ -1488,6 +1488,68 @@ TOOLS = [
         },
     ),
     Tool(
+        name="tp_rename_library",
+        description="Rename one coach-owned Workout Library and verify the provider result.",
+        input_schema={
+            "type": "object",
+            "properties": {
+                "library_id": {"type": "string"},
+                "name": {"type": "string"},
+            },
+            "required": ["library_id", "name"],
+        },
+    ),
+    Tool(
+        name="tp_copy_library_items",
+        description=(
+            "Copy reusable templates between coach-owned Workout Libraries. "
+            "Automatically preserves classic structured workouts and native StructuredStrength "
+            "using the correct provider backend; provider readback is mandatory."
+        ),
+        input_schema={
+            "type": "object",
+            "properties": {
+                "source_library_id": {"type": "string"},
+                "to_library_id": {"type": "string"},
+                "item_ids": {"type": "array", "items": {"type": "integer"}, "minItems": 1},
+            },
+            "required": ["source_library_id", "to_library_id", "item_ids"],
+        },
+    ),
+    Tool(
+        name="tp_move_library_items",
+        description=(
+            "Move reusable templates between coach-owned Workout Libraries without recreating them. "
+            "Supports classic/structured workouts and native StructuredStrength, selecting the native route "
+            "from provider type and verifying source/destination after every move."
+        ),
+        input_schema={
+            "type": "object",
+            "properties": {
+                "source_library_id": {"type": "string"},
+                "to_library_id": {"type": "string"},
+                "item_ids": {"type": "array", "items": {"type": "integer"}, "minItems": 1},
+            },
+            "required": ["source_library_id", "to_library_id", "item_ids"],
+        },
+    ),
+    Tool(
+        name="tp_delete_library_items",
+        description=(
+            "Permanently delete exact reusable templates from one coach-owned Workout Library. "
+            "Supports classic items and native StructuredStrength. This does NOT delete athlete calendar workouts. "
+            "Every deletion is provider-readback verified."
+        ),
+        input_schema={
+            "type": "object",
+            "properties": {
+                "library_id": {"type": "string"},
+                "item_ids": {"type": "array", "items": {"type": "integer"}, "minItems": 1},
+            },
+            "required": ["library_id", "item_ids"],
+        },
+    ),
+    Tool(
         name="tp_delete_library",
         description=(
             "Permanently delete a library AND every template inside it - irreversible, and there is no per- "
@@ -1958,6 +2020,7 @@ _ATHLETE_EXEMPT_TOOLS = {
     "tp_add_athletes_to_group", "tp_remove_athletes_from_group",
     "tp_list_plan_folders", "tp_create_plan_folder", "tp_rename_plan_folder",
     "tp_move_training_plans", "tp_rename_training_plan",
+    "tp_rename_library", "tp_copy_library_items", "tp_move_library_items", "tp_delete_library_items",
 }
 
 _ATHLETE_PARAM = {
@@ -1995,6 +2058,9 @@ _DESTRUCTIVE_TOOLS = {
     "tp_delete_event",
     "tp_delete_group",
     "tp_delete_library",
+    "tp_delete_library_items",
+    "tp_move_library_items",
+    "tp_rename_library",
     "tp_delete_note",
     "tp_delete_training_plan_other",
     "tp_delete_strength_workout",
@@ -2028,6 +2094,7 @@ _NON_IDEMPOTENT_WRITES = {
     "tp_apply_training_plan",
     "tp_create_training_plan",
     "tp_copy_workout",
+    "tp_copy_library_items",
     "tp_create_availability",
     "tp_create_equipment",
     "tp_create_event",
@@ -2640,6 +2707,33 @@ async def _h_get_lib_item(args):
 
 @_handler("tp_create_library")
 async def _h_create_lib(args): return await tp_create_library(name=args["name"])
+
+@_handler("tp_rename_library")
+async def _h_rename_library(args):
+    return await tp_rename_library(library_id=args["library_id"], name=args["name"])
+
+@_handler("tp_copy_library_items")
+async def _h_copy_library_items(args):
+    return await tp_copy_library_items(
+        source_library_id=args["source_library_id"],
+        to_library_id=args["to_library_id"],
+        item_ids=args["item_ids"],
+    )
+
+@_handler("tp_move_library_items")
+async def _h_move_library_items(args):
+    return await tp_move_library_items(
+        source_library_id=args["source_library_id"],
+        to_library_id=args["to_library_id"],
+        item_ids=args["item_ids"],
+    )
+
+@_handler("tp_delete_library_items")
+async def _h_delete_library_items(args):
+    return await tp_delete_library_items(
+        library_id=args["library_id"],
+        item_ids=args["item_ids"],
+    )
 
 @_handler("tp_delete_library")
 async def _h_delete_lib(args): return await tp_delete_library(library_id=args["library_id"])
