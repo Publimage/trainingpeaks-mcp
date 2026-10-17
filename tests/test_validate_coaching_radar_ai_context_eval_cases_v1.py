@@ -64,7 +64,7 @@ def test_eval_case_manifest_rejects_unsupported_category(tmp_path):
         "schema": "IRONMAN_RADAR_AI_CONTEXT_EVAL_CASES_V1",
         "cases": [
             {"athlete_id": 1, "categories": ["UNKNOWN"], "data_quality": ["WELLNESS_PRESENT"], "expected_topics": ["x"]},
-            {"athlete_id": 2, "categories": [], "expected_topics": ["feedback"]},
+            {"athlete_id": 2, "categories": [], "data_quality": ["MISSING_RPE"], "expected_topics": ["feedback"]},
         ],
         "trainingpeaks_writes": 0,
         "drive_writes": 0,
@@ -90,3 +90,22 @@ def test_committed_live_snapshot_covers_current_active_roster():
         "IF_DATA_QUALITY": 4,
         "TSS_DATA_QUALITY": 3,
     }
+
+
+def test_eval_case_manifest_rejects_unsupported_data_quality(tmp_path):
+    roster = tmp_path / "roster.json"
+    cases = tmp_path / "cases.json"
+    _roster(roster)
+    raw = {
+        "schema": "IRONMAN_RADAR_AI_CONTEXT_EVAL_CASES_V1",
+        "cases": [
+            {"athlete_id": 1, "categories": [], "data_quality": ["UNKNOWN_FLAG"], "expected_topics": ["x"]},
+            {"athlete_id": 2, "categories": [], "data_quality": ["MISSING_RPE"], "expected_topics": ["feedback"]},
+        ],
+        "trainingpeaks_writes": 0,
+        "drive_writes": 0,
+        "ai_calls": 0,
+    }
+    cases.write_text(json.dumps(raw))
+    with pytest.raises(ValueError, match="AI_CONTEXT_EVAL_UNSUPPORTED_DATA_QUALITY"):
+        validate_cases(cases, roster)
