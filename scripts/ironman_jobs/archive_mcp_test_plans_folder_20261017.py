@@ -30,7 +30,7 @@ TARGETS = {
 PROTECTED = {
     679801: ("ALBERTO FAZI ENDURANCE | First Ironman | 24 settimane | Beginner | Smart Start incluso | Italiano", True, 179.0),
     684602: ("ALBERTO FAZI ENDURANCE | IRONMAN | 24 settimane | Intermediate | Italiano", False, None),
-    685173: ("ALBERTO FAZI ENDURANCE | CHASING THE SLOT | 24 settimane | Italiano | BOZZA", False, None),
+    685173: ("ALBERTO FAZI ENDURANCE | CHASING THE SLOT | 24 settimane | Advanced | Italiano", False, None),
 }
 PLAN_KEYS = ("title", "weekCount", "workoutCount", "planCategory", "subcategory", "isPublic", "price")
 
