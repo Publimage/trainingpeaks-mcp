@@ -10,8 +10,8 @@ from uuid import UUID
 
 from prefect.client.orchestration import get_client
 
-DEPLOYMENT = "ironman-coaching-radar-v2/alberto-group-readonly-daily"
-PILOT_DEPLOYMENT = "ironman-coaching-radar-v2/polverari-readonly-daily-v2"
+DEPLOYMENT = "ironman-coaching-radar-group-v2/alberto-group-readonly-daily"
+PILOT_DEPLOYMENT = "ironman-coaching-radar-group-v2/polverari-readonly-daily-v2"
 ROSTER = Path("/opt/ironman-prefect/radar-src/data/coaching_radar_alberto_group_v1.json")
 OUTPUT = Path("/var/lib/ironman-prefect/radar")
 
