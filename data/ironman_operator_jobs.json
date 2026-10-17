@@ -1706,6 +1706,14 @@
       "scope": "public:trainingpeaks:frontend:training-plan-folder-sourcemap:read",
       "script": "scripts/ironman_jobs/training_plan_folder_sourcemap_discovery_20261017.py",
       "test": "tests/test_training_plan_folder_sourcemap_discovery_20261017.py"
+    },
+    {
+      "name": "spaces_credential_shape_diagnostic_20261017",
+      "mode": "READ_ONLY",
+      "owner_id": 2116886,
+      "scope": "server:ironman-tp-mcp:spaces-credential-shape-read",
+      "script": "scripts/ironman_jobs/spaces_credential_shape_diagnostic_20261017.py",
+      "test": "tests/test_spaces_credential_shape_diagnostic_20261017.py"
     }
   ]
 }
