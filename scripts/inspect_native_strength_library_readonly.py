@@ -19,7 +19,7 @@ from tp_mcp.tools.strength import _headers, STRENGTH_API_BASE
 OWNER_ID = 2116886
 TARGET_LIB_ID = 3891875
 LAB_LIB_ID = 3890637
-TARGET_NAME = "IRONMAN MASTER | Forza"
+TARGET_NAME = "ALBERTO FAZI ENDURANCE | Forza | IT"
 LAB_NAME = "[MCP TEST] Integration Lab"
 MANIFEST = Path(__file__).resolve().parents[1] / "data" / "intermediate_strength_native_library_queue.json"
 
