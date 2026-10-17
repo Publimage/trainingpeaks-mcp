@@ -51,7 +51,7 @@ async def main()->int:
         libs=await client.get("/exerciselibrary/v2/libraries")
         byid={x.get("exerciseLibraryId"):x for x in libs.data} if not libs.is_error and isinstance(libs.data,list) else {}
         if any(not byid.get(k) or byid[k].get("libraryName")!=v or byid[k].get("ownerId")!=OWNER
-               for k,v in ((SOURCE_LIB,"IRONMAN MASTER | Forza"),(LAB_LIB,"[MCP TEST] Integration Lab"))):
+               for k,v in ((SOURCE_LIB,"ALBERTO FAZI ENDURANCE | Forza | IT"),(LAB_LIB,"[MCP TEST] Integration Lab"))):
             report(stage="STOP_LIBRARY",writes=0);return 2
         _,token,error=await _access(client)
         if error or not token:
