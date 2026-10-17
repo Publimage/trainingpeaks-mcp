@@ -164,3 +164,17 @@ def test_eval_fails_unsupported_data_quality_flag():
     )
     assert result["pass"] is False
     assert result["data_quality_routing_misses"]["UNKNOWN_FLAG"] == ["UNSUPPORTED_FLAG"]
+
+
+def test_optional_sources_without_semantic_match_are_not_forwarded():
+    packet = _packet(["DURATION_SHORT"])
+    packet["knowledge_base"]["contents"]["decision_log"] = "# Altro\nContenuto totalmente estraneo."
+    packet["knowledge_base"]["contents"]["open_questions_roadmap"] = "# Altro\nTema non pertinente."
+    packet["knowledge_base"]["contents"]["workstream_state"] = "# Altro\nNessun termine di routing."
+    packet["knowledge_base"]["contents"]["core_index"] = "# Altro\nIndice neutro."
+    compiled = compile_selective_context(packet, max_total_chars=6000)
+    roles = {x["role"] for x in compiled["excerpts"]}
+    assert "decision_log" not in roles
+    assert "open_questions_roadmap" not in roles
+    assert "workstream_state" not in roles
+    assert "core_index" not in roles
