@@ -38,6 +38,34 @@ def _role_label(role: str) -> str:
     return role
 
 
+def _sanitize_data_quality(value: dict[str, Any], *, athlete_name: str, athlete_id: int) -> dict[str, Any]:
+    out: dict[str, Any] = {}
+    for key, item in value.items():
+        lower = key.lower()
+        if lower in {"athlete_id", "workout_id", "user_id", "id"} or lower.endswith("_id"):
+            continue
+        if lower.endswith("_ids") and isinstance(item, list):
+            out[key[:-4] + "_count"] = len(item)
+            continue
+        if isinstance(item, str):
+            out[key] = _redact_text(item, athlete_name=athlete_name, athlete_id=athlete_id)
+        elif isinstance(item, dict):
+            out[key] = _sanitize_data_quality(item, athlete_name=athlete_name, athlete_id=athlete_id)
+        elif isinstance(item, list):
+            sanitized = []
+            for sub in item:
+                if isinstance(sub, str):
+                    sanitized.append(_redact_text(sub, athlete_name=athlete_name, athlete_id=athlete_id))
+                elif isinstance(sub, dict):
+                    sanitized.append(_sanitize_data_quality(sub, athlete_name=athlete_name, athlete_id=athlete_id))
+                else:
+                    sanitized.append(sub)
+            out[key] = sanitized
+        else:
+            out[key] = item
+    return out
+
+
 def build_provider_payload(
     private_case: dict[str, Any],
     *,
@@ -105,7 +133,11 @@ def build_provider_payload(
             "review_required": bool(radar.get("review_required")),
             "alerts": redacted_alerts,
             "upcoming": redacted_upcoming,
-            "data_quality": radar.get("data_quality") or {},
+            "data_quality": _sanitize_data_quality(
+                radar.get("data_quality") or {},
+                athlete_name=athlete_name,
+                athlete_id=athlete_id,
+            ),
             "evidence_sha256": evidence_sha,
         },
         "context": {
