@@ -37,7 +37,9 @@ on:
       - "scripts/ironman_jobs/coaching_radar_kb_context_v0.py"
       - "tests/test_coaching_radar_kb_context_v0.py"
       - "scripts/ironman_jobs/coaching_radar_drive_context_adapter_v0.py"
-      - "tests/test_coaching_radar_drive_context_adapter_v0.py"
+      - "tests/test_coaching_radar_drive_context_adapter_v0.py tests/test_radar_drive_runtime_preflight_20261017.py"
+      - "scripts/ironman_jobs/radar_drive_runtime_preflight_20261017.py"
+      - "tests/test_radar_drive_runtime_preflight_20261017.py"
   workflow_dispatch:
 
 permissions:
