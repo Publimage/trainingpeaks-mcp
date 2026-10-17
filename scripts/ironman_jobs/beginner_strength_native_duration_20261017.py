@@ -111,7 +111,7 @@ async def main():
                 # Planned Duration used the upper bound (e.g. 25-30' -> 30').
                 for x in items:
                     title, dt = key(x)
-                    m = re.search(r"(\\d+)(?:-(\\d+))?'", title)
+                    m = re.search(r"(\d+)(?:-(\d+))?'", title)
                     must(m, f"TITLE_DURATION_MISSING_{title}")
                     minutes = int(m.group(2) or m.group(1))
                     expected[(title, dt)] = {"minutes": minutes}
