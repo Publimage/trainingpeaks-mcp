@@ -1,0 +1,88 @@
+import json
+
+import pytest
+
+from scripts.ironman_jobs.coaching_radar_ai_provider_payload_v1 import build_provider_payload
+
+
+def _case():
+    return {
+        "schema": "IRONMAN_RADAR_AI_PRIVATE_BENCHMARK_CASE_V1",
+        "athlete_id": 2932097,
+        "athlete_name": "Massimiliano Polverari",
+        "as_of": "2026-10-17",
+        "radar": {
+            "status": "YELLOW",
+            "review_required": True,
+            "evidence_sha256": "a" * 64,
+            "alerts": [{
+                "category": "IF_DATA_QUALITY",
+                "workout_id": "12345",
+                "detail": "Massimiliano Polverari TrainingPeaks ID 2932097",
+            }],
+            "upcoming": [{"workout_id": "678", "title": "Massimiliano Polverari bike"}],
+            "data_quality": {"missing_rpe_workout_ids": ["12345"]},
+        },
+        "selective_context": {
+            "context_fingerprint_sha256": "b" * 64,
+            "compiled_fingerprint_sha256": "c" * 64,
+            "excerpts": [{
+                "role": "athlete_card",
+                "title": "ATHLETE CARD — MASSIMILIANO POLVERARI",
+                "document_id": "private-drive-id",
+                "source_version": "999",
+                "section_heading": "Profilo Massimiliano Polverari",
+                "matched_terms": ["rpe"],
+                "excerpt": "Massimiliano Polverari\nTrainingPeaks ID: 2932097\nEmail max@example.com\nTelefono +39 333 123 4567",
+                "excerpt_sha256": "d" * 64,
+            }],
+        },
+        "benchmark_expectations": {
+            "required_behavior_codes": ["CITE_EVIDENCE", "COACH_DECISION_REQUIRED"],
+            "forbidden_behavior_codes": ["AUTOMATIC_TRAININGPEAKS_WRITE"],
+            "acceptable_attention": ["COACH_REVIEW"],
+        },
+        "guardrails": {},
+    }
+
+
+def test_provider_payload_removes_direct_identifiers_and_private_metadata():
+    payload = build_provider_payload(_case(), output_schema={"type": "object"})
+    text = json.dumps(payload, ensure_ascii=False).lower()
+    assert "massimiliano polverari" not in text
+    assert "2932097" not in text
+    assert "private-drive-id" not in text
+    assert "document_id" not in text
+    assert "athlete_name" not in text
+    assert "athlete_id" not in text
+    assert "max@example.com" not in text
+    assert "333 123 4567" not in text
+    assert "<athlete>" in text
+    assert "<athlete_id>" in text
+    assert "<email>" in text
+    assert "<phone>" in text
+
+
+def test_provider_payload_strips_workout_ids_and_source_titles():
+    payload = build_provider_payload(_case(), output_schema={"type": "object"})
+    assert "workout_id" not in payload["radar"]["alerts"][0]
+    assert "workout_id" not in payload["radar"]["upcoming"][0]
+    excerpt = payload["context"]["excerpts"][0]
+    assert set(excerpt) == {
+        "source_role", "section_heading", "matched_terms", "excerpt", "excerpt_sha256"
+    }
+    assert excerpt["source_role"] == "athlete_card"
+
+
+def test_provider_payload_is_deterministic():
+    a = build_provider_payload(_case(), output_schema={"type": "object"})
+    b = build_provider_payload(_case(), output_schema={"type": "object"})
+    assert a == b
+    assert len(a["provider_payload_sha256"]) == 64
+
+
+def test_provider_payload_rejects_missing_binding():
+    case = _case()
+    case["athlete_name"] = ""
+    with pytest.raises(ValueError, match="PROVIDER_PAYLOAD_ATHLETE_BINDING_MISSING"):
+        build_provider_payload(case, output_schema={"type": "object"})
