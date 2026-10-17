@@ -1922,6 +1922,14 @@
       "scope": "trainingpeaks:strength-native:recovery:move-330612:3902999-to-3890637-and-delete-empty-temp",
       "script": "scripts/ironman_jobs/native_strength_move_recovery_execute.py",
       "test": "tests/test_native_strength_move_recovery_execute.py"
+    },
+    {
+      "name": "training_plan_lifecycle_frontend_readonly",
+      "mode": "READ_ONLY",
+      "owner_id": 2116886,
+      "scope": "public:trainingpeaks:frontend:training-plan-copy-delete-routes:read",
+      "script": "scripts/ironman_jobs/training_plan_lifecycle_frontend_readonly.py",
+      "test": "tests/test_training_plan_lifecycle_frontend_readonly.py"
     }
   ]
 }
