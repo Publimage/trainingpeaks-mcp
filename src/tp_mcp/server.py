@@ -79,7 +79,9 @@ from tp_mcp.tools import (
     tp_get_library_items,
     tp_ironman_operator,
     tp_list_plan_folders,
+    tp_copy_training_plan,
     tp_create_plan_folder,
+    tp_delete_training_plan,
     tp_copy_library_items,
     tp_delete_library_items,
     tp_rename_library,
@@ -731,6 +733,32 @@ TOOLS = [
             "type": "object",
             "properties": {"include_plans": {"type": "boolean", "default": True}},
             "required": [],
+        },
+    ),
+    Tool(
+        name="tp_copy_training_plan",
+        description=("Copy one Training Plan using TrainingPeaks' native asynchronous whole-plan copy command. "
+                     "The new plan is verified by provider readback and copy status; ambiguous POSTs are reconciled, never blindly retried."),
+        input_schema={
+            "type": "object",
+            "properties": {
+                "plan_id": {"type": "integer"},
+                "title": {"type": "string", "maxLength": 100},
+            },
+            "required": ["plan_id", "title"],
+        },
+    ),
+    Tool(
+        name="tp_delete_training_plan",
+        description=("Delete one private, unpriced Training Plan only after exact ID+title preflight. "
+                     "Public or priced plans are blocked. Provider inventory absence is the authoritative immediate readback; no blind retry."),
+        input_schema={
+            "type": "object",
+            "properties": {
+                "plan_id": {"type": "integer"},
+                "expected_title": {"type": "string"},
+            },
+            "required": ["plan_id", "expected_title"],
         },
     ),
     Tool(
@@ -2018,7 +2046,8 @@ _ATHLETE_EXEMPT_TOOLS = {
     "tp_list_groups", "tp_list_athletes_in_group",
     "tp_create_group", "tp_rename_group", "tp_delete_group",
     "tp_add_athletes_to_group", "tp_remove_athletes_from_group",
-    "tp_list_plan_folders", "tp_create_plan_folder", "tp_rename_plan_folder",
+    "tp_list_plan_folders", "tp_copy_training_plan", "tp_create_plan_folder",
+    "tp_delete_training_plan", "tp_rename_plan_folder",
     "tp_move_training_plans", "tp_rename_training_plan",
     "tp_rename_library", "tp_copy_library_items", "tp_move_library_items", "tp_delete_library_items",
 }
@@ -2062,6 +2091,7 @@ _DESTRUCTIVE_TOOLS = {
     "tp_move_library_items",
     "tp_rename_library",
     "tp_delete_note",
+    "tp_delete_training_plan",
     "tp_delete_training_plan_other",
     "tp_delete_strength_workout",
     "tp_delete_workout",
@@ -2094,6 +2124,7 @@ _NON_IDEMPOTENT_WRITES = {
     "tp_apply_training_plan",
     "tp_create_training_plan",
     "tp_copy_workout",
+    "tp_copy_training_plan",
     "tp_copy_library_items",
     "tp_create_availability",
     "tp_create_equipment",
@@ -2472,6 +2503,15 @@ async def _h_delete_training_plan_other(args):
 @_handler("tp_list_plan_folders")
 async def _h_list_plan_folders(args):
     return await tp_list_plan_folders(include_plans=args.get("include_plans", True))
+
+@_handler("tp_copy_training_plan")
+async def _h_copy_training_plan(args):
+    return await tp_copy_training_plan(plan_id=args["plan_id"], title=args["title"])
+
+@_handler("tp_delete_training_plan")
+async def _h_delete_training_plan(args):
+    return await tp_delete_training_plan(
+        plan_id=args["plan_id"], expected_title=args["expected_title"])
 
 @_handler("tp_create_plan_folder")
 async def _h_create_plan_folder(args):
