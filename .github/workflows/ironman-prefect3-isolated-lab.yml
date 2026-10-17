@@ -37,7 +37,9 @@ on:
       - "scripts/ironman_jobs/coaching_radar_kb_context_v0.py"
       - "tests/test_coaching_radar_kb_context_v0.py"
       - "scripts/ironman_jobs/coaching_radar_drive_context_adapter_v0.py"
-      - "tests/test_coaching_radar_drive_context_adapter_v0.py tests/test_radar_drive_runtime_preflight_20261017.py tests/test_validate_radar_drive_credentials_20261017.py"
+      - "tests/test_coaching_radar_drive_context_adapter_v0.py"
+      - "tests/test_coaching_radar_ai_context_contract_v0.py"
+      - "scripts/ironman_jobs/coaching_radar_ai_context_contract_v0.py"
       - "scripts/ironman_jobs/radar_drive_runtime_preflight_20261017.py"
       - "tests/test_radar_drive_runtime_preflight_20261017.py"
       - "scripts/ironman_jobs/validate_radar_drive_credentials_20261017.py"
@@ -84,7 +86,7 @@ jobs:
       - name: Test actual Prefect execution and isolated recovery
         shell: bash
         run: |
-          python -m pytest -q tests/test_prefect3_isolated_resume_pilot_20261015.py tests/test_prefect3_worker_restart_lab_20261015.py tests/test_coaching_radar_polverari_v0.py tests/test_coaching_radar_prefect_v1.py tests/test_coaching_radar_staging_deploy.py tests/test_prefect_admin_pull_agent.py tests/test_coaching_radar_prefect_v2.py tests/test_coaching_radar_v2_staging_transition.py tests/test_coaching_radar_detached_deploy.py tests/test_coaching_radar_kb_context_v0.py tests/test_coaching_radar_drive_context_adapter_v0.py
+          python -m pytest -q tests/test_prefect3_isolated_resume_pilot_20261015.py tests/test_prefect3_worker_restart_lab_20261015.py tests/test_coaching_radar_polverari_v0.py tests/test_coaching_radar_prefect_v1.py tests/test_coaching_radar_staging_deploy.py tests/test_prefect_admin_pull_agent.py tests/test_coaching_radar_prefect_v2.py tests/test_coaching_radar_v2_staging_transition.py tests/test_coaching_radar_detached_deploy.py tests/test_coaching_radar_kb_context_v0.py tests/test_coaching_radar_drive_context_adapter_v0.py tests/test_radar_drive_runtime_preflight_20261017.py tests/test_validate_radar_drive_credentials_20261017.py tests/test_coaching_radar_ai_context_contract_v0.py
 
       - name: Exercise real Prefect server + process worker queue after worker and server restart
         shell: bash
