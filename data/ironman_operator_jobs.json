@@ -1914,6 +1914,14 @@
       "scope": "trainingpeaks:strength-native:recovery:3890637,3902999:item-330612:read",
       "script": "scripts/ironman_jobs/native_strength_move_recovery_readonly.py",
       "test": "tests/test_native_strength_move_recovery_readonly.py"
+    },
+    {
+      "name": "native_strength_move_recovery_execute",
+      "mode": "GUARDED_WRITE",
+      "owner_id": 2116886,
+      "scope": "trainingpeaks:strength-native:recovery:move-330612:3902999-to-3890637-and-delete-empty-temp",
+      "script": "scripts/ironman_jobs/native_strength_move_recovery_execute.py",
+      "test": "tests/test_native_strength_move_recovery_execute.py"
     }
   ]
 }
