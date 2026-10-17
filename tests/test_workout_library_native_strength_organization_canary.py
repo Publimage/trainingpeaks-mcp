@@ -10,6 +10,6 @@ def test_native_routes_and_scope():
     assert "/rx/activity/v1/LibraryContent/workoutLibrary/items/copy" in s
     assert "StructuredStrength" in s
     assert "NATIVE_MOVE_BACK_VERIFIED" in s
-    assert "NATIVE_SOURCE_NOT_EXACTLY_RESTORED" in s
+    assert "NATIVE_SOURCE_NOT_SEMANTICALLY_RESTORED" in s
     assert s.count("_retry_on_401=False") >= 2
     assert "/fitness/" not in s and "/plans/" not in s
