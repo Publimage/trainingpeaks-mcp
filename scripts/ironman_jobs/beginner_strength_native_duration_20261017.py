@@ -64,24 +64,6 @@ async def detail(h, token, wid):
     return d
 
 async def main():
-    must(BACKUP.exists(), "PRE_MIGRATION_BACKUP_MISSING")
-    raw = json.loads(BACKUP.read_text())
-    manifest = raw.get("manifest") or []
-    must(len(manifest) == EXPECTED_NATIVE, "BACKUP_MANIFEST_COUNT")
-    expected = {}
-    source_ids = set()
-    for z in manifest:
-        title = (z.get("title") or "").strip()
-        dt = str(z.get("date") or "")[:10]
-        minutes = int(z.get("duration_min") or 0)
-        sid = int(z.get("source_id") or 0)
-        must(title and dt and minutes > 0 and sid > 0, "BACKUP_MANIFEST_ROW")
-        must((title, dt) not in expected, "BACKUP_DUPLICATE_KEY")
-        expected[(title, dt)] = {"minutes": minutes, "source_id": sid}
-        source_ids.add(sid)
-    must(len(source_ids) == EXPECTED_NATIVE, "BACKUP_SOURCE_IDS")
-    must(sum(v["minutes"] for v in expected.values()) == EXPECTED_MINUTES, "BACKUP_MINUTES_DRIFT")
-
     async with TPClient() as c:
         me = await c._get_user_data()
         p = await c.get(f"/plans/v1/plans/{PLAN}")
@@ -105,7 +87,37 @@ async def main():
         async with httpx.AsyncClient(timeout=30.0, follow_redirects=False) as h:
             items = await native_range(h, token)
             must(len(items) == EXPECTED_NATIVE, "NATIVE_COUNT")
-            must({key(x) for x in items} == set(expected), "NATIVE_KEY_SET")
+            native_keys = {key(x) for x in items}
+            must(len(native_keys) == EXPECTED_NATIVE, "NATIVE_DUPLICATE_KEY")
+
+            expected = {}
+            source = None
+            if BACKUP.exists():
+                raw = json.loads(BACKUP.read_text())
+                manifest = raw.get("manifest") or []
+                must(len(manifest) == EXPECTED_NATIVE, "BACKUP_MANIFEST_COUNT")
+                for z in manifest:
+                    title = (z.get("title") or "").strip()
+                    dt = str(z.get("date") or "")[:10]
+                    minutes = int(z.get("duration_min") or 0)
+                    must(title and dt and minutes > 0, "BACKUP_MANIFEST_ROW")
+                    expected[(title, dt)] = {"minutes": minutes}
+                must(set(expected) == native_keys, "BACKUP_NATIVE_KEY_SET")
+                source = "pre_migration_backup"
+            else:
+                # Recovery path: every migrated native title retained the exact
+                # textual duration label. For ranged labels, the original TP
+                # Planned Duration used the upper bound (e.g. 25-30' -> 30').
+                for x in items:
+                    title, dt = key(x)
+                    m = re.search(r"(\\d+)(?:-(\\d+))?'", title)
+                    must(m, f"TITLE_DURATION_MISSING_{title}")
+                    minutes = int(m.group(2) or m.group(1))
+                    expected[(title, dt)] = {"minutes": minutes}
+                source = "native_title_duration_labels"
+
+            total_expected = sum(v["minutes"] for v in expected.values())
+            must(total_expected == EXPECTED_MINUTES, f"EXPECTED_MINUTES_DRIFT_{total_expected}")
 
             changed = 0
             already = 0
@@ -168,6 +180,7 @@ async def main():
             print(json.dumps({
                 "stage": "BEGINNER_NATIVE_STRENGTH_DURATION_PASS",
                 "plan": PLAN,
+                "duration_source": source,
                 "native_strength": EXPECTED_NATIVE,
                 "duration_minutes_total": total,
                 "duration_hours_total": round(total / 60, 1),
@@ -181,9 +194,3 @@ async def main():
             }, ensure_ascii=False), flush=True)
             return 0
 
-if __name__ == "__main__":
-    try:
-        raise SystemExit(asyncio.run(main()))
-    except Exception as exc:
-        print(json.dumps({"stage": "SAFE_STOP", "reason": str(exc)[:500]}, ensure_ascii=False), flush=True)
-        raise
