@@ -1834,6 +1834,14 @@
       "scope": "server:ironman-tp-mcp:image-runtime-capability-read",
       "script": "scripts/ironman_jobs/image_runtime_capability_inventory_20261017.py",
       "test": "tests/test_image_runtime_capability_inventory_20261017.py"
+    },
+    {
+      "name": "pillow_bootstrap_20261017",
+      "mode": "GUARDED_WRITE",
+      "owner_id": 2116886,
+      "scope": "server:ironman-tp-mcp:install-pillow-11.3.0",
+      "script": "scripts/ironman_jobs/pillow_bootstrap_20261017.py",
+      "test": "tests/test_pillow_bootstrap_20261017.py"
     }
   ]
 }
