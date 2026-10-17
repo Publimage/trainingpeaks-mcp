@@ -72,6 +72,10 @@ on:
 permissions:
   contents: read
 
+concurrency:
+  group: ironman-prefect3-isolated-lab-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
 jobs:
   isolated-prefect:
     name: Prefect 3 / readback + crash recovery / no provider access
