@@ -6,6 +6,32 @@ pull:
   - prefect.deployments.steps.set_working_directory:
       directory: "/opt/ironman-prefect/radar-src"
 deployments:
+  - name: polverari-readonly-daily-v2
+    version: "v2-readonly-pilot-daily"
+    tags:
+      - ironman
+      - coaching-radar
+      - readonly
+      - pilot
+      - daily-triage
+    description: "IRONMAN Coaching Radar V2 daily read-only pilot while multi-athlete runtime activation is pending."
+    entrypoint: "scripts/ironman_jobs/coaching_radar_prefect_v2.py:coaching_radar_group_flow"
+    parameters:
+      athlete_ids:
+        - 2932097
+      lookback_days: 3
+      lookahead_days: 3
+      bridge_base: "http://10.114.0.2:8787"
+      output_dir: "/var/lib/ironman-prefect/radar-pilot-v2"
+    schedules:
+      - cron: "30 5 * * *"
+        timezone: "Europe/Rome"
+        active: true
+    work_pool:
+      name: "ironman-prefect-staging-process"
+      work_queue_name: null
+      job_variables: {}
+
   - name: alberto-group-readonly-daily
     version: "v2-readonly-multiathlete"
     tags:
@@ -14,7 +40,7 @@ deployments:
       - readonly
       - multi-athlete
       - daily-triage
-    description: "IRONMAN Coaching Radar V2 daily read-only triage for active Alberto group roster."
+    description: "IRONMAN Coaching Radar V2 daily read-only triage for active Alberto group roster. Schedule remains inactive until live bridge allowlist canary passes."
     entrypoint: "scripts/ironman_jobs/coaching_radar_prefect_v2.py:coaching_radar_group_flow"
     parameters:
       lookback_days: 3
@@ -24,7 +50,7 @@ deployments:
     schedules:
       - cron: "30 5 * * *"
         timezone: "Europe/Rome"
-        active: true
+        active: false
     work_pool:
       name: "ironman-prefect-staging-process"
       work_queue_name: null
