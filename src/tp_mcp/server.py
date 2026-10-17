@@ -725,7 +725,7 @@ TOOLS = [
         description="List native Training Plan folders plus virtual My Plans, with provider plan membership.",
         input_schema={
             "type": "object",
-            "properties": {"include_plans": {"type": "boolean", "default": true}},
+            "properties": {"include_plans": {"type": "boolean", "default": True}},
             "required": [],
         },
     ),
