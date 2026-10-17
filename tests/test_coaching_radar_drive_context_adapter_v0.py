@@ -6,6 +6,7 @@ from scripts.ironman_jobs.coaching_radar_drive_context_adapter_v0 import (
     ContextDocumentSpec,
     DRIVE_READONLY_SCOPE,
     GoogleDriveContextReader,
+    build_context_bundle,
 )
 
 
@@ -99,3 +100,63 @@ def test_reader_fails_on_empty_content():
 
 def test_scope_is_strict_read_only():
     assert DRIVE_READONLY_SCOPE == "https://www.googleapis.com/auth/drive.readonly"
+
+
+class BundleReader:
+    def read_document(self, spec):
+        marker = "b" if spec.role.startswith("specialist") else "a"
+        return ({
+            "title": spec.expected_title,
+            "document_id": spec.document_id,
+            "source_version": "99",
+            "version_kind": "DRIVE_FILE_VERSION",
+            "modified_time": NOW.isoformat(),
+            "retrieved_at_utc": NOW.isoformat(),
+            "content_sha256": marker * 64,
+            "source": "GOOGLE_DRIVE",
+        }, f"# {spec.expected_title}\n")
+
+
+def _bundle_specs():
+    roles = (
+        "core_index",
+        "master_coaching_context",
+        "decision_log",
+        "open_questions_roadmap",
+        "athlete_card",
+        "workstream_state",
+    )
+    return {
+        role: ContextDocumentSpec(role, "doc-" + role, role)
+        for role in roles
+    }
+
+
+def test_bundle_requires_all_canonical_roles_and_specialist_and_passes_gate():
+    bundle = build_context_bundle(
+        BundleReader(),
+        athlete_id=2932097,
+        documents=_bundle_specs(),
+        specialist_documents=[
+            ContextDocumentSpec("specialist_training", "doc-specialist", "specialist")
+        ],
+        now_utc=NOW,
+    )
+    assert bundle["validation"]["ai_context_gate"] == "PASS"
+    assert bundle["validation"]["document_count"] == 7
+    assert set(bundle["contents"]) == set(_bundle_specs()) | {"specialist:0"}
+
+
+def test_bundle_missing_role_fails_before_reading():
+    specs = _bundle_specs()
+    del specs["athlete_card"]
+    with pytest.raises(ValueError, match="KB_CONTEXT_SPEC_ROLE_MISSING:athlete_card"):
+        build_context_bundle(
+            BundleReader(),
+            athlete_id=2932097,
+            documents=specs,
+            specialist_documents=[
+                ContextDocumentSpec("specialist_training", "doc-specialist", "specialist")
+            ],
+            now_utc=NOW,
+        )
