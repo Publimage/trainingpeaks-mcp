@@ -52,7 +52,9 @@ from tp_mcp.tools.library import (
 )
 from tp_mcp.tools.ironman_operator import tp_ironman_operator
 from tp_mcp.tools.organization import (
+    tp_copy_training_plan,
     tp_create_plan_folder,
+    tp_delete_training_plan,
     tp_copy_library_items,
     tp_delete_library_items,
     tp_list_plan_folders,
@@ -174,7 +176,9 @@ __all__ = [
     "tp_get_library_items",
     "tp_ironman_operator",
     "tp_list_plan_folders",
+    "tp_copy_training_plan",
     "tp_create_plan_folder",
+    "tp_delete_training_plan",
     "tp_rename_plan_folder",
     "tp_move_training_plans",
     "tp_rename_training_plan",
