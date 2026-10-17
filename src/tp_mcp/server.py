@@ -721,6 +721,63 @@ TOOLS = [
     # --- Training Plans (multi-week Plan Store / "My Plans" — distinct from
     #     workout libraries and the ATP) ---
     Tool(
+        name="tp_list_plan_folders",
+        description="List native Training Plan folders plus virtual My Plans, with provider plan membership.",
+        input_schema={
+            "type": "object",
+            "properties": {"include_plans": {"type": "boolean", "default": true}},
+            "required": [],
+        },
+    ),
+    Tool(
+        name="tp_create_plan_folder",
+        description="Create a native Training Plan folder. Idempotent by exact name and provider-readback verified.",
+        input_schema={
+            "type": "object",
+            "properties": {"name": {"type": "string"}},
+            "required": ["name"],
+        },
+    ),
+    Tool(
+        name="tp_rename_plan_folder",
+        description="Rename a native Training Plan folder; provider readback is mandatory before success.",
+        input_schema={
+            "type": "object",
+            "properties": {
+                "folder_id": {"type": "string"},
+                "name": {"type": "string"},
+            },
+            "required": ["folder_id", "name"],
+        },
+    ),
+    Tool(
+        name="tp_move_training_plans",
+        description=("Move one or more Training Plans using native provider folder membership. "
+                     "Use a custom folder UUID or 'my_plans' as destination. "
+                     "Does not recreate or modify plan content; every mutation is read back."),
+        input_schema={
+            "type": "object",
+            "properties": {
+                "plan_ids": {"type": "array", "items": {"type": "integer"}, "minItems": 1},
+                "to_folder_id": {"type": "string"},
+            },
+            "required": ["plan_ids", "to_folder_id"],
+        },
+    ),
+    Tool(
+        name="tp_rename_training_plan",
+        description=("Rename one Training Plan using a title-only provider update. "
+                     "Verifies the title and that all other plan metadata remain unchanged."),
+        input_schema={
+            "type": "object",
+            "properties": {
+                "plan_id": {"type": "integer"},
+                "title": {"type": "string"},
+            },
+            "required": ["plan_id", "title"],
+        },
+    ),
+    Tool(
         name="tp_create_training_plan",
         description=("EXPERIMENTAL: create one private, unpriced [MCP TEST] Training Plan. "
                      "Ordinary lab plans are 1-2 weeks; the exact named Intermediate "
@@ -1858,6 +1915,20 @@ TOOLS = [
             "required": ["group_id", "athlete_ids"],
         },
     ),
+    Tool(
+        name="tp_move_athletes_between_groups",
+        description=("Move athletes between native coach groups/tags using add -> readback -> remove -> readback. "
+                     "Default group is protected."),
+        input_schema={
+            "type": "object",
+            "properties": {
+                "from_group_id": {"type": "string"},
+                "to_group_id": {"type": "string"},
+                "athlete_ids": {"type": "array", "items": {"type": "integer"}, "minItems": 1},
+            },
+            "required": ["from_group_id", "to_group_id", "athlete_ids"],
+        },
+    ),
 ]
 
 # ---------------------------------------------------------------------------
@@ -1881,6 +1952,8 @@ _ATHLETE_EXEMPT_TOOLS = {
     "tp_list_groups", "tp_list_athletes_in_group",
     "tp_create_group", "tp_rename_group", "tp_delete_group",
     "tp_add_athletes_to_group", "tp_remove_athletes_from_group",
+    "tp_list_plan_folders", "tp_create_plan_folder", "tp_rename_plan_folder",
+    "tp_move_training_plans", "tp_rename_training_plan",
 }
 
 _ATHLETE_PARAM = {
@@ -2058,6 +2131,14 @@ async def _h_add_athletes_to_group(args):
 async def _h_remove_athletes_from_group(args):
     return await tp_remove_athletes_from_group(
         group_id=args["group_id"], athlete_ids=args["athlete_ids"]
+    )
+
+@_handler("tp_move_athletes_between_groups")
+async def _h_move_athletes_between_groups(args):
+    return await tp_move_athletes_between_groups(
+        from_group_id=args["from_group_id"],
+        to_group_id=args["to_group_id"],
+        athlete_ids=args["athlete_ids"],
     )
 
 @_handler("tp_refresh_auth")
@@ -2316,6 +2397,27 @@ async def _h_delete_training_plan_other(args):
         plan_id=args["plan_id"], expected_title=args["expected_title"],
         dry_run=args.get("dry_run", True),
     )
+
+@_handler("tp_list_plan_folders")
+async def _h_list_plan_folders(args):
+    return await tp_list_plan_folders(include_plans=args.get("include_plans", True))
+
+@_handler("tp_create_plan_folder")
+async def _h_create_plan_folder(args):
+    return await tp_create_plan_folder(name=args["name"])
+
+@_handler("tp_rename_plan_folder")
+async def _h_rename_plan_folder(args):
+    return await tp_rename_plan_folder(folder_id=args["folder_id"], name=args["name"])
+
+@_handler("tp_move_training_plans")
+async def _h_move_training_plans(args):
+    return await tp_move_training_plans(
+        plan_ids=args["plan_ids"], to_folder_id=args["to_folder_id"])
+
+@_handler("tp_rename_training_plan")
+async def _h_rename_training_plan(args):
+    return await tp_rename_training_plan(plan_id=args["plan_id"], title=args["title"])
 
 @_handler("tp_list_training_plans")
 async def _h_list_training_plans(args): return await tp_list_training_plans()
