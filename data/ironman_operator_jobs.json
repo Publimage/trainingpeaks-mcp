@@ -1642,6 +1642,14 @@
       "scope": "digitalocean:spaces:ironman-assets:signed-auth-readonly-diagnostic",
       "script": "scripts/ironman_jobs/spaces_signed_auth_diagnostic_20261017.py",
       "test": "tests/test_spaces_signed_auth_diagnostic_20261017.py"
+    },
+    {
+      "name": "spaces_access_key_fingerprint_20261017",
+      "mode": "READ_ONLY",
+      "owner_id": 2116886,
+      "scope": "server:ironman-tp-mcp:spaces-access-key-id-safe-fingerprint-read",
+      "script": "scripts/ironman_jobs/spaces_access_key_fingerprint_20261017.py",
+      "test": "tests/test_spaces_access_key_fingerprint_20261017.py"
     }
   ]
 }
