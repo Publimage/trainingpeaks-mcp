@@ -2,7 +2,7 @@
   "schema": "IRONMAN_INFRA_RUNTIME_STATE_V1",
   "purpose": "Small non-canonical execution/resume checkpoint for infrastructure work. Canonical decisions and workstream state remain in Google Drive IRONMAN — KNOWLEDGE BASE.",
   "workstream": "TrainingPeaks MCP / Prefect / Coaching Radar",
-  "updated_at_utc": "2026-10-17T16:03:00Z",
+  "updated_at_utc": "2026-10-17T16:38:00Z",
   "canonical_titles": [
     "00_IRONMAN_CORE_INDEX",
     "01_MASTER_COACHING_CONTEXT",
@@ -72,7 +72,7 @@
     "Do not rerun a live write or deploy merely because chat delivery failed; verify provider/server state first.",
     "This file never overrides Google Drive canonical documents."
   ],
-  "next_safe_action": "On Prefect staging, update checkout to the current branch revision, construct `/var/lib/ironman-prefect/credentials/radar-drive-reader.json` locally from the existing private PEM plus verified key ID 2ea8bc1db51f72a5fa47ca382e318c0a5139704c. Keep mode 0600 and owner ironmanprefect. Run strict local credential validator and read-only runtime preflight. Only if both PASS, run the metadata-only live Drive canary; no Radar deployment change, no Drive writes, no TrainingPeaks writes, no AI calls.",
+  "next_safe_action": "Reconnect to the DigitalOcean web console and run the read-only recovery diagnostic: verify gcloud installation, temp CLOUDSDK_CONFIG/auth presence, any surviving gcloud process, local credential artifacts, enabled iam/drive APIs if auth remains, and existing service-account keys. Resume from the first missing checkpoint only.",
   "safety_constraints": {
     "google_drive_scope": "drive.readonly",
     "drive_writes": 0,
@@ -122,5 +122,17 @@
     "post_interrupt_readback": "USER_MANAGED_KEY_PRESENT",
     "final_key_id": "2ea8bc1db51f72a5fa47ca382e318c0a5139704c",
     "google_public_x509_endpoint_match": "PASS"
+  },
+  "last_incident": {
+    "type": "DIGITALOCEAN_WEB_CONSOLE_DISCONNECTED_DURING_TEMP_GCLOUD_AUTH_FLOW",
+    "observed_local": "2026-10-17T18:37:00+02:00",
+    "droplet_status_verified": "ACTIVE",
+    "risk": "The foreground shell may have exited and triggered cleanup, or the backend process may have continued. Do not rerun auth/upload until server state is checked.",
+    "no_repeat_until_readback": [
+      "gcloud auth login",
+      "gcloud services enable",
+      "gcloud iam service-accounts keys upload",
+      "live Drive canary"
+    ]
   }
 }
