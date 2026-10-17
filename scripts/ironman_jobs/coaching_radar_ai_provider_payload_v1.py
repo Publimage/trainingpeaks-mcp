@@ -120,7 +120,8 @@ def build_provider_payload(
             ),
             "matched_terms": list(item.get("matched_terms") or []),
             "excerpt": excerpt,
-            "excerpt_sha256": item.get("excerpt_sha256"),
+            "source_excerpt_sha256": item.get("excerpt_sha256"),
+            "provider_excerpt_sha256": hashlib.sha256(excerpt.encode("utf-8")).hexdigest(),
         })
 
     payload = {
