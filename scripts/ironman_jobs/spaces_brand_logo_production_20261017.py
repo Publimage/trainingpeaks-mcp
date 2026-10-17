@@ -5,7 +5,7 @@ import httpx
 from PIL import Image
 from tp_mcp.tools.assets import _secure_config, _signed_put_headers, _validate_object_key
 
-SOURCE_URL="https://sdmntprpolandcentral.oaiusercontent.com/files/00000000-19bc-820a-8d4e-28a6faab6ce8/raw?se=2026-10-17T20%3A20%3A10Z&sp=r&sv=2026-02-06&sr=b&scid=d4cca4c5-a93d-5bfc-a913-36ecadb3ad37&skoid=b5d2651b-fef3-4bb0-a03b-ca59cc22929b&sktid=a48cca56-e6da-484e-a814-9c849652bcb3&skt=2026-10-17T19%3A35%3A51Z&ske=2026-10-18T19%3A35%3A51Z&sks=b&skv=2026-02-06&sig=TloVlEXLg/AQxB2fIj4lUmleODY8y1tmZfXq%2BKCBzJg%3D"
+SOURCE_URL="https://sdmntprpolandcentral.oaiusercontent.com/files/00000000-e8e0-820a-ab4f-1e033d51cb29/raw?se=2026-10-17T20%3A21%3A56Z&sp=r&sv=2026-02-06&sr=b&scid=5e4617ff-ca67-5309-9694-bc29af3daf1b&skoid=b5d2651b-fef3-4bb0-a03b-ca59cc22929b&sktid=a48cca56-e6da-484e-a814-9c849652bcb3&skt=2026-10-17T07%3A10%3A35Z&ske=2026-10-18T07%3A10%3A35Z&sks=b&skv=2026-02-06&sig=Xnhh/e4GmsWs0FcvHpbghu9pK1SXvIJol4CZXU8VKUc%3D"
 MASTER_SIZE=352781
 MASTER_SHA="ad2710edac3834c467331d2497716c45f8e4cdaf37eaeb658203d531ea9ceea6"
 OBJECT_KEY="brand/logo/alberto-fazi-endurance-logo-v1.0.png"
