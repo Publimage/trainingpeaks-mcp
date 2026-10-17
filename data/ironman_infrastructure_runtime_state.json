@@ -2,7 +2,7 @@
   "schema": "IRONMAN_INFRA_RUNTIME_STATE_V1",
   "purpose": "Small non-canonical execution/resume checkpoint for infrastructure work. Canonical decisions and workstream state remain in Google Drive IRONMAN — KNOWLEDGE BASE.",
   "workstream": "TrainingPeaks MCP / Prefect / Coaching Radar",
-  "updated_at_utc": "2026-10-17T15:55:00Z",
+  "updated_at_utc": "2026-10-17T16:03:00Z",
   "canonical_titles": [
     "00_IRONMAN_CORE_INDEX",
     "01_MASTER_COACHING_CONTEXT",
@@ -72,7 +72,7 @@
     "Do not rerun a live write or deploy merely because chat delivery failed; verify provider/server state first.",
     "This file never overrides Google Drive canonical documents."
   ],
-  "next_safe_action": "Install google-cloud-cli from the official Google apt repository with CLOUDSDK_SKIP_PY_COMPILATION=1. Authenticate the human admin only inside /root/.config/gcloud-ironman-temp using gcloud auth login --no-launch-browser, set project publimage-varie, enable iam.googleapis.com if needed, upload the existing public certificate, list the user-managed key to capture KEY_ID, then revoke all human auth and delete the temp config.",
+  "next_safe_action": "On Prefect staging, update checkout to the current branch revision, construct `/var/lib/ironman-prefect/credentials/radar-drive-reader.json` locally from the existing private PEM plus verified key ID 2ea8bc1db51f72a5fa47ca382e318c0a5139704c. Keep mode 0600 and owner ironmanprefect. Run strict local credential validator and read-only runtime preflight. Only if both PASS, run the metadata-only live Drive canary; no Radar deployment change, no Drive writes, no TrainingPeaks writes, no AI calls.",
   "safety_constraints": {
     "google_drive_scope": "drive.readonly",
     "drive_writes": 0,
@@ -108,14 +108,19 @@
     "drive_api": "ENABLED",
     "service_account_email": "ironman-radar-drive-reader@publimage-varie.iam.gserviceaccount.com",
     "service_account_project_roles": "NONE",
-    "service_account_key_status": "PENDING_PUBLIC_KEY_UPLOAD"
+    "service_account_key_status": "UPLOADED_VERIFIED",
+    "iam_api": "ENABLED",
+    "service_account_key_id": "2ea8bc1db51f72a5fa47ca382e318c0a5139704c",
+    "public_certificate_verified_against_google_metadata": true,
+    "public_certificate_not_before": "2026-10-17T15:50:18Z",
+    "public_certificate_not_after": "2027-10-17T15:50:18Z"
   },
   "google_cloud_admin_path": {
-    "gcloud_on_prefect_host": "MISSING",
-    "browser_automation": "TOO_SLOW_FOR_PRIMARY_ADMIN_PATH",
-    "decision": "Install Google Cloud CLI on Prefect staging, use a temporary CLOUDSDK_CONFIG for one-time human admin auth, perform IAM API enablement/public-key upload/readback, then revoke/delete the temporary human credentials.",
-    "workload_private_key_location": "/var/lib/ironman-prefect/credentials/radar-drive-reader-private.pem",
-    "workload_private_key_mode": "0600",
-    "public_certificate_location": "/var/lib/ironman-prefect/credentials/radar-drive-reader-public-cert.pem"
+    "browser_upload_initial_attempt": "FAILED_BEFORE_IAM_API",
+    "iam_api_prerequisite": "ENABLED_VERIFIED",
+    "cloud_shell_attempt": "INTERRUPTED_AFTER_UPLOAD_SIDE_EFFECT",
+    "post_interrupt_readback": "USER_MANAGED_KEY_PRESENT",
+    "final_key_id": "2ea8bc1db51f72a5fa47ca382e318c0a5139704c",
+    "google_public_x509_endpoint_match": "PASS"
   }
 }
