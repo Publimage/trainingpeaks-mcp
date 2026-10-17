@@ -1898,6 +1898,14 @@
       "scope": "trainingpeaks:lab-library:3890637:classic-organization-roundtrip-item-14935062",
       "script": "scripts/ironman_jobs/workout_library_classic_organization_canary.py",
       "test": "tests/test_workout_library_classic_organization_canary.py"
+    },
+    {
+      "name": "workout_library_native_strength_organization_canary",
+      "mode": "GUARDED_WRITE",
+      "owner_id": 2116886,
+      "scope": "trainingpeaks:lab-library:3890637:native-strength-organization-roundtrip-item-330612",
+      "script": "scripts/ironman_jobs/workout_library_native_strength_organization_canary.py",
+      "test": "tests/test_workout_library_native_strength_organization_canary.py"
     }
   ]
 }
