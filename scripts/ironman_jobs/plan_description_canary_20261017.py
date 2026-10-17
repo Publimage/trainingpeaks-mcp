@@ -22,7 +22,7 @@ async def go():
             must(not r.is_error and isinstance(r.data,dict),"PLAN_READ_FAILED")
             return r.data
         p=await detail()
-        must(p.get("planId")==PLAN and p.get("title")==EXPECTED_TITLE and p.get("workoutCount")==1
+        must(p.get("planId")==PLAN and p.get("title")==EXPECTED_TITLE and p.get("workoutCount")==0
              and p.get("weekCount")==1 and p.get("isPublic") is False,"LAB_SCOPE_CHANGED")
         old=p.get("description")
         baseline={k:v for k,v in p.items() if k!="description"}
