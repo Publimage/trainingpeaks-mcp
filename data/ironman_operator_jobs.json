@@ -1818,6 +1818,14 @@
       "scope": "digitalocean:spaces:ironman-assets:brand-logo-v1.0:deterministic-production-put-readback",
       "script": "scripts/ironman_jobs/spaces_brand_logo_production_20261017.py",
       "test": "tests/test_spaces_brand_logo_production_20261017.py"
+    },
+    {
+      "name": "training_plan_organization_metadata_readonly",
+      "mode": "READ_ONLY",
+      "owner_id": 2116886,
+      "scope": "trainingpeaks:coach:2116886:training-plan-organization-metadata:read",
+      "script": "scripts/ironman_jobs/training_plan_organization_metadata_readonly.py",
+      "test": "tests/test_training_plan_organization_metadata_readonly.py"
     }
   ]
 }
