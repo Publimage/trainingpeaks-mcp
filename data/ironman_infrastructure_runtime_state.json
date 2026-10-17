@@ -1,0 +1,75 @@
+{
+  "schema": "IRONMAN_INFRA_RUNTIME_STATE_V1",
+  "purpose": "Small non-canonical execution/resume checkpoint for infrastructure work. Canonical decisions and workstream state remain in Google Drive IRONMAN — KNOWLEDGE BASE.",
+  "workstream": "TrainingPeaks MCP / Prefect / Coaching Radar",
+  "updated_at_utc": "2026-10-17T11:54:00Z",
+  "canonical_titles": [
+    "00_IRONMAN_CORE_INDEX",
+    "01_MASTER_COACHING_CONTEXT",
+    "02_DECISION_LOG",
+    "03_OPEN_QUESTIONS_ROADMAP",
+    "10_CHAT_ARCHITECTURE_AND_ROLLOVER",
+    "11_AGENT_ORCHESTRATION_ROADMAP",
+    "21_TRAININGPEAKS_MCP_INTEGRATION_STATE",
+    "00C_IRONMAN_PROVEN_PATHS_REGISTRY"
+  ],
+  "current_objective": "Add selective, versioned, read-only Google Drive Knowledge Base context to Coaching Radar without changing the verified Radar V2 live schedule and without enabling automatic coaching decisions.",
+  "last_verified_checkpoint": {
+    "radar_v2_multiathlete_gate": "PASS",
+    "verified_date": "2026-10-17",
+    "prefect_flow": "ironman-coaching-radar-group-v2",
+    "deployment": "alberto-group-readonly-daily",
+    "flow_run_id": "7caf9c9c-fd51-448c-bafc-dd44e2d02123",
+    "flow_state": "COMPLETED",
+    "group_schedule_active": true,
+    "pilot_schedule_active": false,
+    "cron": "30 5 * * *",
+    "timezone": "Europe/Rome",
+    "athlete_count": 10,
+    "status_counts": {
+      "YELLOW": 9,
+      "GREEN": 1
+    },
+    "trainingpeaks_writes": 0,
+    "independent_provider_readback": "10/10 PASS"
+  },
+  "git": {
+    "branch": "lab/ironman-prefect-20261015",
+    "last_ci_green_revision_for_kb_context_gate": "e30252e27bae68d4a46569799f6e4a56cafc09b8",
+    "failed_revision": "b86dc2f0860371b2dbdcfec3ce113d8884e07c39",
+    "failure": "CI test_bundle_requires_all_canonical_roles_and_specialist_and_passes_gate failed with KB_ATHLETE_CARD_PROVIDER_ID_MISMATCH because the Athlete Card binding regex double-escaped whitespace and word-boundary tokens.",
+    "working_revision": "69e2e032f9d3211de18636586052537ae1844688",
+    "working_change": "Correct Athlete Card TrainingPeaks ID regex to use real regex whitespace and word-boundary tokens.",
+    "ci_run_id": 39030754914,
+    "ci_status": "IN_PROGRESS"
+  },
+  "kb_context_layer": {
+    "source_gate": "SOURCE_READY",
+    "live_drive_access": "PENDING",
+    "ai_context": "NOT_CONNECTED",
+    "implemented": [
+      "fail-closed canonical-role manifest",
+      "Drive read-only adapter",
+      "Drive file version provenance",
+      "SHA256 content fingerprints",
+      "private source-routing validator",
+      "Athlete Card to TrainingPeaks athlete-ID binding",
+      "full-roster metadata-only Drive context canary"
+    ]
+  },
+  "recovery_rules": [
+    "On a new chat/session, read this small runtime state first, then only the targeted canonical Drive sections needed for the current objective.",
+    "Verify current Git branch HEAD and CI state before repeating or replacing any operation.",
+    "Do not rerun a live write or deploy merely because chat delivery failed; verify provider/server state first.",
+    "This file never overrides Google Drive canonical documents."
+  ],
+  "next_safe_action": "If CI run 39030754914 passes, verify branch HEAD, then prepare/verify Prefect Drive-reader runtime and private source configuration without changing the live Radar V2 deployment. Before creating credentials or source files, inspect whether they already exist.",
+  "safety_constraints": {
+    "google_drive_scope": "drive.readonly",
+    "drive_writes": 0,
+    "trainingpeaks_writes": 0,
+    "ai_calls": 0,
+    "no_public_drive_document_ids_or_credentials_in_repo": true,
+    "no_service_restart_for_drive_reader_prepare": true
+  }
+}
