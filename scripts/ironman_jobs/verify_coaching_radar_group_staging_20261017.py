@@ -11,8 +11,42 @@ from uuid import UUID
 from prefect.client.orchestration import get_client
 
 DEPLOYMENT = "ironman-coaching-radar-v2/alberto-group-readonly-daily"
+PILOT_DEPLOYMENT = "ironman-coaching-radar-v2/polverari-readonly-daily-v2"
 ROSTER = Path("/opt/ironman-prefect/radar-src/data/coaching_radar_alberto_group_v1.json")
 OUTPUT = Path("/var/lib/ironman-prefect/radar")
+
+
+def _schedule_snapshot(deployment) -> list[dict]:
+    raw = deployment.model_dump(mode="json")
+    return raw.get("schedules") or []
+
+
+async def verify_schedule_states() -> dict:
+    async with get_client() as client:
+        group = await client.read_deployment_by_name(DEPLOYMENT)
+        pilot = await client.read_deployment_by_name(PILOT_DEPLOYMENT)
+    group_schedules = _schedule_snapshot(group)
+    pilot_schedules = _schedule_snapshot(pilot)
+    if len(group_schedules) != 1 or len(pilot_schedules) != 1:
+        raise RuntimeError("RADAR_V2_SCHEDULE_COUNT_MISMATCH")
+    gs = group_schedules[0]
+    ps = pilot_schedules[0]
+    if gs.get("active") is not True:
+        raise RuntimeError("RADAR_V2_GROUP_SCHEDULE_NOT_ACTIVE")
+    if ps.get("active") is not False:
+        raise RuntimeError("RADAR_V2_PILOT_SCHEDULE_NOT_INACTIVE")
+    for item in (gs, ps):
+        schedule = item.get("schedule") or {}
+        if schedule.get("cron") != "30 5 * * *":
+            raise RuntimeError("RADAR_V2_CRON_MISMATCH")
+        if schedule.get("timezone") != "Europe/Rome":
+            raise RuntimeError("RADAR_V2_TIMEZONE_MISMATCH")
+    return {
+        "group_schedule_active": True,
+        "pilot_schedule_active": False,
+        "cron": "30 5 * * *",
+        "timezone": "Europe/Rome",
+    }
 
 
 async def create_run(as_of: str) -> str:
@@ -75,6 +109,7 @@ def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--as-of", required=True)
     args = parser.parse_args()
+    schedules = asyncio.run(verify_schedule_states())
     run_id = asyncio.run(create_run(args.as_of))
     state = wait(run_id)
     files = verify_files(args.as_of)
@@ -83,6 +118,7 @@ def main() -> int:
         "deployment": DEPLOYMENT,
         "flow_run_id": run_id,
         "state": state,
+        **schedules,
         **files,
     }))
     return 0
