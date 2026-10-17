@@ -15,6 +15,7 @@ SCHEMA = "IRONMAN_RADAR_AI_PROVIDER_PAYLOAD_V1"
 
 _EMAIL_RE = re.compile(r"(?i)\b[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}\b")
 _PHONE_RE = re.compile(r"(?<!\d)(?:\+?\d[\d .()/-]{7,}\d)(?!\d)")
+_URL_RE = re.compile(r"(?i)https?://[^\s)\]}>]+")
 
 
 def _replace_literal(text: str, value: str, replacement: str) -> str:
@@ -26,9 +27,21 @@ def _replace_literal(text: str, value: str, replacement: str) -> str:
 def _redact_text(text: str, *, athlete_name: str, athlete_id: int) -> str:
     out = text
     out = _replace_literal(out, athlete_name, "<ATHLETE>")
+    for token in sorted(
+        {part.strip(".,;:()[]{}") for part in athlete_name.split()},
+        key=len,
+        reverse=True,
+    ):
+        if len(token) >= 3:
+            out = re.sub(
+                rf"(?i)(?<![A-ZÀ-ÖØ-öø-ÿ]){re.escape(token)}(?![A-ZÀ-ÖØ-öø-ÿ])",
+                "<ATHLETE_NAME_PART>",
+                out,
+            )
     out = re.sub(rf"(?<!\d){re.escape(str(athlete_id))}(?!\d)", "<ATHLETE_ID>", out)
     out = _EMAIL_RE.sub("<EMAIL>", out)
     out = _PHONE_RE.sub("<PHONE>", out)
+    out = _URL_RE.sub("<URL>", out)
     return out
 
 
