@@ -1562,6 +1562,14 @@
       "scope": "server:ironman-tp-mcp:private-bridge-active-radar-roster-canary",
       "script": "scripts/ironman_jobs/private_bridge_active_roster_canary_20261017.py",
       "test": "tests/test_private_bridge_active_roster_canary_20261017.py"
+    },
+    {
+      "name": "intermediate_strength_native_duration_20261017",
+      "mode": "GUARDED_WRITE",
+      "owner_id": 2116886,
+      "scope": "trainingpeaks:private-plan:684602:set-prescribed-duration-on-30-native-structuredstrength-from-canonical-title-minutes-only",
+      "script": "scripts/ironman_jobs/intermediate_strength_native_duration_20261017.py",
+      "test": "tests/test_intermediate_strength_native_duration_20261017.py"
     }
   ]
 }
