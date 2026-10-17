@@ -1618,6 +1618,14 @@
       "scope": "digitalocean:spaces:ironman-assets:brand-logo-v1.0:uploader-e2e-put-readback",
       "script": "scripts/ironman_jobs/spaces_brand_logo_uploader_e2e_20261017.py",
       "test": "tests/test_spaces_brand_logo_uploader_e2e_20261017.py"
+    },
+    {
+      "name": "spaces_config_path_inventory_20261017",
+      "mode": "READ_ONLY",
+      "owner_id": 2116886,
+      "scope": "server:ironman-tp-mcp:spaces-config-path-metadata-read",
+      "script": "scripts/ironman_jobs/spaces_config_path_inventory_20261017.py",
+      "test": "tests/test_spaces_config_path_inventory_20261017.py"
     }
   ]
 }
