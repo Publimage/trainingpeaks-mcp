@@ -2,7 +2,7 @@ from scripts.ironman_jobs.native_strength_library_rx_probe import endpoint,shape
 
 def test_explicit_libraries_only():
     assert endpoint(3890637).endswith("/3890637")
-    assert LIBS[3891875]=="IRONMAN MASTER | Forza"
+    assert LIBS[3891875]=="ALBERTO FAZI ENDURANCE | Forza | IT"
 
 def test_shape_exposes_native_metadata():
     a=shape([{"id":45,"title":"canary","workoutLibraryItemType":"ActivityWorkoutTemplate","workout":{"blocks":[]}}])
