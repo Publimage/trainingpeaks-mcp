@@ -9,7 +9,10 @@ import argparse
 import json
 from pathlib import Path
 
-from scripts.ironman_jobs.coaching_radar_ai_context_compiler_v0 import CATEGORY_TERMS
+from scripts.ironman_jobs.coaching_radar_ai_context_compiler_v0 import (
+    CATEGORY_TERMS,
+    DATA_QUALITY_FLAG_TERMS,
+)
 
 SCHEMA = "IRONMAN_RADAR_AI_CONTEXT_EVAL_CASES_V1"
 ROSTER = Path(__file__).resolve().parents[2] / "data" / "coaching_radar_alberto_group_v1.json"
@@ -30,6 +33,7 @@ def validate_cases(path: Path, roster_path: Path = ROSTER) -> dict:
 
     seen: set[int] = set()
     unsupported: set[str] = set()
+    unsupported_data_quality: set[str] = set()
     for item in cases:
         athlete_id = int(item["athlete_id"])
         if athlete_id not in active:
@@ -43,6 +47,12 @@ def validate_cases(path: Path, roster_path: Path = ROSTER) -> dict:
         for category in categories:
             if category not in CATEGORY_TERMS:
                 unsupported.add(str(category))
+        flags = item.get("data_quality")
+        if not isinstance(flags, list) or not flags:
+            raise ValueError("AI_CONTEXT_EVAL_DATA_QUALITY_FLAGS_MISSING")
+        for flag in flags:
+            if flag not in DATA_QUALITY_FLAG_TERMS:
+                unsupported_data_quality.add(str(flag))
         if not isinstance(item.get("expected_topics"), list) or not item["expected_topics"]:
             raise ValueError("AI_CONTEXT_EVAL_EXPECTED_TOPICS_MISSING")
 
@@ -51,6 +61,11 @@ def validate_cases(path: Path, roster_path: Path = ROSTER) -> dict:
         raise ValueError("AI_CONTEXT_EVAL_ROSTER_INCOMPLETE:" + ",".join(map(str, missing)))
     if unsupported:
         raise ValueError("AI_CONTEXT_EVAL_UNSUPPORTED_CATEGORY:" + ",".join(sorted(unsupported)))
+    if unsupported_data_quality:
+        raise ValueError(
+            "AI_CONTEXT_EVAL_UNSUPPORTED_DATA_QUALITY:"
+            + ",".join(sorted(unsupported_data_quality))
+        )
 
     category_counts: dict[str, int] = {}
     for item in cases:
