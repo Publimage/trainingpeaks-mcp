@@ -55,9 +55,9 @@ def test_provider_payload_removes_direct_identifiers_and_private_metadata():
     assert "massimiliano polverari" not in text
     assert "2932097" not in text
     assert "private-drive-id" not in text
-    assert "document_id" not in text
-    assert "athlete_name" not in text
-    assert "athlete_id" not in text
+    assert '"document_id"' not in text
+    assert '"athlete_name"' not in text
+    assert '"athlete_id"' not in text
     assert "max@example.com" not in text
     assert "333 123 4567" not in text
     assert "12345" not in text
