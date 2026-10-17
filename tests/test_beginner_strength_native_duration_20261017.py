@@ -21,3 +21,18 @@ def test_job_has_executable_entrypoint_and_recovery_guard():
     assert "asyncio.run(main())" in code
     assert "EXPECTED_MINUTES_DRIFT_" in code
     assert 'source = "native_title_duration_labels"' in code
+
+
+def test_title_duration_regex_examples():
+    import re
+    pat = re.compile(r"(\d+)(?:-(\d+))?'")
+    cases = {
+        "Forza | Base 25' A": 25,
+        "Forza | Neurale 25-30' A": 30,
+        "Forza | Attivazione 15-20'": 20,
+        "Forza | Attivazione 12'": 12,
+    }
+    for title, expected in cases.items():
+        m = pat.search(title)
+        assert m
+        assert int(m.group(2) or m.group(1)) == expected
