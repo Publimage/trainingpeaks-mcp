@@ -5,6 +5,7 @@ from tp_mcp.client import TPClient
 
 OWNER=2116886
 PATHS=(
+ "/planfolder/v1/folder/all",
  "/plans/v1/planFolders",
  "/plans/v1/trainingPlanFolders",
  "/plans/v1/planFolder",
