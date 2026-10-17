@@ -160,3 +160,22 @@ def test_bundle_missing_role_fails_before_reading():
             ],
             now_utc=NOW,
         )
+
+
+def test_live_canary_contract_is_metadata_only():
+    canary = Path("scripts/ironman_jobs/coaching_radar_drive_live_canary_20261017.py").read_text()
+    assert "DRIVE_READONLY_SCOPE" in canary
+    assert '"drive_writes": 0' in canary
+    assert '"trainingpeaks_writes": 0' in canary
+    assert "print(content)" not in canary
+    assert "KB_CREDENTIALS_FILE_PERMISSIONS_TOO_OPEN" in canary
+
+
+def test_drive_runtime_prepare_is_isolated_and_non_disruptive():
+    installer = Path("scripts/ironman_jobs/prepare_radar_drive_reader_runtime_20261017.sh").read_text()
+    assert "/opt/ironman-prefect/drive-reader" in installer
+    assert "google-auth[requests]==2.62.0" in installer
+    assert "RADAR_DRIVE_READER_RUNTIME_PASS" in installer
+    assert "systemctl restart" not in installer
+    assert "reboot" not in installer
+    assert "git config --global safe.directory" not in installer
