@@ -2,7 +2,7 @@
   "schema": "IRONMAN_INFRA_RUNTIME_STATE_V1",
   "purpose": "Small non-canonical execution/resume checkpoint for infrastructure work. Canonical decisions and workstream state remain in Google Drive IRONMAN — KNOWLEDGE BASE.",
   "workstream": "TrainingPeaks MCP / Prefect / Coaching Radar",
-  "updated_at_utc": "2026-10-17T13:08:00Z",
+  "updated_at_utc": "2026-10-17T13:12:00Z",
   "canonical_titles": [
     "00_IRONMAN_CORE_INDEX",
     "01_MASTER_COACHING_CONTEXT",
@@ -90,5 +90,20 @@
     "drive_writes": 0,
     "trainingpeaks_writes": 0,
     "ai_calls": 0
+  },
+  "google_drive_root": {
+    "title": "IRONMAN — KNOWLEDGE BASE",
+    "folder_id": "1cC7aPJEXfGIQg54b2jd9XlqtgjOzZ3x2",
+    "current_user_can_share": true,
+    "shared": false,
+    "sharing_strategy": "Prefer a single Viewer share on the KB root folder once the dedicated service-account email exists, so inherited access covers current and future canonical docs. Do not broaden access beyond this dedicated identity."
+  },
+  "google_cloud": {
+    "inspected_profile": "DigitalOcean IRONMAN browser profile",
+    "candidate_project_name": "Publimage varie",
+    "candidate_project_id": "publimage-varie",
+    "candidate_project_number": "570133601651",
+    "project_selection_reason": "Generic non-client project visible to the signed-in account; avoids reusing client-specific Google Cloud projects.",
+    "service_account_identity": "PENDING"
   }
 }
