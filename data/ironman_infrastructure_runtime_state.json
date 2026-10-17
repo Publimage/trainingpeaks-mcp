@@ -2,7 +2,7 @@
   "schema": "IRONMAN_INFRA_RUNTIME_STATE_V1",
   "purpose": "Small non-canonical execution/resume checkpoint for infrastructure work. Canonical decisions and workstream state remain in Google Drive IRONMAN — KNOWLEDGE BASE.",
   "workstream": "TrainingPeaks MCP / Prefect / Coaching Radar",
-  "updated_at_utc": "2026-10-17T11:54:00Z",
+  "updated_at_utc": "2026-10-17T11:57:00Z",
   "canonical_titles": [
     "00_IRONMAN_CORE_INDEX",
     "01_MASTER_COACHING_CONTEXT",
@@ -35,13 +35,14 @@
   },
   "git": {
     "branch": "lab/ironman-prefect-20261015",
-    "last_ci_green_revision_for_kb_context_gate": "e30252e27bae68d4a46569799f6e4a56cafc09b8",
+    "last_ci_green_revision_for_kb_context_gate": "69e2e032f9d3211de18636586052537ae1844688",
     "failed_revision": "b86dc2f0860371b2dbdcfec3ce113d8884e07c39",
     "failure": "CI test_bundle_requires_all_canonical_roles_and_specialist_and_passes_gate failed with KB_ATHLETE_CARD_PROVIDER_ID_MISMATCH because the Athlete Card binding regex double-escaped whitespace and word-boundary tokens.",
     "working_revision": "69e2e032f9d3211de18636586052537ae1844688",
     "working_change": "Correct Athlete Card TrainingPeaks ID regex to use real regex whitespace and word-boundary tokens.",
     "ci_run_id": 39030754914,
-    "ci_status": "IN_PROGRESS"
+    "ci_status": "COMPLETED_SUCCESS",
+    "recovered_branch_head_with_resume_state": "b825cf04b672d42462a6441f3b33a4488498f06d"
   },
   "kb_context_layer": {
     "source_gate": "SOURCE_READY",
@@ -63,7 +64,7 @@
     "Do not rerun a live write or deploy merely because chat delivery failed; verify provider/server state first.",
     "This file never overrides Google Drive canonical documents."
   ],
-  "next_safe_action": "If CI run 39030754914 passes, verify branch HEAD, then prepare/verify Prefect Drive-reader runtime and private source configuration without changing the live Radar V2 deployment. Before creating credentials or source files, inspect whether they already exist.",
+  "next_safe_action": "Inspect Prefect staging for existing Drive-reader runtime, credentials and private source configuration before creating or replacing anything. If absent, prepare only the isolated Drive-reader runtime; credential provisioning remains a separate explicit access step. Do not change the live Radar V2 deployment.",
   "safety_constraints": {
     "google_drive_scope": "drive.readonly",
     "drive_writes": 0,
