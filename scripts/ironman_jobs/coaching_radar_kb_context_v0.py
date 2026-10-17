@@ -33,11 +33,13 @@ def _utc(value: str) -> datetime:
 
 
 def _validate_document(item: dict[str, Any], *, now: datetime, max_age_hours: float) -> None:
-    for field in ("title", "document_id", "revision_id", "retrieved_at_utc", "content_sha256"):
+    for field in ("title", "document_id", "source_version", "retrieved_at_utc", "content_sha256"):
         if not isinstance(item.get(field), str) or not item[field].strip():
             raise ValueError(f"KB_DOCUMENT_FIELD_MISSING:{field}")
     if item.get("source") != "GOOGLE_DRIVE":
         raise ValueError("KB_DOCUMENT_SOURCE_NOT_GOOGLE_DRIVE")
+    if item.get("version_kind") != "DRIVE_FILE_VERSION":
+        raise ValueError("KB_DOCUMENT_VERSION_KIND_INVALID")
     if not _HEX64.fullmatch(item["content_sha256"]):
         raise ValueError("KB_DOCUMENT_SHA256_INVALID")
 
@@ -103,7 +105,7 @@ def validate_kb_context_manifest(
     revisions = {
         role: {
             "document_id": item["document_id"],
-            "revision_id": item["revision_id"],
+            "source_version": item["source_version"],
             "content_sha256": item["content_sha256"],
         }
         for role, item in all_items
