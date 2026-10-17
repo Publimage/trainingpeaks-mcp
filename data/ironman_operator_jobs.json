@@ -1874,6 +1874,14 @@
       "scope": "public:trainingpeaks:frontend:workout-library-organization-routes:read",
       "script": "scripts/ironman_jobs/workout_library_organization_frontend_readonly.py",
       "test": "tests/test_workout_library_organization_frontend_readonly.py"
+    },
+    {
+      "name": "trainingpeaks_organization_mcp_offline_gate",
+      "mode": "READ_ONLY",
+      "owner_id": 2116886,
+      "scope": "offline:trainingpeaks-mcp:organization-tools:test",
+      "script": "scripts/ironman_jobs/trainingpeaks_organization_mcp_offline_gate.py",
+      "test": "tests/test_tools/test_organization.py"
     }
   ]
 }
