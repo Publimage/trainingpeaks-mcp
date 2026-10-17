@@ -4,7 +4,7 @@ P=Path(__file__).resolve().parents[1]/"scripts/ironman_jobs/training_plan_lifecy
 def test_public_readonly():
  s=P.read_text();ast.parse(s)
  assert "https://app.trainingpeaks.com/" in s
- assert "copyplan" in s and "_delete" in s
+ assert "copyplan" in s and "removeTrainingPlan" in s
  for bad in ("TPClient","Authorization","Bearer ","h.post(","h.put(","h.delete("):
   assert bad not in s
  assert '"provider_writes":0' in s
