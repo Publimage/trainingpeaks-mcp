@@ -139,12 +139,20 @@ def _terms_for_radar(radar: dict[str, Any]) -> tuple[str, ...]:
     return tuple(dict.fromkeys(_norm(x) for x in terms if str(x).strip()))
 
 
-def _score(section: Section, terms: tuple[str, ...], *, role: str) -> tuple[int, int, int]:
+def _matched_terms(section: Section, terms: tuple[str, ...]) -> tuple[str, ...]:
     hay = _norm(section.heading + "\n" + section.text)
-    hits = sum(1 for term in terms if term in hay)
+    return tuple(term for term in terms if term in hay)
+
+
+def _score(section: Section, terms: tuple[str, ...], *, role: str) -> tuple[int, int, int]:
+    matched = _matched_terms(section, terms)
+    hits = len(matched)
     base = ROLE_BASE_WEIGHT.get("specialist" if role.startswith("specialist:") else role, 0)
-    heading_hits = sum(1 for term in terms if term in _norm(section.heading))
-    return (hits * 10 + heading_hits * 5 + base, -section.ordinal, -len(section.text))
+    heading_hits = sum(1 for term in matched if term in _norm(section.heading))
+    # Base weight breaks ties only when there is a semantic match. Required
+    # sources are added separately even if no alert-specific term is present.
+    score = hits * 10 + heading_hits * 5 + (base if hits else 0)
+    return (score, -section.ordinal, -len(section.text))
 
 
 def _source_meta(packet: dict[str, Any], role: str) -> dict[str, Any]:
@@ -219,6 +227,7 @@ def compile_selective_context(
             "section_heading": section.heading,
             "section_ordinal": section.ordinal,
             "selection_score": score,
+            "matched_terms": list(_matched_terms(section, terms)),
             "excerpt": text,
             "excerpt_sha256": _sha(text),
         })
@@ -302,17 +311,29 @@ def evaluate_compiled_context(
     actual_categories = set(compiled.get("signal_categories") or [])
     missing_categories = sorted(set(expected_categories) - actual_categories)
     roles = {str(item.get("role") or "") for item in excerpts}
+    matched_terms = {
+        term
+        for item in excerpts
+        for term in (item.get("matched_terms") or [])
+    }
 
     def family_hit(family: str) -> bool:
         return family in roles or (family == "specialist" and any(x.startswith("specialist:") for x in roles))
 
     missing_roles = [x for x in expected_role_families if not family_hit(x)]
+    category_routing_misses = {}
+    for category in expected_categories:
+        candidates = CATEGORY_TERMS.get(category, ())
+        if candidates and not any(_norm(term) in matched_terms for term in candidates):
+            category_routing_misses[category] = list(candidates)
+
     chars = int(compiled.get("selected_char_count") or 0)
     duplicate_excerpts = len({x["excerpt_sha256"] for x in excerpts}) != len(excerpts)
 
     passed = (
         not missing_categories
         and not missing_roles
+        and not category_routing_misses
         and chars <= max_chars
         and not duplicate_excerpts
         and compiled.get("trainingpeaks_writes") == 0
@@ -324,6 +345,8 @@ def evaluate_compiled_context(
         "pass": passed,
         "missing_categories": missing_categories,
         "missing_role_families": missing_roles,
+        "category_routing_misses": category_routing_misses,
+        "matched_terms": sorted(matched_terms),
         "selected_char_count": chars,
         "max_chars": max_chars,
         "duplicate_excerpts": duplicate_excerpts,
