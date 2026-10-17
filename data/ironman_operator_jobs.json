@@ -1674,6 +1674,14 @@
       "scope": "public:trainingpeaks:frontend:organization-routes:read",
       "script": "scripts/ironman_jobs/tp_organization_frontend_routes_20261017.py",
       "test": "tests/test_tp_organization_frontend_routes_20261017.py"
+    },
+    {
+      "name": "training_plan_folder_frontend_routes_compact_20261017",
+      "mode": "READ_ONLY",
+      "owner_id": 2116886,
+      "scope": "public:trainingpeaks:frontend:training-plan-folder-routes:read",
+      "script": "scripts/ironman_jobs/training_plan_folder_frontend_routes_compact_20261017.py",
+      "test": "tests/test_training_plan_folder_frontend_routes_compact_20261017.py"
     }
   ]
 }
