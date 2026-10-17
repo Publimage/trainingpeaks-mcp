@@ -33,6 +33,17 @@ async def main():
         if not isinstance(me,dict) or me.get("personId")!=OWNER:
             print(json.dumps({"stage":"STOP_OWNER","writes":0}));return 2
 
+        folder_read=await c.get("/planfolder/v1/folder/all")
+        if folder_read.is_error:
+            print(json.dumps({"stage":"FOLDERS","error":True,"status":getattr(folder_read,"status_code",None),"writes":0}),flush=True)
+        else:
+            folders=folder_read.data if isinstance(folder_read.data,list) else []
+            print(json.dumps({"stage":"FOLDERS","error":False,"count":len(folders),
+                              "folders":[{"folderId":x.get("folderId"),"title":x.get("title"),
+                                          "planIds":x.get("planIds"),"keys":sorted(x)}
+                                         for x in folders if isinstance(x,dict)],
+                              "writes":0},ensure_ascii=False),flush=True)
+
         for endpoint in ("/plans/v1/plans","/plans/v1/plansWithAccess"):
             r=await c.get(endpoint)
             if r.is_error:
