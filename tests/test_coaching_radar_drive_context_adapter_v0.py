@@ -244,3 +244,13 @@ def test_bundle_fails_if_athlete_card_provider_id_is_wrong():
             ],
             now_utc=NOW,
         )
+
+
+def test_roster_canary_has_no_write_or_ai_path():
+    text = Path("scripts/ironman_jobs/coaching_radar_drive_bundle_live_canary_20261017.py").read_text()
+    assert "RADAR_DRIVE_CONTEXT_ROSTER_CANARY_PASS" in text
+    assert '"drive_writes": 0' in text
+    assert '"trainingpeaks_writes": 0' in text
+    assert '"ai_calls": 0' in text
+    assert "print(bundle[\"contents\"])" not in text
+    assert "active_athlete_ids=set(roster)" in text
