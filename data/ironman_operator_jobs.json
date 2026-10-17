@@ -1530,6 +1530,14 @@
       "scope": "trainingpeaks:public-plan:679801:set-prescribed-duration-on-36-native-structuredstrength-from-verified-classic-duration-evidence-only",
       "script": "scripts/ironman_jobs/beginner_strength_native_duration_20261017.py",
       "test": "tests/test_beginner_strength_native_duration_20261017.py"
+    },
+    {
+      "name": "private_bridge_configure_v3_multiathlete_20261017",
+      "mode": "GUARDED_WRITE",
+      "owner_id": 2116886,
+      "scope": "server:ironman-tp-mcp:private-readonly-bridge-config-v3-active-radar-roster",
+      "script": "scripts/ironman_jobs/private_bridge_configure_v3_multiathlete_20261017.py",
+      "test": "tests/test_private_bridge_configure_v3_multiathlete_20261017.py"
     }
   ]
 }
