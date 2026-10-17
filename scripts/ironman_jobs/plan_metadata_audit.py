@@ -4,7 +4,7 @@ Print no email or secrets: presence/type/digest only.
 import asyncio,hashlib,json
 from tp_mcp.client import TPClient
 OWNER=2116886
-PLANS=[684602,679801,684463,684484,684206,504281]
+PLANS=[684602,685173,679801,684463,684484,684206,504281]
 def sig(s):
  if s is None:return "NONE"
  return hashlib.sha256(str(s).encode()).hexdigest()[:12]
@@ -17,7 +17,7 @@ async def main():
    assert not r.is_error and isinstance(r.data,dict) and r.data.get("planId")==i
    p=r.data
    x={k:{"present":p.get(k) not in (None,""),"type":type(p.get(k)).__name__,
-         "digest":sig(p.get(k))} for k in ("author","planEmail")}
+         "digest":sig(p.get(k))} for k in ("author","planEmail","planLanguage")}
    print(json.dumps({"id":i,"title":p.get("title"),"metadata":x,
       "isPublic":p.get("isPublic"),"workoutCount":p.get("workoutCount")}),flush=True)
   print("NO_PROVIDER_WRITES")
