@@ -2,6 +2,7 @@
 
 from tp_mcp.tools.analyze import tp_analyze_workout
 from tp_mcp.tools.atp import tp_get_atp
+from tp_mcp.tools.assets import tp_publish_public_asset
 from tp_mcp.tools.auth_status import tp_auth_status
 from tp_mcp.tools.equipment import (
     tp_create_equipment,
@@ -188,6 +189,7 @@ __all__ = [
     "tp_get_workouts",
     "tp_log_metrics",
     "tp_pair_workout",
+    "tp_publish_public_asset",
     "tp_refresh_auth",
     "tp_reorder_workouts",
     "tp_schedule_library_workout",
