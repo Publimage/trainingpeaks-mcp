@@ -4,6 +4,14 @@
   "notes": "Registry is trusted code metadata. Jobs run only from the pinned verified branch; allow only reviewed scripts.",
   "jobs": [
     {
+      "name": "beginner_price_private_lab_canary_20261017",
+      "mode": "GUARDED_WRITE",
+      "owner_id": 2116886,
+      "scope": "trainingpeaks:disposable-plan:684484:price-1-eur-then-restore",
+      "script": "scripts/ironman_jobs/beginner_price_private_lab_canary_20261017.py",
+      "test": "tests/test_beginner_price_private_lab_canary_20261017.py"
+    },
+    {
       "name": "native_strength_library_audit",
       "mode": "READ_ONLY",
       "owner_id": 2116886,
