@@ -1578,6 +1578,14 @@
       "scope": "trainingpeaks:private-plan:685173:start-note:2664007:attach-exact-three-chasing-guide-pdfs-only",
       "script": "scripts/ironman_jobs/chasing_readme_three_pdfs_20261017.py",
       "test": "tests/test_chasing_readme_three_pdfs_20261017.py"
+    },
+    {
+      "name": "chasing_readme_pdf_postflight_20261017",
+      "mode": "READ_ONLY",
+      "owner_id": 2116886,
+      "scope": "trainingpeaks:private-plan:685173:start-note:2664007:three-guide-pdf-postflight-read",
+      "script": "scripts/ironman_jobs/chasing_readme_pdf_postflight_20261017.py",
+      "test": "tests/test_chasing_readme_pdf_postflight_20261017.py"
     }
   ]
 }
