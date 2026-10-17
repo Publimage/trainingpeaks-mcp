@@ -104,8 +104,9 @@ def test_duration_short_signal_is_preserved():
 
 def test_no_alert_but_missing_feedback_still_compiles_policy_context():
     compiled = compile_selective_context(_packet([], missing_rpe=True, wellness=0), max_total_chars=6000)
-    assert compiled["signal_categories"] == []\n    assert "feedback" in compiled["selection_terms"]\n    assert "wellness" in compiled["selection_terms"]
-
+    assert compiled["signal_categories"] == []
+    assert "feedback" in compiled["selection_terms"]
+    assert "wellness" in compiled["selection_terms"]
 
 def test_eval_passes_expected_current_radar_routing():
     compiled = compile_selective_context(_packet(["TSS_DATA_QUALITY", "IF_DATA_QUALITY"]), max_total_chars=6000)
