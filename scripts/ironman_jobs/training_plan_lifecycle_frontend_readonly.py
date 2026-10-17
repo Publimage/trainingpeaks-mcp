@@ -1,10 +1,10 @@
-"""READ ONLY: exact current public frontend definition for whole-plan removal."""
+"""READ ONLY: exact current public frontend use-case that builds copyplan request body."""
 from __future__ import annotations
 import asyncio,json,re
 from urllib.parse import urljoin,urlparse
 import httpx
 BASE="https://app.trainingpeaks.com/"
-PATTERNS=('key:"removeTrainingPlan"','key:"deleteTrainingPlan"','removeTrainingPlan:function','deleteTrainingPlan:function')
+TERMS=("apiProxy.copyTrainingPlan","CopyTrainingPlan requires","UnableToCopyTrainingPlan")
 async def main()->int:
   async with httpx.AsyncClient(timeout=22,follow_redirects=False,headers={"User-Agent":"Mozilla/5.0"}) as h:
     page=await h.get(BASE)
@@ -18,18 +18,23 @@ async def main()->int:
           r=await h.get(url)
           if r.status_code!=200 or len(r.content)>14000000:return []
           src=r.text;rows=[]
-          for pat in PATTERNS:
-            for m in re.finditer(re.escape(pat),src):
-              a,b=max(0,m.start()-2200),min(len(src),m.end()+5200)
-              rows.append({"asset":urlparse(url).path,"pattern":pat,"offset":m.start(),
-                           "context":src[a:b].replace("\n"," ").replace("\r"," ")[:7500]})
+          for term in TERMS:
+            for m in list(re.finditer(re.escape(term),src,re.I))[:20]:
+              a,b=max(0,m.start()-5200),min(len(src),m.end()+7200)
+              rows.append({"asset":urlparse(url).path,"term":term,"offset":m.start(),
+                           "context":src[a:b].replace("\n"," ").replace("\r"," ")[:12400]})
           return rows
         except Exception:return []
     chunks=await asyncio.gather(*(inspect(u) for u in urls))
     rows=[x for ch in chunks for x in ch]
-    print(json.dumps({"stage":"SUMMARY","definitions":len(rows),"writes":0}),flush=True)
-    for row in rows[:12]:
-      print(json.dumps({"stage":"REMOVE_DEF",**row,"writes":0},ensure_ascii=False),flush=True)
+    seen=set();out=[]
+    for x in rows:
+      key=(x["asset"],x["offset"]//250)
+      if key in seen:continue
+      seen.add(key);out.append(x)
+    print(json.dumps({"stage":"SUMMARY","hits":len(out),"writes":0}),flush=True)
+    for row in out[:12]:
+      print(json.dumps({"stage":"COPY_USECASE",**row,"writes":0},ensure_ascii=False),flush=True)
     print(json.dumps({"stage":"COMPLETE","provider_writes":0}),flush=True)
     return 0
 if __name__=="__main__":raise SystemExit(asyncio.run(main()))
