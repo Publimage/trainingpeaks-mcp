@@ -128,3 +128,12 @@ def test_eval_fails_missing_expected_signal():
     )
     assert result["pass"] is False
     assert result["missing_categories"] == ["COMPLETION_UNCONFIRMED"]
+
+
+def test_short_term_if_does_not_match_inside_verificare():
+    packet = _packet(["IF_DATA_QUALITY"])
+    packet["knowledge_base"]["contents"]["decision_log"] = "# Controllo\nVerificare i dati prima della decisione."
+    compiled = compile_selective_context(packet, max_total_chars=6000)
+    decision = [x for x in compiled["excerpts"] if x["role"] == "decision_log"]
+    if decision:
+        assert "if" not in decision[0]["matched_terms"]
