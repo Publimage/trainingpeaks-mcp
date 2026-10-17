@@ -1930,6 +1930,14 @@
       "scope": "public:trainingpeaks:frontend:training-plan-copy-delete-routes:read",
       "script": "scripts/ironman_jobs/training_plan_lifecycle_frontend_readonly.py",
       "test": "tests/test_training_plan_lifecycle_frontend_readonly.py"
+    },
+    {
+      "name": "plan_description_canary_20261017",
+      "mode": "GUARDED_WRITE",
+      "owner_id": 2116886,
+      "scope": "trainingpeaks:disposable-plan:684484:description-put-revert",
+      "script": "scripts/ironman_jobs/plan_description_canary_20261017.py",
+      "test": "tests/test_plan_description_canary_20261017.py"
     }
   ]
 }
