@@ -1,0 +1,132 @@
+{
+  "schema": "IRONMAN_RADAR_AI_PROVIDER_SELECTION_V1",
+  "checked_at": "2026-10-17",
+  "activation_status": "NOT_AUTHORIZED",
+  "payload_snapshot": {
+    "summary_sha256": "f38dfecce7e85999aa894a3ba9fbf8b07abf99e0691913bfd10fea7a7165f0e4",
+    "case_count": 10,
+    "total_chars": 295955,
+    "total_bytes": 343878,
+    "input_tokens_typical_estimate": 73989,
+    "input_tokens_conservative_estimate": 98652,
+    "output_tokens_per_case_cost_assumption": 1000,
+    "output_tokens_total_cost_assumption": 10000,
+    "note": "Token counts are planning estimates derived from measured pseudonymized payload size; provider tokenizers and reasoning-token usage can differ."
+  },
+  "shortlist": [
+    {
+      "provider": "Anthropic",
+      "route": "Claude API first-party",
+      "model": "claude-sonnet-5-5",
+      "benchmark_role": "balanced_primary",
+      "input_usd_per_million": 2,
+      "output_usd_per_million": 10,
+      "estimated_10_case_run_usd": {
+        "typical": 0.247978,
+        "conservative": 0.297304
+      },
+      "estimated_30_daily_runs_usd": {
+        "typical": 7.4393,
+        "conservative": 8.9191
+      },
+      "structured_output": true,
+      "privacy": {
+        "training_default": false,
+        "structured_outputs_prompt_response_retention": "ZDR according to current Anthropic structured-output documentation; JSON schema may be cached up to 24h.",
+        "inference_geo": "global or US only on first-party Claude API",
+        "workspace_storage_geo": "US"
+      },
+      "official_sources": [
+        "https://www.anthropic.com/claude/sonnet",
+        "https://platform.claude.com/docs/en/build-with-claude/structured-outputs",
+        "https://privacy.anthropic.com/en/articles/7996868-is-my-data-used-for-model-training",
+        "https://platform.claude.com/docs/en/manage-claude/data-residency"
+      ]
+    },
+    {
+      "provider": "OpenAI",
+      "route": "OpenAI API EU regional processing",
+      "model": "gpt-6.1-sol",
+      "benchmark_role": "balanced_primary_eu",
+      "base_input_usd_per_million": 2,
+      "base_output_usd_per_million": 10,
+      "regional_multiplier": 1.1,
+      "estimated_10_case_run_usd": {
+        "typical": 0.272776,
+        "conservative": 0.327034
+      },
+      "estimated_30_daily_runs_usd": {
+        "typical": 8.1833,
+        "conservative": 9.811
+      },
+      "structured_output": true,
+      "privacy": {
+        "training_default": false,
+        "abuse_monitoring_default": "up to 30 days",
+        "zero_data_retention": "available to eligible approved organizations",
+        "eu_data_residency": true
+      },
+      "official_sources": [
+        "https://developers.openai.com/api/docs/models/gpt-6.1-sol",
+        "https://developers.openai.com/api/docs/guides/your-data",
+        "https://developers.openai.com/api/docs/guides/structured-outputs"
+      ]
+    },
+    {
+      "provider": "Google",
+      "route": "Vertex AI non-global/EU processing",
+      "model": "gemini-4-argon",
+      "benchmark_role": "balanced_primary_eu",
+      "input_usd_per_million_through_2026_11_30": 2.2,
+      "output_usd_per_million_through_2026_11_30": 11,
+      "input_usd_per_million_from_2026_12_01": 4.4,
+      "output_usd_per_million_from_2026_12_01": 22,
+      "estimated_10_case_run_usd_through_2026_11_30": {
+        "typical": 0.272776,
+        "conservative": 0.327034
+      },
+      "estimated_30_daily_runs_usd_through_2026_11_30": {
+        "typical": 8.1833,
+        "conservative": 9.811
+      },
+      "estimated_30_daily_runs_usd_from_2026_12_01": {
+        "typical": 16.3665,
+        "conservative": 19.6221
+      },
+      "structured_output": true,
+      "privacy": {
+        "training_default": false,
+        "zero_data_retention": "Vertex AI documents ZDR configuration; avoid stateful/storage features.",
+        "eu_data_residency": "supported through regional/non-global Google Cloud routing for Gemini 4 Argon"
+      },
+      "official_sources": [
+        "https://cloud.google.com/gemini-enterprise-agent-platform/generative-ai/pricing",
+        "https://docs.cloud.google.com/vertex-ai/generative-ai/docs/vertex-ai-zero-data-retention",
+        "https://docs.cloud.google.com/gemini-enterprise-agent-platform/resources/data-residency",
+        "https://ai.google.dev/gemini-api/docs/structured-output"
+      ]
+    }
+  ],
+  "benchmark_plan": {
+    "recommended_first_pass": [
+      "claude-sonnet-5-5",
+      "gpt-6.1-sol",
+      "gemini-4-argon"
+    ],
+    "reason": "Current 10-case benchmark cost is below about USD 1 total across all three under the explicit 1,000-output-tokens-per-case planning assumption, so quality should dominate initial selection.",
+    "combined_estimated_cost_usd": {
+      "typical": 0.79353,
+      "conservative": 0.951372
+    },
+    "hard_rules": [
+      "same frozen AI-3 benchmark and provider payload snapshot for all models",
+      "same provider-visible behavior taxonomy and output schema",
+      "no tools, web search, files, or external retrieval",
+      "structured JSON only",
+      "gold labels remain server-side",
+      "no provider activated until explicit coach confirmation",
+      "record actual input/output/reasoning token usage and actual billed cost per run"
+    ]
+  },
+  "selection_status": "READY_FOR_COACH_PAID_PROVIDER_CONFIRMATION"
+}
