@@ -5,7 +5,7 @@ from tp_mcp.client import TPClient
 from tp_mcp.tools.strength import _access,_headers,STRENGTH_API_BASE
 
 OWNER=2116886
-LIBS={3890637:"[MCP TEST] Integration Lab",3891875:"IRONMAN MASTER | Forza",3894341:"CHASING THE SLOT | Forza"}
+LIBS={3890637:"[MCP TEST] Integration Lab",3891875:"ALBERTO FAZI ENDURANCE | Forza | IT",3894341:"CHASING THE SLOT | Forza"}
 
 def endpoint(lib_id:int)->str:
     assert lib_id in LIBS
