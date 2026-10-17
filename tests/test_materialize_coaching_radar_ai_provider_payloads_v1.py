@@ -38,6 +38,14 @@ def _private_case(index=1):
     }
 
 
+def _taxonomy(path):
+    path.write_text(json.dumps({
+        "schema": "IRONMAN_RADAR_AI_BEHAVIOR_TAXONOMY_V1",
+        "codes": [{"code": "COACH_DECISION_REQUIRED", "kind": "required_capability", "description": "Coach decides."}],
+        "instruction": "Return applicable codes.",
+    }))
+
+
 def test_materializer_creates_private_sanitized_payloads(tmp_path):
     private = tmp_path / "private"
     private.mkdir(mode=0o700)
@@ -55,13 +63,15 @@ def test_materializer_creates_private_sanitized_payloads(tmp_path):
     (private / "manifest.json").write_text(json.dumps(manifest))
     schema = tmp_path / "schema.json"
     schema.write_text(json.dumps({"type": "object"}))
+    taxonomy = tmp_path / "taxonomy.json"
+    _taxonomy(taxonomy)
     out = tmp_path / "out"
-    result = materialize(private, out, schema)
+    result = materialize(private, out, schema, taxonomy)
     assert result["case_count"] == 10
     assert result["gate"] == "PASS"
     assert stat.S_IMODE(out.stat().st_mode) == 0o700
     payload_files = list(out.glob("provider_*.json"))
-    assert len(payload_files) == 1
+    assert len(payload_files) == 10
     assert stat.S_IMODE(payload_files[0].stat().st_mode) == 0o600
     text = payload_files[0].read_text().lower()
     assert "massimiliano polverari" not in text
@@ -84,6 +94,8 @@ def test_summary_has_token_planning_bounds(tmp_path):
     }))
     schema = tmp_path / "schema.json"
     schema.write_text(json.dumps({"type": "object"}))
-    result = materialize(private, tmp_path / "out", schema)
+    taxonomy = tmp_path / "taxonomy.json"
+    _taxonomy(taxonomy)
+    result = materialize(private, tmp_path / "out", schema, taxonomy)
     assert result["approx_input_tokens_typical_chars4"] > 0
     assert result["approx_input_tokens_conservative_chars3"] >= result["approx_input_tokens_typical_chars4"]
