@@ -104,6 +104,10 @@ def main() -> int:
             max_total_chars=args.max_total_chars,
         )
         case = eval_cases[athlete_id]
+        if report.get("evidence_sha256") != case.get("radar_evidence_sha256"):
+            raise RuntimeError(f"AI_CONTEXT_LIVE_EVIDENCE_MISMATCH:{athlete_id}")
+        if report.get("status") != case.get("radar_status"):
+            raise RuntimeError(f"AI_CONTEXT_LIVE_STATUS_MISMATCH:{athlete_id}")
         expected_categories = sorted(case.get("categories") or [])
         if compiled["signal_categories"] != expected_categories:
             raise RuntimeError(
