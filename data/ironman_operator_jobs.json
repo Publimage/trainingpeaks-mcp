@@ -1850,6 +1850,14 @@
       "scope": "public:trainingpeaks:frontend:training-plan-folder-routes:read",
       "script": "scripts/ironman_jobs/training_plan_folder_frontend_routes_readonly.py",
       "test": "tests/test_training_plan_folder_frontend_routes_readonly.py"
+    },
+    {
+      "name": "training_plan_folder_actions_frontend_readonly",
+      "mode": "READ_ONLY",
+      "owner_id": 2116886,
+      "scope": "public:trainingpeaks:frontend:training-plan-folder-actions:read",
+      "script": "scripts/ironman_jobs/training_plan_folder_actions_frontend_readonly.py",
+      "test": "tests/test_training_plan_folder_actions_frontend_readonly.py"
     }
   ]
 }
