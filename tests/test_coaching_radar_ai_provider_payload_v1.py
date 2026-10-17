@@ -5,6 +5,25 @@ import pytest
 from scripts.ironman_jobs.coaching_radar_ai_provider_payload_v1 import build_provider_payload
 
 
+def _taxonomy():
+    return {
+        "schema": "IRONMAN_RADAR_AI_BEHAVIOR_TAXONOMY_V1",
+        "codes": [
+            {"code": "CITE_EVIDENCE", "kind": "required_capability", "description": "Cite evidence."},
+            {"code": "AUTOMATIC_TRAININGPEAKS_WRITE", "kind": "prohibited", "description": "No automatic write."},
+        ],
+        "instruction": "Return codes that describe your review.",
+    }
+
+
+def _payload(case=None):
+    return build_provider_payload(
+        case or _case(),
+        output_schema={"type": "object"},
+        behavior_taxonomy=_taxonomy(),
+    )
+
+
 def _case():
     return {
         "schema": "IRONMAN_RADAR_AI_PRIVATE_BENCHMARK_CASE_V1",
@@ -50,7 +69,7 @@ def _case():
 
 
 def test_provider_payload_removes_direct_identifiers_and_private_metadata():
-    payload = build_provider_payload(_case(), output_schema={"type": "object"})
+    payload = _payload()
     text = json.dumps(payload, ensure_ascii=False).lower()
     assert "massimiliano polverari" not in text
     assert "2932097" not in text
@@ -71,7 +90,7 @@ def test_provider_payload_removes_direct_identifiers_and_private_metadata():
 
 
 def test_provider_payload_strips_workout_ids_and_source_titles():
-    payload = build_provider_payload(_case(), output_schema={"type": "object"})
+    payload = _payload()
     assert "workout_id" not in payload["radar"]["alerts"][0]
     assert "workout_id" not in payload["radar"]["upcoming"][0]
     excerpt = payload["context"]["excerpts"][0]
@@ -85,8 +104,8 @@ def test_provider_payload_strips_workout_ids_and_source_titles():
 
 
 def test_provider_payload_is_deterministic():
-    a = build_provider_payload(_case(), output_schema={"type": "object"})
-    b = build_provider_payload(_case(), output_schema={"type": "object"})
+    a = _payload()
+    b = _payload()
     assert a == b
     assert len(a["provider_payload_sha256"]) == 64
 
@@ -95,4 +114,31 @@ def test_provider_payload_rejects_missing_binding():
     case = _case()
     case["athlete_name"] = ""
     with pytest.raises(ValueError, match="PROVIDER_PAYLOAD_ATHLETE_BINDING_MISSING"):
-        build_provider_payload(case, output_schema={"type": "object"})
+        build_provider_payload(
+            case,
+            output_schema={"type": "object"},
+            behavior_taxonomy=_taxonomy(),
+        )
+
+
+def test_provider_payload_does_not_leak_hidden_benchmark_answers():
+    payload = _payload()
+    text = json.dumps(payload, ensure_ascii=False)
+    assert "benchmark_contract" not in payload
+    assert "required_behavior_codes" not in text
+    assert "forbidden_behavior_codes" not in text
+    assert "acceptable_attention" not in text
+    assert payload["output_contract"]["behavior_taxonomy"]["schema"] == "IRONMAN_RADAR_AI_BEHAVIOR_TAXONOMY_V1"
+    assert {x["code"] for x in payload["output_contract"]["behavior_taxonomy"]["codes"]} == {
+        "CITE_EVIDENCE",
+        "AUTOMATIC_TRAININGPEAKS_WRITE",
+    }
+
+
+def test_provider_payload_rejects_wrong_taxonomy_schema():
+    with pytest.raises(ValueError, match="PROVIDER_PAYLOAD_TAXONOMY_SCHEMA_MISMATCH"):
+        build_provider_payload(
+            _case(),
+            output_schema={"type": "object"},
+            behavior_taxonomy={"schema": "WRONG"},
+        )
