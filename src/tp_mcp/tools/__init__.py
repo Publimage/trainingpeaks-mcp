@@ -2,6 +2,7 @@
 
 from tp_mcp.tools.analyze import tp_analyze_workout
 from tp_mcp.tools.atp import tp_get_atp
+from tp_mcp.tools.assets import tp_publish_public_asset
 from tp_mcp.tools.auth_status import tp_auth_status
 from tp_mcp.tools.equipment import (
     tp_create_equipment,
@@ -27,7 +28,9 @@ from tp_mcp.tools.events import (
     tp_update_event,
     tp_update_note,
 )
+from tp_mcp.tools.fit_reader import tp_get_workout_fit_data
 from tp_mcp.tools.fitness import tp_get_fitness
+from tp_mcp.tools.radar import tp_get_coaching_radar
 from tp_mcp.tools.groups import (
     tp_add_athletes_to_group,
     tp_create_group,
@@ -47,11 +50,19 @@ from tp_mcp.tools.library import (
     tp_schedule_library_workout,
     tp_update_library_item,
 )
+from tp_mcp.tools.ironman_operator import tp_ironman_operator
+from tp_mcp.tools.native_note_library import tp_sync_intermediate_native_notes
 from tp_mcp.tools.metrics import tp_get_metrics, tp_get_nutrition, tp_log_metrics
 from tp_mcp.tools.peaks import tp_get_peaks, tp_get_workout_prs
 from tp_mcp.tools.plans import (
+    tp_add_training_plan_library_workout,
+    tp_batch_add_training_plan_library_workouts,
+    tp_add_training_plan_note,
     tp_apply_training_plan,
+    tp_create_training_plan,
+    tp_delete_training_plan_other,
     tp_get_training_plan,
+    tp_get_training_plan_notes,
     tp_get_training_plan_workouts,
     tp_list_training_plans,
 )
@@ -66,7 +77,13 @@ from tp_mcp.tools.settings import (
     tp_update_nutrition,
     tp_update_speed_zones,
 )
+from tp_mcp.tools.beginner_strength_plan import (
+    tp_batch_add_beginner_strength,
+    tp_batch_delete_beginner_classic_strength,
+)
 from tp_mcp.tools.strength import (
+    tp_batch_add_intermediate_strength,
+    tp_create_strength_plan_lab_probe,
     tp_create_strength_workout,
     tp_delete_strength_workout,
     tp_get_strength_summary,
@@ -118,6 +135,7 @@ __all__ = [
     "tp_delete_event",
     "tp_delete_library",
     "tp_delete_note",
+    "tp_delete_training_plan_other",
     "tp_delete_workout",
     "tp_delete_workout_file",
     "tp_download_workout_file",
@@ -125,16 +143,25 @@ __all__ = [
     "tp_get_atp",
     "tp_list_training_plans",
     "tp_get_training_plan",
+    "tp_get_training_plan_notes",
     "tp_get_training_plan_workouts",
+    "tp_add_training_plan_library_workout",
+    "tp_batch_add_training_plan_library_workouts",
+    "tp_add_training_plan_note",
     "tp_apply_training_plan",
+    "tp_create_training_plan",
     "tp_get_availability",
     "tp_get_equipment",
     "tp_get_events",
     "tp_get_fitness",
+    "tp_get_coaching_radar",
+    "tp_get_workout_fit_data",
     "tp_get_focus_event",
     "tp_get_libraries",
     "tp_get_library_item",
     "tp_get_library_items",
+    "tp_ironman_operator",
+    "tp_sync_intermediate_native_notes",
     "tp_get_metrics",
     "tp_get_next_event",
     "tp_get_note",
@@ -162,6 +189,7 @@ __all__ = [
     "tp_get_workouts",
     "tp_log_metrics",
     "tp_pair_workout",
+    "tp_publish_public_asset",
     "tp_refresh_auth",
     "tp_reorder_workouts",
     "tp_schedule_library_workout",
@@ -180,6 +208,10 @@ __all__ = [
     "tp_upload_workout_file",
     "tp_validate_structure",
     "tp_search_exercises",
+    "tp_batch_add_intermediate_strength",
+    "tp_batch_add_beginner_strength",
+    "tp_batch_delete_beginner_classic_strength",
+    "tp_create_strength_plan_lab_probe",
     "tp_create_strength_workout",
     "tp_get_strength_summary",
     "tp_get_strength_workout",

@@ -1,0 +1,1631 @@
+{
+  "schema": "IRONMAN_OPERATOR_JOBS_V1",
+  "owner": 2116886,
+  "notes": "Registry is trusted code metadata. Jobs run only from the pinned verified branch; allow only reviewed scripts.",
+  "jobs": [
+    {
+      "name": "native_strength_library_audit",
+      "mode": "READ_ONLY",
+      "owner_id": 2116886,
+      "scope": "trainingpeaks:library:3891875:read",
+      "script": "scripts/ironman_jobs/native_strength_library_audit.py",
+      "test": "tests/test_native_note_library.py"
+    },
+    {
+      "name": "readme_first_order_audit",
+      "mode": "READ_ONLY",
+      "owner_id": 2116886,
+      "scope": "trainingpeaks:plan:684602:calendarNote:w1monday:read",
+      "script": "scripts/ironman_jobs/readme_first_order_audit.py",
+      "test": "tests/test_readme_first_order.py"
+    },
+    {
+      "name": "readme_delete_canary",
+      "mode": "GUARDED_WRITE",
+      "owner_id": 2116886,
+      "scope": "trainingpeaks:disposable-plan:684484:transient-note:create-delete",
+      "script": "scripts/ironman_jobs/readme_delete_canary.py",
+      "test": "tests/test_readme_delete_canary.py"
+    },
+    {
+      "name": "readme_first_rebuild",
+      "mode": "GUARDED_WRITE",
+      "owner_id": 2116886,
+      "scope": "trainingpeaks:private-test-plan:684602:w1monday:readme-first:rebuild-two-other-notes",
+      "script": "scripts/ironman_jobs/readme_first_rebuild.py",
+      "test": "tests/test_readme_first_rebuild.py"
+    },
+    {
+      "name": "plan_title_canary",
+      "mode": "GUARDED_WRITE",
+      "owner_id": 2116886,
+      "scope": "trainingpeaks:disposable-plan:684484:title-put-revert",
+      "script": "scripts/ironman_jobs/plan_title_canary.py",
+      "test": "tests/test_plan_title_canary.py"
+    },
+    {
+      "name": "plan_title_restore_lab",
+      "mode": "GUARDED_WRITE",
+      "owner_id": 2116886,
+      "scope": "trainingpeaks:disposable-plan:684484:restore-title",
+      "script": "scripts/ironman_jobs/plan_title_restore_lab.py",
+      "test": "tests/test_plan_title_restore_lab.py"
+    },
+    {
+      "name": "rename_intermediate_release",
+      "mode": "GUARDED_WRITE",
+      "owner_id": 2116886,
+      "scope": "trainingpeaks:private-plan:684602:title-only-rename",
+      "script": "scripts/ironman_jobs/rename_intermediate_release.py",
+      "test": "tests/test_rename_intermediate_release.py"
+    },
+    {
+      "name": "plan_metadata_audit",
+      "mode": "READ_ONLY",
+      "owner_id": 2116886,
+      "scope": "trainingpeaks:plans:owned:metadata:read",
+      "script": "scripts/ironman_jobs/plan_metadata_audit.py",
+      "test": "tests/test_plan_metadata_audit.py"
+    },
+    {
+      "name": "restore_intermediate_plan_metadata",
+      "mode": "GUARDED_WRITE",
+      "owner_id": 2116886,
+      "scope": "trainingpeaks:private-plan:684602:restore-author-email-from-684463",
+      "script": "scripts/ironman_jobs/restore_intermediate_plan_metadata.py",
+      "test": "tests/test_restore_intermediate_plan_metadata.py"
+    },
+    {
+      "name": "stage_intermediate_pdf_secure",
+      "mode": "READ_ONLY",
+      "owner_id": 2116886,
+      "scope": "trainingpeaks:disposable-plan:684484:pdf-transfer:read",
+      "script": "scripts/ironman_jobs/stage_intermediate_pdf_secure.py",
+      "test": "tests/test_stage_intermediate_pdf_secure.py"
+    },
+    {
+      "name": "native_note_attachment_routes",
+      "mode": "READ_ONLY",
+      "owner_id": 2116886,
+      "scope": "trainingpeaks:plan:684602:note-attachments:read",
+      "script": "scripts/ironman_jobs/native_note_attachment_routes.py",
+      "test": "tests/test_native_note_attachment_routes.py"
+    },
+    {
+      "name": "note_attachment_methods_readonly",
+      "mode": "READ_ONLY",
+      "owner_id": 2116886,
+      "scope": "trainingpeaks:lab:684484:attachment:methods-readonly",
+      "script": "scripts/ironman_jobs/note_attachment_methods_readonly.py",
+      "test": "tests/test_note_attachment_methods_readonly.py"
+    },
+    {
+      "name": "test_lab_note_pdf_upload",
+      "mode": "GUARDED_WRITE",
+      "owner_id": 2116886,
+      "scope": "trainingpeaks:disposable-plan:684484:note:2655001:attach-v3-pdf",
+      "script": "scripts/ironman_jobs/test_lab_note_pdf_upload.py",
+      "test": "tests/test_lab_note_pdf_upload.py"
+    },
+    {
+      "name": "delete_pdf_transfer_note_lab",
+      "mode": "GUARDED_WRITE",
+      "owner_id": 2116886,
+      "scope": "trainingpeaks:disposable-plan:684484:delete-signed-transport-note-2655001",
+      "script": "scripts/ironman_jobs/delete_pdf_transfer_note_lab.py",
+      "test": "tests/test_delete_pdf_transfer_note_lab.py"
+    },
+    {
+      "name": "native_pdf_json_contract_lab",
+      "mode": "GUARDED_WRITE",
+      "owner_id": 2116886,
+      "scope": "trainingpeaks:disposable-plan:684484:note:2655001:invalid-json-probe",
+      "script": "scripts/ironman_jobs/native_pdf_json_contract_lab.py",
+      "test": "tests/test_native_pdf_json_contract_lab.py"
+    },
+    {
+      "name": "native_pdf_json_fields_lab",
+      "mode": "GUARDED_WRITE",
+      "owner_id": 2116886,
+      "scope": "trainingpeaks:disposable-plan:684484:note:2655001:probe-json-mandatory-fields",
+      "script": "scripts/ironman_jobs/native_pdf_json_fields_lab.py",
+      "test": "tests/test_native_pdf_json_fields_lab.py"
+    },
+    {
+      "name": "native_pdf_json_data_fields_lab",
+      "mode": "GUARDED_WRITE",
+      "owner_id": 2116886,
+      "scope": "trainingpeaks:disposable-plan:684484:note:2655001:invalid-file-data-probe",
+      "script": "scripts/ironman_jobs/native_pdf_json_data_fields_lab.py",
+      "test": "tests/test_native_pdf_json_data_fields_lab.py"
+    },
+    {
+      "name": "test_lab_note_pdf_json",
+      "mode": "GUARDED_WRITE",
+      "owner_id": 2116886,
+      "scope": "trainingpeaks:disposable-plan:684484:note:2655001:json-attach-v3-pdf",
+      "script": "scripts/ironman_jobs/test_lab_note_pdf_json.py",
+      "test": "tests/test_lab_note_pdf_json.py"
+    },
+    {
+      "name": "native_note_pdf_json_field_probe",
+      "mode": "GUARDED_WRITE",
+      "owner_id": 2116886,
+      "scope": "trainingpeaks:disposable-plan:684484:note:2655001:invalid-json-data-probe",
+      "script": "scripts/ironman_jobs/native_note_pdf_json_field_probe.py",
+      "test": "tests/test_native_note_pdf_json_field_probe.py"
+    },
+    {
+      "name": "publish_intermediate_third_pdf",
+      "mode": "GUARDED_WRITE",
+      "owner_id": 2116886,
+      "scope": "trainingpeaks:private-plan:684602:readme2653899:append-third-pdf-v3",
+      "script": "scripts/ironman_jobs/publish_intermediate_third_pdf.py",
+      "test": "tests/test_publish_intermediate_third_pdf.py"
+    },
+    {
+      "name": "pdf_note_inventory_readonly",
+      "mode": "READ_ONLY",
+      "owner_id": 2116886,
+      "scope": "trainingpeaks:notes:lab-and-readme:attachment-inventory-read",
+      "script": "scripts/ironman_jobs/pdf_note_inventory_readonly.py",
+      "test": "tests/test_pdf_note_inventory_readonly.py"
+    },
+    {
+      "name": "cleanup_intermediate_pdf_lab",
+      "mode": "GUARDED_WRITE",
+      "owner_id": 2116886,
+      "scope": "trainingpeaks:disposable-plan:684484:delete-temporary-note2655001",
+      "script": "scripts/ironman_jobs/cleanup_intermediate_pdf_lab.py",
+      "test": "tests/test_cleanup_intermediate_pdf_lab.py"
+    },
+    {
+      "name": "intermediate_release_postflight",
+      "mode": "READ_ONLY",
+      "owner_id": 2116886,
+      "scope": "trainingpeaks:private-plan:684602:readme-pdfs:final-read",
+      "script": "scripts/ironman_jobs/intermediate_release_postflight.py",
+      "test": "tests/test_intermediate_release_postflight.py"
+    },
+    {
+      "name": "note_put_pdf_preservation_lab",
+      "mode": "GUARDED_WRITE",
+      "owner_id": 2116886,
+      "scope": "trainingpeaks:disposable-plan:684484:pdf-preserving-note-put-canary",
+      "script": "scripts/ironman_jobs/note_put_pdf_preservation_lab.py",
+      "test": "tests/test_note_put_pdf_preservation_lab.py"
+    },
+    {
+      "name": "note_put_pdf_canary_readback",
+      "mode": "READ_ONLY",
+      "owner_id": 2116886,
+      "scope": "trainingpeaks:disposable-plan:684484:pdf-canary-read",
+      "script": "scripts/ironman_jobs/note_put_pdf_canary_readback.py",
+      "test": "tests/test_note_put_pdf_canary_readback.py"
+    },
+    {
+      "name": "update_intermediate_readme_guide_order",
+      "mode": "GUARDED_WRITE",
+      "owner_id": 2116886,
+      "scope": "trainingpeaks:private-plan:684602:readme-2653899:description-only-guide-first",
+      "script": "scripts/ironman_jobs/update_intermediate_readme_guide_order.py",
+      "test": "tests/test_update_intermediate_readme_guide_order.py"
+    },
+    {
+      "name": "native_strength_library_canary",
+      "mode": "GUARDED_WRITE",
+      "owner_id": 2116886,
+      "scope": "trainingpeaks:lab-library:3890637:one-native-strength-template-canary",
+      "script": "scripts/ironman_jobs/native_strength_library_one_canary.py",
+      "test": "tests/test_native_strength_library_one_canary.py"
+    },
+    {
+      "name": "tp_frontend_strength_lib_route_audit",
+      "mode": "READ_ONLY",
+      "owner_id": 2116886,
+      "scope": "public:trainingpeaks:frontend:read",
+      "script": "scripts/ironman_jobs/tp_frontend_strength_lib_route_audit.py",
+      "test": "tests/test_tp_frontend_strength_lib_route_audit.py"
+    },
+    {
+      "name": "native_strength_frontend_hooks_inspect",
+      "mode": "READ_ONLY",
+      "owner_id": 2116886,
+      "scope": "public:trainingpeaks:frontend:strength-library-hooks:read",
+      "script": "scripts/ironman_jobs/native_strength_frontend_hooks_inspect.py",
+      "test": "tests/test_native_strength_frontend_hooks_inspect.py"
+    },
+    {
+      "name": "native_strength_library_rx_probe",
+      "mode": "READ_ONLY",
+      "owner_id": 2116886,
+      "scope": "trainingpeaks:strength-native:library:3890637,3891875:read",
+      "script": "scripts/ironman_jobs/native_strength_library_rx_probe.py",
+      "test": "tests/test_native_strength_library_rx_probe.py"
+    },
+    {
+      "name": "native_strength_library_copy_lab_canary",
+      "mode": "GUARDED_WRITE",
+      "owner_id": 2116886,
+      "scope": "trainingpeaks:lab-library:3890637:copy-one-existing-native-strength-template",
+      "script": "scripts/ironman_jobs/native_strength_library_copy_lab_canary.py",
+      "test": "tests/test_native_strength_library_copy_lab_canary.py"
+    },
+    {
+      "name": "native_chasing_a60_lab_save",
+      "mode": "GUARDED_WRITE",
+      "owner_id": 2116886,
+      "scope": "trainingpeaks:lab-library:3890637:replace-item330612-with-Chasing-native-A60",
+      "script": "scripts/ironman_jobs/native_chasing_a60_lab_save.py",
+      "test": "tests/test_native_chasing_a60_lab_save.py"
+    },
+    {
+      "name": "native_chasing_library_seed_a60",
+      "mode": "GUARDED_WRITE",
+      "owner_id": 2116886,
+      "scope": "trainingpeaks:chasing-library:3894341:copy-native-A60-from-lab330612",
+      "script": "scripts/ironman_jobs/native_chasing_library_seed_a60.py",
+      "test": "tests/test_native_chasing_library_seed_a60.py"
+    },
+    {
+      "name": "native_chasing_b60_publish",
+      "mode": "GUARDED_WRITE",
+      "owner_id": 2116886,
+      "scope": "trainingpeaks:chasing-library:3894341:copy-and-save-native-B60",
+      "script": "scripts/ironman_jobs/native_chasing_b60_publish.py",
+      "test": "tests/test_native_chasing_b60_publish.py"
+    },
+    {
+      "name": "chasing_strength_publish_m60",
+      "mode": "GUARDED_WRITE",
+      "owner_id": 2116886,
+      "scope": "trainingpeaks:chasing-library:3894341:publish-native-m60",
+      "script": "scripts/ironman_jobs/chasing_strength_publish_m60.py",
+      "test": "tests/test_chasing_strength_native_publish_variants.py"
+    },
+    {
+      "name": "chasing_strength_publish_d40",
+      "mode": "GUARDED_WRITE",
+      "owner_id": 2116886,
+      "scope": "trainingpeaks:chasing-library:3894341:publish-native-d40",
+      "script": "scripts/ironman_jobs/chasing_strength_publish_d40.py",
+      "test": "tests/test_chasing_strength_native_publish_variants.py"
+    },
+    {
+      "name": "chasing_strength_publish_m45",
+      "mode": "GUARDED_WRITE",
+      "owner_id": 2116886,
+      "scope": "trainingpeaks:chasing-library:3894341:publish-native-m45",
+      "script": "scripts/ironman_jobs/chasing_strength_publish_m45.py",
+      "test": "tests/test_chasing_strength_native_publish_variants.py"
+    },
+    {
+      "name": "chasing_strength_publish_m30",
+      "mode": "GUARDED_WRITE",
+      "owner_id": 2116886,
+      "scope": "trainingpeaks:chasing-library:3894341:publish-native-m30",
+      "script": "scripts/ironman_jobs/chasing_strength_publish_m30.py",
+      "test": "tests/test_chasing_strength_native_publish_variants.py"
+    },
+    {
+      "name": "chasing_strength_publish_s60",
+      "mode": "GUARDED_WRITE",
+      "owner_id": 2116886,
+      "scope": "trainingpeaks:chasing-library:3894341:publish-native-s60",
+      "script": "scripts/ironman_jobs/chasing_strength_publish_s60.py",
+      "test": "tests/test_chasing_strength_native_publish_variants.py"
+    },
+    {
+      "name": "chasing_strength_block_titles_fix",
+      "mode": "GUARDED_WRITE",
+      "owner_id": 2116886,
+      "scope": "trainingpeaks:chasing-library:3894341:rename-five-native-exercise-blocks",
+      "script": "scripts/ironman_jobs/chasing_strength_block_titles_fix.py",
+      "test": "tests/test_chasing_strength_block_titles_fix.py"
+    },
+    {
+      "name": "chasing_strength_final_naming",
+      "mode": "GUARDED_WRITE",
+      "owner_id": 2116886,
+      "scope": "trainingpeaks:library:3894341:rename-native-7-titles-and-folder",
+      "script": "scripts/ironman_jobs/chasing_strength_final_naming.py",
+      "test": "tests/test_chasing_strength_final_naming.py"
+    },
+    {
+      "name": "rename_shared_it_libraries",
+      "mode": "GUARDED_WRITE",
+      "owner_id": 2116886,
+      "scope": "trainingpeaks:coach:2116886:rename-shared-it-libraries-5",
+      "script": "scripts/ironman_jobs/rename_shared_it_libraries.py",
+      "test": "tests/test_rename_shared_it_libraries.py"
+    },
+    {
+      "name": "chasing_plan_create",
+      "mode": "GUARDED_WRITE",
+      "owner_id": 2116886,
+      "scope": "trainingpeaks:coach:2116886:create-private-chasing-24w-and-seed",
+      "script": "scripts/ironman_jobs/chasing_plan_create.py",
+      "test": "tests/test_chasing_plan_create.py"
+    },
+    {
+      "name": "chasing_plan_w01_w02",
+      "mode": "GUARDED_WRITE",
+      "owner_id": 2116886,
+      "scope": "trainingpeaks:plan:685173:fill-w01-w02-swim-bike-run-only",
+      "script": "scripts/ironman_jobs/chasing_plan_w01_w02.py",
+      "test": "tests/test_chasing_plan_w01_w02.py"
+    },
+    {
+      "name": "chasing_plan_w03_w04",
+      "mode": "GUARDED_WRITE",
+      "owner_id": 2116886,
+      "scope": "trainingpeaks:plan:685173:fill-w03-w04-swim-bike-run-only",
+      "script": "scripts/ironman_jobs/chasing_plan_w03_w04.py",
+      "test": "tests/test_chasing_plan_w03_w04.py"
+    },
+    {
+      "name": "chasing_24w_library_audit",
+      "mode": "READ_ONLY",
+      "owner_id": 2116886,
+      "scope": "trainingpeaks:plan:685173:library-mapping:read",
+      "script": "scripts/ironman_jobs/chasing_24w_library_audit.py",
+      "test": "tests/test_chasing_24w_library_audit.py"
+    },
+    {
+      "name": "chasing_24w_coverage_audit",
+      "mode": "READ_ONLY",
+      "owner_id": 2116886,
+      "scope": "trainingpeaks:plan:685173:24w-library-coverage:read",
+      "script": "scripts/ironman_jobs/chasing_24w_coverage_audit.py",
+      "test": "tests/test_chasing_24w_coverage_audit.py"
+    },
+    {
+      "name": "chasing_w05_candidate_audit",
+      "mode": "READ_ONLY",
+      "owner_id": 2116886,
+      "scope": "trainingpeaks:plan:685173:w05-candidates:read",
+      "script": "scripts/ironman_jobs/chasing_w05_candidate_audit.py",
+      "test": "tests/test_chasing_w05_candidate_audit.py"
+    },
+    {
+      "name": "chasing_plan_w05_complete",
+      "mode": "GUARDED_WRITE",
+      "owner_id": 2116886,
+      "scope": "trainingpeaks:plan:685173:fill-w05-swim-bike-run-only",
+      "script": "scripts/ironman_jobs/chasing_plan_w05_complete.py",
+      "test": "tests/test_chasing_plan_w05_complete.py"
+    },
+    {
+      "name": "chasing_w06_candidates",
+      "mode": "READ_ONLY",
+      "owner_id": 2116886,
+      "scope": "trainingpeaks:plan:685173:w06-candidates:read",
+      "script": "scripts/ironman_jobs/chasing_w06_candidates.py",
+      "test": "tests/test_chasing_w06_candidates.py"
+    },
+    {
+      "name": "chasing_plan_w06_complete",
+      "mode": "GUARDED_WRITE",
+      "owner_id": 2116886,
+      "scope": "trainingpeaks:plan:685173:fill-w06-swim-bike-run-only",
+      "script": "scripts/ironman_jobs/chasing_plan_w06_complete.py",
+      "test": "tests/test_chasing_plan_w06_complete.py"
+    },
+    {
+      "name": "chasing_w07_candidates",
+      "mode": "READ_ONLY",
+      "owner_id": 2116886,
+      "scope": "trainingpeaks:plan:685173:w07-candidates:read",
+      "script": "scripts/ironman_jobs/chasing_w07_candidates.py",
+      "test": "tests/test_chasing_w07_candidates.py"
+    },
+    {
+      "name": "chasing_plan_w07_complete",
+      "mode": "GUARDED_WRITE",
+      "owner_id": 2116886,
+      "scope": "trainingpeaks:plan:685173:fill-w07-swim-bike-run-only",
+      "script": "scripts/ironman_jobs/chasing_plan_w07_complete.py",
+      "test": "tests/test_chasing_plan_w07_complete.py"
+    },
+    {
+      "name": "chasing_w08_candidates",
+      "mode": "READ_ONLY",
+      "owner_id": 2116886,
+      "scope": "trainingpeaks:plan:685173:w08-candidates:read",
+      "script": "scripts/ironman_jobs/chasing_w08_candidates.py",
+      "test": "tests/test_chasing_w08_candidates.py"
+    },
+    {
+      "name": "chasing_plan_w08_complete",
+      "mode": "GUARDED_WRITE",
+      "owner_id": 2116886,
+      "scope": "trainingpeaks:plan:685173:fill-w08-swim-bike-run-only",
+      "script": "scripts/ironman_jobs/chasing_plan_w08_complete.py",
+      "test": "tests/test_chasing_plan_w08_complete.py"
+    },
+    {
+      "name": "chasing_w09_candidates",
+      "mode": "READ_ONLY",
+      "owner_id": 2116886,
+      "scope": "trainingpeaks:plan:685173:w09-candidates:read",
+      "script": "scripts/ironman_jobs/chasing_w09_candidates.py",
+      "test": "tests/test_chasing_w09_candidates.py"
+    },
+    {
+      "name": "chasing_plan_w09_complete",
+      "mode": "GUARDED_WRITE",
+      "owner_id": 2116886,
+      "scope": "trainingpeaks:plan:685173:fill-w09-swim-bike-run-only",
+      "script": "scripts/ironman_jobs/chasing_plan_w09_complete.py",
+      "test": "tests/test_chasing_plan_w09_complete.py"
+    },
+    {
+      "name": "chasing_w10_candidates",
+      "mode": "READ_ONLY",
+      "owner_id": 2116886,
+      "scope": "trainingpeaks:plan:685173:w10-candidates:read",
+      "script": "scripts/ironman_jobs/chasing_w10_candidates.py",
+      "test": "tests/test_chasing_w10_candidates.py"
+    },
+    {
+      "name": "chasing_plan_w10_complete",
+      "mode": "GUARDED_WRITE",
+      "owner_id": 2116886,
+      "scope": "trainingpeaks:plan:685173:fill-w10-swim-bike-run-only",
+      "script": "scripts/ironman_jobs/chasing_plan_w10_complete.py",
+      "test": "tests/test_chasing_plan_w10_complete.py"
+    },
+    {
+      "name": "chasing_w11_candidates",
+      "mode": "READ_ONLY",
+      "owner_id": 2116886,
+      "scope": "trainingpeaks:plan:685173:w11-candidates:read",
+      "script": "scripts/ironman_jobs/chasing_w11_candidates.py",
+      "test": "tests/test_chasing_w11_candidates.py"
+    },
+    {
+      "name": "chasing_plan_w11_complete",
+      "mode": "GUARDED_WRITE",
+      "owner_id": 2116886,
+      "scope": "trainingpeaks:plan:685173:fill-w11-swim-bike-run-only",
+      "script": "scripts/ironman_jobs/chasing_plan_w11_complete.py",
+      "test": "tests/test_chasing_plan_w11_complete.py"
+    },
+    {
+      "name": "chasing_w12_candidates",
+      "mode": "READ_ONLY",
+      "owner_id": 2116886,
+      "scope": "trainingpeaks:plan:685173:w12-candidates:read",
+      "script": "scripts/ironman_jobs/chasing_w12_candidates.py",
+      "test": "tests/test_chasing_w12_candidates.py"
+    },
+    {
+      "name": "chasing_plan_w12_complete",
+      "mode": "GUARDED_WRITE",
+      "owner_id": 2116886,
+      "scope": "trainingpeaks:plan:685173:fill-w12-swim-bike-run-only",
+      "script": "scripts/ironman_jobs/chasing_plan_w12_complete.py",
+      "test": "tests/test_chasing_plan_w12_complete.py"
+    },
+    {
+      "name": "chasing_w13_candidates",
+      "mode": "READ_ONLY",
+      "owner_id": 2116886,
+      "scope": "trainingpeaks:plan:685173:w13-candidates:read",
+      "script": "scripts/ironman_jobs/chasing_w13_candidates.py",
+      "test": "tests/test_chasing_w13_candidates.py"
+    },
+    {
+      "name": "chasing_plan_w13_complete",
+      "mode": "GUARDED_WRITE",
+      "owner_id": 2116886,
+      "scope": "trainingpeaks:plan:685173:fill-w13-swim-bike-run-only",
+      "script": "scripts/ironman_jobs/chasing_plan_w13_complete.py",
+      "test": "tests/test_chasing_plan_w13_complete.py"
+    },
+    {
+      "name": "chasing_w14_candidates",
+      "mode": "READ_ONLY",
+      "owner_id": 2116886,
+      "scope": "trainingpeaks:plan:685173:w14-candidates:read",
+      "script": "scripts/ironman_jobs/chasing_w14_candidates.py",
+      "test": "tests/test_chasing_w14_candidates.py"
+    },
+    {
+      "name": "chasing_plan_w14_complete",
+      "mode": "GUARDED_WRITE",
+      "owner_id": 2116886,
+      "scope": "trainingpeaks:plan:685173:fill-w14-swim-bike-run-only",
+      "script": "scripts/ironman_jobs/chasing_plan_w14_complete.py",
+      "test": "tests/test_chasing_plan_w14_complete.py"
+    },
+    {
+      "name": "chasing_w15_candidates",
+      "mode": "READ_ONLY",
+      "owner_id": 2116886,
+      "scope": "trainingpeaks:plan:685173:w15-candidates:read",
+      "script": "scripts/ironman_jobs/chasing_w15_candidates.py",
+      "test": "tests/test_chasing_w15_candidates.py"
+    },
+    {
+      "name": "chasing_plan_w15_complete",
+      "mode": "GUARDED_WRITE",
+      "owner_id": 2116886,
+      "scope": "trainingpeaks:plan:685173:fill-w15-swim-bike-run-only",
+      "script": "scripts/ironman_jobs/chasing_plan_w15_complete.py",
+      "test": "tests/test_chasing_plan_w15_complete.py"
+    },
+    {
+      "name": "chasing_w16_candidates",
+      "mode": "READ_ONLY",
+      "owner_id": 2116886,
+      "scope": "trainingpeaks:plan:685173:w16-candidates:read",
+      "script": "scripts/ironman_jobs/chasing_w16_candidates.py",
+      "test": "tests/test_chasing_w16_candidates.py"
+    },
+    {
+      "name": "chasing_plan_w16_complete",
+      "mode": "GUARDED_WRITE",
+      "owner_id": 2116886,
+      "scope": "trainingpeaks:plan:685173:fill-w16-swim-bike-run-only",
+      "script": "scripts/ironman_jobs/chasing_plan_w16_complete.py",
+      "test": "tests/test_chasing_plan_w16_complete.py"
+    },
+    {
+      "name": "chasing_w17_candidates",
+      "mode": "READ_ONLY",
+      "owner_id": 2116886,
+      "scope": "trainingpeaks:plan:685173:w17-candidates:read",
+      "script": "scripts/ironman_jobs/chasing_w17_candidates.py",
+      "test": "tests/test_chasing_w17_candidates.py"
+    },
+    {
+      "name": "chasing_plan_w17_complete",
+      "mode": "GUARDED_WRITE",
+      "owner_id": 2116886,
+      "scope": "trainingpeaks:plan:685173:fill-w17-swim-bike-run-only",
+      "script": "scripts/ironman_jobs/chasing_plan_w17_complete.py",
+      "test": "tests/test_chasing_plan_w17_complete.py"
+    },
+    {
+      "name": "chasing_w18_candidates",
+      "mode": "READ_ONLY",
+      "owner_id": 2116886,
+      "scope": "trainingpeaks:plan:685173:w18-candidates:read",
+      "script": "scripts/ironman_jobs/chasing_w18_candidates.py",
+      "test": "tests/test_chasing_w18_candidates.py"
+    },
+    {
+      "name": "chasing_plan_w18_complete",
+      "mode": "GUARDED_WRITE",
+      "owner_id": 2116886,
+      "scope": "trainingpeaks:plan:685173:fill-w18-swim-bike-run-only",
+      "script": "scripts/ironman_jobs/chasing_plan_w18_complete.py",
+      "test": "tests/test_chasing_plan_w18_complete.py"
+    },
+    {
+      "name": "chasing_w19_candidates",
+      "mode": "READ_ONLY",
+      "owner_id": 2116886,
+      "scope": "trainingpeaks:plan:685173:w19-candidates:read",
+      "script": "scripts/ironman_jobs/chasing_w19_candidates.py",
+      "test": "tests/test_chasing_w19_candidates.py"
+    },
+    {
+      "name": "chasing_plan_w19_complete",
+      "mode": "GUARDED_WRITE",
+      "owner_id": 2116886,
+      "scope": "trainingpeaks:plan:685173:fill-w19-swim-bike-run-only",
+      "script": "scripts/ironman_jobs/chasing_plan_w19_complete.py",
+      "test": "tests/test_chasing_plan_w19_complete.py"
+    },
+    {
+      "name": "chasing_plan_w20_complete",
+      "mode": "GUARDED_WRITE",
+      "owner_id": 2116886,
+      "scope": "trainingpeaks:plan:685173:fill-w20-swim-bike-run-only",
+      "script": "scripts/ironman_jobs/chasing_plan_w20_complete.py",
+      "test": "tests/test_chasing_plan_w20_complete.py"
+    },
+    {
+      "name": "chasing_w21_candidates",
+      "mode": "READ_ONLY",
+      "owner_id": 2116886,
+      "scope": "trainingpeaks:plan:685173:w21-candidates:read",
+      "script": "scripts/ironman_jobs/chasing_w21_candidates.py",
+      "test": "tests/test_chasing_w21_candidates.py"
+    },
+    {
+      "name": "chasing_plan_w21_complete",
+      "mode": "GUARDED_WRITE",
+      "owner_id": 2116886,
+      "scope": "trainingpeaks:plan:685173:fill-w21-swim-bike-run-only",
+      "script": "scripts/ironman_jobs/chasing_plan_w21_complete.py",
+      "test": "tests/test_chasing_plan_w21_complete.py"
+    },
+    {
+      "name": "chasing_w22_candidates",
+      "mode": "READ_ONLY",
+      "owner_id": 2116886,
+      "scope": "trainingpeaks:plan:685173:w22-candidates:read",
+      "script": "scripts/ironman_jobs/chasing_w22_candidates.py",
+      "test": "tests/test_chasing_w22_candidates.py"
+    },
+    {
+      "name": "chasing_plan_w22_complete",
+      "mode": "GUARDED_WRITE",
+      "owner_id": 2116886,
+      "scope": "trainingpeaks:plan:685173:fill-w22-swim-bike-run-only",
+      "script": "scripts/ironman_jobs/chasing_plan_w22_complete.py",
+      "test": "tests/test_chasing_plan_w22_complete.py"
+    },
+    {
+      "name": "chasing_w23_candidates",
+      "mode": "READ_ONLY",
+      "owner_id": 2116886,
+      "scope": "trainingpeaks:plan:685173:w23-candidates:read",
+      "script": "scripts/ironman_jobs/chasing_w23_candidates.py",
+      "test": "tests/test_chasing_w23_candidates.py"
+    },
+    {
+      "name": "chasing_plan_w23_complete",
+      "mode": "GUARDED_WRITE",
+      "owner_id": 2116886,
+      "scope": "trainingpeaks:plan:685173:fill-w23-swim-bike-run-only",
+      "script": "scripts/ironman_jobs/chasing_plan_w23_complete.py",
+      "test": "tests/test_chasing_plan_w23_complete.py"
+    },
+    {
+      "name": "chasing_w24_candidates",
+      "mode": "READ_ONLY",
+      "owner_id": 2116886,
+      "scope": "trainingpeaks:plan:685173:w24-candidates:read",
+      "script": "scripts/ironman_jobs/chasing_w24_candidates.py",
+      "test": "tests/test_chasing_w24_candidates.py"
+    },
+    {
+      "name": "chasing_plan_w24_complete",
+      "mode": "GUARDED_WRITE",
+      "owner_id": 2116886,
+      "scope": "trainingpeaks:plan:685173:fill-w24-swim-bike-run-only",
+      "script": "scripts/ironman_jobs/chasing_plan_w24_complete.py",
+      "test": "tests/test_chasing_plan_w24_complete.py"
+    },
+    {
+      "name": "chasing_native_plan_lab_audit",
+      "mode": "READ_ONLY",
+      "owner_id": 2116886,
+      "scope": "trainingpeaks:plan:684543:native-strength:read",
+      "script": "scripts/ironman_jobs/chasing_native_plan_lab_audit.py",
+      "test": "tests/test_chasing_native_plan_lab_audit.py"
+    },
+    {
+      "name": "chasing_native_strength_plan_lab_canary",
+      "mode": "GUARDED_WRITE",
+      "owner_id": 2116886,
+      "scope": "trainingpeaks:plan:684543:one-native-strength-lab-canary-only",
+      "script": "scripts/ironman_jobs/chasing_native_strength_plan_lab_canary.py",
+      "test": "tests/test_chasing_native_strength_plan_lab_canary.py"
+    },
+    {
+      "name": "chasing_strength_product_preflight",
+      "mode": "READ_ONLY",
+      "owner_id": 2116886,
+      "scope": "trainingpeaks:plan:685173:native-strength-preflight:read",
+      "script": "scripts/ironman_jobs/chasing_strength_product_preflight.py",
+      "test": "tests/test_chasing_strength_product_preflight.py"
+    },
+    {
+      "name": "chasing_strength_w01_a60_canary",
+      "mode": "GUARDED_WRITE",
+      "owner_id": 2116886,
+      "scope": "trainingpeaks:plan:685173:native-strength-w01-a60-one-only",
+      "script": "scripts/ironman_jobs/chasing_strength_w01_a60_canary.py",
+      "test": "tests/test_chasing_strength_w01_a60_canary.py"
+    },
+    {
+      "name": "chasing_strength_batch_w01_w08",
+      "mode": "GUARDED_WRITE",
+      "owner_id": 2116886,
+      "scope": "trainingpeaks:plan:685173:native-strength-w01-w08-only",
+      "script": "scripts/ironman_jobs/chasing_strength_batch_w01_w08.py",
+      "test": "tests/test_chasing_strength_batch_w01_w08.py"
+    },
+    {
+      "name": "chasing_strength_batch_w09_w16",
+      "mode": "GUARDED_WRITE",
+      "owner_id": 2116886,
+      "scope": "trainingpeaks:plan:685173:native-strength-w09-w16-only",
+      "script": "scripts/ironman_jobs/chasing_strength_batch_w09_w16.py",
+      "test": "tests/test_chasing_strength_batch_w09_w16.py"
+    },
+    {
+      "name": "chasing_strength_batch_w17_w21",
+      "mode": "GUARDED_WRITE",
+      "owner_id": 2116886,
+      "scope": "trainingpeaks:plan:685173:native-strength-w17-w21-only",
+      "script": "scripts/ironman_jobs/chasing_strength_batch_w17_w21.py",
+      "test": "tests/test_chasing_strength_batch_w17_w21.py"
+    },
+    {
+      "name": "chasing_24w_final_calendar_audit",
+      "mode": "READ_ONLY",
+      "owner_id": 2116886,
+      "scope": "trainingpeaks:plan:685173:full-calendar-audit:read",
+      "script": "scripts/ironman_jobs/chasing_24w_final_calendar_audit.py",
+      "test": "tests/test_chasing_24w_final_calendar_audit.py"
+    },
+    {
+      "name": "chasing_strength_deep_qa",
+      "mode": "READ_ONLY",
+      "owner_id": 2116886,
+      "scope": "trainingpeaks:plan:685173:native-strength-deep-qa:read",
+      "script": "scripts/ironman_jobs/chasing_strength_deep_qa.py",
+      "test": "tests/test_chasing_strength_deep_qa.py"
+    },
+    {
+      "name": "chasing_distribution_diagnostic",
+      "mode": "READ_ONLY",
+      "owner_id": 2116886,
+      "scope": "trainingpeaks:plan:685173:distribution-diagnostic:read",
+      "script": "scripts/ironman_jobs/chasing_distribution_diagnostic.py",
+      "test": "tests/test_chasing_distribution_diagnostic.py"
+    },
+    {
+      "name": "chasing_lab_date_move_canary",
+      "mode": "GUARDED_WRITE",
+      "owner_id": 2116886,
+      "scope": "trainingpeaks:plan:684484:single-native-workout-date-move-and-restore",
+      "script": "scripts/ironman_jobs/chasing_lab_date_move_canary.py",
+      "test": "tests/test_chasing_lab_date_move_canary.py"
+    },
+    {
+      "name": "chasing_lab_restore_audit",
+      "mode": "READ_ONLY",
+      "owner_id": 2116886,
+      "scope": "trainingpeaks:plan:684484:date-move-restoration-audit:read",
+      "script": "scripts/ironman_jobs/chasing_lab_restore_audit.py",
+      "test": "tests/test_chasing_lab_restore_audit.py"
+    },
+    {
+      "name": "chasing_w02_run_to_monday",
+      "mode": "GUARDED_WRITE",
+      "owner_id": 2116886,
+      "scope": "trainingpeaks:plan:685173:move-one-45min-w02-run-fri-to-mon",
+      "script": "scripts/ironman_jobs/chasing_w02_run_to_monday.py",
+      "test": "tests/test_chasing_w02_run_to_monday.py"
+    },
+    {
+      "name": "chasing_w03_w04_run_rebalance",
+      "mode": "GUARDED_WRITE",
+      "owner_id": 2116886,
+      "scope": "trainingpeaks:plan:685173:move-three-w03-w04-run-dates-preserve-volume",
+      "script": "scripts/ironman_jobs/chasing_w03_w04_run_rebalance.py",
+      "test": "tests/test_chasing_w03_w04_run_rebalance.py"
+    },
+    {
+      "name": "chasing_distribute_w05_w08",
+      "mode": "GUARDED_WRITE",
+      "owner_id": 2116886,
+      "scope": "trainingpeaks:plan:685173:inplace-run-distribution-w05-w08",
+      "script": "scripts/ironman_jobs/chasing_distribute_w05_w08.py",
+      "test": "tests/test_chasing_distribute_w05_w08.py"
+    },
+    {
+      "name": "chasing_distribute_w09_w12",
+      "mode": "GUARDED_WRITE",
+      "owner_id": 2116886,
+      "scope": "trainingpeaks:plan:685173:inplace-run-distribution-w09-w12",
+      "script": "scripts/ironman_jobs/chasing_distribute_w09_w12.py",
+      "test": "tests/test_chasing_distribute_w09_w12.py"
+    },
+    {
+      "name": "chasing_distribute_w13_w16",
+      "mode": "GUARDED_WRITE",
+      "owner_id": 2116886,
+      "scope": "trainingpeaks:plan:685173:inplace-run-distribution-w13-w16",
+      "script": "scripts/ironman_jobs/chasing_distribute_w13_w16.py",
+      "test": "tests/test_chasing_distribute_w13_w16.py"
+    },
+    {
+      "name": "chasing_distribute_w17_w20",
+      "mode": "GUARDED_WRITE",
+      "owner_id": 2116886,
+      "scope": "trainingpeaks:plan:685173:inplace-run-distribution-w17-w20",
+      "script": "scripts/ironman_jobs/chasing_distribute_w17_w20.py",
+      "test": "tests/test_chasing_distribute_w17_w20.py"
+    },
+    {
+      "name": "chasing_distribute_w21_w23",
+      "mode": "GUARDED_WRITE",
+      "owner_id": 2116886,
+      "scope": "trainingpeaks:plan:685173:inplace-run-distribution-w21-w23",
+      "script": "scripts/ironman_jobs/chasing_distribute_w21_w23.py",
+      "test": "tests/test_chasing_distribute_w21_w23.py"
+    },
+    {
+      "name": "chasing_lab_plan_anchor_probe",
+      "mode": "GUARDED_WRITE",
+      "owner_id": 2116886,
+      "scope": "trainingpeaks:plan:684484:probe-startDate-july5-to-july4-and-restore",
+      "script": "scripts/ironman_jobs/chasing_lab_plan_anchor_probe.py",
+      "test": "tests/test_chasing_lab_plan_anchor_probe.py"
+    },
+    {
+      "name": "chasing_lab_prestart_workout_probe",
+      "mode": "GUARDED_WRITE",
+      "owner_id": 2116886,
+      "scope": "trainingpeaks:plan:684484:move-one-workout-before-start-and-restore",
+      "script": "scripts/ironman_jobs/chasing_lab_prestart_workout_probe.py",
+      "test": "tests/test_chasing_lab_prestart_workout_probe.py"
+    },
+    {
+      "name": "chasing_w01_reanchor",
+      "mode": "GUARDED_WRITE",
+      "owner_id": 2116886,
+      "scope": "trainingpeaks:plan:685173:move-w01-40min-friday-run-to-monday-reanchor",
+      "script": "scripts/ironman_jobs/chasing_w01_reanchor.py",
+      "test": "tests/test_chasing_w01_reanchor.py"
+    },
+    {
+      "name": "chasing_live_distribution_postmove_audit",
+      "mode": "READ_ONLY",
+      "owner_id": 2116886,
+      "scope": "trainingpeaks:plan:685173:postmove-24w-distribution-audit:read",
+      "script": "scripts/ironman_jobs/chasing_live_distribution_postmove_audit.py",
+      "test": "tests/test_chasing_live_distribution_postmove_audit.py"
+    },
+    {
+      "name": "chasing_content_patch_dto_audit",
+      "mode": "READ_ONLY",
+      "owner_id": 2116886,
+      "scope": "trainingpeaks:plans:684206-685173:content-substitution-dto:read",
+      "script": "scripts/ironman_jobs/chasing_content_patch_dto_audit.py",
+      "test": "tests/test_chasing_content_patch_dto_audit.py"
+    },
+    {
+      "name": "chasing_lab_content_replace",
+      "mode": "GUARDED_WRITE",
+      "owner_id": 2116886,
+      "scope": "trainingpeaks:plan:684206:replace-one-lab-run-content-and-restore",
+      "script": "scripts/ironman_jobs/chasing_lab_content_replace.py",
+      "test": "tests/test_chasing_lab_content_replace.py"
+    },
+    {
+      "name": "chasing_w01_baseline_tests",
+      "mode": "GUARDED_WRITE",
+      "owner_id": 2116886,
+      "scope": "trainingpeaks:plan:685173:replace-w01-run5k-swim1500-bike20-three-workouts",
+      "script": "scripts/ironman_jobs/chasing_w01_baseline_tests.py",
+      "test": "tests/test_chasing_w01_baseline_tests.py"
+    },
+    {
+      "name": "chasing_w05_w09_retest_labels",
+      "mode": "GUARDED_WRITE",
+      "owner_id": 2116886,
+      "scope": "trainingpeaks:plan:685173:label-three-existing-w05-w09-retests",
+      "script": "scripts/ironman_jobs/chasing_w05_w09_retest_labels.py",
+      "test": "tests/test_chasing_w05_w09_retest_labels.py"
+    },
+    {
+      "name": "chasing_swim_duration_first4",
+      "mode": "GUARDED_WRITE",
+      "owner_id": 2116886,
+      "scope": "trainingpeaks:plan:685173:repair-11-swim-duration-w01-w04",
+      "script": "scripts/ironman_jobs/chasing_swim_duration_first4.py",
+      "test": "tests/test_chasing_swim_duration_first4.py"
+    },
+    {
+      "name": "chasing_swim_duration_distance_gate",
+      "mode": "READ_ONLY",
+      "owner_id": 2116886,
+      "scope": "trainingpeaks:library:3891872:plan:685173:swim-meters-duration-read",
+      "script": "scripts/ironman_jobs/chasing_swim_duration_distance_gate.py",
+      "test": "tests/test_chasing_swim_duration_distance_gate.py"
+    },
+    {
+      "name": "chasing_strength_rests_inspect",
+      "mode": "READ_ONLY",
+      "owner_id": 2116886,
+      "scope": "trainingpeaks:library:3894341:strength-rest-notes:read",
+      "script": "scripts/ironman_jobs/chasing_strength_rests_inspect.py",
+      "test": "tests/test_chasing_strength_rests_inspect.py"
+    },
+    {
+      "name": "chasing_strength_rest_lab_canary",
+      "mode": "GUARDED_WRITE",
+      "owner_id": 2116886,
+      "scope": "trainingpeaks:strength-library:3890637:single-coachnotes-lab-write-and-restore",
+      "script": "scripts/ironman_jobs/chasing_strength_rest_lab_canary.py",
+      "test": "tests/test_chasing_strength_rest_lab_canary.py"
+    },
+    {
+      "name": "chasing_strength_rests_library",
+      "mode": "GUARDED_WRITE",
+      "owner_id": 2116886,
+      "scope": "trainingpeaks:strength-library:3894341:seven-model-recovery-notes-only",
+      "script": "scripts/ironman_jobs/chasing_strength_rests_library.py",
+      "test": "tests/test_chasing_strength_rests_library.py"
+    },
+    {
+      "name": "chasing_strength_rest_planlab_canary",
+      "mode": "GUARDED_WRITE",
+      "owner_id": 2116886,
+      "scope": "trainingpeaks:plan:684543:existing-strength-coachnotes-canary-and-restore",
+      "script": "scripts/ironman_jobs/chasing_strength_rest_planlab_canary.py",
+      "test": "tests/test_chasing_strength_rest_planlab_canary.py"
+    },
+    {
+      "name": "chasing_strength_rests_plan_w01_w08",
+      "mode": "GUARDED_WRITE",
+      "owner_id": 2116886,
+      "scope": "trainingpeaks:plan:685173:existing-strength-recovery-notes-w01-w08",
+      "script": "scripts/ironman_jobs/chasing_strength_rests_plan_w01_w08.py",
+      "test": "tests/test_chasing_strength_rests_plan_w01_w08.py"
+    },
+    {
+      "name": "chasing_strength_rests_plan_w09_w16",
+      "mode": "GUARDED_WRITE",
+      "owner_id": 2116886,
+      "scope": "trainingpeaks:plan:685173:existing-strength-recovery-notes-w09-w16",
+      "script": "scripts/ironman_jobs/chasing_strength_rests_plan_w09_w16.py",
+      "test": "tests/test_chasing_strength_rests_plan_w09_w16.py"
+    },
+    {
+      "name": "chasing_strength_rests_plan_w17_w21",
+      "mode": "GUARDED_WRITE",
+      "owner_id": 2116886,
+      "scope": "trainingpeaks:plan:685173:existing-strength-recovery-notes-w17-w21",
+      "script": "scripts/ironman_jobs/chasing_strength_rests_plan_w17_w21.py",
+      "test": "tests/test_chasing_strength_rests_plan_w17_w21.py"
+    },
+    {
+      "name": "chasing_strength_rests_global_audit",
+      "mode": "READ_ONLY",
+      "owner_id": 2116886,
+      "scope": "trainingpeaks:plan:685173:library:3894341:strength-recovery-qa:read",
+      "script": "scripts/ironman_jobs/chasing_strength_rests_global_audit.py",
+      "test": "tests/test_chasing_strength_rests_global_audit.py"
+    },
+    {
+      "name": "chasing_intermediate_layout_w01",
+      "mode": "GUARDED_WRITE",
+      "owner_id": 2116886,
+      "scope": "trainingpeaks:plan:685173:week-01-run-reallocation-monday-easy-sunday-long",
+      "script": "scripts/ironman_jobs/chasing_intermediate_layout_w01.py",
+      "test": "tests/test_chasing_intermediate_layout_w01.py"
+    },
+    {
+      "name": "chasing_intermediate_layout_w02",
+      "mode": "GUARDED_WRITE",
+      "owner_id": 2116886,
+      "scope": "trainingpeaks:plan:685173:week-02-run-reallocation-monday-easy-sunday-long",
+      "script": "scripts/ironman_jobs/chasing_intermediate_layout_w02.py",
+      "test": "tests/test_chasing_intermediate_layout_w02.py"
+    },
+    {
+      "name": "chasing_intermediate_layout_w03",
+      "mode": "GUARDED_WRITE",
+      "owner_id": 2116886,
+      "scope": "trainingpeaks:plan:685173:week-03-run-reallocation-monday-easy-sunday-long",
+      "script": "scripts/ironman_jobs/chasing_intermediate_layout_w03.py",
+      "test": "tests/test_chasing_intermediate_layout_w03.py"
+    },
+    {
+      "name": "chasing_intermediate_layout_w04",
+      "mode": "GUARDED_WRITE",
+      "owner_id": 2116886,
+      "scope": "trainingpeaks:plan:685173:week-04-run-reallocation-monday-easy-sunday-long",
+      "script": "scripts/ironman_jobs/chasing_intermediate_layout_w04.py",
+      "test": "tests/test_chasing_intermediate_layout_w04.py"
+    },
+    {
+      "name": "chasing_w01_partial_resume",
+      "mode": "GUARDED_WRITE",
+      "owner_id": 2116886,
+      "scope": "trainingpeaks:plan:685173:resume-verified-week-01-partial-restore-monday-anchor",
+      "script": "scripts/ironman_jobs/chasing_w01_partial_resume.py",
+      "test": "tests/test_chasing_w01_partial_resume.py"
+    },
+    {
+      "name": "chasing_w01_w04_swim_mwf",
+      "mode": "GUARDED_WRITE",
+      "owner_id": 2116886,
+      "scope": "trainingpeaks:plan:685173:move-three-swims-tue-to-mon-w02-w04-preserve-w01-tests",
+      "script": "scripts/ironman_jobs/chasing_w01_w04_swim_mwf.py",
+      "test": "tests/test_chasing_w01_w04_swim_mwf.py"
+    },
+    {
+      "name": "chasing_w05_w08_latest_volumes_weekends",
+      "mode": "GUARDED_WRITE",
+      "owner_id": 2116886,
+      "scope": "trainingpeaks:plan:685173:w05-w08:two-bike-template-replacements-six-run-date-moves",
+      "script": "scripts/ironman_jobs/chasing_w05_w08_latest_volumes_weekends.py",
+      "test": "tests/test_chasing_w01_w04_swim_mwf.py"
+    },
+    {
+      "name": "chasing_w05_title_longrun_fix",
+      "mode": "GUARDED_WRITE",
+      "owner_id": 2116886,
+      "scope": "trainingpeaks:plan:685173:w05:rename-two-bike-workouts-and-replace-wed-steady-with-sun-long-85",
+      "script": "scripts/ironman_jobs/chasing_w05_title_longrun_fix.py",
+      "test": "tests/test_chasing_w01_w04_swim_mwf.py"
+    },
+    {
+      "name": "chasing_w09_w16_weekend_arch",
+      "mode": "GUARDED_WRITE",
+      "owner_id": 2116886,
+      "scope": "trainingpeaks:plan:685173:w09-w16:two-bike-replacements-and-nineteen-inplace-date-moves",
+      "script": "scripts/ironman_jobs/chasing_w09_w16_weekend_arch.py",
+      "test": "tests/test_chasing_w01_w04_swim_mwf.py"
+    },
+    {
+      "name": "chasing_w09_w16_longrun_balance",
+      "mode": "GUARDED_WRITE",
+      "owner_id": 2116886,
+      "scope": "trainingpeaks:plan:685173:w09-w16:balanced-run-long-replacements-and-w13-sunday-long",
+      "script": "scripts/ironman_jobs/chasing_w09_w16_longrun_balance.py",
+      "test": "tests/test_chasing_w01_w04_swim_mwf.py"
+    },
+    {
+      "name": "chasing_w17_w24_two_long_peaks",
+      "mode": "GUARDED_WRITE",
+      "owner_id": 2116886,
+      "scope": "trainingpeaks:plan:685173:w17-w24:two-150min-long-runs-with-volume-balance-weekend-rotation-and-taper",
+      "script": "scripts/ironman_jobs/chasing_w17_w24_two_long_peaks.py",
+      "test": "tests/test_chasing_w01_w04_swim_mwf.py"
+    },
+    {
+      "name": "chasing_full_native_builder_audit_20261013",
+      "mode": "READ_ONLY",
+      "owner_id": 2116886,
+      "scope": "trainingpeaks:plan:685173:all-24-weeks-native-builder-audit:read",
+      "script": "scripts/ironman_jobs/chasing_full_native_builder_audit_20261013.py",
+      "test": "tests/test_chasing_w01_w04_swim_mwf.py"
+    },
+    {
+      "name": "lab_builder_target_polyline_canary_20261013",
+      "mode": "GUARDED_WRITE",
+      "owner_id": 2116886,
+      "scope": "trainingpeaks:plan:684206:lab-native-target-polyline-save-restore-only",
+      "script": "scripts/ironman_jobs/lab_builder_target_polyline_canary_20261013.py",
+      "test": "tests/test_chasing_w01_w04_swim_mwf.py"
+    },
+    {
+      "name": "chasing_native_builder_repair_35",
+      "mode": "GUARDED_WRITE",
+      "owner_id": 2116886,
+      "scope": "trainingpeaks:plan:685173:repair-35-native-builder-gaps-from-neutral-verified-libraries",
+      "script": "scripts/ironman_jobs/chasing_native_builder_repair_35.py",
+      "test": "tests/test_chasing_w01_w04_swim_mwf.py"
+    },
+    {
+      "name": "chasing_native_builder_postrepair_qa_20261013",
+      "mode": "READ_ONLY",
+      "owner_id": 2116886,
+      "scope": "trainingpeaks:plan:685173:249-native-builders-and-35-repair-backup-read-qa",
+      "script": "scripts/ironman_jobs/chasing_native_builder_postrepair_qa_20261013.py",
+      "test": "tests/test_chasing_w01_w04_swim_mwf.py"
+    },
+    {
+      "name": "chasing_dual_metric_audit",
+      "mode": "READ_ONLY",
+      "owner_id": 2116886,
+      "scope": "trainingpeaks:plans:685173,684602:read-native-bike-run-metrics-only",
+      "script": "scripts/ironman_jobs/chasing_dual_metric_audit.py",
+      "test": "tests/test_chasing_w01_w04_swim_mwf.py"
+    },
+    {
+      "name": "chasing_golden_first_probe",
+      "mode": "READ_ONLY",
+      "owner_id": 2116886,
+      "scope": "trainingpeaks:plan:685173:read-power-pace-golden-schema",
+      "script": "scripts/ironman_jobs/chasing_golden_first_probe.py",
+      "test": "tests/test_chasing_w01_w04_swim_mwf.py"
+    },
+    {
+      "name": "chasing_golden_first_two_workouts",
+      "mode": "GUARDED_WRITE",
+      "owner_id": 2116886,
+      "scope": "trainingpeaks:plan:685173:relative-w21-thu:two-golden-power-pace-prototypes",
+      "script": "scripts/ironman_jobs/chasing_golden_first_two_workouts.py",
+      "test": "tests/test_chasing_w01_w04_swim_mwf.py"
+    },
+    {
+      "name": "chasing_functional_metric_groups",
+      "mode": "READ_ONLY",
+      "owner_id": 2116886,
+      "scope": "trainingpeaks:plan:685173:read-functional-RPE-groups-relative-weeks",
+      "script": "scripts/ironman_jobs/chasing_functional_metric_groups.py",
+      "test": "tests/test_chasing_w01_w04_swim_mwf.py"
+    },
+    {
+      "name": "chasing_w01_three_builder_only_20261014",
+      "mode": "GUARDED_WRITE",
+      "owner_id": 2116886,
+      "scope": "trainingpeaks:plan:685173:relative-w01-thu-sat-sun:exact-three-native-builder-targets-only",
+      "script": "scripts/ironman_jobs/chasing_w01_three_builder_only_20261014.py",
+      "test": "tests/test_chasing_w01_three_builder_only_20261014.py"
+    },
+    {
+      "name": "chasing_strip_codes_plan_20261014",
+      "mode": "GUARDED_WRITE",
+      "owner_id": 2116886,
+      "scope": "trainingpeaks:plan:685173:remove-exact-trailing-code-field-172-endurance-instances-only",
+      "script": "scripts/ironman_jobs/chasing_strip_codes_plan_20261014.py",
+      "test": "tests/test_chasing_strip_codes_plan_20261014.py"
+    },
+    {
+      "name": "chasing_first8_builder_shape_audit_20261014",
+      "mode": "READ_ONLY",
+      "owner_id": 2116886,
+      "scope": "trainingpeaks:plan:685173:relative-w01-w08:native-builder-shape-readonly",
+      "script": "scripts/ironman_jobs/chasing_first8_builder_shape_audit_20261014.py",
+      "test": "tests/test_chasing_w01_w04_swim_mwf.py"
+    },
+    {
+      "name": "chasing_w01_w08_builder_percent_only_20261014",
+      "mode": "GUARDED_WRITE",
+      "owner_id": 2116886,
+      "scope": "trainingpeaks:plan:685173:relative-w01-w08:47-approved-bike-run-native-builder-targets-only",
+      "script": "scripts/ironman_jobs/chasing_w01_w08_builder_percent_only_20261014.py",
+      "test": "tests/test_chasing_w01_w08_builder_percent_only_20261014.py"
+    },
+    {
+      "name": "chasing_w07_thu_steady_ftp_only_20261014",
+      "mode": "GUARDED_WRITE",
+      "owner_id": 2116886,
+      "scope": "trainingpeaks:plan:685173:relative-w07-thu:workout-4000972961-steady-builder-ftp-only",
+      "script": "scripts/ironman_jobs/chasing_w07_thu_steady_ftp_only_20261014.py",
+      "test": "tests/test_chasing_w07_thu_steady_ftp_only_20261014.py"
+    },
+    {
+      "name": "chasing_w07_verify_native_copy_vs_library",
+      "mode": "READ_ONLY",
+      "owner_id": 2116886,
+      "scope": "trainingpeaks:plan:685173:relative-w07-thu:read-native-builder-only",
+      "script": "scripts/ironman_jobs/chasing_w07_verify_native_copy_vs_library.py",
+      "test": "tests/test_chasing_w07_thu_steady_ftp_only_20261014.py"
+    },
+    {
+      "name": "chasing_only_rename_rpe_titles_20261014",
+      "mode": "GUARDED_WRITE",
+      "owner_id": 2116886,
+      "scope": "trainingpeaks:plan:685173:rename-42-bike-run-rpe-titles-only-preserve-everything-else",
+      "script": "scripts/ironman_jobs/chasing_only_rename_rpe_titles_20261014.py",
+      "test": "tests/test_chasing_only_rename_rpe_titles_20261014.py"
+    },
+    {
+      "name": "chasing_w09_thu_tempo_ftp_only_20261014",
+      "mode": "GUARDED_WRITE",
+      "owner_id": 2116886,
+      "scope": "trainingpeaks:plan:685173:relative-w09-thu:workout-4001048439-tempo-builder-ftp-only",
+      "script": "scripts/ironman_jobs/chasing_w09_thu_tempo_ftp_only_20261014.py",
+      "test": "tests/test_chasing_w09_thu_tempo_ftp_only_20261014.py"
+    },
+    {
+      "name": "chasing_w09_24_read_targets_20261014",
+      "mode": "READ_ONLY",
+      "owner_id": 2116886,
+      "scope": "trainingpeaks:plan:685173:relative-w09-w24:read-bike-run-builder-original-targets",
+      "script": "scripts/ironman_jobs/chasing_w09_24_read_targets_20261014.py",
+      "test": "tests/test_chasing_w09_thu_tempo_ftp_only_20261014.py"
+    },
+    {
+      "name": "chasing_w09_w24_quantitative_targets_only_20261014",
+      "mode": "GUARDED_WRITE",
+      "owner_id": 2116886,
+      "scope": "trainingpeaks:plan:685173:relative-w09-w24:95-approved-bike-run-builder-targets-and-w21-race-pace-only",
+      "script": "scripts/ironman_jobs/chasing_w09_w24_quantitative_targets_only_20261014.py",
+      "test": "tests/test_chasing_w09_w24_quantitative_targets_only_20261014.py"
+    },
+    {
+      "name": "chasing_paceplus_nine_20261014",
+      "mode": "GUARDED_WRITE",
+      "owner_id": 2116886,
+      "scope": "trainingpeaks:plan:685173:nine-approved-bike-mixed-ironman-pace-and-paceplus-76-80-fixed-durations-only",
+      "script": "scripts/ironman_jobs/chasing_paceplus_nine_20261014.py",
+      "test": "tests/test_chasing_paceplus_nine_20261014.py"
+    },
+    {
+      "name": "chasing_paceplus_resume_eight_20261014",
+      "mode": "GUARDED_WRITE",
+      "owner_id": 2116886,
+      "scope": "trainingpeaks:plan:685173:exact-eight-bike-paceplus-pending-after-verified-w10-only",
+      "script": "scripts/ironman_jobs/chasing_paceplus_resume_eight_20261014.py",
+      "test": "tests/test_chasing_paceplus_resume_eight_20261014.py"
+    },
+    {
+      "name": "chasing_paceplus_ledger_seed_20261014",
+      "mode": "GUARDED_WRITE",
+      "owner_id": 2116886,
+      "scope": "digitalocean:ironman-tp-mcp:sqlite-ledger-v1:seed-verified-chasing-685173-paceplus-9-no-provider-writes",
+      "script": "scripts/ironman_jobs/chasing_paceplus_ledger_seed_20261014.py",
+      "test": "tests/test_ironman_state_store_v1.py"
+    },
+    {
+      "name": "chasing_paceplus_ledger_read_20261014",
+      "mode": "READ_ONLY",
+      "owner_id": 2116886,
+      "scope": "digitalocean:ironman-tp-mcp:sqlite-ledger-v1:read-verified-chasing-685173-paceplus-9",
+      "script": "scripts/ironman_jobs/chasing_paceplus_ledger_read_20261014.py",
+      "test": "tests/test_ironman_state_store_v1.py"
+    },
+    {
+      "name": "ledger_crash_restart_canary_20261014",
+      "mode": "GUARDED_WRITE",
+      "owner_id": 2116886,
+      "scope": "digitalocean:ironman-tp-mcp:sqlite-ledger-v1:isolated-crash-test-tempdb-no-provider-writes",
+      "script": "scripts/ironman_jobs/ledger_crash_restart_canary_20261014.py",
+      "test": "tests/test_ledger_crash_restart_canary_20261014.py"
+    },
+    {
+      "name": "ledger_partial_resume_canary_20261015",
+      "mode": "GUARDED_WRITE",
+      "owner_id": 2116886,
+      "scope": "digitalocean:ironman-tp-mcp:sqlite-ledger-v1:isolated-partial-resume-tempdb-no-provider-writes",
+      "script": "scripts/ironman_jobs/ledger_partial_resume_canary_20261015.py",
+      "test": "tests/test_ledger_partial_resume_canary_20261015.py"
+    },
+    {
+      "name": "chasing_native_notes_golden_20261015",
+      "mode": "GUARDED_WRITE",
+      "owner_id": 2116886,
+      "scope": "trainingpeaks:private-plan:685173:native-calendar-notes:01-01:no-workouts",
+      "script": "scripts/ironman_jobs/chasing_native_notes_golden_20261015.py",
+      "test": "tests/test_chasing_native_notes_20261015.py"
+    },
+    {
+      "name": "chasing_native_notes_batch02_20261015",
+      "mode": "GUARDED_WRITE",
+      "owner_id": 2116886,
+      "scope": "trainingpeaks:private-plan:685173:native-calendar-notes:02-11:no-workouts",
+      "script": "scripts/ironman_jobs/chasing_native_notes_batch02_20261015.py",
+      "test": "tests/test_chasing_native_notes_20261015.py"
+    },
+    {
+      "name": "chasing_native_notes_batch03_20261015",
+      "mode": "GUARDED_WRITE",
+      "owner_id": 2116886,
+      "scope": "trainingpeaks:private-plan:685173:native-calendar-notes:12-21:no-workouts",
+      "script": "scripts/ironman_jobs/chasing_native_notes_batch03_20261015.py",
+      "test": "tests/test_chasing_native_notes_20261015.py"
+    },
+    {
+      "name": "chasing_native_notes_batch04_20261015",
+      "mode": "GUARDED_WRITE",
+      "owner_id": 2116886,
+      "scope": "trainingpeaks:private-plan:685173:native-calendar-notes:22-31:no-workouts",
+      "script": "scripts/ironman_jobs/chasing_native_notes_batch04_20261015.py",
+      "test": "tests/test_chasing_native_notes_20261015.py"
+    },
+    {
+      "name": "beginner_14_native_builder_readonly_20261016",
+      "mode": "READ_ONLY",
+      "owner_id": 2116886,
+      "scope": "trainingpeaks:public-plan:679801:14-native-bike-run-builder-instances:read-only",
+      "script": "scripts/ironman_jobs/beginner_14_native_builder_readonly_20261016.py",
+      "test": "tests/test_beginner_14_native_builder_readonly_20261016.py"
+    },
+    {
+      "name": "beginner_entire_plan_rpe_metric_audit_20261016",
+      "mode": "READ_ONLY",
+      "owner_id": 2116886,
+      "scope": "trainingpeaks:public-plan:679801:24-week-native-bike-run-rpe-inventory:read-only",
+      "script": "scripts/ironman_jobs/beginner_entire_plan_rpe_metric_audit_20261016.py",
+      "test": "tests/test_beginner_entire_plan_rpe_metric_audit_20261016.py"
+    },
+    {
+      "name": "beginner_rpe_lab_native_probe_20261016",
+      "mode": "READ_ONLY",
+      "owner_id": 2116886,
+      "scope": "trainingpeaks:private-lab-plan:684206:single-bike-builder-native-probe:read-only",
+      "script": "scripts/ironman_jobs/beginner_rpe_lab_native_probe_20261016.py",
+      "test": "tests/test_beginner_rpe_lab_native_probe_20261016.py"
+    },
+    {
+      "name": "beginner_rpe_gold_lab_20261016",
+      "mode": "GUARDED_WRITE",
+      "owner_id": 2116886,
+      "scope": "trainingpeaks:private-lab-plan:684206:single-bike-builder:3994992835:ftp-to-rpe-golden-only",
+      "script": "scripts/ironman_jobs/beginner_rpe_gold_lab_20261016.py",
+      "test": "tests/test_beginner_rpe_gold_lab_20261016.py"
+    },
+    {
+      "name": "beginner_rpe_native_preview_20261016",
+      "mode": "READ_ONLY",
+      "owner_id": 2116886,
+      "scope": "trainingpeaks:public-plan:679801:41-bike-native-ftp-to-rpe-full-compiler-preview:read-only",
+      "script": "scripts/ironman_jobs/beginner_rpe_native_preview_20261016.py",
+      "test": "tests/test_beginner_rpe_native_preview_20261016.py"
+    },
+    {
+      "name": "beginner_rpe_w01_w05_20261016",
+      "mode": "GUARDED_WRITE",
+      "owner_id": 2116886,
+      "scope": "trainingpeaks:public-plan:679801:beginner-rpe-bike-builder-only:relative-w01-w05:native-metric-and-targets",
+      "script": "scripts/ironman_jobs/beginner_rpe_w01_w05_20261016.py",
+      "test": "tests/test_beginner_rpe_w01_w05_20261016.py"
+    },
+    {
+      "name": "beginner_rpe_w06_w10_20261016",
+      "mode": "GUARDED_WRITE",
+      "owner_id": 2116886,
+      "scope": "trainingpeaks:public-plan:679801:beginner-rpe-bike-builder-only:relative-w06-w10:native-metric-and-targets",
+      "script": "scripts/ironman_jobs/beginner_rpe_w06_w10_20261016.py",
+      "test": "tests/test_beginner_rpe_w06_w10_20261016.py"
+    },
+    {
+      "name": "beginner_rpe_w11_w15_20261016",
+      "mode": "GUARDED_WRITE",
+      "owner_id": 2116886,
+      "scope": "trainingpeaks:public-plan:679801:beginner-rpe-bike-builder-only:relative-w11-w15:native-metric-and-targets",
+      "script": "scripts/ironman_jobs/beginner_rpe_w11_w15_20261016.py",
+      "test": "tests/test_beginner_rpe_w11_w15_20261016.py"
+    },
+    {
+      "name": "beginner_run_bike_balance_write_20261016",
+      "mode": "GUARDED_WRITE",
+      "owner_id": 2116886,
+      "scope": "trainingpeaks:public-plan:679801:14-approved-run-bike-duration-rebalance-only",
+      "script": "scripts/ironman_jobs/beginner_run_bike_balance_write_20261016.py",
+      "test": "tests/test_beginner_14_native_builder_readonly_20261016.py"
+    },
+    {
+      "name": "fit_reader_bootstrap_canary",
+      "mode": "GUARDED_WRITE",
+      "owner_id": 2116886,
+      "scope": "server:ironman-tp-mcp:install-fitdecode-0.11.0-and-live-fit-read-canary",
+      "script": "scripts/ironman_jobs/fit_reader_bootstrap_canary.py",
+      "test": "tests/test_fit_reader_bootstrap_canary.py"
+    },
+    {
+      "name": "fit_reader_catalog_audit",
+      "mode": "READ_ONLY",
+      "owner_id": 2116886,
+      "scope": "server:ironman-tp-mcp:mcp-catalog-fit-reader:read",
+      "script": "scripts/ironman_jobs/fit_reader_catalog_audit.py",
+      "test": "tests/test_fit_reader_catalog_audit.py"
+    },
+    {
+      "name": "private_bridge_configure_20261016",
+      "mode": "GUARDED_WRITE",
+      "owner_id": 2116886,
+      "scope": "server:ironman-tp-mcp:private-readonly-bridge-config-v1",
+      "script": "scripts/ironman_jobs/private_bridge_configure_20261016.py",
+      "test": "tests/test_private_bridge_configure_20261016.py"
+    },
+    {
+      "name": "private_bridge_live_selftest_20261016",
+      "mode": "READ_ONLY",
+      "owner_id": 2116886,
+      "scope": "server:ironman-tp-mcp:private-readonly-bridge-live-selftest",
+      "script": "scripts/ironman_jobs/private_bridge_live_selftest_20261016.py",
+      "test": "tests/test_private_bridge_live_selftest_20261016.py"
+    },
+    {
+      "name": "private_bridge_configure_v2_20261016",
+      "mode": "GUARDED_WRITE",
+      "owner_id": 2116886,
+      "scope": "server:ironman-tp-mcp:private-readonly-bridge-config-v2-result-sink",
+      "script": "scripts/ironman_jobs/private_bridge_configure_v2_20261016.py",
+      "test": "tests/test_private_bridge_configure_v2_20261016.py"
+    },
+    {
+      "name": "plan_workout_delete_route_canary_20261016",
+      "mode": "GUARDED_WRITE",
+      "owner_id": 2116886,
+      "scope": "trainingpeaks:disposable-plan:684484:single-other-workout-delete-route-canary",
+      "script": "scripts/ironman_jobs/plan_workout_delete_route_canary_20261016.py",
+      "test": "tests/test_plan_workout_delete_route_canary_20261016.py"
+    },
+    {
+      "name": "beginner_other_to_native_notes_20261016",
+      "mode": "GUARDED_WRITE",
+      "owner_id": 2116886,
+      "scope": "trainingpeaks:public-plan:679801:migrate-29-other-annotations-to-native-calendar-notes-only",
+      "script": "scripts/ironman_jobs/beginner_other_to_native_notes_20261016.py",
+      "test": "tests/test_beginner_other_to_native_notes_20261016.py"
+    },
+    {
+      "name": "beginner_note_library_publish_20261016",
+      "mode": "GUARDED_WRITE",
+      "owner_id": 2116886,
+      "scope": "trainingpeaks:library:3901898:first-ironman-24w-native-note-templates-only",
+      "script": "scripts/ironman_jobs/beginner_note_library_publish_20261016.py",
+      "test": "tests/test_beginner_note_library_publish_20261016.py"
+    },
+    {
+      "name": "beginner_strength_native_migration_20261016",
+      "mode": "GUARDED_WRITE",
+      "owner_id": 2116886,
+      "scope": "trainingpeaks:public-plan:679801:create-36-native-structuredstrength-twins-only",
+      "script": "scripts/ironman_jobs/beginner_strength_native_migration_20261016.py",
+      "test": "tests/test_beginner_strength_native_migration_20261016.py"
+    },
+    {
+      "name": "prefect_admin_keygen_20261016",
+      "mode": "GUARDED_WRITE",
+      "owner_id": 2116886,
+      "scope": "server:ironman-tp-mcp:create-dedicated-prefect-admin-ssh-key",
+      "script": "scripts/ironman_jobs/prefect_admin_keygen_20261016.py",
+      "test": "tests/test_prefect_admin_keygen_20261016.py"
+    },
+    {
+      "name": "prefect_ssh_inventory_20261016",
+      "mode": "READ_ONLY",
+      "owner_id": 2116886,
+      "scope": "server:ironman-tp-mcp:prefect-private-ssh-path-inventory-read",
+      "script": "scripts/ironman_jobs/prefect_ssh_inventory_20261016.py",
+      "test": "tests/test_prefect_ssh_inventory_20261016.py"
+    },
+    {
+      "name": "prefect_admin_result_read_20261016",
+      "mode": "READ_ONLY",
+      "owner_id": 2116886,
+      "scope": "server:ironman-tp-mcp:prefect-admin-result-read",
+      "script": "scripts/ironman_jobs/prefect_admin_result_read_20261016.py",
+      "test": "tests/test_prefect_admin_result_read_20261016.py"
+    },
+    {
+      "name": "prefect_admin_bridge_code_audit_20261016",
+      "mode": "READ_ONLY",
+      "owner_id": 2116886,
+      "scope": "server:ironman-tp-mcp:prefect-admin-result-sink-local-audit",
+      "script": "scripts/ironman_jobs/prefect_admin_bridge_code_audit_20261016.py",
+      "test": "tests/test_private_bridge.py"
+    },
+    {
+      "name": "private_bridge_net_diag_20261016",
+      "mode": "READ_ONLY",
+      "owner_id": 2116886,
+      "scope": "server:ironman-tp-mcp:private-bridge-listener-firewall-read",
+      "script": "scripts/ironman_jobs/private_bridge_net_diag_20261016.py",
+      "test": "tests/test_private_bridge_net_diag_20261016.py"
+    },
+    {
+      "name": "coaching_radar_result_audit_20261016",
+      "mode": "READ_ONLY",
+      "owner_id": 2116886,
+      "scope": "server:ironman-tp-mcp:coaching-radar-result:2932097:read",
+      "script": "scripts/ironman_jobs/coaching_radar_result_audit_20261016.py",
+      "test": "tests/test_coaching_radar_result_audit_20261016.py"
+    },
+    {
+      "name": "mcp_runtime_inventory_20261016",
+      "mode": "READ_ONLY",
+      "owner_id": 2116886,
+      "scope": "server:ironman-tp-mcp:runtime-process-manager-read",
+      "script": "scripts/ironman_jobs/mcp_runtime_inventory_20261016.py",
+      "test": "tests/test_mcp_runtime_inventory_20261016.py"
+    },
+    {
+      "name": "mcp_unit_inventory_20261016",
+      "mode": "READ_ONLY",
+      "owner_id": 2116886,
+      "scope": "server:ironman-tp-mcp:systemd-unit-read",
+      "script": "scripts/ironman_jobs/mcp_unit_inventory_20261016.py",
+      "test": "tests/test_mcp_unit_inventory_20261016.py"
+    },
+    {
+      "name": "beginner_strength_catalog_audit_20261016",
+      "mode": "READ_ONLY",
+      "owner_id": 2116886,
+      "scope": "server:ironman-tp-mcp:beginner-strength-catalog-audit",
+      "script": "scripts/ironman_jobs/beginner_strength_catalog_audit_20261016.py",
+      "test": "tests/test_beginner_strength_catalog_audit_20261016.py"
+    },
+    {
+      "name": "mcp_catalog_reload_20261016",
+      "mode": "GUARDED_WRITE",
+      "owner_id": 2116886,
+      "scope": "server:ironman-tp-mcp:reload-trainingpeaks-tunnel-current-pinned-checkout-only",
+      "script": "scripts/ironman_jobs/mcp_catalog_reload_20261016.py",
+      "test": "tests/test_mcp_catalog_reload_20261016.py"
+    },
+    {
+      "name": "beginner_strength_native_duration_20261017",
+      "mode": "GUARDED_WRITE",
+      "owner_id": 2116886,
+      "scope": "trainingpeaks:public-plan:679801:set-prescribed-duration-on-36-native-structuredstrength-from-verified-classic-duration-evidence-only",
+      "script": "scripts/ironman_jobs/beginner_strength_native_duration_20261017.py",
+      "test": "tests/test_beginner_strength_native_duration_20261017.py"
+    },
+    {
+      "name": "private_bridge_configure_v3_multiathlete_20261017",
+      "mode": "GUARDED_WRITE",
+      "owner_id": 2116886,
+      "scope": "server:ironman-tp-mcp:private-readonly-bridge-config-v3-active-radar-roster",
+      "script": "scripts/ironman_jobs/private_bridge_configure_v3_multiathlete_20261017.py",
+      "test": "tests/test_private_bridge_configure_v3_multiathlete_20261017.py"
+    },
+    {
+      "name": "private_bridge_live_allowlist_probe_20261017",
+      "mode": "READ_ONLY",
+      "owner_id": 2116886,
+      "scope": "server:ironman-tp-mcp:private-bridge-live-allowlist-probe:4480273",
+      "script": "scripts/ironman_jobs/private_bridge_live_allowlist_probe_20261017.py",
+      "test": "tests/test_private_bridge_live_allowlist_probe_20261017.py"
+    },
+    {
+      "name": "coaching_radar_multi_result_audit_20261017",
+      "mode": "READ_ONLY",
+      "owner_id": 2116886,
+      "scope": "server:ironman-tp-mcp:coaching-radar-active-roster:read",
+      "script": "scripts/ironman_jobs/coaching_radar_multi_result_audit_20261017.py",
+      "test": "tests/test_coaching_radar_multi_result_audit_20261017.py"
+    },
+    {
+      "name": "private_bridge_active_roster_canary_20261017",
+      "mode": "READ_ONLY",
+      "owner_id": 2116886,
+      "scope": "server:ironman-tp-mcp:private-bridge-active-radar-roster-canary",
+      "script": "scripts/ironman_jobs/private_bridge_active_roster_canary_20261017.py",
+      "test": "tests/test_private_bridge_active_roster_canary_20261017.py"
+    },
+    {
+      "name": "intermediate_strength_native_duration_20261017",
+      "mode": "GUARDED_WRITE",
+      "owner_id": 2116886,
+      "scope": "trainingpeaks:private-plan:684602:set-prescribed-duration-on-30-native-structuredstrength-from-canonical-title-minutes-only",
+      "script": "scripts/ironman_jobs/intermediate_strength_native_duration_20261017.py",
+      "test": "tests/test_intermediate_strength_native_duration_20261017.py"
+    },
+    {
+      "name": "chasing_readme_three_pdfs_20261017",
+      "mode": "GUARDED_WRITE",
+      "owner_id": 2116886,
+      "scope": "trainingpeaks:private-plan:685173:start-note:2664007:attach-exact-three-chasing-guide-pdfs-only",
+      "script": "scripts/ironman_jobs/chasing_readme_three_pdfs_20261017.py",
+      "test": "tests/test_chasing_readme_three_pdfs_20261017.py"
+    },
+    {
+      "name": "chasing_readme_pdf_postflight_20261017",
+      "mode": "READ_ONLY",
+      "owner_id": 2116886,
+      "scope": "trainingpeaks:private-plan:685173:start-note:2664007:three-guide-pdf-postflight-read",
+      "script": "scripts/ironman_jobs/chasing_readme_pdf_postflight_20261017.py",
+      "test": "tests/test_chasing_readme_pdf_postflight_20261017.py"
+    },
+    {
+      "name": "public_asset_catalog_audit_20261017",
+      "mode": "READ_ONLY",
+      "owner_id": 2116886,
+      "scope": "server:ironman-tp-mcp:public-asset-publisher-catalog-read",
+      "script": "scripts/ironman_jobs/public_asset_catalog_audit_20261017.py",
+      "test": "tests/test_public_assets_20261017.py"
+    },
+    {
+      "name": "spaces_brand_logo_canary_20261017",
+      "mode": "GUARDED_WRITE",
+      "owner_id": 2116886,
+      "scope": "digitalocean:spaces:ironman-assets:brand-logo-v1.0:put-readback",
+      "script": "scripts/ironman_jobs/spaces_brand_logo_canary_20261017.py",
+      "test": "tests/test_spaces_brand_logo_canary_20261017.py"
+    },
+    {
+      "name": "spaces_brand_logo_public_check_20261017",
+      "mode": "READ_ONLY",
+      "owner_id": 2116886,
+      "scope": "digitalocean:spaces:ironman-assets:brand-logo-v1.0:public-read",
+      "script": "scripts/ironman_jobs/spaces_brand_logo_public_check_20261017.py",
+      "test": "tests/test_spaces_brand_logo_public_check_20261017.py"
+    },
+    {
+      "name": "spaces_brand_logo_uploader_e2e_20261017",
+      "mode": "GUARDED_WRITE",
+      "owner_id": 2116886,
+      "scope": "digitalocean:spaces:ironman-assets:brand-logo-v1.0:uploader-e2e-put-readback",
+      "script": "scripts/ironman_jobs/spaces_brand_logo_uploader_e2e_20261017.py",
+      "test": "tests/test_spaces_brand_logo_uploader_e2e_20261017.py"
+    },
+    {
+      "name": "spaces_config_path_inventory_20261017",
+      "mode": "READ_ONLY",
+      "owner_id": 2116886,
+      "scope": "server:ironman-tp-mcp:spaces-config-path-metadata-read",
+      "script": "scripts/ironman_jobs/spaces_config_path_inventory_20261017.py",
+      "test": "tests/test_spaces_config_path_inventory_20261017.py"
+    }
+  ]
+}

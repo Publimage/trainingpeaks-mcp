@@ -7,7 +7,7 @@ metadata block in server.py (_DESTRUCTIVE_TOOLS / _NON_IDEMPOTENT_WRITES /
 _READ_ONLY_EXTRA / _TITLE_OVERRIDES). See "Adding a tool" in the README.
 """
 
-from tp_mcp.server import _DESTRUCTIVE_TOOLS, _NON_IDEMPOTENT_WRITES, TOOLS
+from tp_mcp.server import _DESTRUCTIVE_TOOLS, _NON_IDEMPOTENT_WRITES, _OPEN_WORLD_TOOLS, TOOLS
 
 _HELP = "See tests/test_tool_metadata.py docstring for how to fix this."
 
@@ -21,9 +21,24 @@ class TestEveryToolHasMetadata:
         missing = [t.name for t in TOOLS if t.annotations is None]
         assert not missing, f"Tools without annotations: {missing}. {_HELP}"
 
-    def test_every_tool_declares_open_world(self):
-        bad = [t.name for t in TOOLS if not t.annotations.open_world_hint]
-        assert not bad, f"All tools call the external TrainingPeaks API: {bad}. {_HELP}"
+    def test_every_tool_declares_private_account_boundary(self):
+        """An external URL alone is not an open-world tool.
+
+        All current tools operate in one bounded TrainingPeaks account;
+        any future web, external recipient, or arbitrary-host tool must be
+        explicitly reviewed and declared in _OPEN_WORLD_TOOLS.
+        """
+        names = {t.name for t in TOOLS}
+        assert _OPEN_WORLD_TOOLS <= names
+        assert all(isinstance(t.annotations.open_world_hint, bool) for t in TOOLS)
+        incorrectly_marked = [
+            t.name for t in TOOLS
+            if t.annotations.open_world_hint != (t.name in _OPEN_WORLD_TOOLS)
+        ]
+        assert not incorrectly_marked, (
+            f"Open-world annotations disagree with reviewed boundary: "
+            f"{incorrectly_marked}. {_HELP}"
+        )
 
 
 class TestReadWriteClassification:
@@ -46,7 +61,7 @@ class TestReadWriteClassification:
 
     def test_exception_sets_only_name_real_tools(self):
         names = {t.name for t in TOOLS}
-        stale = (_DESTRUCTIVE_TOOLS | _NON_IDEMPOTENT_WRITES) - names
+        stale = (_DESTRUCTIVE_TOOLS | _NON_IDEMPOTENT_WRITES | _OPEN_WORLD_TOOLS) - names
         assert not stale, f"Exception sets name tools that no longer exist: {stale}"
 
 
@@ -94,3 +109,62 @@ class TestSpotChecks:
         t = self._tool("tp_auth_status")
         assert t.title == "Check auth status"
         assert t.annotations.read_only_hint is True
+
+
+
+class TestSafetyCriticalMetadata:
+    """Independent checks for writes that could erase or replace user data."""
+
+    def _tool(self, name):
+        return next(t for t in TOOLS if t.name == name)
+
+    def test_overwrite_mutations_are_marked_destructive(self):
+        expected = {
+            "tp_set_workout_note",
+            "tp_update_equipment",
+            "tp_update_event",
+            "tp_update_ftp",
+            "tp_update_hr_zones",
+            "tp_update_library_item",
+            "tp_update_note",
+            "tp_update_nutrition",
+            "tp_update_speed_zones",
+            "tp_update_strength_workout",
+            "tp_update_workout",
+            "tp_rename_group",
+        }
+        for name in expected:
+            tool = self._tool(name)
+            assert tool.annotations.read_only_hint is False, name
+            assert tool.annotations.destructive_hint is True, name
+            assert tool.annotations.open_world_hint is False, name
+
+    def test_training_plan_writes_are_additive_and_non_idempotent(self):
+        for name in (
+            "tp_create_training_plan",
+            "tp_add_training_plan_library_workout",
+            "tp_add_training_plan_note",
+        ):
+            tool = self._tool(name)
+            assert tool.annotations.read_only_hint is False, name
+            assert tool.annotations.destructive_hint is False, name
+            assert tool.annotations.idempotent_hint is False, name
+            assert tool.annotations.open_world_hint is False, name
+
+    def test_training_plan_notes_reader_is_read_only(self):
+        tool = self._tool("tp_get_training_plan_notes")
+        assert tool.annotations.read_only_hint is True
+        assert tool.annotations.destructive_hint is False
+        assert tool.annotations.open_world_hint is False
+
+    def test_workout_delete_is_still_destructive(self):
+        assert self._tool("tp_delete_workout").annotations.destructive_hint is True
+
+    def test_no_read_tool_is_marked_open_world(self):
+        # No current read tool searches arbitrary public sites or accesses
+        # arbitrary recipients or externally provided host URLs.
+        unexpected = [
+            t.name for t in TOOLS
+            if t.annotations.read_only_hint and t.annotations.open_world_hint
+        ]
+        assert not unexpected

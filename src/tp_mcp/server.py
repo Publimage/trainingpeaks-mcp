@@ -27,13 +27,19 @@ from mcp.types import (
 from tp_mcp import __version__, apps
 from tp_mcp.auth import get_credential, validate_auth
 from tp_mcp.client.context import athlete_override
+from tp_mcp.private_bridge import maybe_start_private_bridge
 from tp_mcp.tools import (
     tp_add_athletes_to_group,
     tp_add_note_comment,
     tp_add_workout_comment,
     tp_analyze_workout,
+    tp_add_training_plan_library_workout,
+    tp_batch_add_training_plan_library_workouts,
+    tp_add_training_plan_note,
     tp_apply_training_plan,
     tp_auth_status,
+    tp_create_training_plan,
+    tp_delete_training_plan_other,
     tp_copy_workout,
     tp_create_availability,
     tp_create_equipment,
@@ -42,6 +48,10 @@ from tp_mcp.tools import (
     tp_create_library,
     tp_create_library_item,
     tp_create_note,
+    tp_batch_add_intermediate_strength,
+    tp_batch_add_beginner_strength,
+    tp_batch_delete_beginner_classic_strength,
+    tp_create_strength_plan_lab_probe,
     tp_create_strength_workout,
     tp_create_workout,
     tp_create_zones,
@@ -58,6 +68,8 @@ from tp_mcp.tools import (
     tp_get_athlete_settings,
     tp_get_atp,
     tp_get_availability,
+    tp_get_coaching_radar,
+    tp_publish_public_asset,
     tp_get_equipment,
     tp_get_events,
     tp_get_fitness,
@@ -65,6 +77,8 @@ from tp_mcp.tools import (
     tp_get_libraries,
     tp_get_library_item,
     tp_get_library_items,
+    tp_ironman_operator,
+    tp_sync_intermediate_native_notes,
     tp_get_metrics,
     tp_get_next_event,
     tp_get_note,
@@ -77,10 +91,12 @@ from tp_mcp.tools import (
     tp_get_strength_workout,
     tp_get_strength_workouts,
     tp_get_training_plan,
+    tp_get_training_plan_notes,
     tp_get_training_plan_workouts,
     tp_get_weekly_summary,
     tp_get_workout,
     tp_get_workout_comments,
+    tp_get_workout_fit_data,
     tp_get_workout_note,
     tp_get_workout_prs,
     tp_get_workout_types,
@@ -478,6 +494,52 @@ TOOLS = [
         },
     ),
     Tool(
+        name="tp_get_workout_fit_data",
+        description=(
+            "Read and decode the original .FIT/.FIT.gz file attached to a completed workout. "
+            "Read-only fallback when TrainingPeaks chart analysis is unavailable. "
+            "Returns session/lap/length/event messages plus sampled record time-series."
+        ),
+        input_schema={
+            "type": "object",
+            "properties": {
+                "workout_id": {"type": "string", "description": "Workout ID"},
+                "file_id": {
+                    "type": "string",
+                    "description": (
+                        "Optional FIT file ID from tp_get_workout. If omitted, the tool auto-selects "
+                        "when exactly one FIT file exists."
+                    ),
+                },
+                "sample_seconds": {
+                    "type": "integer",
+                    "enum": [1, 5, 10, 30, 60],
+                    "default": 10,
+                    "description": "Downsample record messages by elapsed-time bucket.",
+                },
+                "start_seconds": {
+                    "type": "number",
+                    "minimum": 0,
+                    "default": 0,
+                    "description": "Start of returned time window in elapsed seconds.",
+                },
+                "end_seconds": {
+                    "type": "number",
+                    "minimum": 0,
+                    "description": "Optional end of returned time window in elapsed seconds.",
+                },
+                "max_records": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 5000,
+                    "default": 1800,
+                    "description": "Maximum sampled record messages returned to the caller.",
+                },
+            },
+            "required": ["workout_id"],
+        },
+    ),
+    Tool(
         name="tp_delete_workout_file",
         description="Delete a workout file by file_id. Get file_id from tp_get_workout device_files/attachment_files.",
         input_schema={
@@ -541,11 +603,70 @@ TOOLS = [
     ),
     Tool(
         name="tp_analyze_workout",
-        description="Get workout analysis: metrics, zones, laps. Saves full time-series to JSON file.",
+        description=(
+            "Get workout analysis: metrics, zones, laps and sampled time-series. "
+            "Full chart data is also saved to a JSON file."
+        ),
         input_schema={
             "type": "object",
-            "properties": {"workout_id": {"type": "string"}},
+            "properties": {
+                "workout_id": {"type": "string"},
+                "sample_seconds": {
+                    "type": "integer",
+                    "enum": [1, 5, 10, 30, 60],
+                    "default": 30,
+                    "description": "Inline time-series sampling interval in elapsed seconds.",
+                },
+                "max_time_series_points": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 5000,
+                    "default": 2000,
+                    "description": "Safety cap for inline sampled chart points.",
+                },
+            },
             "required": ["workout_id"],
+        },
+    ),
+    Tool(
+        name="tp_get_coaching_radar",
+        description=(
+            "Read the latest persisted IRONMAN Coaching Radar report for an athlete. "
+            "The report is produced by the private Prefect staging pipeline; this tool performs no TrainingPeaks write."
+        ),
+        input_schema={
+            "type": "object",
+            "properties": {
+                "athlete_id": {"type": "string", "description": "TrainingPeaks athlete ID"}
+            },
+            "required": ["athlete_id"],
+        },
+    ),
+    Tool(
+        name="tp_publish_public_asset",
+        description=(
+            "Publish one approved IRONMAN image asset to the configured DigitalOcean Space. "
+            "Accepts only allowlisted temporary HTTPS source hosts and safe versioned object prefixes. "
+            "Never overwrites different existing bytes; performs public hash readback after upload."
+        ),
+        input_schema={
+            "type": "object",
+            "properties": {
+                "source_url": {
+                    "type": "string",
+                    "description": "Temporary HTTPS URL for the approved image bytes.",
+                },
+                "object_key": {
+                    "type": "string",
+                    "description": "Versioned object path under brand/, trainingpeaks/, shared/, or web/.",
+                },
+                "content_type": {
+                    "type": "string",
+                    "enum": ["image/png", "image/jpeg", "image/webp"],
+                    "default": "image/png",
+                },
+            },
+            "required": ["source_url", "object_key"],
         },
     ),
     # --- Fitness & Summary ---
@@ -594,6 +715,99 @@ TOOLS = [
     # --- Training Plans (multi-week Plan Store / "My Plans" — distinct from
     #     workout libraries and the ATP) ---
     Tool(
+        name="tp_create_training_plan",
+        description=("EXPERIMENTAL: create one private, unpriced [MCP TEST] Training Plan. "
+                     "Ordinary lab plans are 1-2 weeks; the exact named Intermediate "
+                     "archive pilot may be 24 weeks starting 2027-01-04. "
+                     "No athlete calendar writes; never retry ambiguous POST."),
+        input_schema={
+            "type": "object",
+            "properties": {
+                "title": {"type": "string", "description": "Must begin with [MCP TEST]"},
+                "start_date": {"type": "string", "description": "Monday YYYY-MM-DD"},
+                "week_count": {"type": "integer", "minimum": 1, "maximum": 24,
+                               "description": "1-2 for ordinary private lab plans; 24 only for the locked [MCP TEST] IRONMAN Intermediate 24W - Archive Pilot, anchored 2027-01-04"},
+                "description": {"type": "string"},
+            },
+            "required": ["title", "start_date"],
+        },
+    ),
+    Tool(
+        name="tp_add_training_plan_library_workout",
+        description=("Insert one [MCP TEST] Workout Library template in a private "
+                     "[MCP TEST] Training Plan at an in-range plan date. "
+                     "Does NOT apply to any athlete."),
+        input_schema={
+            "type": "object",
+            "properties": {
+                "plan_id": {"type": "integer"},
+                "library_id": {"type": "string"},
+                "item_id": {"type": "string"},
+                "workout_date": {"type": "string", "description": "YYYY-MM-DD inside plan"},
+            },
+            "required": ["plan_id", "library_id", "item_id", "workout_date"],
+        },
+    ),
+    Tool(
+        name="tp_batch_add_training_plan_library_workouts",
+        description=("Guarded assembly batch of 1-25 existing MASTER templates in "
+                     "private Training Plan 684602, using week 1-24 and weekday "
+                     "0=Monday..6=Sunday. Defaults to dry_run=true; never touches athletes."),
+        input_schema={
+            "type": "object",
+            "properties": {
+                "plan_id": {"type": "integer", "enum": [684602]},
+                "dry_run": {"type": "boolean", "default": True},
+                "items": {"type": "array", "minItems": 1, "maxItems": 25,
+                          "items": {"type": "object",
+                                    "properties": {
+                                        "library_id": {"type": "string"},
+                                        "item_id": {"type": "string"},
+                                        "week": {"type": "integer", "minimum": 1, "maximum": 24},
+                                        "day": {"type": "integer", "minimum": 0, "maximum": 6},
+                                        "expected_title": {"type": "string"},
+                                    },
+                                    "required": ["library_id", "item_id", "week", "day",
+                                                 "expected_title"]}},
+            },
+            "required": ["plan_id", "items"],
+        },
+    ),
+    Tool(
+        name="tp_add_training_plan_note",
+        description=("Add a [MCP TEST] calendar note to a private [MCP TEST] "
+                     "Training Plan; never touches an athlete."),
+        input_schema={
+            "type": "object",
+            "properties": {
+                "plan_id": {"type": "integer"},
+                "note_date": {"type": "string", "description": "YYYY-MM-DD inside plan"},
+                "title": {"type": "string", "description": "Must begin with [MCP TEST]"},
+                "description": {"type": "string"},
+            },
+            "required": ["plan_id", "note_date", "title", "description"],
+        },
+    ),
+    Tool(
+        name="tp_delete_training_plan_other",
+        description=("EXPERIMENTAL AND FAIL-CLOSED. Dry-run one exact obsolete "
+                     "one-minute Other card in private Intermediate plan 684463. "
+                     "Read native-note twin and verify all 13 real workouts + 8 "
+                     "native notes. dry_run=false remains DISABLED until a "
+                     "browser-confirmed plan-specific DELETE endpoint is installed. "
+                     "Never deletes an athlete calendar workout."),
+        input_schema={
+            "type": "object",
+            "properties": {
+                "plan_id": {"type": "integer", "description": "Must be 684463"},
+                "expected_title": {"type": "string", "description": "Exact [MCP TEST] Other title from plan reader"},
+                "dry_run": {"type": "boolean", "default": True,
+                            "description": "True is read-only; false is blocked until plan-specific DELETE route is verified"},
+            },
+            "required": ["plan_id", "expected_title"],
+        },
+    ),
+    Tool(
         name="tp_list_training_plans",
         description="List the coach's authored multi-week training plans (id, title, "
                     "weeks, workout count, total hours, category, price).",
@@ -612,9 +826,23 @@ TOOLS = [
         },
     ),
     Tool(
+        name="tp_get_training_plan_notes",
+        description=("Read native calendar notes from one Training Plan (date, title, "
+                     "description, and relative week/day); does not touch athlete calendars."),
+        input_schema={
+            "type": "object",
+            "properties": {
+                "plan_id": {"type": "integer", "description": "Plan id"},
+            },
+            "required": ["plan_id"],
+        },
+    ),
+    Tool(
         name="tp_get_training_plan_workouts",
-        description="All workouts of a training plan laid out by week/day "
-                    "(sport, title, description, duration, TSS, has_structure).",
+        description="Read a Training Plan calendar: all workouts by week/day "
+                    "(sport, title, description, duration, TSS, has_structure), "
+                    "plus native plan calendar notes with separate notes-readback status. "
+                    "Read-only; does not touch an athlete calendar.",
         input_schema={
             "type": "object",
             "properties": {
@@ -625,9 +853,11 @@ TOOLS = [
     ),
     Tool(
         name="tp_apply_training_plan",
-        description="Apply a training plan to an athlete's calendar from a start date "
-                    "by copying each plan workout (with structure) to start_date + its "
-                    "relative day. Targets the athlete given via the athlete parameter.",
+        description="LAB ONLY: synthetically COPY three [MCP TEST] Training Plan workouts "
+                    "from plan 684206 to athlete 941614 (Piattaforma TEST), starting "
+                    "2027-06-21. Requires an empty sandbox; never applies a native "
+                    "linked TrainingPeaks plan or copies its calendar notes. "
+                    "Rejects all other plans, athletes and dates.",
         input_schema={
             "type": "object",
             "properties": {
@@ -1093,7 +1323,59 @@ TOOLS = [
             "required": [],
         },
     ),
+    # --- IRONMAN Cloud Operator ---
+    Tool(
+        name="tp_ironman_operator",
+        description=(
+            "Execute a revision-pinned, GitHub-reviewed IRONMAN job using the existing "
+            "DigitalOcean TrainingPeaks cloud runtime. Does not accept arbitrary "
+            "commands or paths. Defaults to read-only preview; execute verifies "
+            "authenticated coach owner 2116886, trusted repo and exact commit, "
+            "runs approved tests then executes registered task. Native Strength "
+            "Library audit job: native_strength_library_audit. A guarded-write "
+            "job requires explicit exact scope acknowledgement. The job may "
+            "alter the repo checkout, but does not restart the MCP tunnel."
+        ),
+        input_schema={
+            "type": "object",
+            "properties": {
+                "job": {"type": "string", "minLength": 3,
+                        "description": "Approved named job in data/ironman_operator_jobs.json."},
+                "revision": {"type": "string", "minLength": 40, "maxLength": 40,
+                             "description": "Pinned full SHA of trusted GitHub branch tip."},
+                "operation": {"type": "string", "enum": ["preview", "execute"],
+                              "default": "preview"},
+                "ack_scope": {"type": "string",
+                              "description": "Required only for explicitly approved guarded-write jobs."},
+            },
+            "required": ["job", "revision"],
+        },
+    ),
     # --- Workout Library ---
+    Tool(
+        name="tp_sync_intermediate_native_notes",
+        description=(
+            "Guarded native TrainingPeaks NoteTemplate library publisher for the "
+            "private [MCP TEST] Intermediate plan 684602. Default preview is "
+            "READ-ONLY. mode=probe creates ONE disposable LAB NoteTemplate in "
+            "library 3890637; mode=publish writes approved notes exclusively "
+            "to IRONMAN MASTER | Note (3892900), after LAB type-canary and "
+            "live plan/content readback. Does NOT touch athlete calendars "
+            "or edit source notes. Never retries ambiguous POST."
+        ),
+        input_schema={
+            "type": "object",
+            "properties": {
+                "mode": {"type": "string", "enum": ["preview", "probe", "publish"],
+                         "default": "preview"},
+                "ack_library_id": {"type": "integer",
+                                   "description": "3890637 for probe; 3892900 for publish."},
+                "max_items": {"type": "integer", "minimum": 1, "maximum": 35,
+                              "default": 35},
+            },
+            "required": [],
+        },
+    ),
     Tool(
         name="tp_get_libraries",
         description="List workout library folders.",
@@ -1254,6 +1536,103 @@ TOOLS = [
                 },
             },
             "required": ["query"],
+        },
+    ),
+    Tool(
+        name="tp_batch_add_intermediate_strength",
+        description=(
+            "Add 1-8 native StructuredStrength Builder workouts (not text) "
+            "to private Intermediate 24-week TEST Training Plan 684602, "
+            "from approved canonical exercise blocks. Requires exact "
+            "expected plan count. Defaults to dry-run; POST once per "
+            "workout, with native readback; stops on provider drift."
+        ),
+        input_schema={
+            "type": "object",
+            "properties": {
+                "items": {
+                    "type": "array",
+                    "items": {"type": "object"},
+                    "description": (
+                        "Each {uid,week,day,title,instructions,blocks} "
+                        "with week 1-22 and day TUE/WED/THU/FRI; "
+                        "blocks use native Strength Builder exercise ids, "
+                        "sets, and parameters."
+                    ),
+                },
+                "expected_plan_count": {"type": "integer"},
+                "dry_run": {"type": "boolean", "default": True},
+            },
+            "required": ["items", "expected_plan_count"],
+        },
+    ),
+    Tool(
+        name="tp_batch_add_beginner_strength",
+        description=(
+            "Add 1-8 native StructuredStrength Builder twins to the public "
+            "First Ironman Beginner Training Plan 679801 only. Each item is "
+            "anchored to one exact approved classic Strength source workout ID. "
+            "The source classic workout is not deleted by this tool. Requires "
+            "exact expected plan count; defaults to dry-run; POST once per "
+            "workout with native membership/detail/video readback."
+        ),
+        input_schema={
+            "type": "object",
+            "properties": {
+                "items": {
+                    "type": "array",
+                    "items": {"type": "object"},
+                    "description": (
+                        "Each {source_workout_id,title,instructions,blocks}; "
+                        "source_workout_id must be one of the 36 approved "
+                        "Beginner classic Strength IDs."
+                    ),
+                },
+                "expected_plan_count": {"type": "integer"},
+                "dry_run": {"type": "boolean", "default": True},
+            },
+            "required": ["items", "expected_plan_count"],
+        },
+    ),
+    Tool(
+        name="tp_batch_delete_beginner_classic_strength",
+        description=(
+            "Delete 1-8 exact classic text Strength sources from public "
+            "First Ironman Beginner plan 679801 only, but only after an exact "
+            "native StructuredStrength twin exists at the same date/title. "
+            "Defaults to dry-run; provider readback after every delete."
+        ),
+        input_schema={
+            "type": "object",
+            "properties": {
+                "items": {
+                    "type": "array",
+                    "items": {"type": "object"},
+                    "description": (
+                        "Each {source_workout_id,native_title,date}; source ID "
+                        "must be one of the 36 approved Beginner Strength sources."
+                    ),
+                },
+                "expected_plan_count": {"type": "integer"},
+                "dry_run": {"type": "boolean", "default": True},
+            },
+            "required": ["items", "expected_plan_count"],
+        },
+    ),
+    Tool(
+        name="tp_create_strength_plan_lab_probe",
+        description=(
+            "LAB ONLY. Dry-run checks a known native Strength Builder in "
+            "private sacrificial Training Plan 684543. When dry_run=false, "
+            "attempts one plan-scoped Goblet 1x7 create on an observed provider "
+            "route, with strict preflight and independent readback. Not for "
+            "athletes or plan 684602. Never retry an ambiguous POST."
+        ),
+        input_schema={
+            "type": "object",
+            "properties": {
+                "dry_run": {"type": "boolean", "default": True},
+            },
         },
     ),
     Tool(
@@ -1481,10 +1860,17 @@ TOOLS = [
 _ATHLETE_EXEMPT_TOOLS = {
     "tp_auth_status", "tp_refresh_auth", "tp_validate_structure",
     "tp_list_athletes", "tp_get_workout_types",
+    "tp_publish_public_asset",
     # Coach-scoped — enumerates methods under the caller's own user, not an athlete.
     "tp_get_zone_methods",
     # Offline exercise-library search — not athlete-scoped.
     "tp_search_exercises",
+    # Hard-locked pilot, not athlete-scoped and never accepts override.
+    "tp_create_strength_plan_lab_probe",
+    "tp_batch_add_intermediate_strength",
+    "tp_batch_add_beginner_strength",
+    "tp_batch_delete_beginner_classic_strength",
+    "tp_sync_intermediate_native_notes",
     # Coach-scoped (groups belong to the coach, not a targeted athlete).
     "tp_list_groups", "tp_list_athletes_in_group",
     "tp_create_group", "tp_rename_group", "tp_delete_group",
@@ -1514,28 +1900,50 @@ for _tool in TOOLS:
 _READ_ONLY_PREFIXES = ("tp_get_", "tp_list_", "tp_download_", "tp_search_", "tp_validate_", "tp_analyze_")
 _READ_ONLY_EXTRA = {"tp_auth_status"}
 
-# Irrecoverable data removal. Everything else that writes is recoverable by a
-# follow-up call (update/re-add), so destructiveHint stays False there.
+# DestructiveHint covers deletion AND modification that overwrites existing
+# user data; the former may be irreversible, and the latter may lose an old
+# value even when a user can enter another value later. TrainingPeaks confines
+# these writes to the account selected by the authenticated session; the
+# Publishing Gate additionally restricts real-athlete mutations.
 _DESTRUCTIVE_TOOLS = {
+    "tp_batch_delete_beginner_classic_strength",
     "tp_delete_availability",
     "tp_delete_equipment",
     "tp_delete_event",
     "tp_delete_group",
     "tp_delete_library",
     "tp_delete_note",
+    "tp_delete_training_plan_other",
     "tp_delete_strength_workout",
     "tp_delete_workout",
     "tp_delete_workout_file",
     "tp_remove_athletes_from_group",
+    "tp_rename_group",
+    "tp_set_workout_note",
+    "tp_update_equipment",
+    "tp_update_event",
+    "tp_update_ftp",
+    "tp_update_hr_zones",
+    "tp_update_library_item",
+    "tp_update_note",
+    "tp_update_nutrition",
+    "tp_update_speed_zones",
+    "tp_update_strength_workout",
+    "tp_update_workout",
 }
 
 # Writes that append or create: repeating the call duplicates data. Updates,
 # sets, deletes and membership changes converge on the same state and are
 # therefore idempotent.
 _NON_IDEMPOTENT_WRITES = {
+    "tp_ironman_operator",
     "tp_add_note_comment",
     "tp_add_workout_comment",
+    "tp_add_training_plan_library_workout",
+    "tp_batch_add_training_plan_library_workouts",
+    "tp_add_training_plan_note",
     "tp_apply_training_plan",
+    "tp_create_training_plan",
     "tp_copy_workout",
     "tp_create_availability",
     "tp_create_equipment",
@@ -1543,7 +1951,11 @@ _NON_IDEMPOTENT_WRITES = {
     "tp_create_group",
     "tp_create_library",
     "tp_create_library_item",
+    "tp_sync_intermediate_native_notes",
     "tp_create_note",
+    "tp_batch_add_intermediate_strength",
+    "tp_batch_add_beginner_strength",
+    "tp_create_strength_plan_lab_probe",
     "tp_create_strength_workout",
     "tp_create_workout",
     "tp_create_zones",
@@ -1551,6 +1963,14 @@ _NON_IDEMPOTENT_WRITES = {
     "tp_schedule_library_workout",
     "tp_upload_workout_file",
 }
+
+# The current tools access a bounded authenticated TrainingPeaks account,
+# including its private athlete roster, libraries, calendar and settings.
+# No tool accepts an arbitrary remote host, web URL or external recipient as
+# an action destination. Per OpenAI's MCP annotation guidance, this is a
+# closed-world workspace even though the API is hosted outside the Mac.
+# For a future open-ended/web/public publishing tool, add it explicitly here.
+_OPEN_WORLD_TOOLS: set[str] = {"tp_publish_public_asset"}
 
 _TITLE_ACRONYMS = {"atp": "ATP", "ftp": "FTP", "hr": "HR", "prs": "PRs"}
 _TITLE_OVERRIDES = {
@@ -1572,7 +1992,7 @@ for _tool in TOOLS:
         read_only_hint=_read_only,
         destructive_hint=_tool.name in _DESTRUCTIVE_TOOLS,
         idempotent_hint=_tool.name not in _NON_IDEMPOTENT_WRITES,
-        open_world_hint=True,  # every tool talks to the external TrainingPeaks API
+        open_world_hint=_tool.name in _OPEN_WORLD_TOOLS,
     )
 
 
@@ -1731,6 +2151,17 @@ async def _h_download_workout_file(args):
         output_path=args.get("output_path"),
     )
 
+@_handler("tp_get_workout_fit_data")
+async def _h_get_workout_fit_data(args):
+    return await tp_get_workout_fit_data(
+        workout_id=args["workout_id"],
+        file_id=args.get("file_id"),
+        sample_seconds=args.get("sample_seconds", 10),
+        start_seconds=args.get("start_seconds", 0.0),
+        end_seconds=args.get("end_seconds"),
+        max_records=args.get("max_records", 1800),
+    )
+
 @_handler("tp_delete_workout_file")
 async def _h_delete_workout_file(args):
     return await tp_delete_workout_file(
@@ -1750,7 +2181,12 @@ async def _h_get_peaks(args):
     return await tp_get_peaks(sport=args["sport"], pr_type=args["pr_type"], days=args.get("days", 3650))
 
 @_handler("tp_analyze_workout")
-async def _h_analyze(args): return await tp_analyze_workout(workout_id=args["workout_id"])
+async def _h_analyze(args):
+    return await tp_analyze_workout(
+        workout_id=args["workout_id"],
+        sample_seconds=args.get("sample_seconds", 30),
+        max_time_series_points=args.get("max_time_series_points", 2000),
+    )
 
 # --- Structured strength / gym ---
 @_handler("tp_search_exercises")
@@ -1758,6 +2194,28 @@ async def _h_search_exercises(args):
     return await tp_search_exercises(
         query=args.get("query", ""), limit=args.get("limit", 20),
         muscle_group=args.get("muscle_group"))
+
+@_handler("tp_batch_add_intermediate_strength")
+async def _h_batch_add_intermediate_strength(args):
+    return await tp_batch_add_intermediate_strength(
+        items=args["items"], expected_plan_count=args["expected_plan_count"],
+        dry_run=args.get("dry_run", True))
+
+@_handler("tp_batch_add_beginner_strength")
+async def _h_batch_add_beginner_strength(args):
+    return await tp_batch_add_beginner_strength(
+        items=args["items"], expected_plan_count=args["expected_plan_count"],
+        dry_run=args.get("dry_run", True))
+
+@_handler("tp_batch_delete_beginner_classic_strength")
+async def _h_batch_delete_beginner_classic_strength(args):
+    return await tp_batch_delete_beginner_classic_strength(
+        items=args["items"], expected_plan_count=args["expected_plan_count"],
+        dry_run=args.get("dry_run", True))
+
+@_handler("tp_create_strength_plan_lab_probe")
+async def _h_create_strength_plan_lab_probe(args):
+    return await tp_create_strength_plan_lab_probe(dry_run=args.get("dry_run", True))
 
 @_handler("tp_create_strength_workout")
 async def _h_create_strength(args):
@@ -1791,6 +2249,18 @@ async def _h_update_strength(args):
 async def _h_delete_strength(args):
     return await tp_delete_strength_workout(workout_id=args["workout_id"])
 
+@_handler("tp_get_coaching_radar")
+async def _h_get_coaching_radar(args):
+    return await tp_get_coaching_radar(athlete_id=args["athlete_id"])
+
+@_handler("tp_publish_public_asset")
+async def _h_publish_public_asset(args):
+    return await tp_publish_public_asset(
+        source_url=args["source_url"],
+        object_key=args["object_key"],
+        content_type=args.get("content_type", "image/png"),
+    )
+
 # --- Fitness & Summary ---
 @_handler("tp_get_fitness")
 async def _h_get_fitness(args):
@@ -1805,11 +2275,51 @@ async def _h_weekly_summary(args): return await tp_get_weekly_summary(week_of=ar
 @_handler("tp_get_atp")
 async def _h_get_atp(args): return await tp_get_atp(start_date=args["start_date"], end_date=args["end_date"])
 
+@_handler("tp_create_training_plan")
+async def _h_create_training_plan(args):
+    return await tp_create_training_plan(
+        title=args["title"], start_date=args["start_date"],
+        week_count=args.get("week_count", 1),
+        description=args.get("description"),
+    )
+
+@_handler("tp_add_training_plan_library_workout")
+async def _h_add_training_plan_library_workout(args):
+    return await tp_add_training_plan_library_workout(
+        plan_id=args["plan_id"], library_id=args["library_id"],
+        item_id=args["item_id"], workout_date=args["workout_date"],
+    )
+
+@_handler("tp_batch_add_training_plan_library_workouts")
+async def _h_batch_add_training_plan_library_workouts(args):
+    return await tp_batch_add_training_plan_library_workouts(
+        plan_id=args["plan_id"], items=args["items"],
+        dry_run=args.get("dry_run", True),
+    )
+
+@_handler("tp_add_training_plan_note")
+async def _h_add_training_plan_note(args):
+    return await tp_add_training_plan_note(
+        plan_id=args["plan_id"], note_date=args["note_date"],
+        title=args["title"], description=args["description"],
+    )
+
+@_handler("tp_delete_training_plan_other")
+async def _h_delete_training_plan_other(args):
+    return await tp_delete_training_plan_other(
+        plan_id=args["plan_id"], expected_title=args["expected_title"],
+        dry_run=args.get("dry_run", True),
+    )
+
 @_handler("tp_list_training_plans")
 async def _h_list_training_plans(args): return await tp_list_training_plans()
 
 @_handler("tp_get_training_plan")
 async def _h_get_training_plan(args): return await tp_get_training_plan(plan_id=args["plan_id"])
+
+@_handler("tp_get_training_plan_notes")
+async def _h_get_training_plan_notes(args):
+    return await tp_get_training_plan_notes(plan_id=args["plan_id"])
 
 @_handler("tp_get_training_plan_workouts")
 async def _h_get_training_plan_workouts(args): return await tp_get_training_plan_workouts(plan_id=args["plan_id"])
@@ -1995,6 +2505,23 @@ async def _h_get_libs(args): return await tp_get_libraries()
 @_handler("tp_get_library_items")
 async def _h_get_lib_items(args): return await tp_get_library_items(library_id=args["library_id"])
 
+@_handler("tp_ironman_operator")
+async def _h_ironman_operator(args):
+    return await tp_ironman_operator(
+        job=args["job"],
+        revision=args["revision"],
+        operation=args.get("operation", "preview"),
+        ack_scope=args.get("ack_scope"),
+    )
+
+@_handler("tp_sync_intermediate_native_notes")
+async def _h_sync_native_notes(args):
+    return await tp_sync_intermediate_native_notes(
+        mode=args.get("mode", "preview"),
+        ack_library_id=args.get("ack_library_id"),
+        max_items=args.get("max_items", 35),
+    )
+
 @_handler("tp_get_library_item")
 async def _h_get_lib_item(args):
     return await tp_get_library_item(library_id=args["library_id"], item_id=args["item_id"])
@@ -2157,12 +2684,22 @@ async def run_server_async() -> None:
     if os.environ.get("TP_MCP_SKIP_STARTUP_VALIDATION") != "1":
         await _validate_auth_on_startup()
 
-    async with stdio_server() as (read_stream, write_stream):
-        await server.run(
-            read_stream,
-            write_stream,
-            server.create_initialization_options(),
-        )
+    private_bridge = None
+    try:
+        private_bridge = maybe_start_private_bridge()
+        if private_bridge is not None:
+            host, port = private_bridge.server.server_address
+            logger.info("IRONMAN private read-only bridge listening on %s:%s", host, port)
+
+        async with stdio_server() as (read_stream, write_stream):
+            await server.run(
+                read_stream,
+                write_stream,
+                server.create_initialization_options(),
+            )
+    finally:
+        if private_bridge is not None:
+            private_bridge.close()
 
 
 def run_server() -> int:
