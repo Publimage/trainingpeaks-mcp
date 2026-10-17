@@ -52,16 +52,24 @@ def materialize(
     output_dir.mkdir(parents=True, mode=0o700)
     os.chmod(output_dir, 0o700)
 
+    private_cases = []
+    for item in manifest["cases"]:
+        src = private_dir / item["filename"]
+        private_cases.append(json.loads(src.read_text(encoding="utf-8")))
+    private_bindings = [
+        {"athlete_id": case["athlete_id"], "athlete_name": case["athlete_name"]}
+        for case in private_cases
+    ]
+
     rows = []
     total_chars = 0
     total_bytes = 0
-    for item in manifest["cases"]:
-        src = private_dir / item["filename"]
-        case = json.loads(src.read_text(encoding="utf-8"))
+    for case in private_cases:
         payload = build_provider_payload(
             case,
             output_schema=output_schema,
             behavior_taxonomy=behavior_taxonomy,
+            additional_private_bindings=private_bindings,
         )
         filename = f"provider_{payload['case_ref']}.json"
         text = json.dumps(payload, ensure_ascii=False, sort_keys=True)
