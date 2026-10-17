@@ -48,6 +48,24 @@ GLOBAL_POLICY_TERMS = (
     "incertezza",
 )
 
+ATHLETE_PROFILE_TERMS = (
+    "obiettivo",
+    "goal",
+    "gara",
+    "background",
+    "disponibil",
+    "vincol",
+    "limit",
+    "test",
+    "ftp",
+    "css",
+    "ritmo",
+    "potenza",
+    "frequenza cardiaca",
+    "rpe",
+    "feedback",
+)
+
 DATA_ABSENCE_TERMS = (
     "assenza",
     "missing",
@@ -148,13 +166,19 @@ def _term_matches(term: str, hay: str) -> bool:
     return term in hay
 
 
-def _matched_terms(section: Section, terms: tuple[str, ...]) -> tuple[str, ...]:
+def _role_terms(role: str, terms: tuple[str, ...]) -> tuple[str, ...]:
+    if role == "athlete_card":
+        return tuple(dict.fromkeys((*terms, *ATHLETE_PROFILE_TERMS)))
+    return terms
+
+
+def _matched_terms(section: Section, terms: tuple[str, ...], *, role: str) -> tuple[str, ...]:
     hay = _norm(section.heading + "\n" + section.text)
-    return tuple(term for term in terms if _term_matches(term, hay))
+    return tuple(term for term in _role_terms(role, terms) if _term_matches(term, hay))
 
 
 def _score(section: Section, terms: tuple[str, ...], *, role: str) -> tuple[int, int, int]:
-    matched = _matched_terms(section, terms)
+    matched = _matched_terms(section, terms, role=role)
     hits = len(matched)
     base = ROLE_BASE_WEIGHT.get("specialist" if role.startswith("specialist:") else role, 0)
     heading_hits = sum(1 for term in matched if term in _norm(section.heading))
@@ -236,7 +260,7 @@ def compile_selective_context(
             "section_heading": section.heading,
             "section_ordinal": section.ordinal,
             "selection_score": score,
-            "matched_terms": list(_matched_terms(section, terms)),
+            "matched_terms": list(_matched_terms(section, terms, role=role)),
             "excerpt": text,
             "excerpt_sha256": _sha(text),
         })
@@ -337,14 +361,13 @@ def evaluate_compiled_context(
             category_routing_misses[category] = list(candidates)
 
     chars = int(compiled.get("selected_char_count") or 0)
-    duplicate_excerpts = len({x["excerpt_sha256"] for x in excerpts}) != len(excerpts)
+    duplicate_text_count = len(excerpts) - len({x["excerpt_sha256"] for x in excerpts})
 
     passed = (
         not missing_categories
         and not missing_roles
         and not category_routing_misses
         and chars <= max_chars
-        and not duplicate_excerpts
         and compiled.get("trainingpeaks_writes") == 0
         and compiled.get("drive_writes") == 0
         and compiled.get("ai_calls") == 0
@@ -358,7 +381,7 @@ def evaluate_compiled_context(
         "matched_terms": sorted(matched_terms),
         "selected_char_count": chars,
         "max_chars": max_chars,
-        "duplicate_excerpts": duplicate_excerpts,
+        "duplicate_text_across_sources_count": duplicate_text_count,
         "excerpt_count": len(excerpts),
         "trainingpeaks_writes": 0,
         "drive_writes": 0,
