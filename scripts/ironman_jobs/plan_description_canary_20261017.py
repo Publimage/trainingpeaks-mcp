@@ -27,7 +27,7 @@ async def go():
         old=p.get("description")
         baseline={k:v for k,v in p.items() if k!="description"}
         put=await c._request("PUT",f"/plans/v1/plans/{PLAN}",
-            json={"planId":PLAN,"description":CANARY},_retry_on_401=False)
+            json={"planId":PLAN,"title":EXPECTED_TITLE,"description":CANARY},_retry_on_401=False)
         if put.is_error:
             print("CANARY_PUT_REJECTED",put.error_code,str(put.message)[:120],flush=True)
             return 3
@@ -36,7 +36,7 @@ async def go():
         must({k:v for k,v in p2.items() if k!="description"}==baseline,"CANARY_DRIFT")
         print("PLAN_DESCRIPTION_CANARY_CHANGED_VERIFIED",flush=True)
         rb=await c._request("PUT",f"/plans/v1/plans/{PLAN}",
-            json={"planId":PLAN,"description":old},_retry_on_401=False)
+            json={"planId":PLAN,"title":EXPECTED_TITLE,"description":old},_retry_on_401=False)
         must(not rb.is_error,"CANARY_ROLLBACK_ERROR")
         p3=await detail()
         must(p3==p,"CANARY_ROLLBACK_MISMATCH")
