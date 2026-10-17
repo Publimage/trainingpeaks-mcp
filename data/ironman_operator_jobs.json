@@ -1794,6 +1794,14 @@
       "scope": "public:trainingpeaks:frontend:planfolder-recursive-js:read",
       "script": "scripts/ironman_jobs/training_plan_planfolder_recursive_js_20261017.py",
       "test": "tests/test_training_plan_planfolder_recursive_js_20261017.py"
+    },
+    {
+      "name": "training_plan_folder_get_route_shape_20261017",
+      "mode": "READ_ONLY",
+      "owner_id": 2116886,
+      "scope": "trainingpeaks:training-plan-library:planfolder-route-shape:read",
+      "script": "scripts/ironman_jobs/training_plan_folder_get_route_shape_20261017.py",
+      "test": "tests/test_training_plan_folder_get_route_shape_20261017.py"
     }
   ]
 }
