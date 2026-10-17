@@ -1538,6 +1538,14 @@
       "scope": "server:ironman-tp-mcp:private-readonly-bridge-config-v3-active-radar-roster",
       "script": "scripts/ironman_jobs/private_bridge_configure_v3_multiathlete_20261017.py",
       "test": "tests/test_private_bridge_configure_v3_multiathlete_20261017.py"
+    },
+    {
+      "name": "private_bridge_live_allowlist_probe_20261017",
+      "mode": "READ_ONLY",
+      "owner_id": 2116886,
+      "scope": "server:ironman-tp-mcp:private-bridge-live-allowlist-probe:4480273",
+      "script": "scripts/ironman_jobs/private_bridge_live_allowlist_probe_20261017.py",
+      "test": "tests/test_private_bridge_live_allowlist_probe_20261017.py"
     }
   ]
 }
