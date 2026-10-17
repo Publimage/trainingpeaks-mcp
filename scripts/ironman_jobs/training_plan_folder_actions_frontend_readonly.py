@@ -1,7 +1,6 @@
-"""READ ONLY: locate TrainingPeaks coachTrainingPlans API-proxy methods in public JS.
+"""READ ONLY: locate exact coachTrainingPlans API proxy method definitions.
 
-Scans public release JS for exact method names and emits only request-like contexts.
-No authentication and no provider writes.
+Public TrainingPeaks JS GET only; no authentication and no provider writes.
 """
 from __future__ import annotations
 import asyncio,json,re
@@ -9,8 +8,8 @@ from urllib.parse import urljoin,urlparse
 import httpx
 
 BASE="https://app.trainingpeaks.com/"
-TERMS=("movePlansBetweenFolders","assignPlanToFolder","removePlansFromFolder",
-       "renameFolder","createFolder","deleteFolder","getFolders")
+METHODS=("movePlansBetweenFolders","assignPlanToFolder","removePlansFromFolder",
+         "renameFolder","createFolder","deleteFolder","getFolders")
 
 def trusted(url):
     host=(urlparse(url).hostname or "").lower()
@@ -29,28 +28,21 @@ async def main()->int:
                     r=await h.get(url)
                     if r.status_code!=200 or len(r.content)>14000000:return []
                     src=r.text; rows=[]
-                    for term in TERMS:
-                        hits=list(re.finditer(re.escape(term),src))
-                        for idx,m in enumerate(hits[:12]):
-                            a,b=max(0,m.start()-1800),min(len(src),m.end()+3800)
-                            ctx=src[a:b].replace("\n"," ").replace("\r"," ")
-                            requestish=any(x in ctx for x in (
-                                "/plans/","apiRoot","apiProxy","request(",".get(",".post(",".put(",".delete(",
-                                "fetch(","axios","http"))
-                            if requestish:
-                                rows.append({"asset":urlparse(url).path,"term":term,"occurrence":idx,
-                                             "offset":m.start(),"context":ctx[:5600]})
+                    for method in METHODS:
+                        patterns=(f'key:"{method}"',f"{method}:function",f'"{method}":function')
+                        for pat in patterns:
+                            for m in list(re.finditer(re.escape(pat),src))[:8]:
+                                a,b=max(0,m.start()-1400),min(len(src),m.end()+5000)
+                                rows.append({"asset":urlparse(url).path,"method":method,
+                                             "pattern":pat,"offset":m.start(),
+                                             "context":src[a:b].replace("\n"," ").replace("\r"," ")[:6500]})
                     return rows
                 except Exception:return []
         chunks=await asyncio.gather(*(inspect(u) for u in urls))
-        rows=[x for chunk in chunks for x in chunk]
-        print(json.dumps({"stage":"SUMMARY","assets":len(urls),"hits":len(rows),"writes":0}),flush=True)
-        # Prefer contexts containing explicit plan paths or HTTP-looking methods.
-        rows.sort(key=lambda x:(0 if "/plans/" in x["context"] else 1,
-                                0 if any(y in x["context"] for y in (".post(",".put(",".delete(",".get(")) else 1,
-                                x["term"],x["asset"],x["offset"]))
+        rows=[x for c in chunks for x in c]
+        print(json.dumps({"stage":"SUMMARY","assets":len(urls),"definitions":len(rows),"writes":0}),flush=True)
         for row in rows[:24]:
-            print(json.dumps({"stage":"HIT",**row,"writes":0},ensure_ascii=False),flush=True)
+            print(json.dumps({"stage":"DEF",**row,"writes":0},ensure_ascii=False),flush=True)
         print(json.dumps({"stage":"COMPLETE","provider_writes":0}),flush=True)
         return 0
 if __name__=="__main__":
