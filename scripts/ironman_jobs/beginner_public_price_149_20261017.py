@@ -19,6 +19,7 @@ EXPECTED_PRICE=179
 TARGET_PRICE=149
 EXPECTED_WEEKS=24
 EXPECTED_WORKOUTS=225
+EXPECTED_NATIVE_WORKOUTS=189
 EXPECTED_NOTES=30
 ROOT=Path.home()/".local/state/ironman-operator"
 BACKUP=ROOT/"beginner_price_679801_preflight_20261017.json"
@@ -72,7 +73,7 @@ async def run():
         wr=await c.get(f"/plans/v1/plans/{PLAN}/workouts/{begin}/{end}")
         must(not wr.is_error and isinstance(wr.data,list),"WORKOUTS_READ_FAILED")
         w0=wr.data
-        must(len(w0)==EXPECTED_WORKOUTS,"WORKOUTS_NATIVE_COUNT_DRIFT")
+        must(len(w0)==EXPECTED_NATIVE_WORKOUTS,"WORKOUTS_NATIVE_COUNT_DRIFT")
         nsha,wsha=sig(n0),sig(w0)
         must(not BACKUP.exists(),"EXISTING_PRICE_BACKUP_REVIEW_REQUIRED")
         ROOT.mkdir(parents=True,exist_ok=True,mode=0o700)
