@@ -8,8 +8,11 @@ on:
       - scripts/ironman_jobs/plan_patch_batch_core.py
       - tests/test_plan_patch_batch_core.py
       - scripts/ironman_jobs/tp_plan_readonly_gateway.py
+      - scripts/ironman_jobs/tp_private_lab_write_gateway.py
+      - scripts/ironman_jobs/plan_patch_private_lab_write_canary_20261018.py
+      - tests/test_tp_private_lab_write_gateway.py
       - scripts/ironman_jobs/plan_patch_reader_live_smoke_20261018.py
-      - tests/test_tp_plan_readonly_gateway.py
+      - tests/test_tp_plan_readonly_gateway.py tests/test_tp_private_lab_write_gateway.py
       - data/ironman_operator_jobs.json
       - docs/IRONMAN_RELIABLE_PLAN_PATCH_ENGINE_V1.md
       - .github/workflows/plan_patch_engine_ci.yml
@@ -33,4 +36,4 @@ jobs:
       - name: Verify direct-run imports as used on DigitalOcean
         run: |
           cd scripts/ironman_jobs
-          PYTHONPATH=../../src python -c "import plan_patch_batch_core, tp_plan_readonly_gateway"
+          PYTHONPATH=../../src python -c "import plan_patch_batch_core, tp_plan_readonly_gateway, tp_private_lab_write_gateway"

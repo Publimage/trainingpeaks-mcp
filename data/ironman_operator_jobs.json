@@ -2122,6 +2122,14 @@
       "scope": "trainingpeaks:private-lab:684206:plan-patch-readonly-smoke",
       "script": "scripts/ironman_jobs/plan_patch_reader_live_smoke_20261018.py",
       "test": "tests/test_tp_plan_readonly_gateway.py"
+    },
+    {
+      "name": "plan_patch_private_lab_write_canary_20261018",
+      "mode": "GUARDED_WRITE",
+      "owner_id": 2116886,
+      "scope": "trainingpeaks:private-lab:684206:one-bike-title-canary-and-restore",
+      "script": "scripts/ironman_jobs/plan_patch_private_lab_write_canary_20261018.py",
+      "test": "tests/test_tp_private_lab_write_gateway.py"
     }
   ]
 }
