@@ -58,7 +58,7 @@ def load_config(path: Path = MANIFEST_FILE) -> dict[str, Any]:
     require(type(cfg["expected_note_count"]) is int and cfg["expected_note_count"] >= 0,
             "EXPECTED_NOTES_COUNT_INVALID")
     windows = cfg["windows"]
-    require(isinstance(windows, list) and 1 <= len(windows) <= 24,
+    require(isinstance(windows, list) and 1 <= len(windows) <= 6,
             "WINDOWS_INVALID")
     prev = None
     for window in windows:
@@ -227,6 +227,18 @@ async def _run(cfg: dict[str, Any], client: Any, *, execute: bool,
 
 def run_main(*, execute: bool) -> None:
     try:
+        # The permanent read-only job can be health-checked even before a new
+        # reviewed work item is activated. It must never fabricate an empty write.
+        if not execute:
+            current = json.loads(MANIFEST_FILE.read_text(encoding="utf-8"))
+            if (current.get("schema") == "IRONMAN_REVIEWED_PLAN_PATCH_CONFIG_V1"
+                    and current.get("configured") is False):
+                print(json.dumps({
+                    "stage": "PLAN_PATCH_NO_ACTIVE_MANIFEST",
+                    "provider_writes": 0,
+                    "ready_for_future_reviewed_manifest": True,
+                }), flush=True)
+                return
         print(json.dumps(asyncio.run(publish(execute=execute)),
                          ensure_ascii=False, sort_keys=True), flush=True)
     except Exception as exc:

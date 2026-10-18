@@ -195,3 +195,25 @@ def test_missing_target_or_unapproved_change(tmp_path):
     with pytest.raises(PlanPatchStop, match="PREVIEW_TARGET_DRIFT"):
         go(client, tmp_path, execute=True)
     assert not client.writes
+
+def test_dormant_preview_is_positive_but_does_not_connect(tmp_path, monkeypatch, capsys):
+    from scripts.ironman_jobs import reviewed_plan_patch_pipeline as pipeline
+
+    manifest_file = tmp_path / "inactive.json"
+    manifest_file.write_text(json.dumps({
+        "schema": "IRONMAN_REVIEWED_PLAN_PATCH_CONFIG_V1",
+        "configured": False
+    }), encoding="utf-8")
+    monkeypatch.setattr(pipeline, "MANIFEST_FILE", manifest_file)
+    pipeline.run_main(execute=False)
+    output = json.loads(capsys.readouterr().out)
+    assert output["stage"] == "PLAN_PATCH_NO_ACTIVE_MANIFEST"
+    assert output["provider_writes"] == 0
+
+
+def test_more_than_six_provider_windows_refused(tmp_path):
+    cfg = config()
+    cfg["windows"] = [[f"2027-{month:02d}-01", f"2027-{month:02d}-02"]
+                      for month in range(1, 8)]
+    with pytest.raises(PlanPatchStop, match="WINDOWS_INVALID"):
+        load_config(write_conf(tmp_path, cfg))
