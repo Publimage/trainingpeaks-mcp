@@ -113,6 +113,25 @@ def swim_structure(week,which):
  fail(at==meters,"SWIM_SUM")
  return {"structure":result,"primaryLengthMetric":"distance","visualizationDistanceUnit":"meter",
          "primaryIntensityMetric":"rpe","primaryIntensityTargetOrRange":"range"}
+def week_has_steady(week,minutes):
+ warm=min(15,max(8,round(minutes*.15)))
+ cool=min(12,max(5,round(minutes*.08)))
+ return week>=5 and week not in (8,12,15,16) and minutes-warm-cool>=2
+
+def polyline(struct):
+ spans=[]
+ for b in struct["structure"]:
+  repeat=int(b["length"]["value"]) if b.get("type")=="repetition" else 1
+  for _ in range(repeat):
+   for t in b["steps"]:
+    spans.append((t["length"]["value"],t["targets"][0]["maxValue"]))
+ total=sum(a for a,_ in spans);peak=max(b for _,b in spans)
+ out=[];pos=0
+ for n,v in spans:
+  y=round(v/peak,4);lo=round(pos/total,4);pos+=n;hi=round(pos/total,4)
+  out.extend([[lo,0],[lo,y],[hi,y],[hi,0]])
+ return out
+
 def make(row):
  w,d,sp,minutes=row["week"],row["day"],row["sport"],row["minutes"]
  fail(sp in LIB,"STRENGTH_OWNED_BY_NATIVE_PATH")
@@ -121,7 +140,10 @@ def make(row):
  if sp=="SW":
   which=1 if d==1 else 2
   total=SW_METERS[w-1]
-  title=f"{'Tecnica' if which==1 else 'Aerobico'} | Crawl {'assetto e respiro' if which==1 else 'regolare'} {total} m"
+  main_blocks=swim_structure(w,which)["structure"][2]
+  main_reps=main_blocks["length"]["value"] if main_blocks["type"]=="repetition" else 1
+  main_m=main_blocks["steps"][0]["length"]["value"]
+  title=f"{'Tecnica' if which==1 else 'Aerobico'} | Crawl {'assetto e respiro' if which==1 else 'regolare'} {total} m · {main_reps}x{main_m}"
   structure=swim_structure(w,which)
   full=sum((b["length"]["value"] if b["type"]=="repetition" else 1)*sum(s["length"]["value"] for s in b["steps"]) for b in structure["structure"])
   fail(full==total,"SWIM_VOLUME_MISMATCH")
@@ -156,6 +178,8 @@ def make(row):
  label=("Attivazione | Bici agile" if race else
         "Lungo | Bici aerobica" if kind=="long" else "Aerobico | Bici controllo e cadenza")
  title=f"{label} {minutes}'"
+ if not race and kind!="long" and week_has_steady(w,minutes):
+  title+=" · controllo RPE3-4"
  structure={"structure":blocks_by_time(minutes,sp,"long" if kind=="long" else "short",w),
        "primaryLengthMetric":"duration","primaryIntensityMetric":"rpe",
        "primaryIntensityTargetOrRange":"range"}
@@ -258,6 +282,7 @@ async def main():
     fail(len(item)==1,"TEMPLATE_CREATE_AMBIGUITY")
     src=item[0];iid=src["exerciseLibraryItemId"]
     upd=dict(src)
+    struct["polyline"]=polyline(struct)
     upd["structure"]=struct
     # v1 update is confirmed route: use full native shape with existing id.
     saved=await c._request("PUT",f"/exerciselibrary/v1/libraries/{lid}/items/{iid}",json=upd,_retry_on_401=False)
