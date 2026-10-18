@@ -267,9 +267,23 @@ async def main():
     already+=1;continue
    source=sources[sp].get(title)
    if source:
-    fail(abs((source.get("totalTimePlanned") or 0)*60-minutes)<.1 and source.get("description")==desc and bool(source.get("structure")),"EXISTING_TEMPLATE_MISMATCH")
-    iid=source["exerciseLibraryItemId"]
-   else:
+    equivalent=(abs((source.get("totalTimePlanned") or 0)*60-minutes)<.1
+         and source.get("description")==desc and isinstance(source.get("structure"),dict)
+         and structure_len(source["structure"])==structure_len(struct))
+    if not equivalent:
+     # An existing general-purpose library template is not the same prescription.
+     # Use a meaningful neutral variant, never overwrite a template shared by other products.
+     print(json.dumps({"stage":"TEMPLATE_NAME_COLLISION","original":title,
+        "existing_id":source.get("exerciseLibraryItemId"),"sport":sp,"week":row["week"]}),flush=True)
+     title+=(" | continuo controllato" if sp=="SW" else
+             " | fondo regolare" if sp=="BI" else " | economia del gesto")
+     source=sources[sp].get(title)
+     if source:
+      fail(abs((source.get("totalTimePlanned") or 0)*60-minutes)<.1
+          and source.get("description")==desc and isinstance(source.get("structure"),dict)
+          and structure_len(source["structure"])==structure_len(struct),"VARIANT_TEMPLATE_COLLISION")
+    if source:iid=source["exerciseLibraryItemId"]
+   if not source:
     lid=LIB[sp];fam,sub=SPORT[sp]
     payload={"exerciseLibraryId":lid,"itemName":title,"workoutTypeId":fam,"workoutSubTypeId":sub,
       "totalTimePlanned":minutes/60,"description":desc}
