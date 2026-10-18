@@ -9,12 +9,14 @@ Existing endpoint-specific publishers can migrate to this engine incrementally.
 from __future__ import annotations
 
 import asyncio
+import fcntl
 import copy
 import hashlib
 import json
 import os
 import tempfile
 from pathlib import Path
+from contextlib import contextmanager
 from typing import Any, Protocol
 
 
@@ -151,7 +153,7 @@ def _persist(path: Path, data: dict[str, Any]) -> None:
             os.unlink(tmp)
 
 
-async def run_batch(
+async def _run_batch_unlocked(
     manifest: dict[str, Any], gateway: PlanGateway, journal_path: Path,
     *, execute: bool = False, ack_scope: str | None = None,
     reviewed_manifest_sha256: str | None = None,
@@ -178,9 +180,7 @@ async def run_batch(
         actual = selected(current, row["after"])
         original = row["before"]
         desired = row["after"]
-        if execute:
-            previous = ledger["items"].get(key)
-            require(previous not in {"UNCERTAIN", "REVIEW_REQUIRED"}, "RECONCILE_FIRST")
+        previous = ledger["items"].get(key) if execute else None
         if actual == desired:
             status = "ALREADY_VERIFIED"
             if execute:
@@ -192,7 +192,7 @@ async def run_batch(
             if not execute:
                 status = "READY"
             else:
-                require(previous != "INTENT", "INTENT_REQUIRES_RECONCILIATION")
+                require(previous not in {"INTENT", "UNCERTAIN", "REVIEW_REQUIRED"}, "RECONCILE_FIRST")
                 # Record complete provider backup *before* changing this item.
                 ledger["originals"].setdefault(key, copy.deepcopy(current))
                 ledger["items"][key] = "INTENT"
@@ -234,6 +234,43 @@ async def run_batch(
             "processed": len(results), "items": results,
             "provider_writes": sum(x["status"] == "VERIFIED" for x in results),
             "scope": manifest["scope"]}
+
+
+@contextmanager
+def _exclusive_run(path: Path):
+    """Keep a cross-process lock for the complete provider mutation batch."""
+    path.parent.mkdir(parents=True, exist_ok=True, mode=0o700)
+    require(not path.parent.is_symlink(), "UNSAFE_LOCK_PARENT")
+    os.chmod(path.parent, 0o700)
+    lock_path = path.parent / (path.name + ".lock")
+    fd = os.open(lock_path, os.O_CREAT | os.O_RDWR | getattr(os, "O_NOFOLLOW", 0), 0o600)
+    with os.fdopen(fd, "a+") as handle:
+        try:
+            fcntl.flock(handle.fileno(), fcntl.LOCK_EX | fcntl.LOCK_NB)
+        except BlockingIOError as exc:
+            raise PlanPatchStop("ANOTHER_PLAN_BATCH_RUNNING") from exc
+        try:
+            yield
+        finally:
+            fcntl.flock(handle.fileno(), fcntl.LOCK_UN)
+
+
+async def run_batch(
+    manifest: dict[str, Any], gateway: PlanGateway, journal_path: Path,
+    *, execute: bool = False, ack_scope: str | None = None,
+    reviewed_manifest_sha256: str | None = None,
+) -> dict[str, Any]:
+    """Serialize mutating runs; previews are deliberately read-only."""
+    if not execute:
+        return await _run_batch_unlocked(
+            manifest, gateway, journal_path, execute=False,
+            ack_scope=ack_scope, reviewed_manifest_sha256=reviewed_manifest_sha256
+        )
+    with _exclusive_run(Path(journal_path)):
+        return await _run_batch_unlocked(
+            manifest, gateway, journal_path, execute=True,
+            ack_scope=ack_scope, reviewed_manifest_sha256=reviewed_manifest_sha256
+        )
 
 
 __all__ = ["PlanPatchStop", "PlanGateway", "validate_manifest", "sha256",
