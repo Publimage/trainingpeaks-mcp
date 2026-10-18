@@ -9,8 +9,12 @@ import json
 
 from tp_mcp.client import TPClient
 
-from scripts.ironman_jobs.plan_patch_batch_core import require
-from scripts.ironman_jobs.tp_plan_readonly_gateway import TrainingPeaksPlanReadGateway
+try:
+    from scripts.ironman_jobs.plan_patch_batch_core import require
+    from scripts.ironman_jobs.tp_plan_readonly_gateway import TrainingPeaksPlanReadGateway
+except ModuleNotFoundError:
+    from plan_patch_batch_core import require
+    from tp_plan_readonly_gateway import TrainingPeaksPlanReadGateway
 
 
 LAB = 684206
@@ -44,4 +48,13 @@ async def main() -> None:
 
 
 if __name__ == "__main__":
-    asyncio.run(main())
+    try:
+        asyncio.run(main())
+    except Exception as exc:
+        # Operator captures stdout, not stderr. Expose a bounded, non-sensitive
+        # failure classification so an import/runtime issue is diagnosable.
+        print(json.dumps({"stage": "READER_LAB_STOP",
+                          "kind": type(exc).__name__,
+                          "reason": str(exc)[:160] if type(exc).__name__ == "PlanPatchStop" else "runtime_error",
+                          "provider_writes": 0}), flush=True)
+        raise SystemExit(93) from exc
