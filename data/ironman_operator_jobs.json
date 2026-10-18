@@ -2018,6 +2018,38 @@
       "scope": "trainingpeaks:coach:2116886:private-half-beginner16w:endurance-stage5",
       "script": "scripts/ironman_jobs/half_beginner_16w_prod.py",
       "test": "tests/test_half_beginner_16w_prod.py"
+    },
+    {
+      "name": "half_beginner_16w_prod_stage6",
+      "mode": "GUARDED_WRITE",
+      "owner_id": 2116886,
+      "scope": "trainingpeaks:coach:2116886:private-half-beginner16w:endurance-stage6",
+      "script": "scripts/ironman_jobs/half_beginner_16w_prod.py",
+      "test": "tests/test_half_beginner_16w_prod.py"
+    },
+    {
+      "name": "half_beginner_16w_prod_stage7",
+      "mode": "GUARDED_WRITE",
+      "owner_id": 2116886,
+      "scope": "trainingpeaks:coach:2116886:private-half-beginner16w:endurance-stage7",
+      "script": "scripts/ironman_jobs/half_beginner_16w_prod.py",
+      "test": "tests/test_half_beginner_16w_prod.py"
+    },
+    {
+      "name": "half_beginner_16w_prod_stage8",
+      "mode": "GUARDED_WRITE",
+      "owner_id": 2116886,
+      "scope": "trainingpeaks:coach:2116886:private-half-beginner16w:endurance-stage8",
+      "script": "scripts/ironman_jobs/half_beginner_16w_prod.py",
+      "test": "tests/test_half_beginner_16w_prod.py"
+    },
+    {
+      "name": "half_beginner_16w_prod_stage9",
+      "mode": "GUARDED_WRITE",
+      "owner_id": 2116886,
+      "scope": "trainingpeaks:coach:2116886:private-half-beginner16w:endurance-stage9",
+      "script": "scripts/ironman_jobs/half_beginner_16w_prod.py",
+      "test": "tests/test_half_beginner_16w_prod.py"
     }
   ]
 }
