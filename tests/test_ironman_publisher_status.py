@@ -84,7 +84,11 @@ def test_manifest_symlink_is_not_followed(tmp_path):
 
 def test_code_has_no_shell_or_network_execution():
     source = SOURCE.read_text(encoding="utf-8")
-    assert "subprocess" not in source
+    import ast
+    parsed = ast.parse(source)
+    imports = [n.module for n in ast.walk(parsed) if isinstance(n, ast.ImportFrom)]
+    imports += [alias.name for n in ast.walk(parsed) if isinstance(n, ast.Import) for alias in n.names]
+    assert "subprocess" not in imports
     assert "os.system" not in source
     assert "checkout" not in source.split("def inspect_publisher")[1].split("async def")[0]
     assert "asyncio.to_thread" not in source
