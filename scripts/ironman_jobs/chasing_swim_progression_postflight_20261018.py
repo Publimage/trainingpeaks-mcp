@@ -13,7 +13,7 @@ async def main():
         h=p.data
         r.need(not p.is_error and h.get("planId")==r.PLAN and h.get("planPersonId")==r.PERSON
                and h.get("isPublic") is False and h.get("workoutCount")==276
-               and "BOZZA" in (h.get("title") or ""),"PLAN_SCOPE_DRIFT")
+               and "CHASING THE SLOT" in (h.get("title") or "") and "Advanced" in (h.get("title") or ""),"PLAN_SCOPE_DRIFT")
         rows,notes=await r.read_all(c)
         qa=r.final_content_gate(rows,specs)
         swims=[x for x in rows if x.get("workoutTypeValueId")==1]
