@@ -51,16 +51,18 @@ def blocks(w,minutes):
  must(_validate_blocks(result) is None,"STRENGTH_BLOCK_INVALID_"+str(w))
  return result
 def instructions(w,minutes):
- return (f"OBIETTIVO\\n{('Recupero attivo e mantenimento del gesto' if w in (4,8,12,15) else 'Migliorare controllo e forza generale senza interferire con il weekend')}. "
-  f"Durata prevista {minutes} minuti, INCLUDE riscaldamento, pause tra serie e cambi esercizio.\\n\\n"
-  "COME\\nSegui gli esercizi visibili nel Builder con movimento familiare e controllato. "
-  "Recupera circa 90-120 secondi nei movimenti principali, 60-75 secondi negli accessori, 30-45 secondi nel core. "
-  "Le serie e le ripetizioni nel Builder sono dosi conservative; non aggiungere volume per usare tutti i minuti. "
-  "RPE muscolare orientativo 5-6 su 10, lascia 3-5 ripetizioni in riserva, niente cedimento, salti o prova del massimale. "
-  "Se non hai accesso ai manubri sostituisci squat goblet con squat libero e hip hinge con ponte glutei.\\n\\n"
-  "COSA OSSERVARE\\nLa forza non deve generare DOMS significativi per corsa lunga sabato e bici lunga domenica. "
-  "Se questa settimana il weekend risente del lavoro mercoledì, scala una serie dei movimenti per le gambe o riduci il carico.\\n\\n"
-  "RECUPERO\\nPasti regolari con sufficiente quota proteica e idratazione; adattare se sonno o recupero peggiorano.")
+ phase=("scarico tecnico" if w in (4,8,12,15) else "forza generale controllata")
+ return (
+  f"OBIETTIVO\nSeduta di {phase} di {minutes} minuti INCLUSI riscaldamento e recuperi. "
+  "Nessun cedimento: RPE muscolare 5-6, lascia 3-5 ripetizioni in riserva.\n\n"
+  "COME\nSegui le serie nel Builder. Recupera 90-120 s nei principali, 60-75 s "
+  "negli accessori, 30-45 s nel core. Non aggiungere volume per riempire il tempo. "
+  "Squat goblet sostituibile con squat libero; hinge con ponte glutei.\n\n"
+  "COSA OSSERVARE\nNessun DOMS importante prima della corsa lunga di sabato e bici "
+  "lunga di domenica. Se resta rigidità, riduci una serie delle gambe oppure "
+  "il carico nella seduta successiva. Allenamento da interrompere se dolore "
+  "modifica il gesto.\n\nRECUPERO\nAlimentazione regolare, idratazione e sonno adeguati."
+ )
 def dt(row):return (ANCHOR+timedelta(weeks=row["week"]-1,days=row["day"])).isoformat()
 async def main():
  a=work();must(len(a)==15,"STRENGTH_MANIFEST_NOT_15")
