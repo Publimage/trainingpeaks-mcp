@@ -7,7 +7,10 @@ from __future__ import annotations
 
 from typing import Any
 
-from scripts.ironman_jobs.plan_patch_batch_core import PlanPatchStop, require
+try:
+    from scripts.ironman_jobs.plan_patch_batch_core import PlanPatchStop, require
+except ModuleNotFoundError:
+    from plan_patch_batch_core import PlanPatchStop, require
 
 
 class TrainingPeaksPlanReadGateway:
