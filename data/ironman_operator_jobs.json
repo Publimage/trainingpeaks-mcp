@@ -2114,6 +2114,14 @@
       "scope": "trainingpeaks:public-plan:685173:swim-progression-postflight-read",
       "script": "scripts/ironman_jobs/chasing_swim_progression_postflight_20261018.py",
       "test": "tests/test_chasing_swim_rebuild_20261018.py"
+    },
+    {
+      "name": "plan_patch_reader_live_smoke_20261018",
+      "mode": "READ_ONLY",
+      "owner_id": 2116886,
+      "scope": "trainingpeaks:private-lab:684206:plan-patch-readonly-smoke",
+      "script": "scripts/ironman_jobs/plan_patch_reader_live_smoke_20261018.py",
+      "test": "tests/test_tp_plan_readonly_gateway.py"
     }
   ]
 }
