@@ -2098,6 +2098,22 @@
       "scope": "trainingpeaks:private-plan:686994:native-strength-15:stage6",
       "script": "scripts/ironman_jobs/half_beginner_16w_strength.py",
       "test": "tests/test_half_beginner_16w_strength.py"
+    },
+    {
+      "name": "chasing_swim_rebuild_20261018",
+      "mode": "GUARDED_WRITE",
+      "owner_id": 2116886,
+      "scope": "trainingpeaks:private-plan:685173:replace-all-71-swim-occurrences-progression-only",
+      "script": "scripts/ironman_jobs/chasing_swim_rebuild_20261018.py",
+      "test": "tests/test_chasing_swim_rebuild_20261018.py"
+    },
+    {
+      "name": "chasing_swim_progression_postflight_20261018",
+      "mode": "READ_ONLY",
+      "owner_id": 2116886,
+      "scope": "trainingpeaks:private-plan:685173:swim-progression-postflight-read",
+      "script": "scripts/ironman_jobs/chasing_swim_progression_postflight_20261018.py",
+      "test": "tests/test_chasing_swim_rebuild_20261018.py"
     }
   ]
 }
