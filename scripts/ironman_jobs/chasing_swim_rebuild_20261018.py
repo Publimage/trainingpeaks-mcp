@@ -408,7 +408,7 @@ async def main():
         p=await c.get(f"/plans/v1/plans/{PLAN}")
         h=p.data
         need(not p.is_error and h.get("planId")==PLAN and h.get("planPersonId")==PERSON
-             and h.get("isPublic") is False and h.get("workoutCount")==276
+             and h.get("isPublic") is True and h.get("workoutCount")==276
              and "CHASING THE SLOT" in (h.get("title") or "") and "Advanced" in (h.get("title") or ""),
              "PLAN_SCOPE_DRIFT")
         live,live_notes=await read_all(c)
@@ -466,7 +466,7 @@ async def main():
         need(all(fm[wid]==desired[wid] for wid in target_ids),"TARGET_NOT_DESIRED")
         liveqa=final_content_gate(final,specs)
         print(json.dumps({"stage":"CHASING_SWIM_REBUILD_PASS","written":len(pending),
-            "plan":PLAN,"workouts_total":276,"traditional_workouts":249,
+            "plan":PLAN,"workouts_total":276,"public_preserved":True,"traditional_workouts":249,
             "swim":liveqa,"design":design,"notes_unchanged":True,"all_workout_ids_preserved":True,
             "bike_run_unchanged":True,"strength_untouched":True,"library_writes":0,
             "athlete_calendar_writes":0,"pdf_writes":0}),flush=True)
