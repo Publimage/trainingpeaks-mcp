@@ -100,7 +100,7 @@ async def main():
     except httpx.RequestError:
      print(json.dumps({"stage":"NATIVE_POST_UNCERTAIN","week":w,"retry":False}),flush=True);return 4
     if res.status_code!=200:
-     print(json.dumps({"stage":"NATIVE_WRITE_REJECTED","week":w,"http":res.status_code,"body":res.text[:320]}),flush=True);return 5
+     print(json.dumps({"stage":"NATIVE_WRITE_REJECTED","week":w,"http":res.status_code,"body_tail":res.text[-2700:]}),flush=True);return 5
     rid=str((res.json().get("data") or {}).get("id") or payload["id"])
     check=await h.get(f"{STRENGTH_API_BASE}{BASE}/workouts/{rid}",headers=_headers(token))
     z=(check.json().get("data") or {}) if check.status_code==200 else {}
