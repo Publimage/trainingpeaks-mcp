@@ -7,6 +7,10 @@ on:
     paths:
       - scripts/ironman_jobs/plan_patch_batch_core.py
       - tests/test_plan_patch_batch_core.py
+      - scripts/ironman_jobs/tp_plan_readonly_gateway.py
+      - scripts/ironman_jobs/plan_patch_reader_live_smoke_20261018.py
+      - tests/test_tp_plan_readonly_gateway.py
+      - data/ironman_operator_jobs.json
       - docs/IRONMAN_RELIABLE_PLAN_PATCH_ENGINE_V1.md
       - .github/workflows/plan_patch_engine_ci.yml
 
@@ -25,4 +29,4 @@ jobs:
       - name: Install test runtime
         run: python -m pip install 'pytest>=8,<10'
       - name: Verify offline patch engine (no provider calls)
-        run: python -m pytest -q tests/test_plan_patch_batch_core.py
+        run: python -m pytest -q tests/test_plan_patch_batch_core.py tests/test_tp_plan_readonly_gateway.py
