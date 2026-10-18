@@ -206,3 +206,36 @@ def test_manifest_no_arbitrary_builder_or_empty_text():
     spec["items"][0]["after"] = {"structure": {"structure": [{"name": "x"}]}}
     with pytest.raises(PlanPatchStop, match="BUILDER_POLYLINE_REQUIRED"):
         validate_manifest(spec)
+
+
+def test_ambiguous_result_resolves_when_later_provider_read_is_desired(tmp_path):
+    gateway = FakeGateway()
+    gateway.fail_before_write.add(12)
+    spec = manifest()
+    ledger = tmp_path / "journal.json"
+    with pytest.raises(PlanPatchStop, match="UNCERTAIN_RESULT"):
+        run(run_batch(spec, gateway, ledger, execute=True,
+                      reviewed_manifest_sha256=sha256(spec), ack_scope=spec["scope"]))
+    # The provider or a human may have reconciled the item after an ambiguous call.
+    gateway.workouts[12]["title"] = "New B"
+    gateway.fail_before_write.clear()
+    result = run(run_batch(spec, gateway, ledger, execute=True,
+                           reviewed_manifest_sha256=sha256(spec), ack_scope=spec["scope"]))
+    assert result["status"] == "VERIFIED"
+    assert result["provider_writes"] == 0
+    assert gateway.writes == [11, 12]
+
+
+def test_cross_process_execution_lock(tmp_path):
+    import fcntl
+
+    gateway = FakeGateway()
+    spec = manifest()
+    ledger = tmp_path / "journal.json"
+    lock = ledger.parent / (ledger.name + ".lock")
+    with lock.open("w") as handle:
+        fcntl.flock(handle.fileno(), fcntl.LOCK_EX | fcntl.LOCK_NB)
+        with pytest.raises(PlanPatchStop, match="ANOTHER_PLAN_BATCH_RUNNING"):
+            run(run_batch(spec, gateway, ledger, execute=True,
+                          reviewed_manifest_sha256=sha256(spec), ack_scope=spec["scope"]))
+    assert not gateway.writes
