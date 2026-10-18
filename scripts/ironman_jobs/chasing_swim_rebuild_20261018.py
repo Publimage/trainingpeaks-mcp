@@ -409,7 +409,7 @@ async def main():
         h=p.data
         need(not p.is_error and h.get("planId")==PLAN and h.get("planPersonId")==PERSON
              and h.get("isPublic") is False and h.get("workoutCount")==276
-             and "CHASING THE SLOT" in (h.get("title") or "") and "BOZZA" in (h.get("title") or ""),
+             and "CHASING THE SLOT" in (h.get("title") or "") and "Advanced" in (h.get("title") or ""),
              "PLAN_SCOPE_DRIFT")
         live,live_notes=await read_all(c)
         if BACKUP.exists():
