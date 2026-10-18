@@ -12,7 +12,7 @@ async def main():
         p=await c.get(f"/plans/v1/plans/{r.PLAN}")
         h=p.data
         r.need(not p.is_error and h.get("planId")==r.PLAN and h.get("planPersonId")==r.PERSON
-               and h.get("isPublic") is False and h.get("workoutCount")==276
+               and h.get("isPublic") is True and h.get("workoutCount")==276
                and "CHASING THE SLOT" in (h.get("title") or "") and "Advanced" in (h.get("title") or ""),"PLAN_SCOPE_DRIFT")
         rows,notes=await r.read_all(c)
         qa=r.final_content_gate(rows,specs)
@@ -33,7 +33,7 @@ async def main():
               "continuous_3k_plus":exposures,
               "whole_4000_id":qa["whole_4000_id"],
               "old_serial_templates_remaining":0,
-              "notes_readback_blocks":3,"provider_writes":0,
+              "notes_readback_blocks":3,"provider_writes":0,"public_preserved":True,
               "design_gate":design}),flush=True)
 
 if __name__=="__main__":
