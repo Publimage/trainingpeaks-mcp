@@ -2130,6 +2130,22 @@
       "scope": "trainingpeaks:private-lab:684206:one-bike-title-canary-and-restore",
       "script": "scripts/ironman_jobs/plan_patch_private_lab_write_canary_20261018.py",
       "test": "tests/test_tp_private_lab_write_gateway.py"
+    },
+    {
+      "name": "reviewed_plan_patch_preview",
+      "mode": "READ_ONLY",
+      "owner_id": 2116886,
+      "scope": "trainingpeaks:coach:2116886:reviewed-plan-patch-manifest-preview-v1",
+      "script": "scripts/ironman_jobs/reviewed_plan_patch_preview.py",
+      "test": "tests/test_reviewed_plan_patch_pipeline.py"
+    },
+    {
+      "name": "reviewed_plan_patch_publish",
+      "mode": "GUARDED_WRITE",
+      "owner_id": 2116886,
+      "scope": "trainingpeaks:coach:2116886:reviewed-plan-patch-manifest-publish-v1",
+      "script": "scripts/ironman_jobs/reviewed_plan_patch_publish.py",
+      "test": "tests/test_reviewed_plan_patch_pipeline.py"
     }
   ]
 }

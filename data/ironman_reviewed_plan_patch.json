@@ -1,0 +1,5 @@
+{
+  "schema": "IRONMAN_REVIEWED_PLAN_PATCH_CONFIG_V1",
+  "configured": false,
+  "message": "NO ACTIVE PUBLISH: To prepare new, independently authorized work, review a concrete manifest and replace this placeholder in a trusted GitHub commit. Do not reuse it to retry a denied write."
+}
