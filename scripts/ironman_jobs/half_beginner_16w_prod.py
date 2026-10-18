@@ -220,8 +220,9 @@ async def main():
   detail=await c.get(f"/plans/v1/plans/{plan}")
   fail(not detail.is_error and isinstance(detail.data,dict),"PLAN_DETAIL_MISSING")
   pd=detail.data
+  print(json.dumps({"stage":"PLAN_META","plan_id":plan,"count":pd.get("workoutCount"),"start":pd.get("startDate"),"daycount":pd.get("dayCount"),"public":pd.get("isPublic"),"price":pd.get("price")}),flush=True)
   fail(pd.get("title")==TITLE and pd.get("planId")==plan and pd.get("isPublic") is False and pd.get("price") in (None,0),"PLAN_SCOPE_GUARD")
-  fail((pd.get("startDate") or "")[:10] in (ANCHOR.isoformat(),(ANCHOR+timedelta(days=1)).isoformat()),"ANCHOR_CHANGED")
+  fail(not pd.get("startDate") or (pd.get("startDate") or "")[:10] in (ANCHOR.isoformat(),(ANCHOR+timedelta(days=1)).isoformat()),"ANCHOR_CHANGED")
   sources={}
   for sp,lid in LIB.items():
    r=await c.get(f"/exerciselibrary/v2/libraries/{lid}/items")
@@ -310,4 +311,7 @@ async def main():
   print(json.dumps(summary,ensure_ascii=False),flush=True)
   return 0
 if __name__=="__main__":
- raise SystemExit(asyncio.run(main()))
+ try:raise SystemExit(asyncio.run(main()))
+ except Exception as exc:
+  print(json.dumps({"stage":"STOP_TRACE","kind":type(exc).__name__,"error":str(exc)}),flush=True)
+  raise SystemExit(97)
