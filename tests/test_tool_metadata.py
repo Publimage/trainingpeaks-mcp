@@ -112,6 +112,18 @@ class TestSpotChecks:
 
 
 
+    def test_operator_is_write_classified_but_status_is_read_only(self):
+        # The old operator can check out Git commits and execute guarded writes.
+        # It MUST NOT be disguised as read-only because its preview mode is safe.
+        op = self._tool("tp_ironman_operator")
+        status = self._tool("tp_get_ironman_publisher_status")
+        assert op.annotations.read_only_hint is False
+        assert op.annotations.idempotent_hint is False
+        assert status.annotations.read_only_hint is True
+        assert status.annotations.destructive_hint is False
+        assert status.annotations.idempotent_hint is True
+
+
 class TestSafetyCriticalMetadata:
     """Independent checks for writes that could erase or replace user data."""
 

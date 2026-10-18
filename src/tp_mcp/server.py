@@ -78,6 +78,7 @@ from tp_mcp.tools import (
     tp_get_library_item,
     tp_get_library_items,
     tp_ironman_operator,
+    tp_get_ironman_publisher_status,
     tp_list_plan_folders,
     tp_copy_training_plan,
     tp_create_plan_folder,
@@ -1418,6 +1419,18 @@ TOOLS = [
             "required": [],
         },
     ),
+    # --- Truly read-only IRONMAN publisher state (separate from operator) ---
+    Tool(
+        name="tp_get_ironman_publisher_status",
+        description=(
+            "Read the local IRONMAN Training Plan publisher readiness state, "
+            "its two registered jobs and whether a reviewed manifest is active. "
+            "Never executes jobs or shell commands, checks out code, changes "
+            "local files or writes to TrainingPeaks. A healthy status does NOT "
+            "mean a plan write has been verified."
+        ),
+        input_schema={"type": "object", "properties": {}, "required": []},
+    ),
     # --- IRONMAN Cloud Operator ---
     Tool(
         name="tp_ironman_operator",
@@ -2030,6 +2043,7 @@ TOOLS = [
 # ---------------------------------------------------------------------------
 _ATHLETE_EXEMPT_TOOLS = {
     "tp_auth_status", "tp_refresh_auth", "tp_validate_structure",
+    "tp_get_ironman_publisher_status",
     "tp_list_athletes", "tp_get_workout_types",
     "tp_publish_public_asset",
     # Coach-scoped — enumerates methods under the caller's own user, not an athlete.
@@ -2723,6 +2737,11 @@ async def _h_get_libs(args): return await tp_get_libraries()
 
 @_handler("tp_get_library_items")
 async def _h_get_lib_items(args): return await tp_get_library_items(library_id=args["library_id"])
+
+@_handler("tp_get_ironman_publisher_status")
+async def _h_ironman_publisher_status(args):
+    return await tp_get_ironman_publisher_status()
+
 
 @_handler("tp_ironman_operator")
 async def _h_ironman_operator(args):
