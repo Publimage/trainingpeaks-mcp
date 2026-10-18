@@ -11,4 +11,4 @@ def test_scope_and_native_exercises():
   assert m._validate_blocks(b) is None
   assert "70.3" not in m.title(r["minutes"],r["week"])
   assert "W01" not in m.title(r["minutes"],r["week"])
-  assert "include" in m.instructions(r["week"],r["minutes"]).lower()
+  assert "inclus" in m.instructions(r["week"],r["minutes"]).lower()
