@@ -2074,6 +2074,30 @@
       "scope": "trainingpeaks:private-plan:686994:native-strength-15:stage3",
       "script": "scripts/ironman_jobs/half_beginner_16w_strength.py",
       "test": "tests/test_half_beginner_16w_strength.py"
+    },
+    {
+      "name": "half_beginner_16w_strength_stage4",
+      "mode": "GUARDED_WRITE",
+      "owner_id": 2116886,
+      "scope": "trainingpeaks:private-plan:686994:native-strength-15:stage4",
+      "script": "scripts/ironman_jobs/half_beginner_16w_strength.py",
+      "test": "tests/test_half_beginner_16w_strength.py"
+    },
+    {
+      "name": "half_beginner_16w_strength_stage5",
+      "mode": "GUARDED_WRITE",
+      "owner_id": 2116886,
+      "scope": "trainingpeaks:private-plan:686994:native-strength-15:stage5",
+      "script": "scripts/ironman_jobs/half_beginner_16w_strength.py",
+      "test": "tests/test_half_beginner_16w_strength.py"
+    },
+    {
+      "name": "half_beginner_16w_strength_stage6",
+      "mode": "GUARDED_WRITE",
+      "owner_id": 2116886,
+      "scope": "trainingpeaks:private-plan:686994:native-strength-15:stage6",
+      "script": "scripts/ironman_jobs/half_beginner_16w_strength.py",
+      "test": "tests/test_half_beginner_16w_strength.py"
     }
   ]
 }
