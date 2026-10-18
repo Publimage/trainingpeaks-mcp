@@ -4,7 +4,10 @@ from datetime import date,timedelta
 import httpx
 from tp_mcp.client import TPClient
 from tp_mcp.tools.strength import _access,_headers,STRENGTH_API_BASE,_build_payload,_validate_blocks
-from scripts.ironman_jobs.half_beginner_16w_prod import MATRIX,ANCHOR,TITLE,items
+try:
+ from scripts.ironman_jobs.half_beginner_16w_prod import MATRIX,ANCHOR,TITLE,items
+except ModuleNotFoundError:
+ from half_beginner_16w_prod import MATRIX,ANCHOR,TITLE,items
 OWNER=2116886;PLAN=686994;BASE="/rx/activity/v1"
 EXPECTED=118
 def must(cond,msg):
