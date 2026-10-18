@@ -14,8 +14,6 @@ import copy
 import json
 from pathlib import Path
 
-from tp_mcp.client import TPClient
-
 try:
     from scripts.ironman_jobs.plan_patch_batch_core import run_batch, require, sha256, PlanPatchStop
     from scripts.ironman_jobs.tp_private_lab_write_gateway import (
@@ -69,6 +67,7 @@ async def native_notes(client):
 
 
 async def main():
+    from tp_mcp.client import TPClient
     async with TPClient() as client:
         gateway = PrivateLabWriteGateway(client)
         require(await gateway.get_owner_id() == 2116886, "LAB_OWNER_DRIFT")
