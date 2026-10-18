@@ -2103,7 +2103,7 @@
       "name": "chasing_swim_rebuild_20261018",
       "mode": "GUARDED_WRITE",
       "owner_id": 2116886,
-      "scope": "trainingpeaks:private-plan:685173:replace-all-71-swim-occurrences-progression-only",
+      "scope": "trainingpeaks:public-plan:685173:replace-all-71-swim-occurrences-progression-only",
       "script": "scripts/ironman_jobs/chasing_swim_rebuild_20261018.py",
       "test": "tests/test_chasing_swim_rebuild_20261018.py"
     },
@@ -2111,7 +2111,7 @@
       "name": "chasing_swim_progression_postflight_20261018",
       "mode": "READ_ONLY",
       "owner_id": 2116886,
-      "scope": "trainingpeaks:private-plan:685173:swim-progression-postflight-read",
+      "scope": "trainingpeaks:public-plan:685173:swim-progression-postflight-read",
       "script": "scripts/ironman_jobs/chasing_swim_progression_postflight_20261018.py",
       "test": "tests/test_chasing_swim_rebuild_20261018.py"
     }
