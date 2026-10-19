@@ -53,8 +53,8 @@ async def main():
             must(not r.is_error and isinstance(r.data,list),"NOTES_READ_FAILED")
             return r.data
         baseline=await notes()
-        must(len(baseline)==1 and note_id(baseline[0])==ANCHOR,"LAB_NOT_CLEAN")
-        anchor=json.dumps(baseline[0],sort_keys=True,ensure_ascii=False)
+        must(len(baseline)==2 and {note_id(n) for n in baseline}=={ANCHOR,2655235},"LAB_NOT_CLEAN")
+        baseline_json=json.dumps(baseline,sort_keys=True,ensure_ascii=False)
         payload={"planId":LAB,"title":TITLE,"noteDate":START,"description":DESC,
                  "attachments":[],"standardFormatDate":"Week 1, Monday"}
         create=await c._request("POST",f"/plans/v1/plans/{LAB}/calendarNote",json=payload,_retry_on_401=False)
