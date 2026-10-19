@@ -819,7 +819,7 @@ TOOLS = [
         input_schema={
             "type": "object",
             "properties": {
-                "title": {"type": "string", "description": "Must begin with [MCP TEST]"},
+                "title": {"type": "string", "description": "Any nonempty native note title"},
                 "start_date": {"type": "string", "description": "Monday YYYY-MM-DD"},
                 "week_count": {"type": "integer", "minimum": 1, "maximum": 24,
                                "description": "1-2 for ordinary private lab plans; 24 only for the locked [MCP TEST] IRONMAN Intermediate 24W - Archive Pilot, anchored 2027-01-04"},
@@ -871,8 +871,8 @@ TOOLS = [
     ),
     Tool(
         name="tp_add_training_plan_note",
-        description=("Add a [MCP TEST] calendar note to a private [MCP TEST] "
-                     "Training Plan; never touches an athlete."),
+        description=("Create a native calendar note on a coach-owned private, unpriced "
+                     "Training Plan; checks identity, date range and duplicate titles."),
         input_schema={
             "type": "object",
             "properties": {
