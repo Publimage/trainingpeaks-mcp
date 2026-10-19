@@ -2154,6 +2154,14 @@
       "scope": "trainingpeaks:plan:685173:chasing-swim-rebuild-71-reviewed-v2",
       "script": "scripts/ironman_jobs/chasing_swim_reviewed_publish_20261019.py",
       "test": "tests/test_chasing_swim_rebuild_20261018.py"
+    },
+    {
+      "name": "note_attachment_delete_lab_20261019",
+      "mode": "GUARDED_WRITE",
+      "owner_id": 2116886,
+      "scope": "trainingpeaks:disposable-plan:684484:note-attachment-delete-canary-20261019",
+      "script": "scripts/ironman_jobs/note_attachment_delete_lab_20261019.py",
+      "test": "tests/test_note_attachment_delete_lab_20261019.py"
     }
   ]
 }
