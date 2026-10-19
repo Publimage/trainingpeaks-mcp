@@ -8,67 +8,12 @@
     "expected_title": "ALBERTO FAZI ENDURANCE | 70.3 | 16 settimane | Beginner | Italiano",
     "expected_is_public": false,
     "expected_workout_count": 133,
-    "scope": "trainingpeaks:plan:686994:description-newlines-20261019-b04",
+    "scope": "trainingpeaks:plan:686994:description-newlines-20261019-b05",
     "items": [
       {
-        "workout_id": 4011676548,
-        "expected_sport_id": 3,
-        "expected_workout_day": "2027-03-02",
-        "before": {
-          "description": "OBIETTIVO\\nContatto regolare con la corsa, in forma conversazionale.\\n\\nESECUZIONE\\nUsa i blocchi del Builder. RPE 2-3 per quasi tutta la seduta, puoi parlare in frasi complete. Se hai una soglia di corsa validata usa il ritmo come controllo secondario, non forzare percentuali non calibrate. Evita ripetute aggiunte.\\n\\nRECUPERO\\nValuta dolore muscolo-tendineo, rigidità, sonno, andatura e respiro. Se compare dolore che altera il gesto, interrompi. Se la corsa del sabato causa pesantezza insolita, domenica la bici deve essere più facile e il brick va saltato.\\n"
-        },
-        "after": {
-          "description": "OBIETTIVO\nContatto regolare con la corsa, in forma conversazionale.\n\nESECUZIONE\nUsa i blocchi del Builder. RPE 2-3 per quasi tutta la seduta, puoi parlare in frasi complete. Se hai una soglia di corsa validata usa il ritmo come controllo secondario, non forzare percentuali non calibrate. Evita ripetute aggiunte.\n\nRECUPERO\nValuta dolore muscolo-tendineo, rigidità, sonno, andatura e respiro. Se compare dolore che altera il gesto, interrompi. Se la corsa del sabato causa pesantezza insolita, domenica la bici deve essere più facile e il brick va saltato."
-        }
-      },
-      {
-        "workout_id": 4011676565,
+        "workout_id": 4011677187,
         "expected_sport_id": 2,
-        "expected_workout_day": "2027-03-03",
-        "before": {
-          "description": "OBIETTIVO\\nTenere una seduta distinta dal lungo: posizione, fluidità e controllo aerobico.\\n\\nESECUZIONE\\nSegui i blocchi a RPE sul Builder: per le porzioni facili RPE2-3, quando indicato controllo regolare RPE3-4, senza pedalare a soglia. Se possiedi FTP recente e affidabile, osserva potenza e frequenza cardiaca come conferma, ma FTP non equivale direttamente a LT1 o LT2 e non sono prescritti watt universali. Cerca cadenza spontanea e postura sostenibile; non inseguire watt in salita.\\n\\nCOSA OSSERVARE\\nVerifica stabilità di respirazione e capacità di mantenere l'output con costo interno contenuto. Annota sensazioni verso il finale e recupero del giorno dopo.\\nALIMENTAZIONE\\nAcqua secondo sete e condizioni, alimentazione ordinaria per durata breve.\\n"
-        },
-        "after": {
-          "description": "OBIETTIVO\nTenere una seduta distinta dal lungo: posizione, fluidità e controllo aerobico.\n\nESECUZIONE\nSegui i blocchi a RPE sul Builder: per le porzioni facili RPE2-3, quando indicato controllo regolare RPE3-4, senza pedalare a soglia. Se possiedi FTP recente e affidabile, osserva potenza e frequenza cardiaca come conferma, ma FTP non equivale direttamente a LT1 o LT2 e non sono prescritti watt universali. Cerca cadenza spontanea e postura sostenibile; non inseguire watt in salita.\n\nCOSA OSSERVARE\nVerifica stabilità di respirazione e capacità di mantenere l'output con costo interno contenuto. Annota sensazioni verso il finale e recupero del giorno dopo.\nALIMENTAZIONE\nAcqua secondo sete e condizioni, alimentazione ordinaria per durata breve."
-        }
-      },
-      {
-        "workout_id": 4011676576,
-        "expected_sport_id": 3,
-        "expected_workout_day": "2027-03-04",
-        "before": {
-          "description": "OBIETTIVO\\nContatto regolare con la corsa, in forma conversazionale.\\n\\nESECUZIONE\\nUsa i blocchi del Builder. RPE 2-3 per quasi tutta la seduta, puoi parlare in frasi complete. Se hai una soglia di corsa validata usa il ritmo come controllo secondario, non forzare percentuali non calibrate. Evita ripetute aggiunte.\\n\\nRECUPERO\\nValuta dolore muscolo-tendineo, rigidità, sonno, andatura e respiro. Se compare dolore che altera il gesto, interrompi. Se la corsa del sabato causa pesantezza insolita, domenica la bici deve essere più facile e il brick va saltato.\\n"
-        },
-        "after": {
-          "description": "OBIETTIVO\nContatto regolare con la corsa, in forma conversazionale.\n\nESECUZIONE\nUsa i blocchi del Builder. RPE 2-3 per quasi tutta la seduta, puoi parlare in frasi complete. Se hai una soglia di corsa validata usa il ritmo come controllo secondario, non forzare percentuali non calibrate. Evita ripetute aggiunte.\n\nRECUPERO\nValuta dolore muscolo-tendineo, rigidità, sonno, andatura e respiro. Se compare dolore che altera il gesto, interrompi. Se la corsa del sabato causa pesantezza insolita, domenica la bici deve essere più facile e il brick va saltato."
-        }
-      },
-      {
-        "workout_id": 4011676595,
-        "expected_sport_id": 1,
-        "expected_workout_day": "2027-03-05",
-        "before": {
-          "description": "OBIETTIVO\\nSostenere tratte progressivamente più lunghe con nuotata regolare. Distanza prescritta 1850m; durata organizzativa circa 54 min, comprensiva di pause.\\n\\nCOME\\nSegui la struttura a metri. Nei 50m di tecnica cura espirazione continua sott'acqua, assetto e traiettoria: niente attrezzi obbligatori. Tra le ripetizioni recupera 15-30 secondi o finché la respirazione torna regolare, senza cercare di comprimere le pause. RPE 2-3 nelle frazioni facili, fino a 4 soltanto quando la nuotata resta controllata.\\n\\nCOSA OSSERVARE\\nControlla se la seconda metà del lavoro mantiene ampiezza, orientamento e respirazione simili alla prima. Non ricavare automaticamente CSS o soglia dai soli dati di questa seduta.\\n\\nADATTAMENTO\\nSe perdi coordinazione, riduci la lunghezza della ripetuta mantenendo i metri complessivi soltanto se tecnicamente sicuro; in caso di affaticamento inconsueto termina la seduta. Acque libere soltanto in condizioni sicure, mai da soli.\\n"
-        },
-        "after": {
-          "description": "OBIETTIVO\nSostenere tratte progressivamente più lunghe con nuotata regolare. Distanza prescritta 1850m; durata organizzativa circa 54 min, comprensiva di pause.\n\nCOME\nSegui la struttura a metri. Nei 50m di tecnica cura espirazione continua sott'acqua, assetto e traiettoria: niente attrezzi obbligatori. Tra le ripetizioni recupera 15-30 secondi o finché la respirazione torna regolare, senza cercare di comprimere le pause. RPE 2-3 nelle frazioni facili, fino a 4 soltanto quando la nuotata resta controllata.\n\nCOSA OSSERVARE\nControlla se la seconda metà del lavoro mantiene ampiezza, orientamento e respirazione simili alla prima. Non ricavare automaticamente CSS o soglia dai soli dati di questa seduta.\n\nADATTAMENTO\nSe perdi coordinazione, riduci la lunghezza della ripetuta mantenendo i metri complessivi soltanto se tecnicamente sicuro; in caso di affaticamento inconsueto termina la seduta. Acque libere soltanto in condizioni sicure, mai da soli."
-        }
-      },
-      {
-        "workout_id": 4011676610,
-        "expected_sport_id": 3,
-        "expected_workout_day": "2027-03-06",
-        "before": {
-          "description": "OBIETTIVO\\nConsolidare durata di corsa facile minimizzando lo stress muscolo-tendineo.\\n\\nESECUZIONE\\nUsa i blocchi del Builder. RPE 2-3 per quasi tutta la seduta, puoi parlare in frasi complete. Se hai una soglia di corsa validata usa il ritmo come controllo secondario, non forzare percentuali non calibrate. Evita ripetute aggiunte.\\n\\nRECUPERO\\nValuta dolore muscolo-tendineo, rigidità, sonno, andatura e respiro. Se compare dolore che altera il gesto, interrompi. Se la corsa del sabato causa pesantezza insolita, domenica la bici deve essere più facile e il brick va saltato.\\nFUELING\\nSe superi 75-90min usa un'opzione già tollerata per acqua e carboidrati; controlla caldo e durata, non sperimentare il giorno della gara.\\n"
-        },
-        "after": {
-          "description": "OBIETTIVO\nConsolidare durata di corsa facile minimizzando lo stress muscolo-tendineo.\n\nESECUZIONE\nUsa i blocchi del Builder. RPE 2-3 per quasi tutta la seduta, puoi parlare in frasi complete. Se hai una soglia di corsa validata usa il ritmo come controllo secondario, non forzare percentuali non calibrate. Evita ripetute aggiunte.\n\nRECUPERO\nValuta dolore muscolo-tendineo, rigidità, sonno, andatura e respiro. Se compare dolore che altera il gesto, interrompi. Se la corsa del sabato causa pesantezza insolita, domenica la bici deve essere più facile e il brick va saltato.\nFUELING\nSe superi 75-90min usa un'opzione già tollerata per acqua e carboidrati; controlla caldo e durata, non sperimentare il giorno della gara."
-        }
-      },
-      {
-        "workout_id": 4011676635,
-        "expected_sport_id": 2,
-        "expected_workout_day": "2027-03-07",
+        "expected_workout_day": "2027-03-21",
         "before": {
           "description": "OBIETTIVO\\nPreparare resistenza e gestione energetica senza accumulare affaticamento eccessivo.\\n\\nESECUZIONE\\nSegui i blocchi a RPE sul Builder: per le porzioni facili RPE2-3, quando indicato controllo regolare RPE3-4, senza pedalare a soglia. Se possiedi FTP recente e affidabile, osserva potenza e frequenza cardiaca come conferma, ma FTP non equivale direttamente a LT1 o LT2 e non sono prescritti watt universali. Cerca cadenza spontanea e postura sostenibile; non inseguire watt in salita.\\n\\nCOSA OSSERVARE\\nVerifica stabilità di respirazione e capacità di mantenere l'output con costo interno contenuto. Annota sensazioni verso il finale e recupero del giorno dopo.\\nALIMENTAZIONE\\nOltre circa 90 minuti prova gradualmente 30-60g di carboidrati all'ora, aumentando solo in base a tolleranza e durata; acqua e sodio secondo sudorazione e condizioni. Testa gli stessi prodotti prima della gara.\\n"
         },
@@ -77,9 +22,9 @@
         }
       },
       {
-        "workout_id": 4011676666,
+        "workout_id": 4011677197,
         "expected_sport_id": 3,
-        "expected_workout_day": "2027-03-07",
+        "expected_workout_day": "2027-03-21",
         "before": {
           "description": "OBIETTIVO\\nAssorbire la transizione dalla bici senza inseguire il passo.\\n\\nESECUZIONE\\nUsa i blocchi del Builder. RPE 2-3 per quasi tutta la seduta, puoi parlare in frasi complete. Se hai una soglia di corsa validata usa il ritmo come controllo secondario, non forzare percentuali non calibrate. Evita ripetute aggiunte.\\n\\nRECUPERO\\nValuta dolore muscolo-tendineo, rigidità, sonno, andatura e respiro. Se compare dolore che altera il gesto, interrompi. Se la corsa del sabato causa pesantezza insolita, domenica la bici deve essere più facile e il brick va saltato.\\n"
         },
@@ -88,20 +33,20 @@
         }
       },
       {
-        "workout_id": 4011676681,
+        "workout_id": 4011677233,
         "expected_sport_id": 1,
-        "expected_workout_day": "2027-03-09",
+        "expected_workout_day": "2027-03-23",
         "before": {
-          "description": "OBIETTIVO\\nEconomia del crawl e respirazione senza affaticamento. Distanza prescritta 2000m; durata organizzativa circa 57 min, comprensiva di pause.\\n\\nCOME\\nSegui la struttura a metri. Nei 50m di tecnica cura espirazione continua sott'acqua, assetto e traiettoria: niente attrezzi obbligatori. Tra le ripetizioni recupera 15-30 secondi o finché la respirazione torna regolare, senza cercare di comprimere le pause. RPE 2-3 nelle frazioni facili, fino a 4 soltanto quando la nuotata resta controllata.\\n\\nCOSA OSSERVARE\\nControlla se la seconda metà del lavoro mantiene ampiezza, orientamento e respirazione simili alla prima. Non ricavare automaticamente CSS o soglia dai soli dati di questa seduta.\\n\\nADATTAMENTO\\nSe perdi coordinazione, riduci la lunghezza della ripetuta mantenendo i metri complessivi soltanto se tecnicamente sicuro; in caso di affaticamento inconsueto termina la seduta. Acque libere soltanto in condizioni sicure, mai da soli.\\n"
+          "description": "OBIETTIVO\\nEconomia del crawl e respirazione senza affaticamento. Distanza prescritta 1700m; durata organizzativa circa 45 min, comprensiva di pause.\\n\\nCOME\\nSegui la struttura a metri. Nei 50m di tecnica cura espirazione continua sott'acqua, assetto e traiettoria: niente attrezzi obbligatori. Tra le ripetizioni recupera 15-30 secondi o finché la respirazione torna regolare, senza cercare di comprimere le pause. RPE 2-3 nelle frazioni facili, fino a 4 soltanto quando la nuotata resta controllata.\\n\\nCOSA OSSERVARE\\nControlla se la seconda metà del lavoro mantiene ampiezza, orientamento e respirazione simili alla prima. Non ricavare automaticamente CSS o soglia dai soli dati di questa seduta.\\n\\nADATTAMENTO\\nSe perdi coordinazione, riduci la lunghezza della ripetuta mantenendo i metri complessivi soltanto se tecnicamente sicuro; in caso di affaticamento inconsueto termina la seduta. Acque libere soltanto in condizioni sicure, mai da soli.\\n"
         },
         "after": {
-          "description": "OBIETTIVO\nEconomia del crawl e respirazione senza affaticamento. Distanza prescritta 2000m; durata organizzativa circa 57 min, comprensiva di pause.\n\nCOME\nSegui la struttura a metri. Nei 50m di tecnica cura espirazione continua sott'acqua, assetto e traiettoria: niente attrezzi obbligatori. Tra le ripetizioni recupera 15-30 secondi o finché la respirazione torna regolare, senza cercare di comprimere le pause. RPE 2-3 nelle frazioni facili, fino a 4 soltanto quando la nuotata resta controllata.\n\nCOSA OSSERVARE\nControlla se la seconda metà del lavoro mantiene ampiezza, orientamento e respirazione simili alla prima. Non ricavare automaticamente CSS o soglia dai soli dati di questa seduta.\n\nADATTAMENTO\nSe perdi coordinazione, riduci la lunghezza della ripetuta mantenendo i metri complessivi soltanto se tecnicamente sicuro; in caso di affaticamento inconsueto termina la seduta. Acque libere soltanto in condizioni sicure, mai da soli."
+          "description": "OBIETTIVO\nEconomia del crawl e respirazione senza affaticamento. Distanza prescritta 1700m; durata organizzativa circa 45 min, comprensiva di pause.\n\nCOME\nSegui la struttura a metri. Nei 50m di tecnica cura espirazione continua sott'acqua, assetto e traiettoria: niente attrezzi obbligatori. Tra le ripetizioni recupera 15-30 secondi o finché la respirazione torna regolare, senza cercare di comprimere le pause. RPE 2-3 nelle frazioni facili, fino a 4 soltanto quando la nuotata resta controllata.\n\nCOSA OSSERVARE\nControlla se la seconda metà del lavoro mantiene ampiezza, orientamento e respirazione simili alla prima. Non ricavare automaticamente CSS o soglia dai soli dati di questa seduta.\n\nADATTAMENTO\nSe perdi coordinazione, riduci la lunghezza della ripetuta mantenendo i metri complessivi soltanto se tecnicamente sicuro; in caso di affaticamento inconsueto termina la seduta. Acque libere soltanto in condizioni sicure, mai da soli."
         }
       },
       {
-        "workout_id": 4011676762,
+        "workout_id": 4011677255,
         "expected_sport_id": 3,
-        "expected_workout_day": "2027-03-09",
+        "expected_workout_day": "2027-03-23",
         "before": {
           "description": "OBIETTIVO\\nContatto regolare con la corsa, in forma conversazionale.\\n\\nESECUZIONE\\nUsa i blocchi del Builder. RPE 2-3 per quasi tutta la seduta, puoi parlare in frasi complete. Se hai una soglia di corsa validata usa il ritmo come controllo secondario, non forzare percentuali non calibrate. Evita ripetute aggiunte.\\n\\nRECUPERO\\nValuta dolore muscolo-tendineo, rigidità, sonno, andatura e respiro. Se compare dolore che altera il gesto, interrompi. Se la corsa del sabato causa pesantezza insolita, domenica la bici deve essere più facile e il brick va saltato.\\n"
         },
@@ -110,9 +55,9 @@
         }
       },
       {
-        "workout_id": 4011676778,
+        "workout_id": 4011677279,
         "expected_sport_id": 2,
-        "expected_workout_day": "2027-03-10",
+        "expected_workout_day": "2027-03-24",
         "before": {
           "description": "OBIETTIVO\\nTenere una seduta distinta dal lungo: posizione, fluidità e controllo aerobico.\\n\\nESECUZIONE\\nSegui i blocchi a RPE sul Builder: per le porzioni facili RPE2-3, quando indicato controllo regolare RPE3-4, senza pedalare a soglia. Se possiedi FTP recente e affidabile, osserva potenza e frequenza cardiaca come conferma, ma FTP non equivale direttamente a LT1 o LT2 e non sono prescritti watt universali. Cerca cadenza spontanea e postura sostenibile; non inseguire watt in salita.\\n\\nCOSA OSSERVARE\\nVerifica stabilità di respirazione e capacità di mantenere l'output con costo interno contenuto. Annota sensazioni verso il finale e recupero del giorno dopo.\\nALIMENTAZIONE\\nAcqua secondo sete e condizioni, alimentazione ordinaria per durata breve.\\n"
         },
@@ -121,9 +66,9 @@
         }
       },
       {
-        "workout_id": 4011676832,
+        "workout_id": 4011677286,
         "expected_sport_id": 3,
-        "expected_workout_day": "2027-03-11",
+        "expected_workout_day": "2027-03-25",
         "before": {
           "description": "OBIETTIVO\\nContatto regolare con la corsa, in forma conversazionale.\\n\\nESECUZIONE\\nUsa i blocchi del Builder. RPE 2-3 per quasi tutta la seduta, puoi parlare in frasi complete. Se hai una soglia di corsa validata usa il ritmo come controllo secondario, non forzare percentuali non calibrate. Evita ripetute aggiunte.\\n\\nRECUPERO\\nValuta dolore muscolo-tendineo, rigidità, sonno, andatura e respiro. Se compare dolore che altera il gesto, interrompi. Se la corsa del sabato causa pesantezza insolita, domenica la bici deve essere più facile e il brick va saltato.\\n"
         },
@@ -132,31 +77,31 @@
         }
       },
       {
-        "workout_id": 4011676927,
+        "workout_id": 4011677301,
         "expected_sport_id": 1,
-        "expected_workout_day": "2027-03-12",
+        "expected_workout_day": "2027-03-26",
         "before": {
-          "description": "OBIETTIVO\\nSostenere tratte progressivamente più lunghe con nuotata regolare. Distanza prescritta 2000m; durata organizzativa circa 57 min, comprensiva di pause.\\n\\nCOME\\nSegui la struttura a metri. Nei 50m di tecnica cura espirazione continua sott'acqua, assetto e traiettoria: niente attrezzi obbligatori. Tra le ripetizioni recupera 15-30 secondi o finché la respirazione torna regolare, senza cercare di comprimere le pause. RPE 2-3 nelle frazioni facili, fino a 4 soltanto quando la nuotata resta controllata.\\n\\nCOSA OSSERVARE\\nControlla se la seconda metà del lavoro mantiene ampiezza, orientamento e respirazione simili alla prima. Non ricavare automaticamente CSS o soglia dai soli dati di questa seduta.\\n\\nADATTAMENTO\\nSe perdi coordinazione, riduci la lunghezza della ripetuta mantenendo i metri complessivi soltanto se tecnicamente sicuro; in caso di affaticamento inconsueto termina la seduta. Acque libere soltanto in condizioni sicure, mai da soli.\\n"
+          "description": "OBIETTIVO\\nSostenere tratte progressivamente più lunghe con nuotata regolare. Distanza prescritta 1700m; durata organizzativa circa 45 min, comprensiva di pause.\\n\\nCOME\\nSegui la struttura a metri. Nei 50m di tecnica cura espirazione continua sott'acqua, assetto e traiettoria: niente attrezzi obbligatori. Tra le ripetizioni recupera 15-30 secondi o finché la respirazione torna regolare, senza cercare di comprimere le pause. RPE 2-3 nelle frazioni facili, fino a 4 soltanto quando la nuotata resta controllata.\\n\\nCOSA OSSERVARE\\nControlla se la seconda metà del lavoro mantiene ampiezza, orientamento e respirazione simili alla prima. Non ricavare automaticamente CSS o soglia dai soli dati di questa seduta.\\n\\nADATTAMENTO\\nSe perdi coordinazione, riduci la lunghezza della ripetuta mantenendo i metri complessivi soltanto se tecnicamente sicuro; in caso di affaticamento inconsueto termina la seduta. Acque libere soltanto in condizioni sicure, mai da soli.\\n"
         },
         "after": {
-          "description": "OBIETTIVO\nSostenere tratte progressivamente più lunghe con nuotata regolare. Distanza prescritta 2000m; durata organizzativa circa 57 min, comprensiva di pause.\n\nCOME\nSegui la struttura a metri. Nei 50m di tecnica cura espirazione continua sott'acqua, assetto e traiettoria: niente attrezzi obbligatori. Tra le ripetizioni recupera 15-30 secondi o finché la respirazione torna regolare, senza cercare di comprimere le pause. RPE 2-3 nelle frazioni facili, fino a 4 soltanto quando la nuotata resta controllata.\n\nCOSA OSSERVARE\nControlla se la seconda metà del lavoro mantiene ampiezza, orientamento e respirazione simili alla prima. Non ricavare automaticamente CSS o soglia dai soli dati di questa seduta.\n\nADATTAMENTO\nSe perdi coordinazione, riduci la lunghezza della ripetuta mantenendo i metri complessivi soltanto se tecnicamente sicuro; in caso di affaticamento inconsueto termina la seduta. Acque libere soltanto in condizioni sicure, mai da soli."
+          "description": "OBIETTIVO\nSostenere tratte progressivamente più lunghe con nuotata regolare. Distanza prescritta 1700m; durata organizzativa circa 45 min, comprensiva di pause.\n\nCOME\nSegui la struttura a metri. Nei 50m di tecnica cura espirazione continua sott'acqua, assetto e traiettoria: niente attrezzi obbligatori. Tra le ripetizioni recupera 15-30 secondi o finché la respirazione torna regolare, senza cercare di comprimere le pause. RPE 2-3 nelle frazioni facili, fino a 4 soltanto quando la nuotata resta controllata.\n\nCOSA OSSERVARE\nControlla se la seconda metà del lavoro mantiene ampiezza, orientamento e respirazione simili alla prima. Non ricavare automaticamente CSS o soglia dai soli dati di questa seduta.\n\nADATTAMENTO\nSe perdi coordinazione, riduci la lunghezza della ripetuta mantenendo i metri complessivi soltanto se tecnicamente sicuro; in caso di affaticamento inconsueto termina la seduta. Acque libere soltanto in condizioni sicure, mai da soli."
         }
       },
       {
-        "workout_id": 4011676945,
+        "workout_id": 4011677444,
         "expected_sport_id": 3,
-        "expected_workout_day": "2027-03-13",
+        "expected_workout_day": "2027-03-27",
         "before": {
-          "description": "OBIETTIVO\\nConsolidare durata di corsa facile minimizzando lo stress muscolo-tendineo.\\n\\nESECUZIONE\\nUsa i blocchi del Builder. RPE 2-3 per quasi tutta la seduta, puoi parlare in frasi complete. Se hai una soglia di corsa validata usa il ritmo come controllo secondario, non forzare percentuali non calibrate. Evita ripetute aggiunte.\\n\\nRECUPERO\\nValuta dolore muscolo-tendineo, rigidità, sonno, andatura e respiro. Se compare dolore che altera il gesto, interrompi. Se la corsa del sabato causa pesantezza insolita, domenica la bici deve essere più facile e il brick va saltato.\\nFUELING\\nSe superi 75-90min usa un'opzione già tollerata per acqua e carboidrati; controlla caldo e durata, non sperimentare il giorno della gara.\\n"
+          "description": "OBIETTIVO\\nConsolidare durata di corsa facile minimizzando lo stress muscolo-tendineo.\\n\\nESECUZIONE\\nUsa i blocchi del Builder. RPE 2-3 per quasi tutta la seduta, puoi parlare in frasi complete. Se hai una soglia di corsa validata usa il ritmo come controllo secondario, non forzare percentuali non calibrate. Evita ripetute aggiunte.\\n\\nRECUPERO\\nValuta dolore muscolo-tendineo, rigidità, sonno, andatura e respiro. Se compare dolore che altera il gesto, interrompi. Se la corsa del sabato causa pesantezza insolita, domenica la bici deve essere più facile e il brick va saltato.\\n"
         },
         "after": {
-          "description": "OBIETTIVO\nConsolidare durata di corsa facile minimizzando lo stress muscolo-tendineo.\n\nESECUZIONE\nUsa i blocchi del Builder. RPE 2-3 per quasi tutta la seduta, puoi parlare in frasi complete. Se hai una soglia di corsa validata usa il ritmo come controllo secondario, non forzare percentuali non calibrate. Evita ripetute aggiunte.\n\nRECUPERO\nValuta dolore muscolo-tendineo, rigidità, sonno, andatura e respiro. Se compare dolore che altera il gesto, interrompi. Se la corsa del sabato causa pesantezza insolita, domenica la bici deve essere più facile e il brick va saltato.\nFUELING\nSe superi 75-90min usa un'opzione già tollerata per acqua e carboidrati; controlla caldo e durata, non sperimentare il giorno della gara."
+          "description": "OBIETTIVO\nConsolidare durata di corsa facile minimizzando lo stress muscolo-tendineo.\n\nESECUZIONE\nUsa i blocchi del Builder. RPE 2-3 per quasi tutta la seduta, puoi parlare in frasi complete. Se hai una soglia di corsa validata usa il ritmo come controllo secondario, non forzare percentuali non calibrate. Evita ripetute aggiunte.\n\nRECUPERO\nValuta dolore muscolo-tendineo, rigidità, sonno, andatura e respiro. Se compare dolore che altera il gesto, interrompi. Se la corsa del sabato causa pesantezza insolita, domenica la bici deve essere più facile e il brick va saltato."
         }
       },
       {
-        "workout_id": 4011676962,
+        "workout_id": 4011677491,
         "expected_sport_id": 2,
-        "expected_workout_day": "2027-03-14",
+        "expected_workout_day": "2027-03-28",
         "before": {
           "description": "OBIETTIVO\\nPreparare resistenza e gestione energetica senza accumulare affaticamento eccessivo.\\n\\nESECUZIONE\\nSegui i blocchi a RPE sul Builder: per le porzioni facili RPE2-3, quando indicato controllo regolare RPE3-4, senza pedalare a soglia. Se possiedi FTP recente e affidabile, osserva potenza e frequenza cardiaca come conferma, ma FTP non equivale direttamente a LT1 o LT2 e non sono prescritti watt universali. Cerca cadenza spontanea e postura sostenibile; non inseguire watt in salita.\\n\\nCOSA OSSERVARE\\nVerifica stabilità di respirazione e capacità di mantenere l'output con costo interno contenuto. Annota sensazioni verso il finale e recupero del giorno dopo.\\nALIMENTAZIONE\\nOltre circa 90 minuti prova gradualmente 30-60g di carboidrati all'ora, aumentando solo in base a tolleranza e durata; acqua e sodio secondo sudorazione e condizioni. Testa gli stessi prodotti prima della gara.\\n"
         },
@@ -165,9 +110,86 @@
         }
       },
       {
-        "workout_id": 4011676973,
+        "workout_id": 4011677789,
+        "expected_sport_id": 1,
+        "expected_workout_day": "2027-03-30",
+        "before": {
+          "description": "OBIETTIVO\\nEconomia del crawl e respirazione senza affaticamento. Distanza prescritta 2300m; durata organizzativa circa 63 min, comprensiva di pause.\\n\\nCOME\\nSegui la struttura a metri. Nei 50m di tecnica cura espirazione continua sott'acqua, assetto e traiettoria: niente attrezzi obbligatori. Tra le ripetizioni recupera 15-30 secondi o finché la respirazione torna regolare, senza cercare di comprimere le pause. RPE 2-3 nelle frazioni facili, fino a 4 soltanto quando la nuotata resta controllata.\\n\\nCOSA OSSERVARE\\nControlla se la seconda metà del lavoro mantiene ampiezza, orientamento e respirazione simili alla prima. Non ricavare automaticamente CSS o soglia dai soli dati di questa seduta.\\n\\nADATTAMENTO\\nSe perdi coordinazione, riduci la lunghezza della ripetuta mantenendo i metri complessivi soltanto se tecnicamente sicuro; in caso di affaticamento inconsueto termina la seduta. Acque libere soltanto in condizioni sicure, mai da soli.\\n"
+        },
+        "after": {
+          "description": "OBIETTIVO\nEconomia del crawl e respirazione senza affaticamento. Distanza prescritta 2300m; durata organizzativa circa 63 min, comprensiva di pause.\n\nCOME\nSegui la struttura a metri. Nei 50m di tecnica cura espirazione continua sott'acqua, assetto e traiettoria: niente attrezzi obbligatori. Tra le ripetizioni recupera 15-30 secondi o finché la respirazione torna regolare, senza cercare di comprimere le pause. RPE 2-3 nelle frazioni facili, fino a 4 soltanto quando la nuotata resta controllata.\n\nCOSA OSSERVARE\nControlla se la seconda metà del lavoro mantiene ampiezza, orientamento e respirazione simili alla prima. Non ricavare automaticamente CSS o soglia dai soli dati di questa seduta.\n\nADATTAMENTO\nSe perdi coordinazione, riduci la lunghezza della ripetuta mantenendo i metri complessivi soltanto se tecnicamente sicuro; in caso di affaticamento inconsueto termina la seduta. Acque libere soltanto in condizioni sicure, mai da soli."
+        }
+      },
+      {
+        "workout_id": 4011677806,
         "expected_sport_id": 3,
-        "expected_workout_day": "2027-03-14",
+        "expected_workout_day": "2027-03-30",
+        "before": {
+          "description": "OBIETTIVO\\nContatto regolare con la corsa, in forma conversazionale.\\n\\nESECUZIONE\\nUsa i blocchi del Builder. RPE 2-3 per quasi tutta la seduta, puoi parlare in frasi complete. Se hai una soglia di corsa validata usa il ritmo come controllo secondario, non forzare percentuali non calibrate. Evita ripetute aggiunte.\\n\\nRECUPERO\\nValuta dolore muscolo-tendineo, rigidità, sonno, andatura e respiro. Se compare dolore che altera il gesto, interrompi. Se la corsa del sabato causa pesantezza insolita, domenica la bici deve essere più facile e il brick va saltato.\\n"
+        },
+        "after": {
+          "description": "OBIETTIVO\nContatto regolare con la corsa, in forma conversazionale.\n\nESECUZIONE\nUsa i blocchi del Builder. RPE 2-3 per quasi tutta la seduta, puoi parlare in frasi complete. Se hai una soglia di corsa validata usa il ritmo come controllo secondario, non forzare percentuali non calibrate. Evita ripetute aggiunte.\n\nRECUPERO\nValuta dolore muscolo-tendineo, rigidità, sonno, andatura e respiro. Se compare dolore che altera il gesto, interrompi. Se la corsa del sabato causa pesantezza insolita, domenica la bici deve essere più facile e il brick va saltato."
+        }
+      },
+      {
+        "workout_id": 4011677842,
+        "expected_sport_id": 2,
+        "expected_workout_day": "2027-03-31",
+        "before": {
+          "description": "OBIETTIVO\\nTenere una seduta distinta dal lungo: posizione, fluidità e controllo aerobico.\\n\\nESECUZIONE\\nSegui i blocchi a RPE sul Builder: per le porzioni facili RPE2-3, quando indicato controllo regolare RPE3-4, senza pedalare a soglia. Se possiedi FTP recente e affidabile, osserva potenza e frequenza cardiaca come conferma, ma FTP non equivale direttamente a LT1 o LT2 e non sono prescritti watt universali. Cerca cadenza spontanea e postura sostenibile; non inseguire watt in salita.\\n\\nCOSA OSSERVARE\\nVerifica stabilità di respirazione e capacità di mantenere l'output con costo interno contenuto. Annota sensazioni verso il finale e recupero del giorno dopo.\\nALIMENTAZIONE\\nAcqua secondo sete e condizioni, alimentazione ordinaria per durata breve.\\n"
+        },
+        "after": {
+          "description": "OBIETTIVO\nTenere una seduta distinta dal lungo: posizione, fluidità e controllo aerobico.\n\nESECUZIONE\nSegui i blocchi a RPE sul Builder: per le porzioni facili RPE2-3, quando indicato controllo regolare RPE3-4, senza pedalare a soglia. Se possiedi FTP recente e affidabile, osserva potenza e frequenza cardiaca come conferma, ma FTP non equivale direttamente a LT1 o LT2 e non sono prescritti watt universali. Cerca cadenza spontanea e postura sostenibile; non inseguire watt in salita.\n\nCOSA OSSERVARE\nVerifica stabilità di respirazione e capacità di mantenere l'output con costo interno contenuto. Annota sensazioni verso il finale e recupero del giorno dopo.\nALIMENTAZIONE\nAcqua secondo sete e condizioni, alimentazione ordinaria per durata breve."
+        }
+      },
+      {
+        "workout_id": 4011677850,
+        "expected_sport_id": 3,
+        "expected_workout_day": "2027-04-01",
+        "before": {
+          "description": "OBIETTIVO\\nContatto regolare con la corsa, in forma conversazionale.\\n\\nESECUZIONE\\nUsa i blocchi del Builder. RPE 2-3 per quasi tutta la seduta, puoi parlare in frasi complete. Se hai una soglia di corsa validata usa il ritmo come controllo secondario, non forzare percentuali non calibrate. Evita ripetute aggiunte.\\n\\nRECUPERO\\nValuta dolore muscolo-tendineo, rigidità, sonno, andatura e respiro. Se compare dolore che altera il gesto, interrompi. Se la corsa del sabato causa pesantezza insolita, domenica la bici deve essere più facile e il brick va saltato.\\n"
+        },
+        "after": {
+          "description": "OBIETTIVO\nContatto regolare con la corsa, in forma conversazionale.\n\nESECUZIONE\nUsa i blocchi del Builder. RPE 2-3 per quasi tutta la seduta, puoi parlare in frasi complete. Se hai una soglia di corsa validata usa il ritmo come controllo secondario, non forzare percentuali non calibrate. Evita ripetute aggiunte.\n\nRECUPERO\nValuta dolore muscolo-tendineo, rigidità, sonno, andatura e respiro. Se compare dolore che altera il gesto, interrompi. Se la corsa del sabato causa pesantezza insolita, domenica la bici deve essere più facile e il brick va saltato."
+        }
+      },
+      {
+        "workout_id": 4011677878,
+        "expected_sport_id": 1,
+        "expected_workout_day": "2027-04-02",
+        "before": {
+          "description": "OBIETTIVO\\nSostenere tratte progressivamente più lunghe con nuotata regolare. Distanza prescritta 2300m; durata organizzativa circa 63 min, comprensiva di pause.\\n\\nCOME\\nSegui la struttura a metri. Nei 50m di tecnica cura espirazione continua sott'acqua, assetto e traiettoria: niente attrezzi obbligatori. Tra le ripetizioni recupera 15-30 secondi o finché la respirazione torna regolare, senza cercare di comprimere le pause. RPE 2-3 nelle frazioni facili, fino a 4 soltanto quando la nuotata resta controllata.\\n\\nCOSA OSSERVARE\\nControlla se la seconda metà del lavoro mantiene ampiezza, orientamento e respirazione simili alla prima. Non ricavare automaticamente CSS o soglia dai soli dati di questa seduta.\\n\\nADATTAMENTO\\nSe perdi coordinazione, riduci la lunghezza della ripetuta mantenendo i metri complessivi soltanto se tecnicamente sicuro; in caso di affaticamento inconsueto termina la seduta. Acque libere soltanto in condizioni sicure, mai da soli.\\nPROVA DISTANZA GARA\\nLa frazione continua di 1900m non è un test massimale: misura sicurezza e sostenibilità del gesto.\\n"
+        },
+        "after": {
+          "description": "OBIETTIVO\nSostenere tratte progressivamente più lunghe con nuotata regolare. Distanza prescritta 2300m; durata organizzativa circa 63 min, comprensiva di pause.\n\nCOME\nSegui la struttura a metri. Nei 50m di tecnica cura espirazione continua sott'acqua, assetto e traiettoria: niente attrezzi obbligatori. Tra le ripetizioni recupera 15-30 secondi o finché la respirazione torna regolare, senza cercare di comprimere le pause. RPE 2-3 nelle frazioni facili, fino a 4 soltanto quando la nuotata resta controllata.\n\nCOSA OSSERVARE\nControlla se la seconda metà del lavoro mantiene ampiezza, orientamento e respirazione simili alla prima. Non ricavare automaticamente CSS o soglia dai soli dati di questa seduta.\n\nADATTAMENTO\nSe perdi coordinazione, riduci la lunghezza della ripetuta mantenendo i metri complessivi soltanto se tecnicamente sicuro; in caso di affaticamento inconsueto termina la seduta. Acque libere soltanto in condizioni sicure, mai da soli.\nPROVA DISTANZA GARA\nLa frazione continua di 1900m non è un test massimale: misura sicurezza e sostenibilità del gesto."
+        }
+      },
+      {
+        "workout_id": 4011677895,
+        "expected_sport_id": 3,
+        "expected_workout_day": "2027-04-03",
+        "before": {
+          "description": "OBIETTIVO\\nConsolidare durata di corsa facile minimizzando lo stress muscolo-tendineo.\\n\\nESECUZIONE\\nUsa i blocchi del Builder. RPE 2-3 per quasi tutta la seduta, puoi parlare in frasi complete. Se hai una soglia di corsa validata usa il ritmo come controllo secondario, non forzare percentuali non calibrate. Evita ripetute aggiunte.\\n\\nRECUPERO\\nValuta dolore muscolo-tendineo, rigidità, sonno, andatura e respiro. Se compare dolore che altera il gesto, interrompi. Se la corsa del sabato causa pesantezza insolita, domenica la bici deve essere più facile e il brick va saltato.\\nFUELING\\nSe superi 75-90min usa un'opzione già tollerata per acqua e carboidrati; controlla caldo e durata, non sperimentare il giorno della gara.\\n"
+        },
+        "after": {
+          "description": "OBIETTIVO\nConsolidare durata di corsa facile minimizzando lo stress muscolo-tendineo.\n\nESECUZIONE\nUsa i blocchi del Builder. RPE 2-3 per quasi tutta la seduta, puoi parlare in frasi complete. Se hai una soglia di corsa validata usa il ritmo come controllo secondario, non forzare percentuali non calibrate. Evita ripetute aggiunte.\n\nRECUPERO\nValuta dolore muscolo-tendineo, rigidità, sonno, andatura e respiro. Se compare dolore che altera il gesto, interrompi. Se la corsa del sabato causa pesantezza insolita, domenica la bici deve essere più facile e il brick va saltato.\nFUELING\nSe superi 75-90min usa un'opzione già tollerata per acqua e carboidrati; controlla caldo e durata, non sperimentare il giorno della gara."
+        }
+      },
+      {
+        "workout_id": 4011677916,
+        "expected_sport_id": 2,
+        "expected_workout_day": "2027-04-04",
+        "before": {
+          "description": "OBIETTIVO\\nPreparare resistenza e gestione energetica senza accumulare affaticamento eccessivo.\\n\\nESECUZIONE\\nSegui i blocchi a RPE sul Builder: per le porzioni facili RPE2-3, quando indicato controllo regolare RPE3-4, senza pedalare a soglia. Se possiedi FTP recente e affidabile, osserva potenza e frequenza cardiaca come conferma, ma FTP non equivale direttamente a LT1 o LT2 e non sono prescritti watt universali. Cerca cadenza spontanea e postura sostenibile; non inseguire watt in salita.\\n\\nCOSA OSSERVARE\\nVerifica stabilità di respirazione e capacità di mantenere l'output con costo interno contenuto. Annota sensazioni verso il finale e recupero del giorno dopo.\\nALIMENTAZIONE\\nOltre circa 90 minuti prova gradualmente 30-60g di carboidrati all'ora, aumentando solo in base a tolleranza e durata; acqua e sodio secondo sudorazione e condizioni. Testa gli stessi prodotti prima della gara.\\n"
+        },
+        "after": {
+          "description": "OBIETTIVO\nPreparare resistenza e gestione energetica senza accumulare affaticamento eccessivo.\n\nESECUZIONE\nSegui i blocchi a RPE sul Builder: per le porzioni facili RPE2-3, quando indicato controllo regolare RPE3-4, senza pedalare a soglia. Se possiedi FTP recente e affidabile, osserva potenza e frequenza cardiaca come conferma, ma FTP non equivale direttamente a LT1 o LT2 e non sono prescritti watt universali. Cerca cadenza spontanea e postura sostenibile; non inseguire watt in salita.\n\nCOSA OSSERVARE\nVerifica stabilità di respirazione e capacità di mantenere l'output con costo interno contenuto. Annota sensazioni verso il finale e recupero del giorno dopo.\nALIMENTAZIONE\nOltre circa 90 minuti prova gradualmente 30-60g di carboidrati all'ora, aumentando solo in base a tolleranza e durata; acqua e sodio secondo sudorazione e condizioni. Testa gli stessi prodotti prima della gara."
+        }
+      },
+      {
+        "workout_id": 4011677943,
+        "expected_sport_id": 3,
+        "expected_workout_day": "2027-04-04",
         "before": {
           "description": "OBIETTIVO\\nAssorbire la transizione dalla bici senza inseguire il passo.\\n\\nESECUZIONE\\nUsa i blocchi del Builder. RPE 2-3 per quasi tutta la seduta, puoi parlare in frasi complete. Se hai una soglia di corsa validata usa il ritmo come controllo secondario, non forzare percentuali non calibrate. Evita ripetute aggiunte.\\n\\nRECUPERO\\nValuta dolore muscolo-tendineo, rigidità, sonno, andatura e respiro. Se compare dolore che altera il gesto, interrompi. Se la corsa del sabato causa pesantezza insolita, domenica la bici deve essere più facile e il brick va saltato.\\n"
         },
@@ -176,20 +198,20 @@
         }
       },
       {
-        "workout_id": 4011677001,
+        "workout_id": 4011677968,
         "expected_sport_id": 1,
-        "expected_workout_day": "2027-03-16",
+        "expected_workout_day": "2027-04-06",
         "before": {
-          "description": "OBIETTIVO\\nEconomia del crawl e respirazione senza affaticamento. Distanza prescritta 2150m; durata organizzativa circa 60 min, comprensiva di pause.\\n\\nCOME\\nSegui la struttura a metri. Nei 50m di tecnica cura espirazione continua sott'acqua, assetto e traiettoria: niente attrezzi obbligatori. Tra le ripetizioni recupera 15-30 secondi o finché la respirazione torna regolare, senza cercare di comprimere le pause. RPE 2-3 nelle frazioni facili, fino a 4 soltanto quando la nuotata resta controllata.\\n\\nCOSA OSSERVARE\\nControlla se la seconda metà del lavoro mantiene ampiezza, orientamento e respirazione simili alla prima. Non ricavare automaticamente CSS o soglia dai soli dati di questa seduta.\\n\\nADATTAMENTO\\nSe perdi coordinazione, riduci la lunghezza della ripetuta mantenendo i metri complessivi soltanto se tecnicamente sicuro; in caso di affaticamento inconsueto termina la seduta. Acque libere soltanto in condizioni sicure, mai da soli.\\n"
+          "description": "OBIETTIVO\\nEconomia del crawl e respirazione senza affaticamento. Distanza prescritta 2400m; durata organizzativa circa 66 min, comprensiva di pause.\\n\\nCOME\\nSegui la struttura a metri. Nei 50m di tecnica cura espirazione continua sott'acqua, assetto e traiettoria: niente attrezzi obbligatori. Tra le ripetizioni recupera 15-30 secondi o finché la respirazione torna regolare, senza cercare di comprimere le pause. RPE 2-3 nelle frazioni facili, fino a 4 soltanto quando la nuotata resta controllata.\\n\\nCOSA OSSERVARE\\nControlla se la seconda metà del lavoro mantiene ampiezza, orientamento e respirazione simili alla prima. Non ricavare automaticamente CSS o soglia dai soli dati di questa seduta.\\n\\nADATTAMENTO\\nSe perdi coordinazione, riduci la lunghezza della ripetuta mantenendo i metri complessivi soltanto se tecnicamente sicuro; in caso di affaticamento inconsueto termina la seduta. Acque libere soltanto in condizioni sicure, mai da soli.\\n"
         },
         "after": {
-          "description": "OBIETTIVO\nEconomia del crawl e respirazione senza affaticamento. Distanza prescritta 2150m; durata organizzativa circa 60 min, comprensiva di pause.\n\nCOME\nSegui la struttura a metri. Nei 50m di tecnica cura espirazione continua sott'acqua, assetto e traiettoria: niente attrezzi obbligatori. Tra le ripetizioni recupera 15-30 secondi o finché la respirazione torna regolare, senza cercare di comprimere le pause. RPE 2-3 nelle frazioni facili, fino a 4 soltanto quando la nuotata resta controllata.\n\nCOSA OSSERVARE\nControlla se la seconda metà del lavoro mantiene ampiezza, orientamento e respirazione simili alla prima. Non ricavare automaticamente CSS o soglia dai soli dati di questa seduta.\n\nADATTAMENTO\nSe perdi coordinazione, riduci la lunghezza della ripetuta mantenendo i metri complessivi soltanto se tecnicamente sicuro; in caso di affaticamento inconsueto termina la seduta. Acque libere soltanto in condizioni sicure, mai da soli."
+          "description": "OBIETTIVO\nEconomia del crawl e respirazione senza affaticamento. Distanza prescritta 2400m; durata organizzativa circa 66 min, comprensiva di pause.\n\nCOME\nSegui la struttura a metri. Nei 50m di tecnica cura espirazione continua sott'acqua, assetto e traiettoria: niente attrezzi obbligatori. Tra le ripetizioni recupera 15-30 secondi o finché la respirazione torna regolare, senza cercare di comprimere le pause. RPE 2-3 nelle frazioni facili, fino a 4 soltanto quando la nuotata resta controllata.\n\nCOSA OSSERVARE\nControlla se la seconda metà del lavoro mantiene ampiezza, orientamento e respirazione simili alla prima. Non ricavare automaticamente CSS o soglia dai soli dati di questa seduta.\n\nADATTAMENTO\nSe perdi coordinazione, riduci la lunghezza della ripetuta mantenendo i metri complessivi soltanto se tecnicamente sicuro; in caso di affaticamento inconsueto termina la seduta. Acque libere soltanto in condizioni sicure, mai da soli."
         }
       },
       {
-        "workout_id": 4011677011,
+        "workout_id": 4011677982,
         "expected_sport_id": 3,
-        "expected_workout_day": "2027-03-16",
+        "expected_workout_day": "2027-04-06",
         "before": {
           "description": "OBIETTIVO\\nContatto regolare con la corsa, in forma conversazionale.\\n\\nESECUZIONE\\nUsa i blocchi del Builder. RPE 2-3 per quasi tutta la seduta, puoi parlare in frasi complete. Se hai una soglia di corsa validata usa il ritmo come controllo secondario, non forzare percentuali non calibrate. Evita ripetute aggiunte.\\n\\nRECUPERO\\nValuta dolore muscolo-tendineo, rigidità, sonno, andatura e respiro. Se compare dolore che altera il gesto, interrompi. Se la corsa del sabato causa pesantezza insolita, domenica la bici deve essere più facile e il brick va saltato.\\n"
         },
@@ -198,36 +220,14 @@
         }
       },
       {
-        "workout_id": 4011677045,
-        "expected_sport_id": 3,
-        "expected_workout_day": "2027-03-18",
+        "workout_id": 4011678026,
+        "expected_sport_id": 2,
+        "expected_workout_day": "2027-04-07",
         "before": {
-          "description": "OBIETTIVO\\nContatto regolare con la corsa, in forma conversazionale.\\n\\nESECUZIONE\\nUsa i blocchi del Builder. RPE 2-3 per quasi tutta la seduta, puoi parlare in frasi complete. Se hai una soglia di corsa validata usa il ritmo come controllo secondario, non forzare percentuali non calibrate. Evita ripetute aggiunte.\\n\\nRECUPERO\\nValuta dolore muscolo-tendineo, rigidità, sonno, andatura e respiro. Se compare dolore che altera il gesto, interrompi. Se la corsa del sabato causa pesantezza insolita, domenica la bici deve essere più facile e il brick va saltato.\\n"
+          "description": "OBIETTIVO\\nTenere una seduta distinta dal lungo: posizione, fluidità e controllo aerobico.\\n\\nESECUZIONE\\nSegui i blocchi a RPE sul Builder: per le porzioni facili RPE2-3, quando indicato controllo regolare RPE3-4, senza pedalare a soglia. Se possiedi FTP recente e affidabile, osserva potenza e frequenza cardiaca come conferma, ma FTP non equivale direttamente a LT1 o LT2 e non sono prescritti watt universali. Cerca cadenza spontanea e postura sostenibile; non inseguire watt in salita.\\n\\nCOSA OSSERVARE\\nVerifica stabilità di respirazione e capacità di mantenere l'output con costo interno contenuto. Annota sensazioni verso il finale e recupero del giorno dopo.\\nALIMENTAZIONE\\nOltre circa 90 minuti prova gradualmente 30-60g di carboidrati all'ora, aumentando solo in base a tolleranza e durata; acqua e sodio secondo sudorazione e condizioni. Testa gli stessi prodotti prima della gara.\\n"
         },
         "after": {
-          "description": "OBIETTIVO\nContatto regolare con la corsa, in forma conversazionale.\n\nESECUZIONE\nUsa i blocchi del Builder. RPE 2-3 per quasi tutta la seduta, puoi parlare in frasi complete. Se hai una soglia di corsa validata usa il ritmo come controllo secondario, non forzare percentuali non calibrate. Evita ripetute aggiunte.\n\nRECUPERO\nValuta dolore muscolo-tendineo, rigidità, sonno, andatura e respiro. Se compare dolore che altera il gesto, interrompi. Se la corsa del sabato causa pesantezza insolita, domenica la bici deve essere più facile e il brick va saltato."
-        }
-      },
-      {
-        "workout_id": 4011677101,
-        "expected_sport_id": 1,
-        "expected_workout_day": "2027-03-19",
-        "before": {
-          "description": "OBIETTIVO\\nSostenere tratte progressivamente più lunghe con nuotata regolare. Distanza prescritta 2150m; durata organizzativa circa 60 min, comprensiva di pause.\\n\\nCOME\\nSegui la struttura a metri. Nei 50m di tecnica cura espirazione continua sott'acqua, assetto e traiettoria: niente attrezzi obbligatori. Tra le ripetizioni recupera 15-30 secondi o finché la respirazione torna regolare, senza cercare di comprimere le pause. RPE 2-3 nelle frazioni facili, fino a 4 soltanto quando la nuotata resta controllata.\\n\\nCOSA OSSERVARE\\nControlla se la seconda metà del lavoro mantiene ampiezza, orientamento e respirazione simili alla prima. Non ricavare automaticamente CSS o soglia dai soli dati di questa seduta.\\n\\nADATTAMENTO\\nSe perdi coordinazione, riduci la lunghezza della ripetuta mantenendo i metri complessivi soltanto se tecnicamente sicuro; in caso di affaticamento inconsueto termina la seduta. Acque libere soltanto in condizioni sicure, mai da soli.\\n"
-        },
-        "after": {
-          "description": "OBIETTIVO\nSostenere tratte progressivamente più lunghe con nuotata regolare. Distanza prescritta 2150m; durata organizzativa circa 60 min, comprensiva di pause.\n\nCOME\nSegui la struttura a metri. Nei 50m di tecnica cura espirazione continua sott'acqua, assetto e traiettoria: niente attrezzi obbligatori. Tra le ripetizioni recupera 15-30 secondi o finché la respirazione torna regolare, senza cercare di comprimere le pause. RPE 2-3 nelle frazioni facili, fino a 4 soltanto quando la nuotata resta controllata.\n\nCOSA OSSERVARE\nControlla se la seconda metà del lavoro mantiene ampiezza, orientamento e respirazione simili alla prima. Non ricavare automaticamente CSS o soglia dai soli dati di questa seduta.\n\nADATTAMENTO\nSe perdi coordinazione, riduci la lunghezza della ripetuta mantenendo i metri complessivi soltanto se tecnicamente sicuro; in caso di affaticamento inconsueto termina la seduta. Acque libere soltanto in condizioni sicure, mai da soli."
-        }
-      },
-      {
-        "workout_id": 4011677161,
-        "expected_sport_id": 3,
-        "expected_workout_day": "2027-03-20",
-        "before": {
-          "description": "OBIETTIVO\\nConsolidare durata di corsa facile minimizzando lo stress muscolo-tendineo.\\n\\nESECUZIONE\\nUsa i blocchi del Builder. RPE 2-3 per quasi tutta la seduta, puoi parlare in frasi complete. Se hai una soglia di corsa validata usa il ritmo come controllo secondario, non forzare percentuali non calibrate. Evita ripetute aggiunte.\\n\\nRECUPERO\\nValuta dolore muscolo-tendineo, rigidità, sonno, andatura e respiro. Se compare dolore che altera il gesto, interrompi. Se la corsa del sabato causa pesantezza insolita, domenica la bici deve essere più facile e il brick va saltato.\\nFUELING\\nSe superi 75-90min usa un'opzione già tollerata per acqua e carboidrati; controlla caldo e durata, non sperimentare il giorno della gara.\\n"
-        },
-        "after": {
-          "description": "OBIETTIVO\nConsolidare durata di corsa facile minimizzando lo stress muscolo-tendineo.\n\nESECUZIONE\nUsa i blocchi del Builder. RPE 2-3 per quasi tutta la seduta, puoi parlare in frasi complete. Se hai una soglia di corsa validata usa il ritmo come controllo secondario, non forzare percentuali non calibrate. Evita ripetute aggiunte.\n\nRECUPERO\nValuta dolore muscolo-tendineo, rigidità, sonno, andatura e respiro. Se compare dolore che altera il gesto, interrompi. Se la corsa del sabato causa pesantezza insolita, domenica la bici deve essere più facile e il brick va saltato.\nFUELING\nSe superi 75-90min usa un'opzione già tollerata per acqua e carboidrati; controlla caldo e durata, non sperimentare il giorno della gara."
+          "description": "OBIETTIVO\nTenere una seduta distinta dal lungo: posizione, fluidità e controllo aerobico.\n\nESECUZIONE\nSegui i blocchi a RPE sul Builder: per le porzioni facili RPE2-3, quando indicato controllo regolare RPE3-4, senza pedalare a soglia. Se possiedi FTP recente e affidabile, osserva potenza e frequenza cardiaca come conferma, ma FTP non equivale direttamente a LT1 o LT2 e non sono prescritti watt universali. Cerca cadenza spontanea e postura sostenibile; non inseguire watt in salita.\n\nCOSA OSSERVARE\nVerifica stabilità di respirazione e capacità di mantenere l'output con costo interno contenuto. Annota sensazioni verso il finale e recupero del giorno dopo.\nALIMENTAZIONE\nOltre circa 90 minuti prova gradualmente 30-60g di carboidrati all'ora, aumentando solo in base a tolleranza e durata; acqua e sodio secondo sudorazione e condizioni. Testa gli stessi prodotti prima della gara."
         }
       }
     ]
