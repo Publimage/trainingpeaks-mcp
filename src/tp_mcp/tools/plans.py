@@ -1212,10 +1212,9 @@ async def tp_get_training_plan_notes(plan_id: int | str) -> dict[str, Any]:
         start = _parse_plan_date((plan.get("startDate") or "")[:10])
         days = max(plan.get("dayCount") or 0,
                    (plan.get("weekCount") or 0) * 7)
-        if v.plan_id == 684602 and start == date_type(2026, 10, 6):
-            # Calendar is a relative W1..W24 template. TP technical startDate
-            # reflects the first Tuesday workout, not the Monday of week 1.
-            start = start - timedelta(days=1)
+        # Relative Training Plan weeks begin Monday, even when the
+        # first scheduled workout is Tuesday or later.
+        start = start - timedelta(days=start.weekday())
         if start is None or days <= 0:
             return _err("API_ERROR", "Plan has no populated calendar range.")
         if v.plan_id == _INTERMEDIATE_PILOT_ID and start == _INTERMEDIATE_PILOT_START:
@@ -1290,13 +1289,14 @@ async def tp_add_training_plan_note(
                 "[MCP TEST] SETTIMANA 1 | Calibrazione e riferimenti",
             }
         )
-        date_error = _check_plan_date(plan, note_date)
-        if date_error and not w1_monday:
-            return date_error
-        target = date_type.fromisoformat(note_date)
-        start = date_type.fromisoformat(plan["startDate"][:10])
-        if v.plan_id == 684602 and start == date_type(2026, 10, 6):
-            start -= timedelta(days=1)
+        target = _parse_plan_date(note_date)
+        raw_start = _parse_plan_date((plan.get("startDate") or "")[:10])
+        days = max(plan.get("dayCount") or 0, (plan.get("weekCount") or 0) * 7)
+        if target is None or raw_start is None or days <= 0:
+            return _err("VALIDATION_ERROR", "Invalid note date or plan range.")
+        start = raw_start - timedelta(days=raw_start.weekday())
+        if not (start <= target < start + timedelta(days=days)):
+            return _err("VALIDATION_ERROR", "Note date outside relative plan weeks.")
         week = (target - start).days // 7 + 1
         # This POST is non-idempotent. Preflight the exact plan calendar
         # before creating the note, and never retry an ambiguous POST.
