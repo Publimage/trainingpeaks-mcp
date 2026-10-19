@@ -69,6 +69,7 @@ from tp_mcp.tools.organization import (
 from tp_mcp.tools.native_note_library import tp_sync_intermediate_native_notes
 from tp_mcp.tools.metrics import tp_get_metrics, tp_get_nutrition, tp_log_metrics
 from tp_mcp.tools.peaks import tp_get_peaks, tp_get_workout_prs
+from tp_mcp.tools.plan_attachments import tp_attach_training_plan_note_pdf
 from tp_mcp.tools.plans import (
     tp_add_training_plan_library_workout,
     tp_batch_add_training_plan_library_workouts,
@@ -163,6 +164,7 @@ __all__ = [
     "tp_add_training_plan_library_workout",
     "tp_batch_add_training_plan_library_workouts",
     "tp_add_training_plan_note",
+    "tp_attach_training_plan_note_pdf",
     "tp_apply_training_plan",
     "tp_create_training_plan",
     "tp_get_availability",
