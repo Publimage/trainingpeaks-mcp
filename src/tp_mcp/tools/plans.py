@@ -1248,6 +1248,16 @@ async def tp_get_training_plan_notes(plan_id: int | str) -> dict[str, Any]:
                 "date": day or None,
                 "week": (offset - 1) // 7 + 1 if offset else None,
                 "day": offset,
+                "attachments": [
+                    {
+                        "id": a.get("id"),
+                        "file_name": a.get("fileName"),
+                        "content_length": a.get("contentLength"),
+                        "content_type": a.get("contentType"),
+                    }
+                    for a in (note.get("attachments") or [])
+                    if isinstance(a, dict)
+                ],
             })
         return {"plan_id": v.plan_id, "notes": out, "count": len(out)}
 
