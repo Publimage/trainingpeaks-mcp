@@ -2146,6 +2146,14 @@
       "scope": "trainingpeaks:coach:2116886:reviewed-plan-patch-manifest-publish-v1",
       "script": "scripts/ironman_jobs/reviewed_plan_patch_publish.py",
       "test": "tests/test_reviewed_plan_patch_pipeline.py"
+    },
+    {
+      "name": "chasing_swim_reviewed_publish_20261019",
+      "mode": "GUARDED_WRITE",
+      "owner_id": 2116886,
+      "scope": "trainingpeaks:plan:685173:chasing-swim-rebuild-71-reviewed-v2",
+      "script": "scripts/ironman_jobs/chasing_swim_reviewed_publish_20261019.py",
+      "test": "tests/test_chasing_swim_rebuild_20261018.py"
     }
   ]
 }
