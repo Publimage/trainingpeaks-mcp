@@ -32,7 +32,7 @@ def _allowed_source(url: str) -> bool:
         return (
             u.scheme == "https"
             and u.username is None and u.password is None and u.port is None
-            and re.fullmatch(r"sdmntpr[a-z0-9-]+\\.oaiusercontent\\.com", u.hostname or "") is not None
+            and re.fullmatch(r"sdmntpr[a-z0-9-]+\.oaiusercontent\.com", u.hostname or "") is not None
             and re.fullmatch(r"/files/[0-9a-f-]+/raw", u.path) is not None
             and u.query != ""
             and u.fragment == ""
