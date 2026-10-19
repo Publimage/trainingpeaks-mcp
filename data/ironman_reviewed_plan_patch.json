@@ -4,439 +4,549 @@
   "manifest": {
     "schema": "IRONMAN_PLAN_PATCH_V1",
     "owner_id": 2116886,
-    "plan_id": 685173,
-    "expected_title": "ALBERTO FAZI ENDURANCE | CHASING THE SLOT | 24 settimane | Advanced | Italiano",
-    "expected_is_public": true,
-    "expected_workout_count": 276,
-    "scope": "trainingpeaks:plan:685173:symbol-system-titles-20261019-v1",
+    "plan_id": 686994,
+    "expected_title": "ALBERTO FAZI ENDURANCE | 70.3 | 16 settimane | Beginner | Italiano",
+    "expected_is_public": false,
+    "expected_workout_count": 133,
+    "scope": "trainingpeaks:plan:686994:beginner-70-3-title-symbols-and-section-spacing-20261019-v1",
     "items": [
       {
-        "workout_id": 4000486945,
-        "expected_sport_id": 1,
-        "expected_workout_day": "2027-01-05",
-        "before": {
-          "title": "Test | T1500 iniziale - 2500 m"
-        },
-        "after": {
-          "title": "◎ Test | T1500 iniziale - 2500 m"
-        }
-      },
-      {
-        "workout_id": 4000490168,
-        "expected_sport_id": 3,
+        "workout_id": 4011673528,
+        "expected_sport_id": 2,
         "expected_workout_day": "2027-01-06",
         "before": {
-          "title": "Test | 5 km - riferimento corsa"
+          "description": "OBIETTIVO\nTenere una seduta distinta dal lungo: posizione, fluidità e controllo aerobico.\n\nESECUZIONE\nSegui i blocchi a RPE sul Builder: per le porzioni facili RPE2-3, quando indicato controllo regolare RPE3-4, senza pedalare a soglia. Se possiedi FTP recente e affidabile, osserva potenza e frequenza cardiaca come conferma, ma FTP non equivale direttamente a LT1 o LT2 e non sono prescritti watt universali. Cerca cadenza spontanea e postura sostenibile; non inseguire watt in salita.\n\nCOSA OSSERVARE\nVerifica stabilità di respirazione e capacità di mantenere l'output con costo interno contenuto. Annota sensazioni verso il finale e recupero del giorno dopo.\nALIMENTAZIONE\nAcqua secondo sete e condizioni, alimentazione ordinaria per durata breve."
         },
         "after": {
-          "title": "◎ Test | 5 km - riferimento corsa"
+          "description": "OBIETTIVO\nTenere una seduta distinta dal lungo: posizione, fluidità e controllo aerobico.\n\nESECUZIONE\nSegui i blocchi a RPE sul Builder: per le porzioni facili RPE2-3, quando indicato controllo regolare RPE3-4, senza pedalare a soglia. Se possiedi FTP recente e affidabile, osserva potenza e frequenza cardiaca come conferma, ma FTP non equivale direttamente a LT1 o LT2 e non sono prescritti watt universali. Cerca cadenza spontanea e postura sostenibile; non inseguire watt in salita.\n\nCOSA OSSERVARE\nVerifica stabilità di respirazione e capacità di mantenere l'output con costo interno contenuto. Annota sensazioni verso il finale e recupero del giorno dopo.\n\nALIMENTAZIONE\nAcqua secondo sete e condizioni, alimentazione ordinaria per durata breve."
         }
       },
       {
-        "workout_id": 4000490118,
+        "workout_id": 4011673672,
         "expected_sport_id": 2,
-        "expected_workout_day": "2027-01-07",
+        "expected_workout_day": "2027-01-10",
         "before": {
-          "title": "Test | 20' potenza sostenibile - 60'"
+          "title": "Lungo | Bici aerobica 85'",
+          "description": "OBIETTIVO\nPreparare resistenza e gestione energetica senza accumulare affaticamento eccessivo.\n\nESECUZIONE\nSegui i blocchi a RPE sul Builder: per le porzioni facili RPE2-3, quando indicato controllo regolare RPE3-4, senza pedalare a soglia. Se possiedi FTP recente e affidabile, osserva potenza e frequenza cardiaca come conferma, ma FTP non equivale direttamente a LT1 o LT2 e non sono prescritti watt universali. Cerca cadenza spontanea e postura sostenibile; non inseguire watt in salita.\n\nCOSA OSSERVARE\nVerifica stabilità di respirazione e capacità di mantenere l'output con costo interno contenuto. Annota sensazioni verso il finale e recupero del giorno dopo.\nALIMENTAZIONE\nAcqua secondo sete e condizioni, alimentazione ordinaria per durata breve."
         },
         "after": {
-          "title": "◎ Test | 20' potenza sostenibile - 60'"
+          "title": "◆ Lungo | Bici aerobica 85'",
+          "description": "OBIETTIVO\nPreparare resistenza e gestione energetica senza accumulare affaticamento eccessivo.\n\nESECUZIONE\nSegui i blocchi a RPE sul Builder: per le porzioni facili RPE2-3, quando indicato controllo regolare RPE3-4, senza pedalare a soglia. Se possiedi FTP recente e affidabile, osserva potenza e frequenza cardiaca come conferma, ma FTP non equivale direttamente a LT1 o LT2 e non sono prescritti watt universali. Cerca cadenza spontanea e postura sostenibile; non inseguire watt in salita.\n\nCOSA OSSERVARE\nVerifica stabilità di respirazione e capacità di mantenere l'output con costo interno contenuto. Annota sensazioni verso il finale e recupero del giorno dopo.\n\nALIMENTAZIONE\nAcqua secondo sete e condizioni, alimentazione ordinaria per durata breve."
         }
       },
       {
-        "workout_id": 4000954221,
-        "expected_sport_id": 1,
-        "expected_workout_day": "2027-02-03",
-        "before": {
-          "title": "Test | RETEST W05 | T1500 - 2500 m"
-        },
-        "after": {
-          "title": "◎ Test | RETEST W05 | T1500 - 2500 m"
-        }
-      },
-      {
-        "workout_id": 4000954256,
+        "workout_id": 4011673804,
         "expected_sport_id": 2,
-        "expected_workout_day": "2027-02-04",
+        "expected_workout_day": "2027-01-13",
         "before": {
-          "title": "Test | RETEST W05 | 20' potenza - 60'"
+          "description": "OBIETTIVO\nTenere una seduta distinta dal lungo: posizione, fluidità e controllo aerobico.\n\nESECUZIONE\nSegui i blocchi a RPE sul Builder: per le porzioni facili RPE2-3, quando indicato controllo regolare RPE3-4, senza pedalare a soglia. Se possiedi FTP recente e affidabile, osserva potenza e frequenza cardiaca come conferma, ma FTP non equivale direttamente a LT1 o LT2 e non sono prescritti watt universali. Cerca cadenza spontanea e postura sostenibile; non inseguire watt in salita.\n\nCOSA OSSERVARE\nVerifica stabilità di respirazione e capacità di mantenere l'output con costo interno contenuto. Annota sensazioni verso il finale e recupero del giorno dopo.\nALIMENTAZIONE\nAcqua secondo sete e condizioni, alimentazione ordinaria per durata breve."
         },
         "after": {
-          "title": "◎ Test | RETEST W05 | 20' potenza - 60'"
+          "description": "OBIETTIVO\nTenere una seduta distinta dal lungo: posizione, fluidità e controllo aerobico.\n\nESECUZIONE\nSegui i blocchi a RPE sul Builder: per le porzioni facili RPE2-3, quando indicato controllo regolare RPE3-4, senza pedalare a soglia. Se possiedi FTP recente e affidabile, osserva potenza e frequenza cardiaca come conferma, ma FTP non equivale direttamente a LT1 o LT2 e non sono prescritti watt universali. Cerca cadenza spontanea e postura sostenibile; non inseguire watt in salita.\n\nCOSA OSSERVARE\nVerifica stabilità di respirazione e capacità di mantenere l'output con costo interno contenuto. Annota sensazioni verso il finale e recupero del giorno dopo.\n\nALIMENTAZIONE\nAcqua secondo sete e condizioni, alimentazione ordinaria per durata breve."
         }
       },
       {
-        "workout_id": 4001048397,
-        "expected_sport_id": 1,
-        "expected_workout_day": "2027-03-03",
-        "before": {
-          "title": "Test | RETEST W09 | T1500 - 2500 m"
-        },
-        "after": {
-          "title": "◎ Test | RETEST W09 | T1500 - 2500 m"
-        }
-      },
-      {
-        "workout_id": 4001059176,
+        "workout_id": 4011673909,
         "expected_sport_id": 3,
-        "expected_workout_day": "2027-03-29",
-        "before": {
-          "title": "Test | RETEST - 5 km - riferimento corsa"
-        },
-        "after": {
-          "title": "◎ Test | RETEST - 5 km - riferimento corsa"
-        }
-      },
-      {
-        "workout_id": 4000973064,
-        "expected_sport_id": 3,
-        "expected_workout_day": "2027-02-20",
-        "before": {
-          "title": "Brick | 15' transizione diagnostica e passo IM percepito"
-        },
-        "after": {
-          "title": "↳ Brick | 15' transizione diagnostica e passo IM percepito"
-        }
-      },
-      {
-        "workout_id": 4001048527,
-        "expected_sport_id": 3,
-        "expected_workout_day": "2027-03-06",
-        "before": {
-          "title": "Brick | 20' diagnostico con passo IM percepito"
-        },
-        "after": {
-          "title": "↳ Brick | 20' diagnostico con passo IM percepito"
-        }
-      },
-      {
-        "workout_id": 4001053081,
-        "expected_sport_id": 3,
-        "expected_workout_day": "2027-03-21",
-        "before": {
-          "title": "Brick | 30' diagnostico con passo IM percepito"
-        },
-        "after": {
-          "title": "↳ Brick | 30' diagnostico con passo IM percepito"
-        }
-      },
-      {
-        "workout_id": 4001059264,
-        "expected_sport_id": 3,
-        "expected_workout_day": "2027-04-03",
-        "before": {
-          "title": "Brick | 25' diagnostico IM Run Pace individuale"
-        },
-        "after": {
-          "title": "↳ Brick | 25' diagnostico IM Run Pace individuale"
-        }
-      },
-      {
-        "workout_id": 4001062302,
-        "expected_sport_id": 3,
-        "expected_workout_day": "2027-04-10",
-        "before": {
-          "title": "Brick | 20' diagnostico con passo IM percepito"
-        },
-        "after": {
-          "title": "↳ Brick | 20' diagnostico con passo IM percepito"
-        }
-      },
-      {
-        "workout_id": 4001065444,
-        "expected_sport_id": 3,
-        "expected_workout_day": "2027-04-18",
-        "before": {
-          "title": "Brick | 30' diagnostico con passo IM percepito"
-        },
-        "after": {
-          "title": "↳ Brick | 30' diagnostico con passo IM percepito"
-        }
-      },
-      {
-        "workout_id": 4001072135,
-        "expected_sport_id": 3,
-        "expected_workout_day": "2027-05-02",
-        "before": {
-          "title": "Brick | 30' diagnostico con passo IM percepito"
-        },
-        "after": {
-          "title": "↳ Brick | 30' diagnostico con passo IM percepito"
-        }
-      },
-      {
-        "workout_id": 4001076980,
-        "expected_sport_id": 3,
-        "expected_workout_day": "2027-05-15",
-        "before": {
-          "title": "Brick | 40' race execution"
-        },
-        "after": {
-          "title": "↳ Brick | 40' race execution"
-        }
-      },
-      {
-        "workout_id": 4001081245,
-        "expected_sport_id": 3,
-        "expected_workout_day": "2027-05-30",
-        "before": {
-          "title": "Brick | 30' diagnostico con passo IM percepito"
-        },
-        "after": {
-          "title": "↳ Brick | 30' diagnostico con passo IM percepito"
-        }
-      },
-      {
-        "workout_id": 4001086549,
-        "expected_sport_id": 3,
-        "expected_workout_day": "2027-06-12",
-        "before": {
-          "title": "Brick | BRICK 15' facile"
-        },
-        "after": {
-          "title": "↳ Brick | BRICK 15' facile"
-        }
-      },
-      {
-        "workout_id": 4000490183,
-        "expected_sport_id": 2,
-        "expected_workout_day": "2027-01-09",
-        "before": {
-          "title": "Lungo | 3h10 endurance sotto LT1 e aero opzionale"
-        },
-        "after": {
-          "title": "◆ Lungo | 3h10 endurance sotto LT1 e aero opzionale"
-        }
-      },
-      {
-        "workout_id": 4000490450,
-        "expected_sport_id": 2,
         "expected_workout_day": "2027-01-16",
         "before": {
-          "title": "Lungo | 3h35 fondo sotto LT1 e aero facoltativa"
+          "title": "Lungo | Corsa facile 50'"
         },
         "after": {
-          "title": "◆ Lungo | 3h35 fondo sotto LT1 e aero facoltativa"
+          "title": "◆ Lungo | Corsa facile 50'"
         }
       },
       {
-        "workout_id": 4000591505,
+        "workout_id": 4011673960,
         "expected_sport_id": 2,
-        "expected_workout_day": "2027-01-21",
+        "expected_workout_day": "2027-01-17",
         "before": {
-          "title": "Qualità | 105' 3x8' steady alto e 6' recupero"
+          "description": "OBIETTIVO\nPreparare resistenza e gestione energetica senza accumulare affaticamento eccessivo.\n\nESECUZIONE\nSegui i blocchi a RPE sul Builder: per le porzioni facili RPE2-3, quando indicato controllo regolare RPE3-4, senza pedalare a soglia. Se possiedi FTP recente e affidabile, osserva potenza e frequenza cardiaca come conferma, ma FTP non equivale direttamente a LT1 o LT2 e non sono prescritti watt universali. Cerca cadenza spontanea e postura sostenibile; non inseguire watt in salita.\n\nCOSA OSSERVARE\nVerifica stabilità di respirazione e capacità di mantenere l'output con costo interno contenuto. Annota sensazioni verso il finale e recupero del giorno dopo.\nALIMENTAZIONE\nOltre circa 90 minuti prova gradualmente 30-60g di carboidrati all'ora, aumentando solo in base a tolleranza e durata; acqua e sodio secondo sudorazione e condizioni. Testa gli stessi prodotti prima della gara."
         },
         "after": {
-          "title": "◆ Qualità | 105' 3x8' steady alto e 6' recupero"
+          "description": "OBIETTIVO\nPreparare resistenza e gestione energetica senza accumulare affaticamento eccessivo.\n\nESECUZIONE\nSegui i blocchi a RPE sul Builder: per le porzioni facili RPE2-3, quando indicato controllo regolare RPE3-4, senza pedalare a soglia. Se possiedi FTP recente e affidabile, osserva potenza e frequenza cardiaca come conferma, ma FTP non equivale direttamente a LT1 o LT2 e non sono prescritti watt universali. Cerca cadenza spontanea e postura sostenibile; non inseguire watt in salita.\n\nCOSA OSSERVARE\nVerifica stabilità di respirazione e capacità di mantenere l'output con costo interno contenuto. Annota sensazioni verso il finale e recupero del giorno dopo.\n\nALIMENTAZIONE\nOltre circa 90 minuti prova gradualmente 30-60g di carboidrati all'ora, aumentando solo in base a tolleranza e durata; acqua e sodio secondo sudorazione e condizioni. Testa gli stessi prodotti prima della gara."
         }
       },
       {
-        "workout_id": 4000954310,
+        "workout_id": 4011674025,
         "expected_sport_id": 2,
-        "expected_workout_day": "2027-02-06",
+        "expected_workout_day": "2027-01-20",
         "before": {
-          "title": "Lungo | 4h05 endurance sotto LT1"
+          "description": "OBIETTIVO\nTenere una seduta distinta dal lungo: posizione, fluidità e controllo aerobico.\n\nESECUZIONE\nSegui i blocchi a RPE sul Builder: per le porzioni facili RPE2-3, quando indicato controllo regolare RPE3-4, senza pedalare a soglia. Se possiedi FTP recente e affidabile, osserva potenza e frequenza cardiaca come conferma, ma FTP non equivale direttamente a LT1 o LT2 e non sono prescritti watt universali. Cerca cadenza spontanea e postura sostenibile; non inseguire watt in salita.\n\nCOSA OSSERVARE\nVerifica stabilità di respirazione e capacità di mantenere l'output con costo interno contenuto. Annota sensazioni verso il finale e recupero del giorno dopo.\nALIMENTAZIONE\nAcqua secondo sete e condizioni, alimentazione ordinaria per durata breve."
         },
         "after": {
-          "title": "◆ Lungo | 4h05 endurance sotto LT1"
+          "description": "OBIETTIVO\nTenere una seduta distinta dal lungo: posizione, fluidità e controllo aerobico.\n\nESECUZIONE\nSegui i blocchi a RPE sul Builder: per le porzioni facili RPE2-3, quando indicato controllo regolare RPE3-4, senza pedalare a soglia. Se possiedi FTP recente e affidabile, osserva potenza e frequenza cardiaca come conferma, ma FTP non equivale direttamente a LT1 o LT2 e non sono prescritti watt universali. Cerca cadenza spontanea e postura sostenibile; non inseguire watt in salita.\n\nCOSA OSSERVARE\nVerifica stabilità di respirazione e capacità di mantenere l'output con costo interno contenuto. Annota sensazioni verso il finale e recupero del giorno dopo.\n\nALIMENTAZIONE\nAcqua secondo sete e condizioni, alimentazione ordinaria per durata breve."
         }
       },
       {
-        "workout_id": 4000966582,
+        "workout_id": 4011674136,
         "expected_sport_id": 2,
+        "expected_workout_day": "2027-01-24",
+        "before": {
+          "title": "Lungo | Bici aerobica 105'",
+          "description": "OBIETTIVO\nPreparare resistenza e gestione energetica senza accumulare affaticamento eccessivo.\n\nESECUZIONE\nSegui i blocchi a RPE sul Builder: per le porzioni facili RPE2-3, quando indicato controllo regolare RPE3-4, senza pedalare a soglia. Se possiedi FTP recente e affidabile, osserva potenza e frequenza cardiaca come conferma, ma FTP non equivale direttamente a LT1 o LT2 e non sono prescritti watt universali. Cerca cadenza spontanea e postura sostenibile; non inseguire watt in salita.\n\nCOSA OSSERVARE\nVerifica stabilità di respirazione e capacità di mantenere l'output con costo interno contenuto. Annota sensazioni verso il finale e recupero del giorno dopo.\nALIMENTAZIONE\nOltre circa 90 minuti prova gradualmente 30-60g di carboidrati all'ora, aumentando solo in base a tolleranza e durata; acqua e sodio secondo sudorazione e condizioni. Testa gli stessi prodotti prima della gara."
+        },
+        "after": {
+          "title": "◆ Lungo | Bici aerobica 105'",
+          "description": "OBIETTIVO\nPreparare resistenza e gestione energetica senza accumulare affaticamento eccessivo.\n\nESECUZIONE\nSegui i blocchi a RPE sul Builder: per le porzioni facili RPE2-3, quando indicato controllo regolare RPE3-4, senza pedalare a soglia. Se possiedi FTP recente e affidabile, osserva potenza e frequenza cardiaca come conferma, ma FTP non equivale direttamente a LT1 o LT2 e non sono prescritti watt universali. Cerca cadenza spontanea e postura sostenibile; non inseguire watt in salita.\n\nCOSA OSSERVARE\nVerifica stabilità di respirazione e capacità di mantenere l'output con costo interno contenuto. Annota sensazioni verso il finale e recupero del giorno dopo.\n\nALIMENTAZIONE\nOltre circa 90 minuti prova gradualmente 30-60g di carboidrati all'ora, aumentando solo in base a tolleranza e durata; acqua e sodio secondo sudorazione e condizioni. Testa gli stessi prodotti prima della gara."
+        }
+      },
+      {
+        "workout_id": 4011674156,
+        "expected_sport_id": 3,
+        "expected_workout_day": "2027-01-24",
+        "before": {
+          "title": "Brick | Corsa di transizione 10'"
+        },
+        "after": {
+          "title": "↳ Brick | Corsa di transizione 10'"
+        }
+      },
+      {
+        "workout_id": 4011674202,
+        "expected_sport_id": 2,
+        "expected_workout_day": "2027-01-27",
+        "before": {
+          "description": "OBIETTIVO\nTenere una seduta distinta dal lungo: posizione, fluidità e controllo aerobico.\n\nESECUZIONE\nSegui i blocchi a RPE sul Builder: per le porzioni facili RPE2-3, quando indicato controllo regolare RPE3-4, senza pedalare a soglia. Se possiedi FTP recente e affidabile, osserva potenza e frequenza cardiaca come conferma, ma FTP non equivale direttamente a LT1 o LT2 e non sono prescritti watt universali. Cerca cadenza spontanea e postura sostenibile; non inseguire watt in salita.\n\nCOSA OSSERVARE\nVerifica stabilità di respirazione e capacità di mantenere l'output con costo interno contenuto. Annota sensazioni verso il finale e recupero del giorno dopo.\nALIMENTAZIONE\nAcqua secondo sete e condizioni, alimentazione ordinaria per durata breve."
+        },
+        "after": {
+          "description": "OBIETTIVO\nTenere una seduta distinta dal lungo: posizione, fluidità e controllo aerobico.\n\nESECUZIONE\nSegui i blocchi a RPE sul Builder: per le porzioni facili RPE2-3, quando indicato controllo regolare RPE3-4, senza pedalare a soglia. Se possiedi FTP recente e affidabile, osserva potenza e frequenza cardiaca come conferma, ma FTP non equivale direttamente a LT1 o LT2 e non sono prescritti watt universali. Cerca cadenza spontanea e postura sostenibile; non inseguire watt in salita.\n\nCOSA OSSERVARE\nVerifica stabilità di respirazione e capacità di mantenere l'output con costo interno contenuto. Annota sensazioni verso il finale e recupero del giorno dopo.\n\nALIMENTAZIONE\nAcqua secondo sete e condizioni, alimentazione ordinaria per durata breve."
+        }
+      },
+      {
+        "workout_id": 4011674276,
+        "expected_sport_id": 2,
+        "expected_workout_day": "2027-01-31",
+        "before": {
+          "description": "OBIETTIVO\nPreparare resistenza e gestione energetica senza accumulare affaticamento eccessivo.\n\nESECUZIONE\nSegui i blocchi a RPE sul Builder: per le porzioni facili RPE2-3, quando indicato controllo regolare RPE3-4, senza pedalare a soglia. Se possiedi FTP recente e affidabile, osserva potenza e frequenza cardiaca come conferma, ma FTP non equivale direttamente a LT1 o LT2 e non sono prescritti watt universali. Cerca cadenza spontanea e postura sostenibile; non inseguire watt in salita.\n\nCOSA OSSERVARE\nVerifica stabilità di respirazione e capacità di mantenere l'output con costo interno contenuto. Annota sensazioni verso il finale e recupero del giorno dopo.\nALIMENTAZIONE\nAcqua secondo sete e condizioni, alimentazione ordinaria per durata breve."
+        },
+        "after": {
+          "description": "OBIETTIVO\nPreparare resistenza e gestione energetica senza accumulare affaticamento eccessivo.\n\nESECUZIONE\nSegui i blocchi a RPE sul Builder: per le porzioni facili RPE2-3, quando indicato controllo regolare RPE3-4, senza pedalare a soglia. Se possiedi FTP recente e affidabile, osserva potenza e frequenza cardiaca come conferma, ma FTP non equivale direttamente a LT1 o LT2 e non sono prescritti watt universali. Cerca cadenza spontanea e postura sostenibile; non inseguire watt in salita.\n\nCOSA OSSERVARE\nVerifica stabilità di respirazione e capacità di mantenere l'output con costo interno contenuto. Annota sensazioni verso il finale e recupero del giorno dopo.\n\nALIMENTAZIONE\nAcqua secondo sete e condizioni, alimentazione ordinaria per durata breve."
+        }
+      },
+      {
+        "workout_id": 4011674660,
+        "expected_sport_id": 2,
+        "expected_workout_day": "2027-02-03",
+        "before": {
+          "description": "OBIETTIVO\nTenere una seduta distinta dal lungo: posizione, fluidità e controllo aerobico.\n\nESECUZIONE\nSegui i blocchi a RPE sul Builder: per le porzioni facili RPE2-3, quando indicato controllo regolare RPE3-4, senza pedalare a soglia. Se possiedi FTP recente e affidabile, osserva potenza e frequenza cardiaca come conferma, ma FTP non equivale direttamente a LT1 o LT2 e non sono prescritti watt universali. Cerca cadenza spontanea e postura sostenibile; non inseguire watt in salita.\n\nCOSA OSSERVARE\nVerifica stabilità di respirazione e capacità di mantenere l'output con costo interno contenuto. Annota sensazioni verso il finale e recupero del giorno dopo.\nALIMENTAZIONE\nAcqua secondo sete e condizioni, alimentazione ordinaria per durata breve."
+        },
+        "after": {
+          "description": "OBIETTIVO\nTenere una seduta distinta dal lungo: posizione, fluidità e controllo aerobico.\n\nESECUZIONE\nSegui i blocchi a RPE sul Builder: per le porzioni facili RPE2-3, quando indicato controllo regolare RPE3-4, senza pedalare a soglia. Se possiedi FTP recente e affidabile, osserva potenza e frequenza cardiaca come conferma, ma FTP non equivale direttamente a LT1 o LT2 e non sono prescritti watt universali. Cerca cadenza spontanea e postura sostenibile; non inseguire watt in salita.\n\nCOSA OSSERVARE\nVerifica stabilità di respirazione e capacità di mantenere l'output con costo interno contenuto. Annota sensazioni verso il finale e recupero del giorno dopo.\n\nALIMENTAZIONE\nAcqua secondo sete e condizioni, alimentazione ordinaria per durata breve."
+        }
+      },
+      {
+        "workout_id": 4011674754,
+        "expected_sport_id": 2,
+        "expected_workout_day": "2027-02-07",
+        "before": {
+          "title": "Lungo | Bici aerobica 115'",
+          "description": "OBIETTIVO\nPreparare resistenza e gestione energetica senza accumulare affaticamento eccessivo.\n\nESECUZIONE\nSegui i blocchi a RPE sul Builder: per le porzioni facili RPE2-3, quando indicato controllo regolare RPE3-4, senza pedalare a soglia. Se possiedi FTP recente e affidabile, osserva potenza e frequenza cardiaca come conferma, ma FTP non equivale direttamente a LT1 o LT2 e non sono prescritti watt universali. Cerca cadenza spontanea e postura sostenibile; non inseguire watt in salita.\n\nCOSA OSSERVARE\nVerifica stabilità di respirazione e capacità di mantenere l'output con costo interno contenuto. Annota sensazioni verso il finale e recupero del giorno dopo.\nALIMENTAZIONE\nOltre circa 90 minuti prova gradualmente 30-60g di carboidrati all'ora, aumentando solo in base a tolleranza e durata; acqua e sodio secondo sudorazione e condizioni. Testa gli stessi prodotti prima della gara."
+        },
+        "after": {
+          "title": "◆ Lungo | Bici aerobica 115'",
+          "description": "OBIETTIVO\nPreparare resistenza e gestione energetica senza accumulare affaticamento eccessivo.\n\nESECUZIONE\nSegui i blocchi a RPE sul Builder: per le porzioni facili RPE2-3, quando indicato controllo regolare RPE3-4, senza pedalare a soglia. Se possiedi FTP recente e affidabile, osserva potenza e frequenza cardiaca come conferma, ma FTP non equivale direttamente a LT1 o LT2 e non sono prescritti watt universali. Cerca cadenza spontanea e postura sostenibile; non inseguire watt in salita.\n\nCOSA OSSERVARE\nVerifica stabilità di respirazione e capacità di mantenere l'output con costo interno contenuto. Annota sensazioni verso il finale e recupero del giorno dopo.\n\nALIMENTAZIONE\nOltre circa 90 minuti prova gradualmente 30-60g di carboidrati all'ora, aumentando solo in base a tolleranza e durata; acqua e sodio secondo sudorazione e condizioni. Testa gli stessi prodotti prima della gara."
+        }
+      },
+      {
+        "workout_id": 4011674833,
+        "expected_sport_id": 2,
+        "expected_workout_day": "2027-02-10",
+        "before": {
+          "description": "OBIETTIVO\nTenere una seduta distinta dal lungo: posizione, fluidità e controllo aerobico.\n\nESECUZIONE\nSegui i blocchi a RPE sul Builder: per le porzioni facili RPE2-3, quando indicato controllo regolare RPE3-4, senza pedalare a soglia. Se possiedi FTP recente e affidabile, osserva potenza e frequenza cardiaca come conferma, ma FTP non equivale direttamente a LT1 o LT2 e non sono prescritti watt universali. Cerca cadenza spontanea e postura sostenibile; non inseguire watt in salita.\n\nCOSA OSSERVARE\nVerifica stabilità di respirazione e capacità di mantenere l'output con costo interno contenuto. Annota sensazioni verso il finale e recupero del giorno dopo.\nALIMENTAZIONE\nAcqua secondo sete e condizioni, alimentazione ordinaria per durata breve."
+        },
+        "after": {
+          "description": "OBIETTIVO\nTenere una seduta distinta dal lungo: posizione, fluidità e controllo aerobico.\n\nESECUZIONE\nSegui i blocchi a RPE sul Builder: per le porzioni facili RPE2-3, quando indicato controllo regolare RPE3-4, senza pedalare a soglia. Se possiedi FTP recente e affidabile, osserva potenza e frequenza cardiaca come conferma, ma FTP non equivale direttamente a LT1 o LT2 e non sono prescritti watt universali. Cerca cadenza spontanea e postura sostenibile; non inseguire watt in salita.\n\nCOSA OSSERVARE\nVerifica stabilità di respirazione e capacità di mantenere l'output con costo interno contenuto. Annota sensazioni verso il finale e recupero del giorno dopo.\n\nALIMENTAZIONE\nAcqua secondo sete e condizioni, alimentazione ordinaria per durata breve."
+        }
+      },
+      {
+        "workout_id": 4011674945,
+        "expected_sport_id": 3,
         "expected_workout_day": "2027-02-13",
         "before": {
-          "title": "Lungo | 4h15 durability 3x15' aero +45' easy"
+          "title": "Lungo | Corsa facile 65'"
         },
         "after": {
-          "title": "◆ Lungo | 4h15 durability 3x15' aero +45' easy"
+          "title": "◆ Lungo | Corsa facile 65'"
         }
       },
       {
-        "workout_id": 4000973031,
+        "workout_id": 4011674984,
         "expected_sport_id": 2,
-        "expected_workout_day": "2027-02-20",
+        "expected_workout_day": "2027-02-14",
         "before": {
-          "title": "Lungo | 3h40 3x10' aero facile +45' LT1"
+          "description": "OBIETTIVO\nPreparare resistenza e gestione energetica senza accumulare affaticamento eccessivo.\n\nESECUZIONE\nSegui i blocchi a RPE sul Builder: per le porzioni facili RPE2-3, quando indicato controllo regolare RPE3-4, senza pedalare a soglia. Se possiedi FTP recente e affidabile, osserva potenza e frequenza cardiaca come conferma, ma FTP non equivale direttamente a LT1 o LT2 e non sono prescritti watt universali. Cerca cadenza spontanea e postura sostenibile; non inseguire watt in salita.\n\nCOSA OSSERVARE\nVerifica stabilità di respirazione e capacità di mantenere l'output con costo interno contenuto. Annota sensazioni verso il finale e recupero del giorno dopo.\nALIMENTAZIONE\nOltre circa 90 minuti prova gradualmente 30-60g di carboidrati all'ora, aumentando solo in base a tolleranza e durata; acqua e sodio secondo sudorazione e condizioni. Testa gli stessi prodotti prima della gara."
         },
         "after": {
-          "title": "◆ Lungo | 3h40 3x10' aero facile +45' LT1"
+          "description": "OBIETTIVO\nPreparare resistenza e gestione energetica senza accumulare affaticamento eccessivo.\n\nESECUZIONE\nSegui i blocchi a RPE sul Builder: per le porzioni facili RPE2-3, quando indicato controllo regolare RPE3-4, senza pedalare a soglia. Se possiedi FTP recente e affidabile, osserva potenza e frequenza cardiaca come conferma, ma FTP non equivale direttamente a LT1 o LT2 e non sono prescritti watt universali. Cerca cadenza spontanea e postura sostenibile; non inseguire watt in salita.\n\nCOSA OSSERVARE\nVerifica stabilità di respirazione e capacità di mantenere l'output con costo interno contenuto. Annota sensazioni verso il finale e recupero del giorno dopo.\n\nALIMENTAZIONE\nOltre circa 90 minuti prova gradualmente 30-60g di carboidrati all'ora, aumentando solo in base a tolleranza e durata; acqua e sodio secondo sudorazione e condizioni. Testa gli stessi prodotti prima della gara."
         }
       },
       {
-        "workout_id": 4001048502,
+        "workout_id": 4011675001,
+        "expected_sport_id": 3,
+        "expected_workout_day": "2027-02-14",
+        "before": {
+          "title": "Brick | Corsa di transizione 10'"
+        },
+        "after": {
+          "title": "↳ Brick | Corsa di transizione 10'"
+        }
+      },
+      {
+        "workout_id": 4011675120,
         "expected_sport_id": 2,
+        "expected_workout_day": "2027-02-17",
+        "before": {
+          "description": "OBIETTIVO\nTenere una seduta distinta dal lungo: posizione, fluidità e controllo aerobico.\n\nESECUZIONE\nSegui i blocchi a RPE sul Builder: per le porzioni facili RPE2-3, quando indicato controllo regolare RPE3-4, senza pedalare a soglia. Se possiedi FTP recente e affidabile, osserva potenza e frequenza cardiaca come conferma, ma FTP non equivale direttamente a LT1 o LT2 e non sono prescritti watt universali. Cerca cadenza spontanea e postura sostenibile; non inseguire watt in salita.\n\nCOSA OSSERVARE\nVerifica stabilità di respirazione e capacità di mantenere l'output con costo interno contenuto. Annota sensazioni verso il finale e recupero del giorno dopo.\nALIMENTAZIONE\nAcqua secondo sete e condizioni, alimentazione ordinaria per durata breve."
+        },
+        "after": {
+          "description": "OBIETTIVO\nTenere una seduta distinta dal lungo: posizione, fluidità e controllo aerobico.\n\nESECUZIONE\nSegui i blocchi a RPE sul Builder: per le porzioni facili RPE2-3, quando indicato controllo regolare RPE3-4, senza pedalare a soglia. Se possiedi FTP recente e affidabile, osserva potenza e frequenza cardiaca come conferma, ma FTP non equivale direttamente a LT1 o LT2 e non sono prescritti watt universali. Cerca cadenza spontanea e postura sostenibile; non inseguire watt in salita.\n\nCOSA OSSERVARE\nVerifica stabilità di respirazione e capacità di mantenere l'output con costo interno contenuto. Annota sensazioni verso il finale e recupero del giorno dopo.\n\nALIMENTAZIONE\nAcqua secondo sete e condizioni, alimentazione ordinaria per durata breve."
+        }
+      },
+      {
+        "workout_id": 4011675441,
+        "expected_sport_id": 2,
+        "expected_workout_day": "2027-02-21",
+        "before": {
+          "title": "Lungo | Bici aerobica 135'",
+          "description": "OBIETTIVO\nPreparare resistenza e gestione energetica senza accumulare affaticamento eccessivo.\n\nESECUZIONE\nSegui i blocchi a RPE sul Builder: per le porzioni facili RPE2-3, quando indicato controllo regolare RPE3-4, senza pedalare a soglia. Se possiedi FTP recente e affidabile, osserva potenza e frequenza cardiaca come conferma, ma FTP non equivale direttamente a LT1 o LT2 e non sono prescritti watt universali. Cerca cadenza spontanea e postura sostenibile; non inseguire watt in salita.\n\nCOSA OSSERVARE\nVerifica stabilità di respirazione e capacità di mantenere l'output con costo interno contenuto. Annota sensazioni verso il finale e recupero del giorno dopo.\nALIMENTAZIONE\nOltre circa 90 minuti prova gradualmente 30-60g di carboidrati all'ora, aumentando solo in base a tolleranza e durata; acqua e sodio secondo sudorazione e condizioni. Testa gli stessi prodotti prima della gara."
+        },
+        "after": {
+          "title": "◆ Lungo | Bici aerobica 135'",
+          "description": "OBIETTIVO\nPreparare resistenza e gestione energetica senza accumulare affaticamento eccessivo.\n\nESECUZIONE\nSegui i blocchi a RPE sul Builder: per le porzioni facili RPE2-3, quando indicato controllo regolare RPE3-4, senza pedalare a soglia. Se possiedi FTP recente e affidabile, osserva potenza e frequenza cardiaca come conferma, ma FTP non equivale direttamente a LT1 o LT2 e non sono prescritti watt universali. Cerca cadenza spontanea e postura sostenibile; non inseguire watt in salita.\n\nCOSA OSSERVARE\nVerifica stabilità di respirazione e capacità di mantenere l'output con costo interno contenuto. Annota sensazioni verso il finale e recupero del giorno dopo.\n\nALIMENTAZIONE\nOltre circa 90 minuti prova gradualmente 30-60g di carboidrati all'ora, aumentando solo in base a tolleranza e durata; acqua e sodio secondo sudorazione e condizioni. Testa gli stessi prodotti prima della gara."
+        }
+      },
+      {
+        "workout_id": 4011675497,
+        "expected_sport_id": 3,
+        "expected_workout_day": "2027-02-21",
+        "before": {
+          "title": "Brick | Corsa di transizione 10'"
+        },
+        "after": {
+          "title": "↳ Brick | Corsa di transizione 10'"
+        }
+      },
+      {
+        "workout_id": 4011675723,
+        "expected_sport_id": 2,
+        "expected_workout_day": "2027-02-24",
+        "before": {
+          "description": "OBIETTIVO\nTenere una seduta distinta dal lungo: posizione, fluidità e controllo aerobico.\n\nESECUZIONE\nSegui i blocchi a RPE sul Builder: per le porzioni facili RPE2-3, quando indicato controllo regolare RPE3-4, senza pedalare a soglia. Se possiedi FTP recente e affidabile, osserva potenza e frequenza cardiaca come conferma, ma FTP non equivale direttamente a LT1 o LT2 e non sono prescritti watt universali. Cerca cadenza spontanea e postura sostenibile; non inseguire watt in salita.\n\nCOSA OSSERVARE\nVerifica stabilità di respirazione e capacità di mantenere l'output con costo interno contenuto. Annota sensazioni verso il finale e recupero del giorno dopo.\nALIMENTAZIONE\nAcqua secondo sete e condizioni, alimentazione ordinaria per durata breve."
+        },
+        "after": {
+          "description": "OBIETTIVO\nTenere una seduta distinta dal lungo: posizione, fluidità e controllo aerobico.\n\nESECUZIONE\nSegui i blocchi a RPE sul Builder: per le porzioni facili RPE2-3, quando indicato controllo regolare RPE3-4, senza pedalare a soglia. Se possiedi FTP recente e affidabile, osserva potenza e frequenza cardiaca come conferma, ma FTP non equivale direttamente a LT1 o LT2 e non sono prescritti watt universali. Cerca cadenza spontanea e postura sostenibile; non inseguire watt in salita.\n\nCOSA OSSERVARE\nVerifica stabilità di respirazione e capacità di mantenere l'output con costo interno contenuto. Annota sensazioni verso il finale e recupero del giorno dopo.\n\nALIMENTAZIONE\nAcqua secondo sete e condizioni, alimentazione ordinaria per durata breve."
+        }
+      },
+      {
+        "workout_id": 4011676040,
+        "expected_sport_id": 2,
+        "expected_workout_day": "2027-02-28",
+        "before": {
+          "description": "OBIETTIVO\nPreparare resistenza e gestione energetica senza accumulare affaticamento eccessivo.\n\nESECUZIONE\nSegui i blocchi a RPE sul Builder: per le porzioni facili RPE2-3, quando indicato controllo regolare RPE3-4, senza pedalare a soglia. Se possiedi FTP recente e affidabile, osserva potenza e frequenza cardiaca come conferma, ma FTP non equivale direttamente a LT1 o LT2 e non sono prescritti watt universali. Cerca cadenza spontanea e postura sostenibile; non inseguire watt in salita.\n\nCOSA OSSERVARE\nVerifica stabilità di respirazione e capacità di mantenere l'output con costo interno contenuto. Annota sensazioni verso il finale e recupero del giorno dopo.\nALIMENTAZIONE\nOltre circa 90 minuti prova gradualmente 30-60g di carboidrati all'ora, aumentando solo in base a tolleranza e durata; acqua e sodio secondo sudorazione e condizioni. Testa gli stessi prodotti prima della gara."
+        },
+        "after": {
+          "description": "OBIETTIVO\nPreparare resistenza e gestione energetica senza accumulare affaticamento eccessivo.\n\nESECUZIONE\nSegui i blocchi a RPE sul Builder: per le porzioni facili RPE2-3, quando indicato controllo regolare RPE3-4, senza pedalare a soglia. Se possiedi FTP recente e affidabile, osserva potenza e frequenza cardiaca come conferma, ma FTP non equivale direttamente a LT1 o LT2 e non sono prescritti watt universali. Cerca cadenza spontanea e postura sostenibile; non inseguire watt in salita.\n\nCOSA OSSERVARE\nVerifica stabilità di respirazione e capacità di mantenere l'output con costo interno contenuto. Annota sensazioni verso il finale e recupero del giorno dopo.\n\nALIMENTAZIONE\nOltre circa 90 minuti prova gradualmente 30-60g di carboidrati all'ora, aumentando solo in base a tolleranza e durata; acqua e sodio secondo sudorazione e condizioni. Testa gli stessi prodotti prima della gara."
+        }
+      },
+      {
+        "workout_id": 4011676565,
+        "expected_sport_id": 2,
+        "expected_workout_day": "2027-03-03",
+        "before": {
+          "description": "OBIETTIVO\nTenere una seduta distinta dal lungo: posizione, fluidità e controllo aerobico.\n\nESECUZIONE\nSegui i blocchi a RPE sul Builder: per le porzioni facili RPE2-3, quando indicato controllo regolare RPE3-4, senza pedalare a soglia. Se possiedi FTP recente e affidabile, osserva potenza e frequenza cardiaca come conferma, ma FTP non equivale direttamente a LT1 o LT2 e non sono prescritti watt universali. Cerca cadenza spontanea e postura sostenibile; non inseguire watt in salita.\n\nCOSA OSSERVARE\nVerifica stabilità di respirazione e capacità di mantenere l'output con costo interno contenuto. Annota sensazioni verso il finale e recupero del giorno dopo.\nALIMENTAZIONE\nAcqua secondo sete e condizioni, alimentazione ordinaria per durata breve."
+        },
+        "after": {
+          "description": "OBIETTIVO\nTenere una seduta distinta dal lungo: posizione, fluidità e controllo aerobico.\n\nESECUZIONE\nSegui i blocchi a RPE sul Builder: per le porzioni facili RPE2-3, quando indicato controllo regolare RPE3-4, senza pedalare a soglia. Se possiedi FTP recente e affidabile, osserva potenza e frequenza cardiaca come conferma, ma FTP non equivale direttamente a LT1 o LT2 e non sono prescritti watt universali. Cerca cadenza spontanea e postura sostenibile; non inseguire watt in salita.\n\nCOSA OSSERVARE\nVerifica stabilità di respirazione e capacità di mantenere l'output con costo interno contenuto. Annota sensazioni verso il finale e recupero del giorno dopo.\n\nALIMENTAZIONE\nAcqua secondo sete e condizioni, alimentazione ordinaria per durata breve."
+        }
+      },
+      {
+        "workout_id": 4011676610,
+        "expected_sport_id": 3,
         "expected_workout_day": "2027-03-06",
         "before": {
-          "title": "Lungo | 4h30 durability 3x25' aero +45' LT1"
+          "description": "OBIETTIVO\nConsolidare durata di corsa facile minimizzando lo stress muscolo-tendineo.\n\nESECUZIONE\nUsa i blocchi del Builder. RPE 2-3 per quasi tutta la seduta, puoi parlare in frasi complete. Se hai una soglia di corsa validata usa il ritmo come controllo secondario, non forzare percentuali non calibrate. Evita ripetute aggiunte.\n\nRECUPERO\nValuta dolore muscolo-tendineo, rigidità, sonno, andatura e respiro. Se compare dolore che altera il gesto, interrompi. Se la corsa del sabato causa pesantezza insolita, domenica la bici deve essere più facile e il brick va saltato.\nFUELING\nSe superi 75-90min usa un'opzione già tollerata per acqua e carboidrati; controlla caldo e durata, non sperimentare il giorno della gara."
         },
         "after": {
-          "title": "◆ Lungo | 4h30 durability 3x25' aero +45' LT1"
+          "description": "OBIETTIVO\nConsolidare durata di corsa facile minimizzando lo stress muscolo-tendineo.\n\nESECUZIONE\nUsa i blocchi del Builder. RPE 2-3 per quasi tutta la seduta, puoi parlare in frasi complete. Se hai una soglia di corsa validata usa il ritmo come controllo secondario, non forzare percentuali non calibrate. Evita ripetute aggiunte.\n\nRECUPERO\nValuta dolore muscolo-tendineo, rigidità, sonno, andatura e respiro. Se compare dolore che altera il gesto, interrompi. Se la corsa del sabato causa pesantezza insolita, domenica la bici deve essere più facile e il brick va saltato.\n\nFUELING\nSe superi 75-90min usa un'opzione già tollerata per acqua e carboidrati; controlla caldo e durata, non sperimentare il giorno della gara."
         }
       },
       {
-        "workout_id": 4001050384,
+        "workout_id": 4011676635,
         "expected_sport_id": 2,
+        "expected_workout_day": "2027-03-07",
+        "before": {
+          "title": "Lungo | Bici aerobica 150'",
+          "description": "OBIETTIVO\nPreparare resistenza e gestione energetica senza accumulare affaticamento eccessivo.\n\nESECUZIONE\nSegui i blocchi a RPE sul Builder: per le porzioni facili RPE2-3, quando indicato controllo regolare RPE3-4, senza pedalare a soglia. Se possiedi FTP recente e affidabile, osserva potenza e frequenza cardiaca come conferma, ma FTP non equivale direttamente a LT1 o LT2 e non sono prescritti watt universali. Cerca cadenza spontanea e postura sostenibile; non inseguire watt in salita.\n\nCOSA OSSERVARE\nVerifica stabilità di respirazione e capacità di mantenere l'output con costo interno contenuto. Annota sensazioni verso il finale e recupero del giorno dopo.\nALIMENTAZIONE\nOltre circa 90 minuti prova gradualmente 30-60g di carboidrati all'ora, aumentando solo in base a tolleranza e durata; acqua e sodio secondo sudorazione e condizioni. Testa gli stessi prodotti prima della gara."
+        },
+        "after": {
+          "title": "◆ Lungo | Bici aerobica 150'",
+          "description": "OBIETTIVO\nPreparare resistenza e gestione energetica senza accumulare affaticamento eccessivo.\n\nESECUZIONE\nSegui i blocchi a RPE sul Builder: per le porzioni facili RPE2-3, quando indicato controllo regolare RPE3-4, senza pedalare a soglia. Se possiedi FTP recente e affidabile, osserva potenza e frequenza cardiaca come conferma, ma FTP non equivale direttamente a LT1 o LT2 e non sono prescritti watt universali. Cerca cadenza spontanea e postura sostenibile; non inseguire watt in salita.\n\nCOSA OSSERVARE\nVerifica stabilità di respirazione e capacità di mantenere l'output con costo interno contenuto. Annota sensazioni verso il finale e recupero del giorno dopo.\n\nALIMENTAZIONE\nOltre circa 90 minuti prova gradualmente 30-60g di carboidrati all'ora, aumentando solo in base a tolleranza e durata; acqua e sodio secondo sudorazione e condizioni. Testa gli stessi prodotti prima della gara."
+        }
+      },
+      {
+        "workout_id": 4011676666,
+        "expected_sport_id": 3,
+        "expected_workout_day": "2027-03-07",
+        "before": {
+          "title": "Brick | Corsa di transizione 15'"
+        },
+        "after": {
+          "title": "↳ Brick | Corsa di transizione 15'"
+        }
+      },
+      {
+        "workout_id": 4011676778,
+        "expected_sport_id": 2,
+        "expected_workout_day": "2027-03-10",
+        "before": {
+          "description": "OBIETTIVO\nTenere una seduta distinta dal lungo: posizione, fluidità e controllo aerobico.\n\nESECUZIONE\nSegui i blocchi a RPE sul Builder: per le porzioni facili RPE2-3, quando indicato controllo regolare RPE3-4, senza pedalare a soglia. Se possiedi FTP recente e affidabile, osserva potenza e frequenza cardiaca come conferma, ma FTP non equivale direttamente a LT1 o LT2 e non sono prescritti watt universali. Cerca cadenza spontanea e postura sostenibile; non inseguire watt in salita.\n\nCOSA OSSERVARE\nVerifica stabilità di respirazione e capacità di mantenere l'output con costo interno contenuto. Annota sensazioni verso il finale e recupero del giorno dopo.\nALIMENTAZIONE\nAcqua secondo sete e condizioni, alimentazione ordinaria per durata breve."
+        },
+        "after": {
+          "description": "OBIETTIVO\nTenere una seduta distinta dal lungo: posizione, fluidità e controllo aerobico.\n\nESECUZIONE\nSegui i blocchi a RPE sul Builder: per le porzioni facili RPE2-3, quando indicato controllo regolare RPE3-4, senza pedalare a soglia. Se possiedi FTP recente e affidabile, osserva potenza e frequenza cardiaca come conferma, ma FTP non equivale direttamente a LT1 o LT2 e non sono prescritti watt universali. Cerca cadenza spontanea e postura sostenibile; non inseguire watt in salita.\n\nCOSA OSSERVARE\nVerifica stabilità di respirazione e capacità di mantenere l'output con costo interno contenuto. Annota sensazioni verso il finale e recupero del giorno dopo.\n\nALIMENTAZIONE\nAcqua secondo sete e condizioni, alimentazione ordinaria per durata breve."
+        }
+      },
+      {
+        "workout_id": 4011676945,
+        "expected_sport_id": 3,
         "expected_workout_day": "2027-03-13",
         "before": {
-          "title": "Lungo | 4h25 3x70' endurance e aero opzionale"
+          "title": "Lungo | Corsa facile 80'",
+          "description": "OBIETTIVO\nConsolidare durata di corsa facile minimizzando lo stress muscolo-tendineo.\n\nESECUZIONE\nUsa i blocchi del Builder. RPE 2-3 per quasi tutta la seduta, puoi parlare in frasi complete. Se hai una soglia di corsa validata usa il ritmo come controllo secondario, non forzare percentuali non calibrate. Evita ripetute aggiunte.\n\nRECUPERO\nValuta dolore muscolo-tendineo, rigidità, sonno, andatura e respiro. Se compare dolore che altera il gesto, interrompi. Se la corsa del sabato causa pesantezza insolita, domenica la bici deve essere più facile e il brick va saltato.\nFUELING\nSe superi 75-90min usa un'opzione già tollerata per acqua e carboidrati; controlla caldo e durata, non sperimentare il giorno della gara."
         },
         "after": {
-          "title": "◆ Lungo | 4h25 3x70' endurance e aero opzionale"
+          "title": "◆ Lungo | Corsa facile 80'",
+          "description": "OBIETTIVO\nConsolidare durata di corsa facile minimizzando lo stress muscolo-tendineo.\n\nESECUZIONE\nUsa i blocchi del Builder. RPE 2-3 per quasi tutta la seduta, puoi parlare in frasi complete. Se hai una soglia di corsa validata usa il ritmo come controllo secondario, non forzare percentuali non calibrate. Evita ripetute aggiunte.\n\nRECUPERO\nValuta dolore muscolo-tendineo, rigidità, sonno, andatura e respiro. Se compare dolore che altera il gesto, interrompi. Se la corsa del sabato causa pesantezza insolita, domenica la bici deve essere più facile e il brick va saltato.\n\nFUELING\nSe superi 75-90min usa un'opzione già tollerata per acqua e carboidrati; controlla caldo e durata, non sperimentare il giorno della gara."
         }
       },
       {
-        "workout_id": 4001053067,
+        "workout_id": 4011676962,
+        "expected_sport_id": 2,
+        "expected_workout_day": "2027-03-14",
+        "before": {
+          "description": "OBIETTIVO\nPreparare resistenza e gestione energetica senza accumulare affaticamento eccessivo.\n\nESECUZIONE\nSegui i blocchi a RPE sul Builder: per le porzioni facili RPE2-3, quando indicato controllo regolare RPE3-4, senza pedalare a soglia. Se possiedi FTP recente e affidabile, osserva potenza e frequenza cardiaca come conferma, ma FTP non equivale direttamente a LT1 o LT2 e non sono prescritti watt universali. Cerca cadenza spontanea e postura sostenibile; non inseguire watt in salita.\n\nCOSA OSSERVARE\nVerifica stabilità di respirazione e capacità di mantenere l'output con costo interno contenuto. Annota sensazioni verso il finale e recupero del giorno dopo.\nALIMENTAZIONE\nOltre circa 90 minuti prova gradualmente 30-60g di carboidrati all'ora, aumentando solo in base a tolleranza e durata; acqua e sodio secondo sudorazione e condizioni. Testa gli stessi prodotti prima della gara."
+        },
+        "after": {
+          "description": "OBIETTIVO\nPreparare resistenza e gestione energetica senza accumulare affaticamento eccessivo.\n\nESECUZIONE\nSegui i blocchi a RPE sul Builder: per le porzioni facili RPE2-3, quando indicato controllo regolare RPE3-4, senza pedalare a soglia. Se possiedi FTP recente e affidabile, osserva potenza e frequenza cardiaca come conferma, ma FTP non equivale direttamente a LT1 o LT2 e non sono prescritti watt universali. Cerca cadenza spontanea e postura sostenibile; non inseguire watt in salita.\n\nCOSA OSSERVARE\nVerifica stabilità di respirazione e capacità di mantenere l'output con costo interno contenuto. Annota sensazioni verso il finale e recupero del giorno dopo.\n\nALIMENTAZIONE\nOltre circa 90 minuti prova gradualmente 30-60g di carboidrati all'ora, aumentando solo in base a tolleranza e durata; acqua e sodio secondo sudorazione e condizioni. Testa gli stessi prodotti prima della gara."
+        }
+      },
+      {
+        "workout_id": 4011676973,
+        "expected_sport_id": 3,
+        "expected_workout_day": "2027-03-14",
+        "before": {
+          "title": "Brick | Corsa di transizione 15'"
+        },
+        "after": {
+          "title": "↳ Brick | Corsa di transizione 15'"
+        }
+      },
+      {
+        "workout_id": 4011677029,
+        "expected_sport_id": 2,
+        "expected_workout_day": "2027-03-17",
+        "before": {
+          "description": "OBIETTIVO\nTenere una seduta distinta dal lungo: posizione, fluidità e controllo aerobico.\n\nESECUZIONE\nSegui i blocchi a RPE sul Builder: per le porzioni facili RPE2-3, quando indicato controllo regolare RPE3-4, senza pedalare a soglia. Se possiedi FTP recente e affidabile, osserva potenza e frequenza cardiaca come conferma, ma FTP non equivale direttamente a LT1 o LT2 e non sono prescritti watt universali. Cerca cadenza spontanea e postura sostenibile; non inseguire watt in salita.\n\nCOSA OSSERVARE\nVerifica stabilità di respirazione e capacità di mantenere l'output con costo interno contenuto. Annota sensazioni verso il finale e recupero del giorno dopo.\nALIMENTAZIONE\nAcqua secondo sete e condizioni, alimentazione ordinaria per durata breve."
+        },
+        "after": {
+          "description": "OBIETTIVO\nTenere una seduta distinta dal lungo: posizione, fluidità e controllo aerobico.\n\nESECUZIONE\nSegui i blocchi a RPE sul Builder: per le porzioni facili RPE2-3, quando indicato controllo regolare RPE3-4, senza pedalare a soglia. Se possiedi FTP recente e affidabile, osserva potenza e frequenza cardiaca come conferma, ma FTP non equivale direttamente a LT1 o LT2 e non sono prescritti watt universali. Cerca cadenza spontanea e postura sostenibile; non inseguire watt in salita.\n\nCOSA OSSERVARE\nVerifica stabilità di respirazione e capacità di mantenere l'output con costo interno contenuto. Annota sensazioni verso il finale e recupero del giorno dopo.\n\nALIMENTAZIONE\nAcqua secondo sete e condizioni, alimentazione ordinaria per durata breve."
+        }
+      },
+      {
+        "workout_id": 4011677161,
+        "expected_sport_id": 3,
+        "expected_workout_day": "2027-03-20",
+        "before": {
+          "description": "OBIETTIVO\nConsolidare durata di corsa facile minimizzando lo stress muscolo-tendineo.\n\nESECUZIONE\nUsa i blocchi del Builder. RPE 2-3 per quasi tutta la seduta, puoi parlare in frasi complete. Se hai una soglia di corsa validata usa il ritmo come controllo secondario, non forzare percentuali non calibrate. Evita ripetute aggiunte.\n\nRECUPERO\nValuta dolore muscolo-tendineo, rigidità, sonno, andatura e respiro. Se compare dolore che altera il gesto, interrompi. Se la corsa del sabato causa pesantezza insolita, domenica la bici deve essere più facile e il brick va saltato.\nFUELING\nSe superi 75-90min usa un'opzione già tollerata per acqua e carboidrati; controlla caldo e durata, non sperimentare il giorno della gara."
+        },
+        "after": {
+          "description": "OBIETTIVO\nConsolidare durata di corsa facile minimizzando lo stress muscolo-tendineo.\n\nESECUZIONE\nUsa i blocchi del Builder. RPE 2-3 per quasi tutta la seduta, puoi parlare in frasi complete. Se hai una soglia di corsa validata usa il ritmo come controllo secondario, non forzare percentuali non calibrate. Evita ripetute aggiunte.\n\nRECUPERO\nValuta dolore muscolo-tendineo, rigidità, sonno, andatura e respiro. Se compare dolore che altera il gesto, interrompi. Se la corsa del sabato causa pesantezza insolita, domenica la bici deve essere più facile e il brick va saltato.\n\nFUELING\nSe superi 75-90min usa un'opzione già tollerata per acqua e carboidrati; controlla caldo e durata, non sperimentare il giorno della gara."
+        }
+      },
+      {
+        "workout_id": 4011677187,
         "expected_sport_id": 2,
         "expected_workout_day": "2027-03-21",
         "before": {
-          "title": "Specifico | 4h45 3x25' IM Pace preliminare +50' easy"
+          "title": "Lungo | Bici aerobica 170'",
+          "description": "OBIETTIVO\nPreparare resistenza e gestione energetica senza accumulare affaticamento eccessivo.\n\nESECUZIONE\nSegui i blocchi a RPE sul Builder: per le porzioni facili RPE2-3, quando indicato controllo regolare RPE3-4, senza pedalare a soglia. Se possiedi FTP recente e affidabile, osserva potenza e frequenza cardiaca come conferma, ma FTP non equivale direttamente a LT1 o LT2 e non sono prescritti watt universali. Cerca cadenza spontanea e postura sostenibile; non inseguire watt in salita.\n\nCOSA OSSERVARE\nVerifica stabilità di respirazione e capacità di mantenere l'output con costo interno contenuto. Annota sensazioni verso il finale e recupero del giorno dopo.\nALIMENTAZIONE\nOltre circa 90 minuti prova gradualmente 30-60g di carboidrati all'ora, aumentando solo in base a tolleranza e durata; acqua e sodio secondo sudorazione e condizioni. Testa gli stessi prodotti prima della gara."
         },
         "after": {
-          "title": "◆ Specifico | 4h45 3x25' IM Pace preliminare +50' easy"
+          "title": "◆ Lungo | Bici aerobica 170'",
+          "description": "OBIETTIVO\nPreparare resistenza e gestione energetica senza accumulare affaticamento eccessivo.\n\nESECUZIONE\nSegui i blocchi a RPE sul Builder: per le porzioni facili RPE2-3, quando indicato controllo regolare RPE3-4, senza pedalare a soglia. Se possiedi FTP recente e affidabile, osserva potenza e frequenza cardiaca come conferma, ma FTP non equivale direttamente a LT1 o LT2 e non sono prescritti watt universali. Cerca cadenza spontanea e postura sostenibile; non inseguire watt in salita.\n\nCOSA OSSERVARE\nVerifica stabilità di respirazione e capacità di mantenere l'output con costo interno contenuto. Annota sensazioni verso il finale e recupero del giorno dopo.\n\nALIMENTAZIONE\nOltre circa 90 minuti prova gradualmente 30-60g di carboidrati all'ora, aumentando solo in base a tolleranza e durata; acqua e sodio secondo sudorazione e condizioni. Testa gli stessi prodotti prima della gara."
         }
       },
       {
-        "workout_id": 4001059223,
+        "workout_id": 4011677197,
+        "expected_sport_id": 3,
+        "expected_workout_day": "2027-03-21",
+        "before": {
+          "title": "Brick | Corsa di transizione 15'"
+        },
+        "after": {
+          "title": "↳ Brick | Corsa di transizione 15'"
+        }
+      },
+      {
+        "workout_id": 4011677279,
         "expected_sport_id": 2,
+        "expected_workout_day": "2027-03-24",
+        "before": {
+          "description": "OBIETTIVO\nTenere una seduta distinta dal lungo: posizione, fluidità e controllo aerobico.\n\nESECUZIONE\nSegui i blocchi a RPE sul Builder: per le porzioni facili RPE2-3, quando indicato controllo regolare RPE3-4, senza pedalare a soglia. Se possiedi FTP recente e affidabile, osserva potenza e frequenza cardiaca come conferma, ma FTP non equivale direttamente a LT1 o LT2 e non sono prescritti watt universali. Cerca cadenza spontanea e postura sostenibile; non inseguire watt in salita.\n\nCOSA OSSERVARE\nVerifica stabilità di respirazione e capacità di mantenere l'output con costo interno contenuto. Annota sensazioni verso il finale e recupero del giorno dopo.\nALIMENTAZIONE\nAcqua secondo sete e condizioni, alimentazione ordinaria per durata breve."
+        },
+        "after": {
+          "description": "OBIETTIVO\nTenere una seduta distinta dal lungo: posizione, fluidità e controllo aerobico.\n\nESECUZIONE\nSegui i blocchi a RPE sul Builder: per le porzioni facili RPE2-3, quando indicato controllo regolare RPE3-4, senza pedalare a soglia. Se possiedi FTP recente e affidabile, osserva potenza e frequenza cardiaca come conferma, ma FTP non equivale direttamente a LT1 o LT2 e non sono prescritti watt universali. Cerca cadenza spontanea e postura sostenibile; non inseguire watt in salita.\n\nCOSA OSSERVARE\nVerifica stabilità di respirazione e capacità di mantenere l'output con costo interno contenuto. Annota sensazioni verso il finale e recupero del giorno dopo.\n\nALIMENTAZIONE\nAcqua secondo sete e condizioni, alimentazione ordinaria per durata breve."
+        }
+      },
+      {
+        "workout_id": 4011677491,
+        "expected_sport_id": 2,
+        "expected_workout_day": "2027-03-28",
+        "before": {
+          "description": "OBIETTIVO\nPreparare resistenza e gestione energetica senza accumulare affaticamento eccessivo.\n\nESECUZIONE\nSegui i blocchi a RPE sul Builder: per le porzioni facili RPE2-3, quando indicato controllo regolare RPE3-4, senza pedalare a soglia. Se possiedi FTP recente e affidabile, osserva potenza e frequenza cardiaca come conferma, ma FTP non equivale direttamente a LT1 o LT2 e non sono prescritti watt universali. Cerca cadenza spontanea e postura sostenibile; non inseguire watt in salita.\n\nCOSA OSSERVARE\nVerifica stabilità di respirazione e capacità di mantenere l'output con costo interno contenuto. Annota sensazioni verso il finale e recupero del giorno dopo.\nALIMENTAZIONE\nOltre circa 90 minuti prova gradualmente 30-60g di carboidrati all'ora, aumentando solo in base a tolleranza e durata; acqua e sodio secondo sudorazione e condizioni. Testa gli stessi prodotti prima della gara."
+        },
+        "after": {
+          "description": "OBIETTIVO\nPreparare resistenza e gestione energetica senza accumulare affaticamento eccessivo.\n\nESECUZIONE\nSegui i blocchi a RPE sul Builder: per le porzioni facili RPE2-3, quando indicato controllo regolare RPE3-4, senza pedalare a soglia. Se possiedi FTP recente e affidabile, osserva potenza e frequenza cardiaca come conferma, ma FTP non equivale direttamente a LT1 o LT2 e non sono prescritti watt universali. Cerca cadenza spontanea e postura sostenibile; non inseguire watt in salita.\n\nCOSA OSSERVARE\nVerifica stabilità di respirazione e capacità di mantenere l'output con costo interno contenuto. Annota sensazioni verso il finale e recupero del giorno dopo.\n\nALIMENTAZIONE\nOltre circa 90 minuti prova gradualmente 30-60g di carboidrati all'ora, aumentando solo in base a tolleranza e durata; acqua e sodio secondo sudorazione e condizioni. Testa gli stessi prodotti prima della gara."
+        }
+      },
+      {
+        "workout_id": 4011677842,
+        "expected_sport_id": 2,
+        "expected_workout_day": "2027-03-31",
+        "before": {
+          "description": "OBIETTIVO\nTenere una seduta distinta dal lungo: posizione, fluidità e controllo aerobico.\n\nESECUZIONE\nSegui i blocchi a RPE sul Builder: per le porzioni facili RPE2-3, quando indicato controllo regolare RPE3-4, senza pedalare a soglia. Se possiedi FTP recente e affidabile, osserva potenza e frequenza cardiaca come conferma, ma FTP non equivale direttamente a LT1 o LT2 e non sono prescritti watt universali. Cerca cadenza spontanea e postura sostenibile; non inseguire watt in salita.\n\nCOSA OSSERVARE\nVerifica stabilità di respirazione e capacità di mantenere l'output con costo interno contenuto. Annota sensazioni verso il finale e recupero del giorno dopo.\nALIMENTAZIONE\nAcqua secondo sete e condizioni, alimentazione ordinaria per durata breve."
+        },
+        "after": {
+          "description": "OBIETTIVO\nTenere una seduta distinta dal lungo: posizione, fluidità e controllo aerobico.\n\nESECUZIONE\nSegui i blocchi a RPE sul Builder: per le porzioni facili RPE2-3, quando indicato controllo regolare RPE3-4, senza pedalare a soglia. Se possiedi FTP recente e affidabile, osserva potenza e frequenza cardiaca come conferma, ma FTP non equivale direttamente a LT1 o LT2 e non sono prescritti watt universali. Cerca cadenza spontanea e postura sostenibile; non inseguire watt in salita.\n\nCOSA OSSERVARE\nVerifica stabilità di respirazione e capacità di mantenere l'output con costo interno contenuto. Annota sensazioni verso il finale e recupero del giorno dopo.\n\nALIMENTAZIONE\nAcqua secondo sete e condizioni, alimentazione ordinaria per durata breve."
+        }
+      },
+      {
+        "workout_id": 4011677895,
+        "expected_sport_id": 3,
         "expected_workout_day": "2027-04-03",
         "before": {
-          "title": "Lungo | 4h40 3x35' IM Pace +25' finale LT1"
+          "title": "Lungo | Corsa facile 90'",
+          "description": "OBIETTIVO\nConsolidare durata di corsa facile minimizzando lo stress muscolo-tendineo.\n\nESECUZIONE\nUsa i blocchi del Builder. RPE 2-3 per quasi tutta la seduta, puoi parlare in frasi complete. Se hai una soglia di corsa validata usa il ritmo come controllo secondario, non forzare percentuali non calibrate. Evita ripetute aggiunte.\n\nRECUPERO\nValuta dolore muscolo-tendineo, rigidità, sonno, andatura e respiro. Se compare dolore che altera il gesto, interrompi. Se la corsa del sabato causa pesantezza insolita, domenica la bici deve essere più facile e il brick va saltato.\nFUELING\nSe superi 75-90min usa un'opzione già tollerata per acqua e carboidrati; controlla caldo e durata, non sperimentare il giorno della gara."
         },
         "after": {
-          "title": "◆ Lungo | 4h40 3x35' IM Pace +25' finale LT1"
+          "title": "◆ Lungo | Corsa facile 90'",
+          "description": "OBIETTIVO\nConsolidare durata di corsa facile minimizzando lo stress muscolo-tendineo.\n\nESECUZIONE\nUsa i blocchi del Builder. RPE 2-3 per quasi tutta la seduta, puoi parlare in frasi complete. Se hai una soglia di corsa validata usa il ritmo come controllo secondario, non forzare percentuali non calibrate. Evita ripetute aggiunte.\n\nRECUPERO\nValuta dolore muscolo-tendineo, rigidità, sonno, andatura e respiro. Se compare dolore che altera il gesto, interrompi. Se la corsa del sabato causa pesantezza insolita, domenica la bici deve essere più facile e il brick va saltato.\n\nFUELING\nSe superi 75-90min usa un'opzione già tollerata per acqua e carboidrati; controlla caldo e durata, non sperimentare il giorno della gara."
         }
       },
       {
-        "workout_id": 4001062280,
+        "workout_id": 4011677916,
         "expected_sport_id": 2,
+        "expected_workout_day": "2027-04-04",
+        "before": {
+          "title": "Lungo | Bici aerobica 180'",
+          "description": "OBIETTIVO\nPreparare resistenza e gestione energetica senza accumulare affaticamento eccessivo.\n\nESECUZIONE\nSegui i blocchi a RPE sul Builder: per le porzioni facili RPE2-3, quando indicato controllo regolare RPE3-4, senza pedalare a soglia. Se possiedi FTP recente e affidabile, osserva potenza e frequenza cardiaca come conferma, ma FTP non equivale direttamente a LT1 o LT2 e non sono prescritti watt universali. Cerca cadenza spontanea e postura sostenibile; non inseguire watt in salita.\n\nCOSA OSSERVARE\nVerifica stabilità di respirazione e capacità di mantenere l'output con costo interno contenuto. Annota sensazioni verso il finale e recupero del giorno dopo.\nALIMENTAZIONE\nOltre circa 90 minuti prova gradualmente 30-60g di carboidrati all'ora, aumentando solo in base a tolleranza e durata; acqua e sodio secondo sudorazione e condizioni. Testa gli stessi prodotti prima della gara."
+        },
+        "after": {
+          "title": "◆ Lungo | Bici aerobica 180'",
+          "description": "OBIETTIVO\nPreparare resistenza e gestione energetica senza accumulare affaticamento eccessivo.\n\nESECUZIONE\nSegui i blocchi a RPE sul Builder: per le porzioni facili RPE2-3, quando indicato controllo regolare RPE3-4, senza pedalare a soglia. Se possiedi FTP recente e affidabile, osserva potenza e frequenza cardiaca come conferma, ma FTP non equivale direttamente a LT1 o LT2 e non sono prescritti watt universali. Cerca cadenza spontanea e postura sostenibile; non inseguire watt in salita.\n\nCOSA OSSERVARE\nVerifica stabilità di respirazione e capacità di mantenere l'output con costo interno contenuto. Annota sensazioni verso il finale e recupero del giorno dopo.\n\nALIMENTAZIONE\nOltre circa 90 minuti prova gradualmente 30-60g di carboidrati all'ora, aumentando solo in base a tolleranza e durata; acqua e sodio secondo sudorazione e condizioni. Testa gli stessi prodotti prima della gara."
+        }
+      },
+      {
+        "workout_id": 4011677943,
+        "expected_sport_id": 3,
+        "expected_workout_day": "2027-04-04",
+        "before": {
+          "title": "Brick | Corsa di transizione 20'"
+        },
+        "after": {
+          "title": "↳ Brick | Corsa di transizione 20'"
+        }
+      },
+      {
+        "workout_id": 4011678026,
+        "expected_sport_id": 2,
+        "expected_workout_day": "2027-04-07",
+        "before": {
+          "description": "OBIETTIVO\nTenere una seduta distinta dal lungo: posizione, fluidità e controllo aerobico.\n\nESECUZIONE\nSegui i blocchi a RPE sul Builder: per le porzioni facili RPE2-3, quando indicato controllo regolare RPE3-4, senza pedalare a soglia. Se possiedi FTP recente e affidabile, osserva potenza e frequenza cardiaca come conferma, ma FTP non equivale direttamente a LT1 o LT2 e non sono prescritti watt universali. Cerca cadenza spontanea e postura sostenibile; non inseguire watt in salita.\n\nCOSA OSSERVARE\nVerifica stabilità di respirazione e capacità di mantenere l'output con costo interno contenuto. Annota sensazioni verso il finale e recupero del giorno dopo.\nALIMENTAZIONE\nOltre circa 90 minuti prova gradualmente 30-60g di carboidrati all'ora, aumentando solo in base a tolleranza e durata; acqua e sodio secondo sudorazione e condizioni. Testa gli stessi prodotti prima della gara."
+        },
+        "after": {
+          "description": "OBIETTIVO\nTenere una seduta distinta dal lungo: posizione, fluidità e controllo aerobico.\n\nESECUZIONE\nSegui i blocchi a RPE sul Builder: per le porzioni facili RPE2-3, quando indicato controllo regolare RPE3-4, senza pedalare a soglia. Se possiedi FTP recente e affidabile, osserva potenza e frequenza cardiaca come conferma, ma FTP non equivale direttamente a LT1 o LT2 e non sono prescritti watt universali. Cerca cadenza spontanea e postura sostenibile; non inseguire watt in salita.\n\nCOSA OSSERVARE\nVerifica stabilità di respirazione e capacità di mantenere l'output con costo interno contenuto. Annota sensazioni verso il finale e recupero del giorno dopo.\n\nALIMENTAZIONE\nOltre circa 90 minuti prova gradualmente 30-60g di carboidrati all'ora, aumentando solo in base a tolleranza e durata; acqua e sodio secondo sudorazione e condizioni. Testa gli stessi prodotti prima della gara."
+        }
+      },
+      {
+        "workout_id": 4011678111,
+        "expected_sport_id": 3,
         "expected_workout_day": "2027-04-10",
         "before": {
-          "title": "Lungo | 3h35 2x30' IM Pace +15' endurance finale"
+          "title": "Lungo | Corsa facile 95'",
+          "description": "OBIETTIVO\nConsolidare durata di corsa facile minimizzando lo stress muscolo-tendineo.\n\nESECUZIONE\nUsa i blocchi del Builder. RPE 2-3 per quasi tutta la seduta, puoi parlare in frasi complete. Se hai una soglia di corsa validata usa il ritmo come controllo secondario, non forzare percentuali non calibrate. Evita ripetute aggiunte.\n\nRECUPERO\nValuta dolore muscolo-tendineo, rigidità, sonno, andatura e respiro. Se compare dolore che altera il gesto, interrompi. Se la corsa del sabato causa pesantezza insolita, domenica la bici deve essere più facile e il brick va saltato.\nFUELING\nSe superi 75-90min usa un'opzione già tollerata per acqua e carboidrati; controlla caldo e durata, non sperimentare il giorno della gara."
         },
         "after": {
-          "title": "◆ Lungo | 3h35 2x30' IM Pace +15' endurance finale"
+          "title": "◆ Lungo | Corsa facile 95'",
+          "description": "OBIETTIVO\nConsolidare durata di corsa facile minimizzando lo stress muscolo-tendineo.\n\nESECUZIONE\nUsa i blocchi del Builder. RPE 2-3 per quasi tutta la seduta, puoi parlare in frasi complete. Se hai una soglia di corsa validata usa il ritmo come controllo secondario, non forzare percentuali non calibrate. Evita ripetute aggiunte.\n\nRECUPERO\nValuta dolore muscolo-tendineo, rigidità, sonno, andatura e respiro. Se compare dolore che altera il gesto, interrompi. Se la corsa del sabato causa pesantezza insolita, domenica la bici deve essere più facile e il brick va saltato.\n\nFUELING\nSe superi 75-90min usa un'opzione già tollerata per acqua e carboidrati; controlla caldo e durata, non sperimentare il giorno della gara."
         }
       },
       {
-        "workout_id": 4001065380,
-        "expected_sport_id": 1,
-        "expected_workout_day": "2027-04-16",
+        "workout_id": 4011678146,
+        "expected_sport_id": 2,
+        "expected_workout_day": "2027-04-11",
         "before": {
-          "title": "Specifico | 3500 m continuati no-stop - rehearsal"
+          "title": "Lungo | Bici aerobica 185'",
+          "description": "OBIETTIVO\nPreparare resistenza e gestione energetica senza accumulare affaticamento eccessivo.\n\nESECUZIONE\nSegui i blocchi a RPE sul Builder: per le porzioni facili RPE2-3, quando indicato controllo regolare RPE3-4, senza pedalare a soglia. Se possiedi FTP recente e affidabile, osserva potenza e frequenza cardiaca come conferma, ma FTP non equivale direttamente a LT1 o LT2 e non sono prescritti watt universali. Cerca cadenza spontanea e postura sostenibile; non inseguire watt in salita.\n\nCOSA OSSERVARE\nVerifica stabilità di respirazione e capacità di mantenere l'output con costo interno contenuto. Annota sensazioni verso il finale e recupero del giorno dopo.\nALIMENTAZIONE\nOltre circa 90 minuti prova gradualmente 30-60g di carboidrati all'ora, aumentando solo in base a tolleranza e durata; acqua e sodio secondo sudorazione e condizioni. Testa gli stessi prodotti prima della gara."
         },
         "after": {
-          "title": "◆ Specifico | 3500 m continuati no-stop - rehearsal"
+          "title": "◆ Lungo | Bici aerobica 185'",
+          "description": "OBIETTIVO\nPreparare resistenza e gestione energetica senza accumulare affaticamento eccessivo.\n\nESECUZIONE\nSegui i blocchi a RPE sul Builder: per le porzioni facili RPE2-3, quando indicato controllo regolare RPE3-4, senza pedalare a soglia. Se possiedi FTP recente e affidabile, osserva potenza e frequenza cardiaca come conferma, ma FTP non equivale direttamente a LT1 o LT2 e non sono prescritti watt universali. Cerca cadenza spontanea e postura sostenibile; non inseguire watt in salita.\n\nCOSA OSSERVARE\nVerifica stabilità di respirazione e capacità di mantenere l'output con costo interno contenuto. Annota sensazioni verso il finale e recupero del giorno dopo.\n\nALIMENTAZIONE\nOltre circa 90 minuti prova gradualmente 30-60g di carboidrati all'ora, aumentando solo in base a tolleranza e durata; acqua e sodio secondo sudorazione e condizioni. Testa gli stessi prodotti prima della gara."
         }
       },
       {
-        "workout_id": 4001065433,
+        "workout_id": 4011678165,
+        "expected_sport_id": 3,
+        "expected_workout_day": "2027-04-11",
+        "before": {
+          "title": "Brick | Corsa di transizione 20'"
+        },
+        "after": {
+          "title": "↳ Brick | Corsa di transizione 20'"
+        }
+      },
+      {
+        "workout_id": 4011678265,
+        "expected_sport_id": 2,
+        "expected_workout_day": "2027-04-14",
+        "before": {
+          "description": "OBIETTIVO\nTenere una seduta distinta dal lungo: posizione, fluidità e controllo aerobico.\n\nESECUZIONE\nSegui i blocchi a RPE sul Builder: per le porzioni facili RPE2-3, quando indicato controllo regolare RPE3-4, senza pedalare a soglia. Se possiedi FTP recente e affidabile, osserva potenza e frequenza cardiaca come conferma, ma FTP non equivale direttamente a LT1 o LT2 e non sono prescritti watt universali. Cerca cadenza spontanea e postura sostenibile; non inseguire watt in salita.\n\nCOSA OSSERVARE\nVerifica stabilità di respirazione e capacità di mantenere l'output con costo interno contenuto. Annota sensazioni verso il finale e recupero del giorno dopo.\nALIMENTAZIONE\nAcqua secondo sete e condizioni, alimentazione ordinaria per durata breve."
+        },
+        "after": {
+          "description": "OBIETTIVO\nTenere una seduta distinta dal lungo: posizione, fluidità e controllo aerobico.\n\nESECUZIONE\nSegui i blocchi a RPE sul Builder: per le porzioni facili RPE2-3, quando indicato controllo regolare RPE3-4, senza pedalare a soglia. Se possiedi FTP recente e affidabile, osserva potenza e frequenza cardiaca come conferma, ma FTP non equivale direttamente a LT1 o LT2 e non sono prescritti watt universali. Cerca cadenza spontanea e postura sostenibile; non inseguire watt in salita.\n\nCOSA OSSERVARE\nVerifica stabilità di respirazione e capacità di mantenere l'output con costo interno contenuto. Annota sensazioni verso il finale e recupero del giorno dopo.\n\nALIMENTAZIONE\nAcqua secondo sete e condizioni, alimentazione ordinaria per durata breve."
+        }
+      },
+      {
+        "workout_id": 4011681716,
         "expected_sport_id": 2,
         "expected_workout_day": "2027-04-18",
         "before": {
-          "title": "Lungo | 5h 3x30' IM Pace +55' easy"
+          "description": "OBIETTIVO\nPreparare resistenza e gestione energetica senza accumulare affaticamento eccessivo.\n\nESECUZIONE\nSegui i blocchi a RPE sul Builder: per le porzioni facili RPE2-3, quando indicato controllo regolare RPE3-4, senza pedalare a soglia. Se possiedi FTP recente e affidabile, osserva potenza e frequenza cardiaca come conferma, ma FTP non equivale direttamente a LT1 o LT2 e non sono prescritti watt universali. Cerca cadenza spontanea e postura sostenibile; non inseguire watt in salita.\n\nCOSA OSSERVARE\nVerifica stabilità di respirazione e capacità di mantenere l'output con costo interno contenuto. Annota sensazioni verso il finale e recupero del giorno dopo.\nALIMENTAZIONE\nOltre circa 90 minuti prova gradualmente 30-60g di carboidrati all'ora, aumentando solo in base a tolleranza e durata; acqua e sodio secondo sudorazione e condizioni. Testa gli stessi prodotti prima della gara."
         },
         "after": {
-          "title": "◆ Lungo | 5h 3x30' IM Pace +55' easy"
+          "description": "OBIETTIVO\nPreparare resistenza e gestione energetica senza accumulare affaticamento eccessivo.\n\nESECUZIONE\nSegui i blocchi a RPE sul Builder: per le porzioni facili RPE2-3, quando indicato controllo regolare RPE3-4, senza pedalare a soglia. Se possiedi FTP recente e affidabile, osserva potenza e frequenza cardiaca come conferma, ma FTP non equivale direttamente a LT1 o LT2 e non sono prescritti watt universali. Cerca cadenza spontanea e postura sostenibile; non inseguire watt in salita.\n\nCOSA OSSERVARE\nVerifica stabilità di respirazione e capacità di mantenere l'output con costo interno contenuto. Annota sensazioni verso il finale e recupero del giorno dopo.\n\nALIMENTAZIONE\nOltre circa 90 minuti prova gradualmente 30-60g di carboidrati all'ora, aumentando solo in base a tolleranza e durata; acqua e sodio secondo sudorazione e condizioni. Testa gli stessi prodotti prima della gara."
         }
       },
       {
-        "workout_id": 4001071997,
-        "expected_sport_id": 3,
-        "expected_workout_day": "2027-05-01",
-        "before": {
-          "title": "Lungo | 150' facile"
-        },
-        "after": {
-          "title": "◆ Lungo | 150' facile"
-        }
-      },
-      {
-        "workout_id": 4001072083,
+        "workout_id": 4011681771,
         "expected_sport_id": 2,
-        "expected_workout_day": "2027-05-02",
+        "expected_workout_day": "2027-04-21",
         "before": {
-          "title": "Lungo | 4h10 3x35' IM Pace +25' LT1"
+          "description": "OBIETTIVO\nTenere una seduta distinta dal lungo: posizione, fluidità e controllo aerobico.\n\nESECUZIONE\nSegui i blocchi a RPE sul Builder: per le porzioni facili RPE2-3, quando indicato controllo regolare RPE3-4, senza pedalare a soglia. Se possiedi FTP recente e affidabile, osserva potenza e frequenza cardiaca come conferma, ma FTP non equivale direttamente a LT1 o LT2 e non sono prescritti watt universali. Cerca cadenza spontanea e postura sostenibile; non inseguire watt in salita.\n\nCOSA OSSERVARE\nVerifica stabilità di respirazione e capacità di mantenere l'output con costo interno contenuto. Annota sensazioni verso il finale e recupero del giorno dopo.\nALIMENTAZIONE\nAcqua secondo sete e condizioni, alimentazione ordinaria per durata breve."
         },
         "after": {
-          "title": "◆ Lungo | 4h10 3x35' IM Pace +25' LT1"
+          "description": "OBIETTIVO\nTenere una seduta distinta dal lungo: posizione, fluidità e controllo aerobico.\n\nESECUZIONE\nSegui i blocchi a RPE sul Builder: per le porzioni facili RPE2-3, quando indicato controllo regolare RPE3-4, senza pedalare a soglia. Se possiedi FTP recente e affidabile, osserva potenza e frequenza cardiaca come conferma, ma FTP non equivale direttamente a LT1 o LT2 e non sono prescritti watt universali. Cerca cadenza spontanea e postura sostenibile; non inseguire watt in salita.\n\nCOSA OSSERVARE\nVerifica stabilità di respirazione e capacità di mantenere l'output con costo interno contenuto. Annota sensazioni verso il finale e recupero del giorno dopo.\n\nALIMENTAZIONE\nAcqua secondo sete e condizioni, alimentazione ordinaria per durata breve."
         }
       },
       {
-        "workout_id": 4001074565,
+        "workout_id": 4011681824,
         "expected_sport_id": 2,
-        "expected_workout_day": "2027-05-08",
+        "expected_workout_day": "2027-04-23",
         "before": {
-          "title": "Lungo | 3h40 durability 3x15' aero"
+          "description": "OBIETTIVO\nTenere una seduta distinta dal lungo: posizione, fluidità e controllo aerobico.\n\nESECUZIONE\nSegui i blocchi a RPE sul Builder: per le porzioni facili RPE2-3, quando indicato controllo regolare RPE3-4, senza pedalare a soglia. Se possiedi FTP recente e affidabile, osserva potenza e frequenza cardiaca come conferma, ma FTP non equivale direttamente a LT1 o LT2 e non sono prescritti watt universali. Cerca cadenza spontanea e postura sostenibile; non inseguire watt in salita.\n\nCOSA OSSERVARE\nVerifica stabilità di respirazione e capacità di mantenere l'output con costo interno contenuto. Annota sensazioni verso il finale e recupero del giorno dopo.\nALIMENTAZIONE\nAcqua secondo sete e condizioni, alimentazione ordinaria per durata breve."
         },
         "after": {
-          "title": "◆ Lungo | 3h40 durability 3x15' aero"
-        }
-      },
-      {
-        "workout_id": 4001076910,
-        "expected_sport_id": 1,
-        "expected_workout_day": "2027-05-14",
-        "before": {
-          "title": "Specifico | 4000 m continuati no-stop - rehearsal"
-        },
-        "after": {
-          "title": "◆ Specifico | 4000 m continuati no-stop - rehearsal"
-        }
-      },
-      {
-        "workout_id": 4001076968,
-        "expected_sport_id": 2,
-        "expected_workout_day": "2027-05-15",
-        "before": {
-          "title": "Lungo | 4h55 3x30' IM Pace +35' fondo facile"
-        },
-        "after": {
-          "title": "◆ Lungo | 4h55 3x30' IM Pace +35' fondo facile"
-        }
-      },
-      {
-        "workout_id": 4001081009,
-        "expected_sport_id": 3,
-        "expected_workout_day": "2027-05-29",
-        "before": {
-          "title": "Lungo | 150' facile"
-        },
-        "after": {
-          "title": "◆ Lungo | 150' facile"
-        }
-      },
-      {
-        "workout_id": 4001081215,
-        "expected_sport_id": 2,
-        "expected_workout_day": "2027-05-30",
-        "before": {
-          "title": "Lungo | 5h30 - peak race execution"
-        },
-        "after": {
-          "title": "◆ Lungo | 5h30 - peak race execution"
-        }
-      },
-      {
-        "workout_id": 4001083740,
-        "expected_sport_id": 2,
-        "expected_workout_day": "2027-06-05",
-        "before": {
-          "title": "Specifico | 225' 2x20' IM Pace +55' facile"
-        },
-        "after": {
-          "title": "◆ Specifico | 225' 2x20' IM Pace +55' facile"
-        }
-      },
-      {
-        "workout_id": 4001086537,
-        "expected_sport_id": 2,
-        "expected_workout_day": "2027-06-12",
-        "before": {
-          "title": "Specifico | 125' 2x8' IM Pace +16' easy"
-        },
-        "after": {
-          "title": "◆ Specifico | 125' 2x8' IM Pace +16' easy"
+          "description": "OBIETTIVO\nTenere una seduta distinta dal lungo: posizione, fluidità e controllo aerobico.\n\nESECUZIONE\nSegui i blocchi a RPE sul Builder: per le porzioni facili RPE2-3, quando indicato controllo regolare RPE3-4, senza pedalare a soglia. Se possiedi FTP recente e affidabile, osserva potenza e frequenza cardiaca come conferma, ma FTP non equivale direttamente a LT1 o LT2 e non sono prescritti watt universali. Cerca cadenza spontanea e postura sostenibile; non inseguire watt in salita.\n\nCOSA OSSERVARE\nVerifica stabilità di respirazione e capacità di mantenere l'output con costo interno contenuto. Annota sensazioni verso il finale e recupero del giorno dopo.\n\nALIMENTAZIONE\nAcqua secondo sete e condizioni, alimentazione ordinaria per durata breve."
         }
       }
     ]
@@ -448,9 +558,9 @@
     ],
     [
       "2027-04-01",
-      "2027-06-18"
+      "2027-04-25"
     ]
   ],
-  "expected_classic_count": 249,
-  "expected_note_count": 31
+  "expected_classic_count": 118,
+  "expected_note_count": 0
 }
