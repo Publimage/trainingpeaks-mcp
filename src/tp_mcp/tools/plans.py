@@ -1255,18 +1255,28 @@ async def tp_get_training_plan_notes(plan_id: int | str) -> dict[str, Any]:
 async def tp_add_training_plan_note(
     plan_id: int | str, note_date: str, title: str, description: str,
 ) -> dict[str, Any]:
-    """Add one calendar note to a private [MCP TEST] Training Plan only."""
+    """Create a native Calendar Note on a coach-owned private Training Plan."""
     try:
         v = _PlanIdInput(plan_id=plan_id)  # type: ignore[arg-type]
     except (ValidationError, ValueError) as e:
         return _err("VALIDATION_ERROR", str(e))
-    if not title.strip().startswith("[MCP TEST]"):
-        return _err("VALIDATION_ERROR", "Test note title must begin with [MCP TEST].")
+    if not title or not title.strip() or not description or not description.strip():
+        return _err("VALIDATION_ERROR", "A nonempty title and description are required.")
     async with TPClient() as client:
-        plan, error = await _get_writable_test_plan(client, v.plan_id)
-        if error is not None:
-            return error
-        assert plan is not None
+        identity = await client._get_user_data()
+        if identity.get("personId") != 2116886:
+            return _err("PROTECTED_RESOURCE", "Authenticated coach owner mismatch.")
+        owned = await client.get("/plans/v1/plans")
+        if owned.is_error or not isinstance(owned.data, list):
+            return _err("API_ERROR", "Unable to verify owned plans.")
+        if not any(p.get("planId") == v.plan_id for p in owned.data):
+            return _err("PROTECTED_RESOURCE", "Plan not in coach-owned plan list.")
+        meta = await client.get(f"/plans/v1/plans/{v.plan_id}")
+        if meta.is_error:
+            return _api_err(meta)
+        plan = meta.data
+        if not isinstance(plan, dict) or plan.get("isPublic") is not False or plan.get("price") not in (None, 0):
+            return _err("PROTECTED_RESOURCE", "Only private, unpriced coach-owned plans.")
         # Guarded exception: exactly two canonical W1 Monday notes, no Other
         # workaround, no date shift. All other plan guards remain unchanged.
         w1_monday = (
