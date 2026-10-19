@@ -37,4 +37,8 @@ async def main():
               "design_gate":design}),flush=True)
 
 if __name__=="__main__":
-    asyncio.run(main())
+    try:
+        asyncio.run(main())
+    except Exception as exc:
+        print(json.dumps({"stage":"STOP_CHASING_SWIM_POSTFLIGHT","type":type(exc).__name__,"reason":str(exc)[:500],"provider_writes":0}),flush=True)
+        raise
