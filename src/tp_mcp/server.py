@@ -871,8 +871,8 @@ TOOLS = [
     ),
     Tool(
         name="tp_add_training_plan_note",
-        description=("Create a native calendar note on a coach-owned private, unpriced "
-                     "Training Plan; checks identity, date range and duplicate titles."),
+        description=("Create a native calendar note on any coach-owned Training Plan "
+                     "with an arbitrary nonempty title; checks identity, date range and duplicates."),
         input_schema={
             "type": "object",
             "properties": {
