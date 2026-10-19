@@ -36,6 +36,7 @@ from tp_mcp.tools import (
     tp_add_training_plan_library_workout,
     tp_batch_add_training_plan_library_workouts,
     tp_add_training_plan_note,
+    tp_attach_training_plan_note_pdf,
     tp_apply_training_plan,
     tp_auth_status,
     tp_create_training_plan,
@@ -882,6 +883,26 @@ TOOLS = [
                 "description": {"type": "string"},
             },
             "required": ["plan_id", "note_date", "title", "description"],
+        },
+    ),
+    Tool(
+        name="tp_attach_training_plan_note_pdf",
+        description=("Attach a verified binary PDF to an existing native Calendar Note "
+                     "on a coach-owned Training Plan, using a short-lived trusted "
+                     "download URL. Checks file size, SHA256, note identity, "
+                     "duplicates and independent provider readback."),
+        input_schema={
+            "type": "object",
+            "properties": {
+                "plan_id": {"type": "integer", "description": "Exact coach-owned plan ID"},
+                "note_id": {"type": "integer", "description": "Exact existing native note ID"},
+                "file_name": {"type": "string", "description": "PDF attachment filename"},
+                "source_url": {"type": "string", "description": "Short-lived signed OpenAI file URL; not stored"},
+                "expected_sha256": {"type": "string", "description": "64-character SHA256 hex"},
+                "expected_size_bytes": {"type": "integer", "description": "Exact source PDF byte size"},
+            },
+            "required": ["plan_id", "note_id", "file_name", "source_url",
+                         "expected_sha256", "expected_size_bytes"],
         },
     ),
     Tool(
@@ -2135,6 +2156,7 @@ _NON_IDEMPOTENT_WRITES = {
     "tp_add_training_plan_library_workout",
     "tp_batch_add_training_plan_library_workouts",
     "tp_add_training_plan_note",
+    "tp_attach_training_plan_note_pdf",
     "tp_apply_training_plan",
     "tp_create_training_plan",
     "tp_copy_workout",
@@ -2505,6 +2527,15 @@ async def _h_add_training_plan_note(args):
     return await tp_add_training_plan_note(
         plan_id=args["plan_id"], note_date=args["note_date"],
         title=args["title"], description=args["description"],
+    )
+
+@_handler("tp_attach_training_plan_note_pdf")
+async def _h_attach_training_plan_note_pdf(args):
+    return await tp_attach_training_plan_note_pdf(
+        plan_id=args["plan_id"], note_id=args["note_id"],
+        file_name=args["file_name"], source_url=args["source_url"],
+        expected_sha256=args["expected_sha256"],
+        expected_size_bytes=args["expected_size_bytes"],
     )
 
 @_handler("tp_delete_training_plan_other")
