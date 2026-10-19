@@ -17,14 +17,14 @@ try:
         PLAN, OWNER, RANGES, build_specs, design_gate, target_from_original,
         final_content_gate,
     )
-    from scripts.ironman_jobs.plan_patch_batch_core import require
+    from scripts.ironman_jobs.plan_patch_batch_core import require, validate_manifest
     from scripts.ironman_jobs.reviewed_plan_patch_pipeline import _run, JOURNAL_DIR
 except ModuleNotFoundError:
     from chasing_swim_rebuild_20261018 import (
         PLAN, OWNER, RANGES, build_specs, design_gate, target_from_original,
         final_content_gate,
     )
-    from plan_patch_batch_core import require
+    from plan_patch_batch_core import require, validate_manifest
     from reviewed_plan_patch_pipeline import _run, JOURNAL_DIR
 
 EXPECTED_TITLE = "ALBERTO FAZI ENDURANCE | CHASING THE SLOT | 24 settimane | Advanced | Italiano"
@@ -125,6 +125,7 @@ async def main():
             "expected_classic_count": EXPECTED_CLASSIC_COUNT,
             "expected_note_count": EXPECTED_NOTE_COUNT,
         }
+        cfg["_manifest_sha256"] = validate_manifest(cfg["manifest"])
 
         report = await _run(
             cfg,
