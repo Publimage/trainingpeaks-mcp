@@ -1,5 +1,396 @@
 {
   "schema": "IRONMAN_REVIEWED_PLAN_PATCH_CONFIG_V1",
-  "configured": false,
-  "message": "NO ACTIVE PUBLISH: To prepare new, independently authorized work, review a concrete manifest and replace this placeholder in a trusted GitHub commit. Do not reuse it to retry a denied write."
+  "configured": true,
+  "manifest": {
+    "schema": "IRONMAN_PLAN_PATCH_V1",
+    "owner_id": 2116886,
+    "plan_id": 686994,
+    "expected_title": "ALBERTO FAZI ENDURANCE | 70.3 | 16 settimane | Beginner | Italiano",
+    "expected_is_public": false,
+    "expected_workout_count": 133,
+    "scope": "trainingpeaks:plan:686994:canary-4011677029-rounding-newlines-v1",
+    "items": [
+      {
+        "workout_id": 4011677029,
+        "expected_sport_id": 2,
+        "expected_workout_day": "2027-03-17",
+        "before": {
+          "title": "Aerobico | Bici controllo e cadenza 88' · controllo RPE3-4",
+          "description": "OBIETTIVO\\nTenere una seduta distinta dal lungo: posizione, fluidità e controllo aerobico.\\n\\nESECUZIONE\\nSegui i blocchi a RPE sul Builder: per le porzioni facili RPE2-3, quando indicato controllo regolare RPE3-4, senza pedalare a soglia. Se possiedi FTP recente e affidabile, osserva potenza e frequenza cardiaca come conferma, ma FTP non equivale direttamente a LT1 o LT2 e non sono prescritti watt universali. Cerca cadenza spontanea e postura sostenibile; non inseguire watt in salita.\\n\\nCOSA OSSERVARE\\nVerifica stabilità di respirazione e capacità di mantenere l'output con costo interno contenuto. Annota sensazioni verso il finale e recupero del giorno dopo.\\nALIMENTAZIONE\\nAcqua secondo sete e condizioni, alimentazione ordinaria per durata breve.\\n",
+          "totalTimePlanned": 1.4666666666666666,
+          "structure": {
+            "structure": [
+              {
+                "type": "step",
+                "length": {
+                  "value": 1,
+                  "unit": "repetition"
+                },
+                "steps": [
+                  {
+                    "name": "Riscaldamento",
+                    "length": {
+                      "value": 780,
+                      "unit": "second"
+                    },
+                    "targets": [
+                      {
+                        "minValue": 1,
+                        "maxValue": 2
+                      }
+                    ],
+                    "intensityClass": "warmUp",
+                    "openDuration": false
+                  }
+                ],
+                "begin": 0,
+                "end": 780
+              },
+              {
+                "type": "step",
+                "length": {
+                  "value": 1,
+                  "unit": "repetition"
+                },
+                "steps": [
+                  {
+                    "name": "Fondo facile",
+                    "length": {
+                      "value": 2640,
+                      "unit": "second"
+                    },
+                    "targets": [
+                      {
+                        "minValue": 2,
+                        "maxValue": 3
+                      }
+                    ],
+                    "intensityClass": "active",
+                    "openDuration": false
+                  }
+                ],
+                "begin": 780,
+                "end": 3420
+              },
+              {
+                "type": "step",
+                "length": {
+                  "value": 1,
+                  "unit": "repetition"
+                },
+                "steps": [
+                  {
+                    "name": "Controllo regolare RPE3-4",
+                    "length": {
+                      "value": 1440,
+                      "unit": "second"
+                    },
+                    "targets": [
+                      {
+                        "minValue": 3,
+                        "maxValue": 4
+                      }
+                    ],
+                    "intensityClass": "active",
+                    "openDuration": false
+                  }
+                ],
+                "begin": 3420,
+                "end": 4860
+              },
+              {
+                "type": "step",
+                "length": {
+                  "value": 1,
+                  "unit": "repetition"
+                },
+                "steps": [
+                  {
+                    "name": "Ritorno facile",
+                    "length": {
+                      "value": 420,
+                      "unit": "second"
+                    },
+                    "targets": [
+                      {
+                        "minValue": 1,
+                        "maxValue": 2
+                      }
+                    ],
+                    "intensityClass": "coolDown",
+                    "openDuration": false
+                  }
+                ],
+                "begin": 4860,
+                "end": 5280
+              }
+            ],
+            "primaryLengthMetric": "duration",
+            "primaryIntensityMetric": "rpe",
+            "primaryIntensityTargetOrRange": "range",
+            "polyline": [
+              [
+                0,
+                0
+              ],
+              [
+                0,
+                0.5
+              ],
+              [
+                0.1477,
+                0.5
+              ],
+              [
+                0.1477,
+                0
+              ],
+              [
+                0.1477,
+                0
+              ],
+              [
+                0.1477,
+                0.75
+              ],
+              [
+                0.6477,
+                0.75
+              ],
+              [
+                0.6477,
+                0
+              ],
+              [
+                0.6477,
+                0
+              ],
+              [
+                0.6477,
+                1
+              ],
+              [
+                0.9205,
+                1
+              ],
+              [
+                0.9205,
+                0
+              ],
+              [
+                0.9205,
+                0
+              ],
+              [
+                0.9205,
+                0.5
+              ],
+              [
+                1,
+                0.5
+              ],
+              [
+                1,
+                0
+              ]
+            ]
+          }
+        },
+        "after": {
+          "title": "Aerobico | Bici controllo e cadenza 90' · controllo RPE3-4",
+          "description": "OBIETTIVO\nTenere una seduta distinta dal lungo: posizione, fluidità e controllo aerobico.\n\nESECUZIONE\nSegui i blocchi a RPE sul Builder: per le porzioni facili RPE2-3, quando indicato controllo regolare RPE3-4, senza pedalare a soglia. Se possiedi FTP recente e affidabile, osserva potenza e frequenza cardiaca come conferma, ma FTP non equivale direttamente a LT1 o LT2 e non sono prescritti watt universali. Cerca cadenza spontanea e postura sostenibile; non inseguire watt in salita.\n\nCOSA OSSERVARE\nVerifica stabilità di respirazione e capacità di mantenere l'output con costo interno contenuto. Annota sensazioni verso il finale e recupero del giorno dopo.\nALIMENTAZIONE\nAcqua secondo sete e condizioni, alimentazione ordinaria per durata breve.",
+          "totalTimePlanned": 1.5,
+          "structure": {
+            "structure": [
+              {
+                "type": "step",
+                "length": {
+                  "value": 1,
+                  "unit": "repetition"
+                },
+                "steps": [
+                  {
+                    "name": "Riscaldamento",
+                    "length": {
+                      "value": 900,
+                      "unit": "second"
+                    },
+                    "targets": [
+                      {
+                        "minValue": 1,
+                        "maxValue": 2
+                      }
+                    ],
+                    "intensityClass": "warmUp",
+                    "openDuration": false
+                  }
+                ],
+                "begin": 0,
+                "end": 900
+              },
+              {
+                "type": "step",
+                "length": {
+                  "value": 1,
+                  "unit": "repetition"
+                },
+                "steps": [
+                  {
+                    "name": "Fondo facile",
+                    "length": {
+                      "value": 2700,
+                      "unit": "second"
+                    },
+                    "targets": [
+                      {
+                        "minValue": 2,
+                        "maxValue": 3
+                      }
+                    ],
+                    "intensityClass": "active",
+                    "openDuration": false
+                  }
+                ],
+                "begin": 900,
+                "end": 3600
+              },
+              {
+                "type": "step",
+                "length": {
+                  "value": 1,
+                  "unit": "repetition"
+                },
+                "steps": [
+                  {
+                    "name": "Controllo regolare senza soglia",
+                    "length": {
+                      "value": 1500,
+                      "unit": "second"
+                    },
+                    "targets": [
+                      {
+                        "minValue": 3,
+                        "maxValue": 4
+                      }
+                    ],
+                    "intensityClass": "active",
+                    "openDuration": false
+                  }
+                ],
+                "begin": 3600,
+                "end": 5100
+              },
+              {
+                "type": "step",
+                "length": {
+                  "value": 1,
+                  "unit": "repetition"
+                },
+                "steps": [
+                  {
+                    "name": "Ritorno facile",
+                    "length": {
+                      "value": 300,
+                      "unit": "second"
+                    },
+                    "targets": [
+                      {
+                        "minValue": 1,
+                        "maxValue": 2
+                      }
+                    ],
+                    "intensityClass": "coolDown",
+                    "openDuration": false
+                  }
+                ],
+                "begin": 5100,
+                "end": 5400
+              }
+            ],
+            "primaryLengthMetric": "duration",
+            "primaryIntensityMetric": "rpe",
+            "primaryIntensityTargetOrRange": "range",
+            "polyline": [
+              [
+                0,
+                0
+              ],
+              [
+                0,
+                0.5
+              ],
+              [
+                0.1667,
+                0.5
+              ],
+              [
+                0.1667,
+                0
+              ],
+              [
+                0.1667,
+                0
+              ],
+              [
+                0.1667,
+                0.75
+              ],
+              [
+                0.6667,
+                0.75
+              ],
+              [
+                0.6667,
+                0
+              ],
+              [
+                0.6667,
+                0
+              ],
+              [
+                0.6667,
+                1
+              ],
+              [
+                0.9444,
+                1
+              ],
+              [
+                0.9444,
+                0
+              ],
+              [
+                0.9444,
+                0
+              ],
+              [
+                0.9444,
+                0.5
+              ],
+              [
+                1,
+                0.5
+              ],
+              [
+                1,
+                0
+              ]
+            ]
+          }
+        }
+      }
+    ]
+  },
+  "windows": [
+    [
+      "2027-01-04",
+      "2027-03-31"
+    ],
+    [
+      "2027-04-01",
+      "2027-04-25"
+    ]
+  ],
+  "expected_classic_count": 118,
+  "expected_note_count": 0
 }
