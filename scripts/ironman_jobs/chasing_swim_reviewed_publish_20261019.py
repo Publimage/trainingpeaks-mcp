@@ -12,14 +12,20 @@ import copy
 import json
 
 from tp_mcp.client import TPClient
-from scripts.ironman_jobs.chasing_swim_rebuild_20261018 import (
-    PLAN, OWNER, RANGES, build_specs, design_gate, target_from_original,
-    final_content_gate,
-)
-from scripts.ironman_jobs.plan_patch_batch_core import require
-from scripts.ironman_jobs.reviewed_plan_patch_pipeline import (
-    _run, JOURNAL_DIR,
-)
+try:
+    from scripts.ironman_jobs.chasing_swim_rebuild_20261018 import (
+        PLAN, OWNER, RANGES, build_specs, design_gate, target_from_original,
+        final_content_gate,
+    )
+    from scripts.ironman_jobs.plan_patch_batch_core import require
+    from scripts.ironman_jobs.reviewed_plan_patch_pipeline import _run, JOURNAL_DIR
+except ModuleNotFoundError:
+    from chasing_swim_rebuild_20261018 import (
+        PLAN, OWNER, RANGES, build_specs, design_gate, target_from_original,
+        final_content_gate,
+    )
+    from plan_patch_batch_core import require
+    from reviewed_plan_patch_pipeline import _run, JOURNAL_DIR
 
 EXPECTED_TITLE = "ALBERTO FAZI ENDURANCE | CHASING THE SLOT | 24 settimane | Advanced | Italiano"
 EXPECTED_WORKOUT_COUNT = 276
