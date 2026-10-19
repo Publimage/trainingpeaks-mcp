@@ -47,7 +47,7 @@ async def main():
         p=await c.get(f"/plans/v1/plans/{LAB}")
         must(not p.is_error and isinstance(p.data,dict),"LAB_READ_FAILED")
         must(p.data.get("planId")==LAB and p.data.get("isPublic") is False
-             and p.data.get("workoutCount")==1 and p.data.get("weekCount")==1,"LAB_SCOPE_DRIFT")
+             and p.data.get("workoutCount")==0 and p.data.get("weekCount")==1,"LAB_SCOPE_DRIFT")
         async def notes():
             r=await c.get(f"/plans/v1/plans/{LAB}/calendarNote/{START}/{END}")
             must(not r.is_error and isinstance(r.data,list),"NOTES_READ_FAILED")
@@ -61,7 +61,7 @@ async def main():
         must(not create.is_error,"CREATE_FAILED")
         now=await notes()
         tmp=[n for n in now if n.get("title")==TITLE]
-        must(len(tmp)==1 and len(now)==2,"TEMP_NOTE_NOT_UNIQUE")
+        must(len(tmp)==1 and len(now)==3,"TEMP_NOTE_NOT_UNIQUE")
         nid=note_id(tmp[0])
         pdf=tiny_pdf(); must(pdf.startswith(b"%PDF-") and len(pdf)>300,"PDF_INVALID")
         await c._ensure_client(); tok=await c._ensure_access_token(); must(tok.success,"AUTH_MISSING")
@@ -88,7 +88,7 @@ async def main():
         cleanup=await c._request("DELETE",f"/plans/v1/plans/{LAB}/calendarNote/{nid}",_retry_on_401=False)
         must(not cleanup.is_error,"TEMP_NOTE_CLEANUP_FAILED")
         final=await notes()
-        must(len(final)==1 and json.dumps(final[0],sort_keys=True,ensure_ascii=False)==anchor,"LAB_NOT_RESTORED")
+        must(len(final)==2 and json.dumps(final,sort_keys=True,ensure_ascii=False)==baseline_json,"LAB_NOT_RESTORED")
         if not route_ok:
             print(json.dumps({"stage":"ATTACHMENT_DELETE_ROUTE_NOT_SUPPORTED","attachment_id":aid,
               "provider_writes":3,"lab_restored":True},ensure_ascii=False),flush=True)
