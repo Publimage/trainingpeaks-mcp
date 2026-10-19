@@ -4,224 +4,574 @@
   "manifest": {
     "schema": "IRONMAN_PLAN_PATCH_V1",
     "owner_id": 2116886,
-    "plan_id": 685173,
-    "expected_title": "ALBERTO FAZI ENDURANCE | CHASING THE SLOT | 24 settimane | Advanced | Italiano",
+    "plan_id": 684602,
+    "expected_title": "ALBERTO FAZI ENDURANCE | IRONMAN | 24 settimane | Intermediate | Italiano",
     "expected_is_public": true,
-    "expected_workout_count": 276,
-    "scope": "trainingpeaks:plan:685173:accent-corrections-18-20261019-v1",
+    "expected_workout_count": 259,
+    "scope": "trainingpeaks:plan:684602:symbol-system-titles-20261019-v1",
     "items": [
       {
-        "workout_id": 4000490118,
-        "expected_sport_id": 2,
-        "expected_workout_day": "2027-01-07",
+        "workout_id": 3996872965,
+        "expected_sport_id": 1,
+        "expected_workout_day": "2026-10-06",
         "before": {
-          "description": "OBIETTIVO\nTest prestativo di 20' in bicicletta con misuratore di potenza affidabile, da confrontare nel tempo; non misura direttamente LT2 e non fornisce automaticamente la soglia lattato.\n\nPROTOCOLLO\n15' riscaldamento progressivo; 5' attivazione submassimale RPE5-6 (NON uno sforzo all-out); 10' facili; 20' a miglior potenza MEDIA sostenibile con distribuzione regolare; 10' facili. Totale 60'.\n\nRISULTATO\nRegistrare potenza media dei 20', FC, RPE, cadenza, sorgente potenza e setup (trainer/outdoor). Una stima FTP mediante coefficiente tipo 0,95 e' soltanto orientativa e dipende dalla metodologia di preaffaticamento: questo protocollo non autorizza a usare automaticamente 95% come soglia. Incrociare con durate maggiori, sensazioni e altri dati.\n\nGATE\nEseguire recuperati e con alimentazione replicabile; non sommare a lunghi/forza impegnativa o a test massimali ravvicinati. Retest preferibilmente stessa sorgente, indoor/outdoor e condizioni."
+          "title": "Test | T1500 iniziale - 2500 m"
         },
         "after": {
-          "description": "OBIETTIVO\nTest prestativo di 20' in bicicletta con misuratore di potenza affidabile, da confrontare nel tempo; non misura direttamente LT2 e non fornisce automaticamente la soglia lattato.\n\nPROTOCOLLO\n15' riscaldamento progressivo; 5' attivazione submassimale RPE5-6 (NON uno sforzo all-out); 10' facili; 20' a miglior potenza MEDIA sostenibile con distribuzione regolare; 10' facili. Totale 60'.\n\nRISULTATO\nRegistrare potenza media dei 20', FC, RPE, cadenza, sorgente potenza e setup (trainer/outdoor). Una stima FTP mediante coefficiente tipo 0,95 è soltanto orientativa e dipende dalla metodologia di preaffaticamento: questo protocollo non autorizza a usare automaticamente 95% come soglia. Incrociare con durate maggiori, sensazioni e altri dati.\n\nGATE\nEseguire recuperati e con alimentazione replicabile; non sommare a lunghi/forza impegnativa o a test massimali ravvicinati. Retest preferibilmente stessa sorgente, indoor/outdoor e condizioni."
+          "title": "◎ Test | T1500 iniziale - 2500 m"
         }
       },
       {
-        "workout_id": 4000490091,
+        "workout_id": 3996858351,
+        "expected_sport_id": 2,
+        "expected_workout_day": "2026-10-08",
+        "before": {
+          "title": "Test | CP8 outdoor + indoor - 70'"
+        },
+        "after": {
+          "title": "◎ Test | CP8 outdoor + indoor - 70'"
+        }
+      },
+      {
+        "workout_id": 3996858955,
         "expected_sport_id": 3,
-        "expected_workout_day": "2027-01-10",
+        "expected_workout_day": "2026-10-15",
         "before": {
-          "description": "OBIETTIVO\nCorsa aerobica principale controllata: 12' riscaldamento +45' fondo RPE2–3 +8' defaticamento. Nessuna progressione automatica.\n\nTECNICA OPZIONALE\nAll'interno dei 45' facili puoi collocare fino a 6–8' di tecnica gia' familiare (A-March, ankling, eventualmente pochissimi strides sciolti) SOSTITUENDO corsa facile, mai aggiungendo minuti o carico significativo. Se peggiora la tecnica o compare fatica muscolotendinea post-forza, omettere i drills.\n\nINTENSITÀ\nRPE2–3 sul fondo; corsa conversazionale, verifica appoggi e FC/RPE. In caso di fatica residua dalla forza, dare priorità al recupero.\n\nFUELING\nAlimentazione ordinaria, acqua secondo sete; snack familiare se lontano dal pasto."
+          "title": "Test | 5 km - riferimento corsa"
         },
         "after": {
-          "description": "OBIETTIVO\nCorsa aerobica principale controllata: 12' riscaldamento +45' fondo RPE2–3 +8' defaticamento. Nessuna progressione automatica.\n\nTECNICA OPZIONALE\nAll'interno dei 45' facili puoi collocare fino a 6–8' di tecnica già familiare (A-March, ankling, eventualmente pochissimi strides sciolti) SOSTITUENDO corsa facile, mai aggiungendo minuti o carico significativo. Se peggiora la tecnica o compare fatica muscolotendinea post-forza, omettere i drills.\n\nINTENSITÀ\nRPE2–3 sul fondo; corsa conversazionale, verifica appoggi e FC/RPE. In caso di fatica residua dalla forza, dare priorità al recupero.\n\nFUELING\nAlimentazione ordinaria, acqua secondo sete; snack familiare se lontano dal pasto."
+          "title": "◎ Test | 5 km - riferimento corsa"
         }
       },
       {
-        "workout_id": 4000954256,
+        "workout_id": 3996860110,
+        "expected_sport_id": 3,
+        "expected_workout_day": "2026-10-29",
+        "before": {
+          "title": "Test | Benchmark corsa - 20' steady dentro 50'"
+        },
+        "after": {
+          "title": "◎ Test | Benchmark corsa - 20' steady dentro 50'"
+        }
+      },
+      {
+        "workout_id": 3996862048,
+        "expected_sport_id": 1,
+        "expected_workout_day": "2026-11-24",
+        "before": {
+          "title": "Test | RETEST - T1500 - 2600 m — V1"
+        },
+        "after": {
+          "title": "◎ Test | RETEST - T1500 - 2600 m — V1"
+        }
+      },
+      {
+        "workout_id": 3996862267,
         "expected_sport_id": 2,
-        "expected_workout_day": "2027-02-04",
+        "expected_workout_day": "2026-11-26",
         "before": {
-          "description": "RETEST W05 dopo lo scarico W04. Ripeti il protocollo baseline W01 di 20 minuti, idealmente stesso misuratore/tratto, condizioni comparabili e pacing regolare. Non impostare automaticamente LT2 o FTP usando un fattore fisso.\n\nOBIETTIVO\nTest prestativo di 20' in bicicletta con misuratore di potenza affidabile, da confrontare nel tempo; non misura direttamente LT2 e non fornisce automaticamente la soglia lattato.\n\nPROTOCOLLO\n15' riscaldamento progressivo; 5' attivazione submassimale RPE5-6 (NON uno sforzo all-out); 10' facili; 20' a miglior potenza MEDIA sostenibile con distribuzione regolare; 10' facili. Totale 60'.\n\nRISULTATO\nRegistrare potenza media dei 20', FC, RPE, cadenza, sorgente potenza e setup (trainer/outdoor). Una stima FTP mediante coefficiente tipo 0,95 e' soltanto orientativa e dipende dalla metodologia di preaffaticamento: questo protocollo non autorizza a usare automaticamente 95% come soglia. Incrociare con durate maggiori, sensazioni e altri dati.\n\nGATE\nEseguire recuperati e con alimentazione replicabile; non sommare a lunghi/forza impegnativa o a test massimali ravvicinati. Retest preferibilmente stessa sorgente, indoor/outdoor e condizioni."
+          "title": "Test | RETEST bici - 2x8' outdoor - 70'"
         },
         "after": {
-          "description": "RETEST W05 dopo lo scarico W04. Ripeti il protocollo baseline W01 di 20 minuti, idealmente stesso misuratore/tratto, condizioni comparabili e pacing regolare. Non impostare automaticamente LT2 o FTP usando un fattore fisso.\n\nOBIETTIVO\nTest prestativo di 20' in bicicletta con misuratore di potenza affidabile, da confrontare nel tempo; non misura direttamente LT2 e non fornisce automaticamente la soglia lattato.\n\nPROTOCOLLO\n15' riscaldamento progressivo; 5' attivazione submassimale RPE5-6 (NON uno sforzo all-out); 10' facili; 20' a miglior potenza MEDIA sostenibile con distribuzione regolare; 10' facili. Totale 60'.\n\nRISULTATO\nRegistrare potenza media dei 20', FC, RPE, cadenza, sorgente potenza e setup (trainer/outdoor). Una stima FTP mediante coefficiente tipo 0,95 è soltanto orientativa e dipende dalla metodologia di preaffaticamento: questo protocollo non autorizza a usare automaticamente 95% come soglia. Incrociare con durate maggiori, sensazioni e altri dati.\n\nGATE\nEseguire recuperati e con alimentazione replicabile; non sommare a lunghi/forza impegnativa o a test massimali ravvicinati. Retest preferibilmente stessa sorgente, indoor/outdoor e condizioni."
+          "title": "◎ Test | RETEST bici - 2x8' outdoor - 70'"
         }
       },
       {
-        "workout_id": 4000973064,
+        "workout_id": 3996864491,
+        "expected_sport_id": 3,
+        "expected_workout_day": "2026-12-24",
+        "before": {
+          "title": "Test | RETEST - 5 km - riferimento corsa"
+        },
+        "after": {
+          "title": "◎ Test | RETEST - 5 km - riferimento corsa"
+        }
+      },
+      {
+        "workout_id": 3996867371,
+        "expected_sport_id": 1,
+        "expected_workout_day": "2027-01-19",
+        "before": {
+          "title": "Test | RETEST - T1500 - 2600 m — V2"
+        },
+        "after": {
+          "title": "◎ Test | RETEST - T1500 - 2600 m — V2"
+        }
+      },
+      {
+        "workout_id": 3996867496,
+        "expected_sport_id": 2,
+        "expected_workout_day": "2027-01-20",
+        "before": {
+          "title": "Test | RETEST bici - 2x8' outdoor - 70'"
+        },
+        "after": {
+          "title": "◎ Test | RETEST bici - 2x8' outdoor - 70'"
+        }
+      },
+      {
+        "workout_id": 3996858622,
+        "expected_sport_id": 3,
+        "expected_workout_day": "2026-10-10",
+        "before": {
+          "title": "Brick | BRICK 10' molto facile"
+        },
+        "after": {
+          "title": "↳ Brick | BRICK 10' molto facile"
+        }
+      },
+      {
+        "workout_id": 3996859164,
+        "expected_sport_id": 3,
+        "expected_workout_day": "2026-10-17",
+        "before": {
+          "title": "Brick | BRICK 15' facile"
+        },
+        "after": {
+          "title": "↳ Brick | BRICK 15' facile"
+        }
+      },
+      {
+        "workout_id": 3996859706,
+        "expected_sport_id": 3,
+        "expected_workout_day": "2026-10-24",
+        "before": {
+          "title": "Brick | BRICK 20' facile"
+        },
+        "after": {
+          "title": "↳ Brick | BRICK 20' facile"
+        }
+      },
+      {
+        "workout_id": 3996860839,
+        "expected_sport_id": 3,
+        "expected_workout_day": "2026-11-07",
+        "before": {
+          "title": "Brick | 15' facile"
+        },
+        "after": {
+          "title": "↳ Brick | 15' facile"
+        }
+      },
+      {
+        "workout_id": 3996861365,
+        "expected_sport_id": 3,
+        "expected_workout_day": "2026-11-14",
+        "before": {
+          "title": "Brick | BRICK 20' facile"
+        },
+        "after": {
+          "title": "↳ Brick | BRICK 20' facile"
+        }
+      },
+      {
+        "workout_id": 3996861911,
+        "expected_sport_id": 3,
+        "expected_workout_day": "2026-11-21",
+        "before": {
+          "title": "Brick | 25' facile-controllato"
+        },
+        "after": {
+          "title": "↳ Brick | 25' facile-controllato"
+        }
+      },
+      {
+        "workout_id": 3996862954,
+        "expected_sport_id": 3,
+        "expected_workout_day": "2026-12-05",
+        "before": {
+          "title": "Brick | 20' facile"
+        },
+        "after": {
+          "title": "↳ Brick | 20' facile"
+        }
+      },
+      {
+        "workout_id": 3996863510,
+        "expected_sport_id": 3,
+        "expected_workout_day": "2026-12-12",
+        "before": {
+          "title": "Brick | 25' di cui 20' facile + 5' molto facile"
+        },
+        "after": {
+          "title": "↳ Brick | 25' di cui 20' facile + 5' molto facile"
+        }
+      },
+      {
+        "workout_id": 3996864085,
+        "expected_sport_id": 3,
+        "expected_workout_day": "2026-12-20",
+        "before": {
+          "title": "Brick | 20' facile"
+        },
+        "after": {
+          "title": "↳ Brick | 20' facile"
+        }
+      },
+      {
+        "workout_id": 3996865203,
+        "expected_sport_id": 3,
+        "expected_workout_day": "2027-01-02",
+        "before": {
+          "title": "Brick | 25' facile continuo"
+        },
+        "after": {
+          "title": "↳ Brick | 25' facile continuo"
+        }
+      },
+      {
+        "workout_id": 3996865772,
+        "expected_sport_id": 3,
+        "expected_workout_day": "2027-01-09",
+        "before": {
+          "title": "Brick | 30' facile → controllato"
+        },
+        "after": {
+          "title": "↳ Brick | 30' facile → controllato"
+        }
+      },
+      {
+        "workout_id": 3996867332,
+        "expected_sport_id": 3,
+        "expected_workout_day": "2027-01-17",
+        "before": {
+          "title": "Brick | 30' facile"
+        },
+        "after": {
+          "title": "↳ Brick | 30' facile"
+        }
+      },
+      {
+        "workout_id": 3996868350,
+        "expected_sport_id": 3,
+        "expected_workout_day": "2027-01-30",
+        "before": {
+          "title": "Brick | 35' facile → controllato"
+        },
+        "after": {
+          "title": "↳ Brick | 35' facile → controllato"
+        }
+      },
+      {
+        "workout_id": 3996869077,
+        "expected_sport_id": 3,
+        "expected_workout_day": "2027-02-06",
+        "before": {
+          "title": "Brick | 35' controllato"
+        },
+        "after": {
+          "title": "↳ Brick | 35' controllato"
+        }
+      },
+      {
+        "workout_id": 3996869924,
+        "expected_sport_id": 3,
+        "expected_workout_day": "2027-02-14",
+        "before": {
+          "title": "Brick | 30' facile"
+        },
+        "after": {
+          "title": "↳ Brick | 30' facile"
+        }
+      },
+      {
+        "workout_id": 3996870470,
         "expected_sport_id": 3,
         "expected_workout_day": "2027-02-20",
         "before": {
-          "description": "GUIDA BUILDER AGGIORNATA: intervallo RPE 2-4 come riferimento soggettivo per il blocco specifico, NON equivale a un wattaggio o passo IRONMAN universale. Calibrare sulla risposta individuale, soglie, FC e gara; correre anche piu facile se serve.\n\nOBIETTIVO\nBrick diagnostico breve dopo la bici: osservare cambiamento della cadenza, economia e capacità di correre senza perdere controllo. NON è un lungo aggiuntivo.\n\nSTRUTTURA\n5' partenza lentissima, 5' a Ironman Run Pace percepito oppure più facile, 5' defaticamento. Il blocco centrale NON ha un target RPE numerico universale: il passo gara è individuale e dipende da gara, condizioni e stato di recupero; impostarlo dal piano/atleta, mai forzarlo con intensità artificiale.\n\nGATE\nSe dolore, appoggio alterato, malessere o segnali di esaurimento dopo bici, restare easy o interrompere. Nessuna tecnica extra obbligatoria.\n\nFUELING\nIl brick breve segue il fueling bici; generalmente non serve un gel separato se ben alimentati. Annotare eventuali sintomi GI e correggere la strategia sulla bici."
+          "title": "Brick | REHEARSAL - Brick corsa 45' - RPE gara"
         },
         "after": {
-          "description": "GUIDA BUILDER AGGIORNATA: intervallo RPE 2-4 come riferimento soggettivo per il blocco specifico, NON equivale a un wattaggio o passo IRONMAN universale. Calibrare sulla risposta individuale, soglie, FC e gara; correre anche più facile se serve.\n\nOBIETTIVO\nBrick diagnostico breve dopo la bici: osservare cambiamento della cadenza, economia e capacità di correre senza perdere controllo. NON è un lungo aggiuntivo.\n\nSTRUTTURA\n5' partenza lentissima, 5' a Ironman Run Pace percepito oppure più facile, 5' defaticamento. Il blocco centrale NON ha un target RPE numerico universale: il passo gara è individuale e dipende da gara, condizioni e stato di recupero; impostarlo dal piano/atleta, mai forzarlo con intensità artificiale.\n\nGATE\nSe dolore, appoggio alterato, malessere o segnali di esaurimento dopo bici, restare easy o interrompere. Nessuna tecnica extra obbligatoria.\n\nFUELING\nIl brick breve segue il fueling bici; generalmente non serve un gel separato se ben alimentati. Annotare eventuali sintomi GI e correggere la strategia sulla bici."
+          "title": "↳ Brick | REHEARSAL - Brick corsa 45' - RPE gara"
         }
       },
       {
-        "workout_id": 4001046357,
+        "workout_id": 3996870986,
         "expected_sport_id": 3,
-        "expected_workout_day": "2027-02-28",
+        "expected_workout_day": "2027-02-27",
         "before": {
-          "description": "OBIETTIVO\nCorsa aerobica principale controllata: 12' riscaldamento +45' fondo RPE2–3 +8' defaticamento. Nessuna progressione automatica.\n\nTECNICA OPZIONALE\nAll'interno dei 45' facili puoi collocare fino a 6–8' di tecnica gia' familiare (A-March, ankling, eventualmente pochissimi strides sciolti) SOSTITUENDO corsa facile, mai aggiungendo minuti o carico significativo. Se peggiora la tecnica o compare fatica muscolotendinea post-forza, omettere i drills.\n\nINTENSITÀ\nRPE2–3 sul fondo; corsa conversazionale, verifica appoggi e FC/RPE. In caso di fatica residua dalla forza, dare priorità al recupero.\n\nFUELING\nAlimentazione ordinaria, acqua secondo sete; snack familiare se lontano dal pasto."
+          "title": "Brick | 40' race execution"
         },
         "after": {
-          "description": "OBIETTIVO\nCorsa aerobica principale controllata: 12' riscaldamento +45' fondo RPE2–3 +8' defaticamento. Nessuna progressione automatica.\n\nTECNICA OPZIONALE\nAll'interno dei 45' facili puoi collocare fino a 6–8' di tecnica già familiare (A-March, ankling, eventualmente pochissimi strides sciolti) SOSTITUENDO corsa facile, mai aggiungendo minuti o carico significativo. Se peggiora la tecnica o compare fatica muscolotendinea post-forza, omettere i drills.\n\nINTENSITÀ\nRPE2–3 sul fondo; corsa conversazionale, verifica appoggi e FC/RPE. In caso di fatica residua dalla forza, dare priorità al recupero.\n\nFUELING\nAlimentazione ordinaria, acqua secondo sete; snack familiare se lontano dal pasto."
+          "title": "↳ Brick | 40' race execution"
         }
       },
       {
-        "workout_id": 4001048527,
+        "workout_id": 3996871532,
         "expected_sport_id": 3,
         "expected_workout_day": "2027-03-06",
         "before": {
-          "description": "GUIDA BUILDER AGGIORNATA: intervallo RPE 2-4 come riferimento soggettivo per il blocco specifico, NON equivale a un wattaggio o passo IRONMAN universale. Calibrare sulla risposta individuale, soglie, FC e gara; correre anche piu facile se serve.\n\nOBIETTIVO\nBrick diagnostico dopo la bici, per osservare economia di corsa, passo, appoggi, respirazione e risposta al fueling; non un secondo lungo.\n\nSTRUTTURA\n5' molto piano dopo T2 + 10' a Ironman Run Pace percepito (o PIÙ FACILE) +5' facile finale, per 20' complessivi.\n\nINTENSITÀ\nNessun target di ritmo gara o RPE universale per la parte centrale: deve essere individualizzato in base alla gara, allenamento e risposta fisiologica; nei segnali di fatica restare sotto. Nessuna forzatura di passo.\n\nFUELING\nSegue il rifornimento della bici; in genere non serve un gel separato per la durata breve, ma annotare eventuali disturbi GI e riconsiderare il rifornimento bici. STOP se dolore o appoggio alterato."
+          "title": "Brick | 25' controllato"
         },
         "after": {
-          "description": "GUIDA BUILDER AGGIORNATA: intervallo RPE 2-4 come riferimento soggettivo per il blocco specifico, NON equivale a un wattaggio o passo IRONMAN universale. Calibrare sulla risposta individuale, soglie, FC e gara; correre anche più facile se serve.\n\nOBIETTIVO\nBrick diagnostico dopo la bici, per osservare economia di corsa, passo, appoggi, respirazione e risposta al fueling; non un secondo lungo.\n\nSTRUTTURA\n5' molto piano dopo T2 + 10' a Ironman Run Pace percepito (o PIÙ FACILE) +5' facile finale, per 20' complessivi.\n\nINTENSITÀ\nNessun target di ritmo gara o RPE universale per la parte centrale: deve essere individualizzato in base alla gara, allenamento e risposta fisiologica; nei segnali di fatica restare sotto. Nessuna forzatura di passo.\n\nFUELING\nSegue il rifornimento della bici; in genere non serve un gel separato per la durata breve, ma annotare eventuali disturbi GI e riconsiderare il rifornimento bici. STOP se dolore o appoggio alterato."
+          "title": "↳ Brick | 25' controllato"
         }
       },
       {
-        "workout_id": 4001050288,
+        "workout_id": 3996858557,
         "expected_sport_id": 2,
-        "expected_workout_day": "2027-03-11",
+        "expected_workout_day": "2026-10-10",
         "before": {
-          "description": "GUIDA BUILDER AGGIORNATA: intervallo RPE 3-4 come riferimento soggettivo per il blocco specifico, NON equivale a un wattaggio o passo IRONMAN universale. Calibrare sulla risposta individuale, soglie, FC e gara; correre anche piu facile se serve.\n\nOBIETTIVO\nEconomia in posizione aero con lieve variabilità di intensità controllata, senza imporre un target universale o nuovo threshold. Nei 3x15' aero il passo/potenza deve essere scelto sul profilo individuale e restare sotto LT2, RPE stabile; i 15' easy separano i blocchi. Mantenere tecnica e postura, non inseguire watt. Fueling coerente con durata e disponibilità energetica.\n\nSTRUTTURA\n15' avvio + 3x(10' Ironman Pace + 5' Ironman Pace+ + 15' recupero facile) + 25' fondo facile + 10' defaticamento = 140' totali.\n\nINTENSITÀ\nControllo RPE e FC, zone personali e contesto, senza presumere FTP=LT2. Eventuali target non indicati nel Builder richiedono personalizzazione e NON corrispondono a un invito a intensità libera.\n\nFUELING\nAlimentazione e rifornimento adeguati alla durata, prodotti già tollerati; osservare risposta GI e deriva in bici."
+          "title": "Lungo | Lungo 2h30 endurance + aero"
         },
         "after": {
-          "description": "GUIDA BUILDER AGGIORNATA: intervallo RPE 3-4 come riferimento soggettivo per il blocco specifico, NON equivale a un wattaggio o passo IRONMAN universale. Calibrare sulla risposta individuale, soglie, FC e gara; correre anche più facile se serve.\n\nOBIETTIVO\nEconomia in posizione aero con lieve variabilità di intensità controllata, senza imporre un target universale o nuovo threshold. Nei 3x15' aero il passo/potenza deve essere scelto sul profilo individuale e restare sotto LT2, RPE stabile; i 15' easy separano i blocchi. Mantenere tecnica e postura, non inseguire watt. Fueling coerente con durata e disponibilità energetica.\n\nSTRUTTURA\n15' avvio + 3x(10' Ironman Pace + 5' Ironman Pace+ + 15' recupero facile) + 25' fondo facile + 10' defaticamento = 140' totali.\n\nINTENSITÀ\nControllo RPE e FC, zone personali e contesto, senza presumere FTP=LT2. Eventuali target non indicati nel Builder richiedono personalizzazione e NON corrispondono a un invito a intensità libera.\n\nFUELING\nAlimentazione e rifornimento adeguati alla durata, prodotti già tollerati; osservare risposta GI e deriva in bici."
+          "title": "◆ Lungo | Lungo 2h30 endurance + aero"
         }
       },
       {
-        "workout_id": 4001052997,
+        "workout_id": 3996859107,
         "expected_sport_id": 2,
-        "expected_workout_day": "2027-03-18",
+        "expected_workout_day": "2026-10-17",
         "before": {
-          "description": "GUIDA BUILDER AGGIORNATA: intervallo RPE 3-4 come riferimento soggettivo per il blocco specifico, NON equivale a un wattaggio o passo IRONMAN universale. Calibrare sulla risposta individuale, soglie, FC e gara; correre anche piu facile se serve.\n\nOBIETTIVO\nSpecificità a Ironman Bike Pace GIÀ verificato per l'atleta, senza dedurlo automaticamente da FTP. Non è un over-under di soglia. Il target numerico resta da parametrizzare individualmente: step senza range RPE inventato. Eseguire solo se pacing/zona coerente con recupero e carico settimana. Fueling praticato in aero.\n\nSTRUTTURA\n15' Riscaldamento + 3x(10' Ironman Bike Pace individuale verificato + 20' Fondo facile) + 5' Fondo finale facile + 10' Defaticamento = 120' totali.\n\nINTENSITÀ\nControllare output e costo interno: FC, RPE, capacità di mantenere forma e alimentarsi. I tratti a ritmo gara non hanno target numerico universale, occorre la personalizzazione individuale prima dell'uso.\n\nFUELING\nArrivare alimentati; carboidrati e liquidi con strategia già provata, annotare comfort GI e ritmo di assunzione."
+          "title": "Lungo | Lungo 2h45 endurance + aero"
         },
         "after": {
-          "description": "GUIDA BUILDER AGGIORNATA: intervallo RPE 3-4 come riferimento soggettivo per il blocco specifico, NON equivale a un wattaggio o passo IRONMAN universale. Calibrare sulla risposta individuale, soglie, FC e gara; correre anche più facile se serve.\n\nOBIETTIVO\nSpecificità a Ironman Bike Pace GIÀ verificato per l'atleta, senza dedurlo automaticamente da FTP. Non è un over-under di soglia. Il target numerico resta da parametrizzare individualmente: step senza range RPE inventato. Eseguire solo se pacing/zona coerente con recupero e carico settimana. Fueling praticato in aero.\n\nSTRUTTURA\n15' Riscaldamento + 3x(10' Ironman Bike Pace individuale verificato + 20' Fondo facile) + 5' Fondo finale facile + 10' Defaticamento = 120' totali.\n\nINTENSITÀ\nControllare output e costo interno: FC, RPE, capacità di mantenere forma e alimentarsi. I tratti a ritmo gara non hanno target numerico universale, occorre la personalizzazione individuale prima dell'uso.\n\nFUELING\nArrivare alimentati; carboidrati e liquidi con strategia già provata, annotare comfort GI e ritmo di assunzione."
+          "title": "◆ Lungo | Lungo 2h45 endurance + aero"
         }
       },
       {
-        "workout_id": 4001053067,
+        "workout_id": 3996859347,
         "expected_sport_id": 2,
-        "expected_workout_day": "2027-03-21",
+        "expected_workout_day": "2026-10-20",
         "before": {
-          "description": "GUIDA BUILDER AGGIORNATA: intervallo RPE 3-4 come riferimento soggettivo per il blocco specifico, NON equivale a un wattaggio o passo IRONMAN universale. Calibrare sulla risposta individuale, soglie, FC e gara; correre anche piu facile se serve.\n\nOBIETTIVO\nLungo specifico parziale, non simulazione gara intera né test massimale. Le ripetizioni a IM Bike Pace richiedono pacing individuale preliminarmente validato; non usare un valore FTP % universale. Valutare aero, deriva FC/RPE, fueling già tollerato e possibile brick separato conteggiato dal piano.\n\nSTRUTTURA\n20' avvio + 3x(19' Ironman Pace + 6' Ironman Pace+ + 50' recupero facile) + 30' fondo facile + 10' defaticamento = 285' totali.\n\nINTENSITÀ\nControllare output e costo interno: FC, RPE, capacità di mantenere forma e alimentarsi. I tratti a ritmo gara non hanno target numerico universale, occorre la personalizzazione individuale prima dell'uso.\n\nFUELING\nArrivare alimentati; carboidrati e liquidi con strategia già provata, annotare comfort GI e ritmo di assunzione."
+          "title": "Qualità | 3x12' sub-threshold - 80'"
         },
         "after": {
-          "description": "GUIDA BUILDER AGGIORNATA: intervallo RPE 3-4 come riferimento soggettivo per il blocco specifico, NON equivale a un wattaggio o passo IRONMAN universale. Calibrare sulla risposta individuale, soglie, FC e gara; correre anche più facile se serve.\n\nOBIETTIVO\nLungo specifico parziale, non simulazione gara intera né test massimale. Le ripetizioni a IM Bike Pace richiedono pacing individuale preliminarmente validato; non usare un valore FTP % universale. Valutare aero, deriva FC/RPE, fueling già tollerato e possibile brick separato conteggiato dal piano.\n\nSTRUTTURA\n20' avvio + 3x(19' Ironman Pace + 6' Ironman Pace+ + 50' recupero facile) + 30' fondo facile + 10' defaticamento = 285' totali.\n\nINTENSITÀ\nControllare output e costo interno: FC, RPE, capacità di mantenere forma e alimentarsi. I tratti a ritmo gara non hanno target numerico universale, occorre la personalizzazione individuale prima dell'uso.\n\nFUELING\nArrivare alimentati; carboidrati e liquidi con strategia già provata, annotare comfort GI e ritmo di assunzione."
+          "title": "◆ Qualità | 3x12' sub-threshold - 80'"
         }
       },
       {
-        "workout_id": 4001053081,
+        "workout_id": 3996859484,
         "expected_sport_id": 3,
-        "expected_workout_day": "2027-03-21",
+        "expected_workout_day": "2026-10-22",
         "before": {
-          "description": "GUIDA BUILDER AGGIORNATA: intervallo RPE 2-4 come riferimento soggettivo per il blocco specifico, NON equivale a un wattaggio o passo IRONMAN universale. Calibrare sulla risposta individuale, soglie, FC e gara; correre anche piu facile se serve.\n\nOBIETTIVO\nBrick diagnostico dopo la bici, per osservare economia di corsa, passo, appoggi, respirazione e risposta al fueling; non un secondo lungo.\n\nSTRUTTURA\n5' molto piano dopo T2 + 20' a Ironman Run Pace percepito (o PIÙ FACILE) +5' facile finale, per 30' complessivi.\n\nINTENSITÀ\nNessun target di ritmo gara o RPE universale per la parte centrale: deve essere individualizzato in base alla gara, allenamento e risposta fisiologica; nei segnali di fatica restare sotto. Nessuna forzatura di passo.\n\nFUELING\nSegue il rifornimento della bici; in genere non serve un gel separato per la durata breve, ma annotare eventuali disturbi GI e riconsiderare il rifornimento bici. STOP se dolore o appoggio alterato."
+          "title": "Qualità | 3x10' sostenuto controllato - 70'"
         },
         "after": {
-          "description": "GUIDA BUILDER AGGIORNATA: intervallo RPE 2-4 come riferimento soggettivo per il blocco specifico, NON equivale a un wattaggio o passo IRONMAN universale. Calibrare sulla risposta individuale, soglie, FC e gara; correre anche più facile se serve.\n\nOBIETTIVO\nBrick diagnostico dopo la bici, per osservare economia di corsa, passo, appoggi, respirazione e risposta al fueling; non un secondo lungo.\n\nSTRUTTURA\n5' molto piano dopo T2 + 20' a Ironman Run Pace percepito (o PIÙ FACILE) +5' facile finale, per 30' complessivi.\n\nINTENSITÀ\nNessun target di ritmo gara o RPE universale per la parte centrale: deve essere individualizzato in base alla gara, allenamento e risposta fisiologica; nei segnali di fatica restare sotto. Nessuna forzatura di passo.\n\nFUELING\nSegue il rifornimento della bici; in genere non serve un gel separato per la durata breve, ma annotare eventuali disturbi GI e riconsiderare il rifornimento bici. STOP se dolore o appoggio alterato."
+          "title": "◆ Qualità | 3x10' sostenuto controllato - 70'"
         }
       },
       {
-        "workout_id": 4001058948,
+        "workout_id": 3996860483,
         "expected_sport_id": 2,
-        "expected_workout_day": "2027-03-30",
+        "expected_workout_day": "2026-11-03",
         "before": {
-          "description": "GUIDA BUILDER AGGIORNATA: intervallo RPE 3-4 come riferimento soggettivo per il blocco specifico, NON equivale a un wattaggio o passo IRONMAN universale. Calibrare sulla risposta individuale, soglie, FC e gara; correre anche piu facile se serve.\n\nOBIETTIVO\nAllenamento a specificità Ironman: ritmo gara personale da verificare, non una percentuale universale di FTP e non una ripetuta threshold obbligatoria. La fase aerobica deve restare controllata.\n\nSTRUTTURA\n15' avvio + 3x(8' Ironman Pace + 4' Ironman Pace+ + 8' recupero facile) + 45' fondo facile + 10' defaticamento = 130' totali.\n\nINTENSITÀ\n\nFUELING\nArrivare alimentati e distribuire carboidrati e liquidi già tollerati. Nei lunghi monitorare RPE, deriva FC/potenza, capacità di mantenere aero e risposta GI, senza nuovi mix sperimentali."
+          "title": "Qualità | Sub-threshold 3x10' - 75'"
         },
         "after": {
-          "description": "GUIDA BUILDER AGGIORNATA: intervallo RPE 3-4 come riferimento soggettivo per il blocco specifico, NON equivale a un wattaggio o passo IRONMAN universale. Calibrare sulla risposta individuale, soglie, FC e gara; correre anche più facile se serve.\n\nOBIETTIVO\nAllenamento a specificità Ironman: ritmo gara personale da verificare, non una percentuale universale di FTP e non una ripetuta threshold obbligatoria. La fase aerobica deve restare controllata.\n\nSTRUTTURA\n15' avvio + 3x(8' Ironman Pace + 4' Ironman Pace+ + 8' recupero facile) + 45' fondo facile + 10' defaticamento = 130' totali.\n\nINTENSITÀ\n\nFUELING\nArrivare alimentati e distribuire carboidrati e liquidi già tollerati. Nei lunghi monitorare RPE, deriva FC/potenza, capacità di mantenere aero e risposta GI, senza nuovi mix sperimentali."
+          "title": "◆ Qualità | Sub-threshold 3x10' - 75'"
         }
       },
       {
-        "workout_id": 4001062077,
+        "workout_id": 3996861024,
         "expected_sport_id": 2,
-        "expected_workout_day": "2027-04-06",
+        "expected_workout_day": "2026-11-10",
         "before": {
-          "description": "GUIDA BUILDER AGGIORNATA: intervallo RPE 3-4 come riferimento soggettivo per il blocco specifico, NON equivale a un wattaggio o passo IRONMAN universale. Calibrare sulla risposta individuale, soglie, FC e gara; correre anche piu facile se serve.\n\nOBIETTIVO\nAllenamento a specificità Ironman: ritmo gara personale da verificare, non una percentuale universale di FTP e non una ripetuta threshold obbligatoria. La fase aerobica deve restare controllata.\n\nSTRUTTURA\n15' Avvio facile + 3x(12' IM Bike Pace verificato + 8' Recupero sotto LT1) + 45' Fondo facile + 10' Defaticamento = 130' effettivi.\n\nINTENSITÀ\n\nFUELING\nArrivare alimentati e distribuire carboidrati e liquidi già tollerati. Nei lunghi monitorare RPE, deriva FC/potenza, capacità di mantenere aero e risposta GI, senza nuovi mix sperimentali."
+          "title": "Qualità | 4x8' threshold controllata - 80'"
         },
         "after": {
-          "description": "GUIDA BUILDER AGGIORNATA: intervallo RPE 3-4 come riferimento soggettivo per il blocco specifico, NON equivale a un wattaggio o passo IRONMAN universale. Calibrare sulla risposta individuale, soglie, FC e gara; correre anche più facile se serve.\n\nOBIETTIVO\nAllenamento a specificità Ironman: ritmo gara personale da verificare, non una percentuale universale di FTP e non una ripetuta threshold obbligatoria. La fase aerobica deve restare controllata.\n\nSTRUTTURA\n15' Avvio facile + 3x(12' IM Bike Pace verificato + 8' Recupero sotto LT1) + 45' Fondo facile + 10' Defaticamento = 130' effettivi.\n\nINTENSITÀ\n\nFUELING\nArrivare alimentati e distribuire carboidrati e liquidi già tollerati. Nei lunghi monitorare RPE, deriva FC/potenza, capacità di mantenere aero e risposta GI, senza nuovi mix sperimentali."
+          "title": "◆ Qualità | 4x8' threshold controllata - 80'"
         }
       },
       {
-        "workout_id": 4001062302,
-        "expected_sport_id": 3,
-        "expected_workout_day": "2027-04-10",
-        "before": {
-          "description": "GUIDA BUILDER AGGIORNATA: intervallo RPE 2-4 come riferimento soggettivo per il blocco specifico, NON equivale a un wattaggio o passo IRONMAN universale. Calibrare sulla risposta individuale, soglie, FC e gara; correre anche piu facile se serve.\n\nOBIETTIVO\nBrick diagnostico dopo la bici, per osservare economia di corsa, passo, appoggi, respirazione e risposta al fueling; non un secondo lungo.\n\nSTRUTTURA\n5' molto piano dopo T2 + 10' a Ironman Run Pace percepito (o PIÙ FACILE) +5' facile finale, per 20' complessivi.\n\nINTENSITÀ\nNessun target di ritmo gara o RPE universale per la parte centrale: deve essere individualizzato in base alla gara, allenamento e risposta fisiologica; nei segnali di fatica restare sotto. Nessuna forzatura di passo.\n\nFUELING\nSegue il rifornimento della bici; in genere non serve un gel separato per la durata breve, ma annotare eventuali disturbi GI e riconsiderare il rifornimento bici. STOP se dolore o appoggio alterato."
-        },
-        "after": {
-          "description": "GUIDA BUILDER AGGIORNATA: intervallo RPE 2-4 come riferimento soggettivo per il blocco specifico, NON equivale a un wattaggio o passo IRONMAN universale. Calibrare sulla risposta individuale, soglie, FC e gara; correre anche più facile se serve.\n\nOBIETTIVO\nBrick diagnostico dopo la bici, per osservare economia di corsa, passo, appoggi, respirazione e risposta al fueling; non un secondo lungo.\n\nSTRUTTURA\n5' molto piano dopo T2 + 10' a Ironman Run Pace percepito (o PIÙ FACILE) +5' facile finale, per 20' complessivi.\n\nINTENSITÀ\nNessun target di ritmo gara o RPE universale per la parte centrale: deve essere individualizzato in base alla gara, allenamento e risposta fisiologica; nei segnali di fatica restare sotto. Nessuna forzatura di passo.\n\nFUELING\nSegue il rifornimento della bici; in genere non serve un gel separato per la durata breve, ma annotare eventuali disturbi GI e riconsiderare il rifornimento bici. STOP se dolore o appoggio alterato."
-        }
-      },
-      {
-        "workout_id": 4001065444,
-        "expected_sport_id": 3,
-        "expected_workout_day": "2027-04-18",
-        "before": {
-          "description": "GUIDA BUILDER AGGIORNATA: intervallo RPE 2-4 come riferimento soggettivo per il blocco specifico, NON equivale a un wattaggio o passo IRONMAN universale. Calibrare sulla risposta individuale, soglie, FC e gara; correre anche piu facile se serve.\n\nOBIETTIVO\nBrick diagnostico dopo la bici, per osservare economia di corsa, passo, appoggi, respirazione e risposta al fueling; non un secondo lungo.\n\nSTRUTTURA\n5' molto piano dopo T2 + 20' a Ironman Run Pace percepito (o PIÙ FACILE) +5' facile finale, per 30' complessivi.\n\nINTENSITÀ\nNessun target di ritmo gara o RPE universale per la parte centrale: deve essere individualizzato in base alla gara, allenamento e risposta fisiologica; nei segnali di fatica restare sotto. Nessuna forzatura di passo.\n\nFUELING\nSegue il rifornimento della bici; in genere non serve un gel separato per la durata breve, ma annotare eventuali disturbi GI e riconsiderare il rifornimento bici. STOP se dolore o appoggio alterato."
-        },
-        "after": {
-          "description": "GUIDA BUILDER AGGIORNATA: intervallo RPE 2-4 come riferimento soggettivo per il blocco specifico, NON equivale a un wattaggio o passo IRONMAN universale. Calibrare sulla risposta individuale, soglie, FC e gara; correre anche più facile se serve.\n\nOBIETTIVO\nBrick diagnostico dopo la bici, per osservare economia di corsa, passo, appoggi, respirazione e risposta al fueling; non un secondo lungo.\n\nSTRUTTURA\n5' molto piano dopo T2 + 20' a Ironman Run Pace percepito (o PIÙ FACILE) +5' facile finale, per 30' complessivi.\n\nINTENSITÀ\nNessun target di ritmo gara o RPE universale per la parte centrale: deve essere individualizzato in base alla gara, allenamento e risposta fisiologica; nei segnali di fatica restare sotto. Nessuna forzatura di passo.\n\nFUELING\nSegue il rifornimento della bici; in genere non serve un gel separato per la durata breve, ma annotare eventuali disturbi GI e riconsiderare il rifornimento bici. STOP se dolore o appoggio alterato."
-        }
-      },
-      {
-        "workout_id": 4001071953,
+        "workout_id": 3996861535,
         "expected_sport_id": 2,
-        "expected_workout_day": "2027-04-27",
+        "expected_workout_day": "2026-11-17",
         "before": {
-          "description": "GUIDA BUILDER AGGIORNATA: intervallo RPE 3-4 come riferimento soggettivo per il blocco specifico, NON equivale a un wattaggio o passo IRONMAN universale. Calibrare sulla risposta individuale, soglie, FC e gara; correre anche piu facile se serve.\n\nOBIETTIVO\nAllenamento a specificità Ironman: ritmo gara personale da verificare, non una percentuale universale di FTP e non una ripetuta threshold obbligatoria. La fase aerobica deve restare controllata.\n\nSTRUTTURA\n15' avvio + 3x(8' Ironman Pace + 4' Ironman Pace+ + 8' recupero facile) + 45' fondo facile + 10' defaticamento = 130' totali.\n\nINTENSITÀ\n\nFUELING\nArrivare alimentati e distribuire carboidrati e liquidi già tollerati. Nei lunghi monitorare RPE, deriva FC/potenza, capacità di mantenere aero e risposta GI, senza nuovi mix sperimentali."
+          "title": "Qualità | 3x10x30\"/30\" high-aerobic - 85'"
         },
         "after": {
-          "description": "GUIDA BUILDER AGGIORNATA: intervallo RPE 3-4 come riferimento soggettivo per il blocco specifico, NON equivale a un wattaggio o passo IRONMAN universale. Calibrare sulla risposta individuale, soglie, FC e gara; correre anche più facile se serve.\n\nOBIETTIVO\nAllenamento a specificità Ironman: ritmo gara personale da verificare, non una percentuale universale di FTP e non una ripetuta threshold obbligatoria. La fase aerobica deve restare controllata.\n\nSTRUTTURA\n15' avvio + 3x(8' Ironman Pace + 4' Ironman Pace+ + 8' recupero facile) + 45' fondo facile + 10' defaticamento = 130' totali.\n\nINTENSITÀ\n\nFUELING\nArrivare alimentati e distribuire carboidrati e liquidi già tollerati. Nei lunghi monitorare RPE, deriva FC/potenza, capacità di mantenere aero e risposta GI, senza nuovi mix sperimentali."
+          "title": "◆ Qualità | 3x10x30\"/30\" high-aerobic - 85'"
         }
       },
       {
-        "workout_id": 4001072135,
-        "expected_sport_id": 3,
-        "expected_workout_day": "2027-05-02",
+        "workout_id": 3996862894,
+        "expected_sport_id": 2,
+        "expected_workout_day": "2026-12-05",
         "before": {
-          "description": "GUIDA BUILDER AGGIORNATA: intervallo RPE 2-4 come riferimento soggettivo per il blocco specifico, NON equivale a un wattaggio o passo IRONMAN universale. Calibrare sulla risposta individuale, soglie, FC e gara; correre anche piu facile se serve.\n\nOBIETTIVO\nBrick diagnostico dopo la bici, per osservare economia di corsa, passo, appoggi, respirazione e risposta al fueling; non un secondo lungo.\n\nSTRUTTURA\n5' molto piano dopo T2 + 20' a Ironman Run Pace percepito (o PIÙ FACILE) +5' facile finale, per 30' complessivi.\n\nINTENSITÀ\nNessun target di ritmo gara o RPE universale per la parte centrale: deve essere individualizzato in base alla gara, allenamento e risposta fisiologica; nei segnali di fatica restare sotto. Nessuna forzatura di passo.\n\nFUELING\nSegue il rifornimento della bici; in genere non serve un gel separato per la durata breve, ma annotare eventuali disturbi GI e riconsiderare il rifornimento bici. STOP se dolore o appoggio alterato."
+          "title": "Lungo | 3h25 endurance + Ironman Pace"
         },
         "after": {
-          "description": "GUIDA BUILDER AGGIORNATA: intervallo RPE 2-4 come riferimento soggettivo per il blocco specifico, NON equivale a un wattaggio o passo IRONMAN universale. Calibrare sulla risposta individuale, soglie, FC e gara; correre anche più facile se serve.\n\nOBIETTIVO\nBrick diagnostico dopo la bici, per osservare economia di corsa, passo, appoggi, respirazione e risposta al fueling; non un secondo lungo.\n\nSTRUTTURA\n5' molto piano dopo T2 + 20' a Ironman Run Pace percepito (o PIÙ FACILE) +5' facile finale, per 30' complessivi.\n\nINTENSITÀ\nNessun target di ritmo gara o RPE universale per la parte centrale: deve essere individualizzato in base alla gara, allenamento e risposta fisiologica; nei segnali di fatica restare sotto. Nessuna forzatura di passo.\n\nFUELING\nSegue il rifornimento della bici; in genere non serve un gel separato per la durata breve, ma annotare eventuali disturbi GI e riconsiderare il rifornimento bici. STOP se dolore o appoggio alterato."
+          "title": "◆ Lungo | 3h25 endurance + Ironman Pace"
         }
       },
       {
-        "workout_id": 4001081094,
-        "expected_sport_id": 3,
-        "expected_workout_day": "2027-05-27",
+        "workout_id": 3996863151,
+        "expected_sport_id": 2,
+        "expected_workout_day": "2026-12-08",
         "before": {
-          "title": "Aerobico | 55' facile 78-84% velocita soglia",
-          "description": "TARGET QUANTITATIVO\n8' 76-82% della velocita di soglia; 41' 78-84% della velocita di soglia; 6' 70-78%. Target Builder relativo alla Run Threshold Pace personale configurata dopo il test 5 km valido. RPE 2-3 rimane seconda lettura, con adeguamento per caldo, terreno e sensazioni muscolari.\n\nOBIETTIVO\nCorsa aerobica di continuità, senza ricerca di progressione o affaticamento.\n\nRISCALDAMENTO\n8' avvio lento RPE 1–2.\n\nPARTE CENTRALE\n41' fondo controllato RPE 2–3; passo conversazionale.\n\nDEFATICAMENTO\n6' corsa facile.\n\nNOTE\nNessun drill obbligatorio. Controllare sensazioni muscolotendinee; eventuale coordinazione leggera inclusa nel riscaldamento, mai aggiunta alla durata.\n\nFUELING\nAlimentazione normale, acqua secondo sete; snack se il pasto è lontano."
+          "title": "Soglia | 3x12' over-under - 85'"
         },
         "after": {
-          "title": "Aerobico | 55' facile 78-84% velocità soglia",
-          "description": "TARGET QUANTITATIVO\n8' 76-82% della velocità di soglia; 41' 78-84% della velocità di soglia; 6' 70-78%. Target Builder relativo alla Run Threshold Pace personale configurata dopo il test 5 km valido. RPE 2-3 rimane seconda lettura, con adeguamento per caldo, terreno e sensazioni muscolari.\n\nOBIETTIVO\nCorsa aerobica di continuità, senza ricerca di progressione o affaticamento.\n\nRISCALDAMENTO\n8' avvio lento RPE 1–2.\n\nPARTE CENTRALE\n41' fondo controllato RPE 2–3; passo conversazionale.\n\nDEFATICAMENTO\n6' corsa facile.\n\nNOTE\nNessun drill obbligatorio. Controllare sensazioni muscolotendinee; eventuale coordinazione leggera inclusa nel riscaldamento, mai aggiunta alla durata.\n\nFUELING\nAlimentazione normale, acqua secondo sete; snack se il pasto è lontano."
+          "title": "◆ Soglia | 3x12' over-under - 85'"
         }
       },
       {
-        "workout_id": 4001081245,
-        "expected_sport_id": 3,
-        "expected_workout_day": "2027-05-30",
+        "workout_id": 3996864023,
+        "expected_sport_id": 2,
+        "expected_workout_day": "2026-12-20",
         "before": {
-          "description": "GUIDA BUILDER AGGIORNATA: intervallo RPE 2-4 come riferimento soggettivo per il blocco specifico, NON equivale a un wattaggio o passo IRONMAN universale. Calibrare sulla risposta individuale, soglie, FC e gara; correre anche piu facile se serve.\n\nOBIETTIVO\nBrick diagnostico dopo la bici, per osservare economia di corsa, passo, appoggi, respirazione e risposta al fueling; non un secondo lungo.\n\nSTRUTTURA\n5' molto piano dopo T2 + 20' a Ironman Run Pace percepito (o PIÙ FACILE) +5' facile finale, per 30' complessivi.\n\nINTENSITÀ\nNessun target di ritmo gara o RPE universale per la parte centrale: deve essere individualizzato in base alla gara, allenamento e risposta fisiologica; nei segnali di fatica restare sotto. Nessuna forzatura di passo.\n\nFUELING\nSegue il rifornimento della bici; in genere non serve un gel separato per la durata breve, ma annotare eventuali disturbi GI e riconsiderare il rifornimento bici. STOP se dolore o appoggio alterato."
+          "title": "Lungo | 4h30 Ironman durability"
         },
         "after": {
-          "description": "GUIDA BUILDER AGGIORNATA: intervallo RPE 2-4 come riferimento soggettivo per il blocco specifico, NON equivale a un wattaggio o passo IRONMAN universale. Calibrare sulla risposta individuale, soglie, FC e gara; correre anche più facile se serve.\n\nOBIETTIVO\nBrick diagnostico dopo la bici, per osservare economia di corsa, passo, appoggi, respirazione e risposta al fueling; non un secondo lungo.\n\nSTRUTTURA\n5' molto piano dopo T2 + 20' a Ironman Run Pace percepito (o PIÙ FACILE) +5' facile finale, per 30' complessivi.\n\nINTENSITÀ\nNessun target di ritmo gara o RPE universale per la parte centrale: deve essere individualizzato in base alla gara, allenamento e risposta fisiologica; nei segnali di fatica restare sotto. Nessuna forzatura di passo.\n\nFUELING\nSegue il rifornimento della bici; in genere non serve un gel separato per la durata breve, ma annotare eventuali disturbi GI e riconsiderare il rifornimento bici. STOP se dolore o appoggio alterato."
+          "title": "◆ Lungo | 4h30 Ironman durability"
+        }
+      },
+      {
+        "workout_id": 3996865161,
+        "expected_sport_id": 2,
+        "expected_workout_day": "2027-01-02",
+        "before": {
+          "title": "Lungo | 4h05 - 3x35' Ironman Pace"
+        },
+        "after": {
+          "title": "◆ Lungo | 4h05 - 3x35' Ironman Pace"
+        }
+      },
+      {
+        "workout_id": 3996865733,
+        "expected_sport_id": 2,
+        "expected_workout_day": "2027-01-09",
+        "before": {
+          "title": "Lungo | 4h20 - Ironman Pace + Pace+"
+        },
+        "after": {
+          "title": "◆ Lungo | 4h20 - Ironman Pace + Pace+"
+        }
+      },
+      {
+        "workout_id": 3996867241,
+        "expected_sport_id": 3,
+        "expected_workout_day": "2027-01-16",
+        "before": {
+          "title": "Lungo | 105' facile"
+        },
+        "after": {
+          "title": "◆ Lungo | 105' facile"
+        }
+      },
+      {
+        "workout_id": 3996867297,
+        "expected_sport_id": 2,
+        "expected_workout_day": "2027-01-17",
+        "before": {
+          "title": "Lungo | 4h45 - durability specifica"
+        },
+        "after": {
+          "title": "◆ Lungo | 4h45 - durability specifica"
+        }
+      },
+      {
+        "workout_id": 3996868271,
+        "expected_sport_id": 2,
+        "expected_workout_day": "2027-01-30",
+        "before": {
+          "title": "Lungo | 4h45 - 3x45' Ironman Pace"
+        },
+        "after": {
+          "title": "◆ Lungo | 4h45 - 3x45' Ironman Pace"
+        }
+      },
+      {
+        "workout_id": 3996868992,
+        "expected_sport_id": 2,
+        "expected_workout_day": "2027-02-06",
+        "before": {
+          "title": "Lungo | 5h00 - 2x60' + 30' Ironman Pace"
+        },
+        "after": {
+          "title": "◆ Lungo | 5h00 - 2x60' + 30' Ironman Pace"
+        }
+      },
+      {
+        "workout_id": 3996869780,
+        "expected_sport_id": 3,
+        "expected_workout_day": "2027-02-13",
+        "before": {
+          "title": "Lungo | 110' facile"
+        },
+        "after": {
+          "title": "◆ Lungo | 110' facile"
+        }
+      },
+      {
+        "workout_id": 3996869851,
+        "expected_sport_id": 2,
+        "expected_workout_day": "2027-02-14",
+        "before": {
+          "title": "Lungo | 5h15 - durability specifica"
+        },
+        "after": {
+          "title": "◆ Lungo | 5h15 - durability specifica"
+        }
+      },
+      {
+        "workout_id": 3996870399,
+        "expected_sport_id": 2,
+        "expected_workout_day": "2027-02-20",
+        "before": {
+          "title": "Simulazione | REHEARSAL - Bici 4h00 - execution Ironman"
+        },
+        "after": {
+          "title": "◆ Simulazione | REHEARSAL - Bici 4h00 - execution Ironman"
+        }
+      },
+      {
+        "workout_id": 3996870953,
+        "expected_sport_id": 2,
+        "expected_workout_day": "2027-02-27",
+        "before": {
+          "title": "Lungo | 5h30 - peak race execution"
+        },
+        "after": {
+          "title": "◆ Lungo | 5h30 - peak race execution"
+        }
+      },
+      {
+        "workout_id": 3996871057,
+        "expected_sport_id": 3,
+        "expected_workout_day": "2027-02-28",
+        "before": {
+          "title": "Lungo | 2h05 facile"
+        },
+        "after": {
+          "title": "◆ Lungo | 2h05 facile"
+        }
+      },
+      {
+        "workout_id": 3996871489,
+        "expected_sport_id": 2,
+        "expected_workout_day": "2027-03-06",
+        "before": {
+          "title": "Lungo | 3h45 - specifico"
+        },
+        "after": {
+          "title": "◆ Lungo | 3h45 - specifico"
+        }
+      },
+      {
+        "workout_id": 3996872429,
+        "expected_sport_id": 2,
+        "expected_workout_day": "2027-03-13",
+        "before": {
+          "title": "Specifico | 2h15 specifico"
+        },
+        "after": {
+          "title": "◆ Specifico | 2h15 specifico"
         }
       }
     ]
   },
   "windows": [
     [
-      "2027-01-04",
-      "2027-03-31"
+      "2026-10-05",
+      "2026-12-31"
     ],
     [
-      "2027-04-01",
-      "2027-06-18"
+      "2027-01-01",
+      "2027-03-21"
     ]
   ],
-  "expected_classic_count": 249,
-  "expected_note_count": 31
+  "expected_classic_count": 229,
+  "expected_note_count": 35
 }
