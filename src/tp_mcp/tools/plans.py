@@ -1254,7 +1254,7 @@ async def tp_get_training_plan_notes(plan_id: int | str) -> dict[str, Any]:
 async def tp_add_training_plan_note(
     plan_id: int | str, note_date: str, title: str, description: str,
 ) -> dict[str, Any]:
-    """Create a native Calendar Note on a coach-owned private Training Plan."""
+    """Create a native Calendar Note on an explicitly targeted coach-owned plan."""
     try:
         v = _PlanIdInput(plan_id=plan_id)  # type: ignore[arg-type]
     except (ValidationError, ValueError) as e:
@@ -1274,21 +1274,8 @@ async def tp_add_training_plan_note(
         if meta.is_error:
             return _api_err(meta)
         plan = meta.data
-        if not isinstance(plan, dict) or plan.get("isPublic") is not False or plan.get("price") not in (None, 0):
-            return _err("PROTECTED_RESOURCE", "Only private, unpriced coach-owned plans.")
-        # Guarded exception: exactly two canonical W1 Monday notes, no Other
-        # workaround, no date shift. All other plan guards remain unchanged.
-        w1_monday = (
-            v.plan_id == 684602
-            and (plan.get("title") or "").strip()
-                == "[MCP TEST] IRONMAN Intermediate Assembly 24W"
-            and (plan.get("startDate") or "")[:10] == "2026-10-06"
-            and note_date == "2026-10-05"
-            and title.strip() in {
-                "[MCP TEST] FASE | Calibration / General Development",
-                "[MCP TEST] SETTIMANA 1 | Calibrazione e riferimenti",
-            }
-        )
+        if not isinstance(plan, dict) or plan.get("planId") != v.plan_id:
+            return _err("PROTECTED_RESOURCE", "Plan identity mismatch.")
         target = _parse_plan_date(note_date)
         raw_start = _parse_plan_date((plan.get("startDate") or "")[:10])
         days = max(plan.get("dayCount") or 0, (plan.get("weekCount") or 0) * 7)
