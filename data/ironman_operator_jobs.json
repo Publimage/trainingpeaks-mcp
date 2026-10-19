@@ -2162,6 +2162,14 @@
       "scope": "trainingpeaks:disposable-plan:684484:note-attachment-delete-canary-20261019",
       "script": "scripts/ironman_jobs/note_attachment_delete_lab_20261019.py",
       "test": "tests/test_note_attachment_delete_lab_20261019.py"
+    },
+    {
+      "name": "chasing_replace_athlete_guide_v11_20261019",
+      "mode": "GUARDED_WRITE",
+      "owner_id": 2116886,
+      "scope": "trainingpeaks:public-plan:685173:start-note:2664007:replace-athlete-guide-v11-only",
+      "script": "scripts/ironman_jobs/chasing_replace_athlete_guide_v11_20261019.py",
+      "test": "tests/test_chasing_replace_athlete_guide_v11_20261019.py"
     }
   ]
 }
