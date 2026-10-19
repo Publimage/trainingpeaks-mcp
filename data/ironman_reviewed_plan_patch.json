@@ -4,16 +4,16 @@
   "manifest": {
     "schema": "IRONMAN_PLAN_PATCH_V1",
     "owner_id": 2116886,
-    "plan_id": 684602,
-    "expected_title": "ALBERTO FAZI ENDURANCE | IRONMAN | 24 settimane | Intermediate | Italiano",
+    "plan_id": 685173,
+    "expected_title": "ALBERTO FAZI ENDURANCE | CHASING THE SLOT | 24 settimane | Advanced | Italiano",
     "expected_is_public": true,
-    "expected_workout_count": 259,
-    "scope": "trainingpeaks:plan:684602:symbol-system-titles-20261019-v1",
+    "expected_workout_count": 276,
+    "scope": "trainingpeaks:plan:685173:symbol-system-titles-20261019-v1",
     "items": [
       {
-        "workout_id": 3996872965,
+        "workout_id": 4000486945,
         "expected_sport_id": 1,
-        "expected_workout_day": "2026-10-06",
+        "expected_workout_day": "2027-01-05",
         "before": {
           "title": "Test | T1500 iniziale - 2500 m"
         },
@@ -22,20 +22,9 @@
         }
       },
       {
-        "workout_id": 3996858351,
-        "expected_sport_id": 2,
-        "expected_workout_day": "2026-10-08",
-        "before": {
-          "title": "Test | CP8 outdoor + indoor - 70'"
-        },
-        "after": {
-          "title": "◎ Test | CP8 outdoor + indoor - 70'"
-        }
-      },
-      {
-        "workout_id": 3996858955,
+        "workout_id": 4000490168,
         "expected_sport_id": 3,
-        "expected_workout_day": "2026-10-15",
+        "expected_workout_day": "2027-01-06",
         "before": {
           "title": "Test | 5 km - riferimento corsa"
         },
@@ -44,42 +33,53 @@
         }
       },
       {
-        "workout_id": 3996860110,
-        "expected_sport_id": 3,
-        "expected_workout_day": "2026-10-29",
-        "before": {
-          "title": "Test | Benchmark corsa - 20' steady dentro 50'"
-        },
-        "after": {
-          "title": "◎ Test | Benchmark corsa - 20' steady dentro 50'"
-        }
-      },
-      {
-        "workout_id": 3996862048,
-        "expected_sport_id": 1,
-        "expected_workout_day": "2026-11-24",
-        "before": {
-          "title": "Test | RETEST - T1500 - 2600 m — V1"
-        },
-        "after": {
-          "title": "◎ Test | RETEST - T1500 - 2600 m — V1"
-        }
-      },
-      {
-        "workout_id": 3996862267,
+        "workout_id": 4000490118,
         "expected_sport_id": 2,
-        "expected_workout_day": "2026-11-26",
+        "expected_workout_day": "2027-01-07",
         "before": {
-          "title": "Test | RETEST bici - 2x8' outdoor - 70'"
+          "title": "Test | 20' potenza sostenibile - 60'"
         },
         "after": {
-          "title": "◎ Test | RETEST bici - 2x8' outdoor - 70'"
+          "title": "◎ Test | 20' potenza sostenibile - 60'"
         }
       },
       {
-        "workout_id": 3996864491,
+        "workout_id": 4000954221,
+        "expected_sport_id": 1,
+        "expected_workout_day": "2027-02-03",
+        "before": {
+          "title": "Test | RETEST W05 | T1500 - 2500 m"
+        },
+        "after": {
+          "title": "◎ Test | RETEST W05 | T1500 - 2500 m"
+        }
+      },
+      {
+        "workout_id": 4000954256,
+        "expected_sport_id": 2,
+        "expected_workout_day": "2027-02-04",
+        "before": {
+          "title": "Test | RETEST W05 | 20' potenza - 60'"
+        },
+        "after": {
+          "title": "◎ Test | RETEST W05 | 20' potenza - 60'"
+        }
+      },
+      {
+        "workout_id": 4001048397,
+        "expected_sport_id": 1,
+        "expected_workout_day": "2027-03-03",
+        "before": {
+          "title": "Test | RETEST W09 | T1500 - 2500 m"
+        },
+        "after": {
+          "title": "◎ Test | RETEST W09 | T1500 - 2500 m"
+        }
+      },
+      {
+        "workout_id": 4001059176,
         "expected_sport_id": 3,
-        "expected_workout_day": "2026-12-24",
+        "expected_workout_day": "2027-03-29",
         "before": {
           "title": "Test | RETEST - 5 km - riferimento corsa"
         },
@@ -88,207 +88,86 @@
         }
       },
       {
-        "workout_id": 3996867371,
-        "expected_sport_id": 1,
-        "expected_workout_day": "2027-01-19",
-        "before": {
-          "title": "Test | RETEST - T1500 - 2600 m — V2"
-        },
-        "after": {
-          "title": "◎ Test | RETEST - T1500 - 2600 m — V2"
-        }
-      },
-      {
-        "workout_id": 3996867496,
-        "expected_sport_id": 2,
-        "expected_workout_day": "2027-01-20",
-        "before": {
-          "title": "Test | RETEST bici - 2x8' outdoor - 70'"
-        },
-        "after": {
-          "title": "◎ Test | RETEST bici - 2x8' outdoor - 70'"
-        }
-      },
-      {
-        "workout_id": 3996858622,
-        "expected_sport_id": 3,
-        "expected_workout_day": "2026-10-10",
-        "before": {
-          "title": "Brick | BRICK 10' molto facile"
-        },
-        "after": {
-          "title": "↳ Brick | BRICK 10' molto facile"
-        }
-      },
-      {
-        "workout_id": 3996859164,
-        "expected_sport_id": 3,
-        "expected_workout_day": "2026-10-17",
-        "before": {
-          "title": "Brick | BRICK 15' facile"
-        },
-        "after": {
-          "title": "↳ Brick | BRICK 15' facile"
-        }
-      },
-      {
-        "workout_id": 3996859706,
-        "expected_sport_id": 3,
-        "expected_workout_day": "2026-10-24",
-        "before": {
-          "title": "Brick | BRICK 20' facile"
-        },
-        "after": {
-          "title": "↳ Brick | BRICK 20' facile"
-        }
-      },
-      {
-        "workout_id": 3996860839,
-        "expected_sport_id": 3,
-        "expected_workout_day": "2026-11-07",
-        "before": {
-          "title": "Brick | 15' facile"
-        },
-        "after": {
-          "title": "↳ Brick | 15' facile"
-        }
-      },
-      {
-        "workout_id": 3996861365,
-        "expected_sport_id": 3,
-        "expected_workout_day": "2026-11-14",
-        "before": {
-          "title": "Brick | BRICK 20' facile"
-        },
-        "after": {
-          "title": "↳ Brick | BRICK 20' facile"
-        }
-      },
-      {
-        "workout_id": 3996861911,
-        "expected_sport_id": 3,
-        "expected_workout_day": "2026-11-21",
-        "before": {
-          "title": "Brick | 25' facile-controllato"
-        },
-        "after": {
-          "title": "↳ Brick | 25' facile-controllato"
-        }
-      },
-      {
-        "workout_id": 3996862954,
-        "expected_sport_id": 3,
-        "expected_workout_day": "2026-12-05",
-        "before": {
-          "title": "Brick | 20' facile"
-        },
-        "after": {
-          "title": "↳ Brick | 20' facile"
-        }
-      },
-      {
-        "workout_id": 3996863510,
-        "expected_sport_id": 3,
-        "expected_workout_day": "2026-12-12",
-        "before": {
-          "title": "Brick | 25' di cui 20' facile + 5' molto facile"
-        },
-        "after": {
-          "title": "↳ Brick | 25' di cui 20' facile + 5' molto facile"
-        }
-      },
-      {
-        "workout_id": 3996864085,
-        "expected_sport_id": 3,
-        "expected_workout_day": "2026-12-20",
-        "before": {
-          "title": "Brick | 20' facile"
-        },
-        "after": {
-          "title": "↳ Brick | 20' facile"
-        }
-      },
-      {
-        "workout_id": 3996865203,
-        "expected_sport_id": 3,
-        "expected_workout_day": "2027-01-02",
-        "before": {
-          "title": "Brick | 25' facile continuo"
-        },
-        "after": {
-          "title": "↳ Brick | 25' facile continuo"
-        }
-      },
-      {
-        "workout_id": 3996865772,
-        "expected_sport_id": 3,
-        "expected_workout_day": "2027-01-09",
-        "before": {
-          "title": "Brick | 30' facile → controllato"
-        },
-        "after": {
-          "title": "↳ Brick | 30' facile → controllato"
-        }
-      },
-      {
-        "workout_id": 3996867332,
-        "expected_sport_id": 3,
-        "expected_workout_day": "2027-01-17",
-        "before": {
-          "title": "Brick | 30' facile"
-        },
-        "after": {
-          "title": "↳ Brick | 30' facile"
-        }
-      },
-      {
-        "workout_id": 3996868350,
-        "expected_sport_id": 3,
-        "expected_workout_day": "2027-01-30",
-        "before": {
-          "title": "Brick | 35' facile → controllato"
-        },
-        "after": {
-          "title": "↳ Brick | 35' facile → controllato"
-        }
-      },
-      {
-        "workout_id": 3996869077,
-        "expected_sport_id": 3,
-        "expected_workout_day": "2027-02-06",
-        "before": {
-          "title": "Brick | 35' controllato"
-        },
-        "after": {
-          "title": "↳ Brick | 35' controllato"
-        }
-      },
-      {
-        "workout_id": 3996869924,
-        "expected_sport_id": 3,
-        "expected_workout_day": "2027-02-14",
-        "before": {
-          "title": "Brick | 30' facile"
-        },
-        "after": {
-          "title": "↳ Brick | 30' facile"
-        }
-      },
-      {
-        "workout_id": 3996870470,
+        "workout_id": 4000973064,
         "expected_sport_id": 3,
         "expected_workout_day": "2027-02-20",
         "before": {
-          "title": "Brick | REHEARSAL - Brick corsa 45' - RPE gara"
+          "title": "Brick | 15' transizione diagnostica e passo IM percepito"
         },
         "after": {
-          "title": "↳ Brick | REHEARSAL - Brick corsa 45' - RPE gara"
+          "title": "↳ Brick | 15' transizione diagnostica e passo IM percepito"
         }
       },
       {
-        "workout_id": 3996870986,
+        "workout_id": 4001048527,
         "expected_sport_id": 3,
-        "expected_workout_day": "2027-02-27",
+        "expected_workout_day": "2027-03-06",
+        "before": {
+          "title": "Brick | 20' diagnostico con passo IM percepito"
+        },
+        "after": {
+          "title": "↳ Brick | 20' diagnostico con passo IM percepito"
+        }
+      },
+      {
+        "workout_id": 4001053081,
+        "expected_sport_id": 3,
+        "expected_workout_day": "2027-03-21",
+        "before": {
+          "title": "Brick | 30' diagnostico con passo IM percepito"
+        },
+        "after": {
+          "title": "↳ Brick | 30' diagnostico con passo IM percepito"
+        }
+      },
+      {
+        "workout_id": 4001059264,
+        "expected_sport_id": 3,
+        "expected_workout_day": "2027-04-03",
+        "before": {
+          "title": "Brick | 25' diagnostico IM Run Pace individuale"
+        },
+        "after": {
+          "title": "↳ Brick | 25' diagnostico IM Run Pace individuale"
+        }
+      },
+      {
+        "workout_id": 4001062302,
+        "expected_sport_id": 3,
+        "expected_workout_day": "2027-04-10",
+        "before": {
+          "title": "Brick | 20' diagnostico con passo IM percepito"
+        },
+        "after": {
+          "title": "↳ Brick | 20' diagnostico con passo IM percepito"
+        }
+      },
+      {
+        "workout_id": 4001065444,
+        "expected_sport_id": 3,
+        "expected_workout_day": "2027-04-18",
+        "before": {
+          "title": "Brick | 30' diagnostico con passo IM percepito"
+        },
+        "after": {
+          "title": "↳ Brick | 30' diagnostico con passo IM percepito"
+        }
+      },
+      {
+        "workout_id": 4001072135,
+        "expected_sport_id": 3,
+        "expected_workout_day": "2027-05-02",
+        "before": {
+          "title": "Brick | 30' diagnostico con passo IM percepito"
+        },
+        "after": {
+          "title": "↳ Brick | 30' diagnostico con passo IM percepito"
+        }
+      },
+      {
+        "workout_id": 4001076980,
+        "expected_sport_id": 3,
+        "expected_workout_day": "2027-05-15",
         "before": {
           "title": "Brick | 40' race execution"
         },
@@ -297,229 +176,240 @@
         }
       },
       {
-        "workout_id": 3996871532,
+        "workout_id": 4001081245,
         "expected_sport_id": 3,
-        "expected_workout_day": "2027-03-06",
+        "expected_workout_day": "2027-05-30",
         "before": {
-          "title": "Brick | 25' controllato"
+          "title": "Brick | 30' diagnostico con passo IM percepito"
         },
         "after": {
-          "title": "↳ Brick | 25' controllato"
+          "title": "↳ Brick | 30' diagnostico con passo IM percepito"
         }
       },
       {
-        "workout_id": 3996858557,
-        "expected_sport_id": 2,
-        "expected_workout_day": "2026-10-10",
-        "before": {
-          "title": "Lungo | Lungo 2h30 endurance + aero"
-        },
-        "after": {
-          "title": "◆ Lungo | Lungo 2h30 endurance + aero"
-        }
-      },
-      {
-        "workout_id": 3996859107,
-        "expected_sport_id": 2,
-        "expected_workout_day": "2026-10-17",
-        "before": {
-          "title": "Lungo | Lungo 2h45 endurance + aero"
-        },
-        "after": {
-          "title": "◆ Lungo | Lungo 2h45 endurance + aero"
-        }
-      },
-      {
-        "workout_id": 3996859347,
-        "expected_sport_id": 2,
-        "expected_workout_day": "2026-10-20",
-        "before": {
-          "title": "Qualità | 3x12' sub-threshold - 80'"
-        },
-        "after": {
-          "title": "◆ Qualità | 3x12' sub-threshold - 80'"
-        }
-      },
-      {
-        "workout_id": 3996859484,
+        "workout_id": 4001086549,
         "expected_sport_id": 3,
-        "expected_workout_day": "2026-10-22",
+        "expected_workout_day": "2027-06-12",
         "before": {
-          "title": "Qualità | 3x10' sostenuto controllato - 70'"
+          "title": "Brick | BRICK 15' facile"
         },
         "after": {
-          "title": "◆ Qualità | 3x10' sostenuto controllato - 70'"
+          "title": "↳ Brick | BRICK 15' facile"
         }
       },
       {
-        "workout_id": 3996860483,
-        "expected_sport_id": 2,
-        "expected_workout_day": "2026-11-03",
-        "before": {
-          "title": "Qualità | Sub-threshold 3x10' - 75'"
-        },
-        "after": {
-          "title": "◆ Qualità | Sub-threshold 3x10' - 75'"
-        }
-      },
-      {
-        "workout_id": 3996861024,
-        "expected_sport_id": 2,
-        "expected_workout_day": "2026-11-10",
-        "before": {
-          "title": "Qualità | 4x8' threshold controllata - 80'"
-        },
-        "after": {
-          "title": "◆ Qualità | 4x8' threshold controllata - 80'"
-        }
-      },
-      {
-        "workout_id": 3996861535,
-        "expected_sport_id": 2,
-        "expected_workout_day": "2026-11-17",
-        "before": {
-          "title": "Qualità | 3x10x30\"/30\" high-aerobic - 85'"
-        },
-        "after": {
-          "title": "◆ Qualità | 3x10x30\"/30\" high-aerobic - 85'"
-        }
-      },
-      {
-        "workout_id": 3996862894,
-        "expected_sport_id": 2,
-        "expected_workout_day": "2026-12-05",
-        "before": {
-          "title": "Lungo | 3h25 endurance + Ironman Pace"
-        },
-        "after": {
-          "title": "◆ Lungo | 3h25 endurance + Ironman Pace"
-        }
-      },
-      {
-        "workout_id": 3996863151,
-        "expected_sport_id": 2,
-        "expected_workout_day": "2026-12-08",
-        "before": {
-          "title": "Soglia | 3x12' over-under - 85'"
-        },
-        "after": {
-          "title": "◆ Soglia | 3x12' over-under - 85'"
-        }
-      },
-      {
-        "workout_id": 3996864023,
-        "expected_sport_id": 2,
-        "expected_workout_day": "2026-12-20",
-        "before": {
-          "title": "Lungo | 4h30 Ironman durability"
-        },
-        "after": {
-          "title": "◆ Lungo | 4h30 Ironman durability"
-        }
-      },
-      {
-        "workout_id": 3996865161,
-        "expected_sport_id": 2,
-        "expected_workout_day": "2027-01-02",
-        "before": {
-          "title": "Lungo | 4h05 - 3x35' Ironman Pace"
-        },
-        "after": {
-          "title": "◆ Lungo | 4h05 - 3x35' Ironman Pace"
-        }
-      },
-      {
-        "workout_id": 3996865733,
+        "workout_id": 4000490183,
         "expected_sport_id": 2,
         "expected_workout_day": "2027-01-09",
         "before": {
-          "title": "Lungo | 4h20 - Ironman Pace + Pace+"
+          "title": "Lungo | 3h10 endurance sotto LT1 e aero opzionale"
         },
         "after": {
-          "title": "◆ Lungo | 4h20 - Ironman Pace + Pace+"
+          "title": "◆ Lungo | 3h10 endurance sotto LT1 e aero opzionale"
         }
       },
       {
-        "workout_id": 3996867241,
-        "expected_sport_id": 3,
+        "workout_id": 4000490450,
+        "expected_sport_id": 2,
         "expected_workout_day": "2027-01-16",
         "before": {
-          "title": "Lungo | 105' facile"
+          "title": "Lungo | 3h35 fondo sotto LT1 e aero facoltativa"
         },
         "after": {
-          "title": "◆ Lungo | 105' facile"
+          "title": "◆ Lungo | 3h35 fondo sotto LT1 e aero facoltativa"
         }
       },
       {
-        "workout_id": 3996867297,
+        "workout_id": 4000591505,
         "expected_sport_id": 2,
-        "expected_workout_day": "2027-01-17",
+        "expected_workout_day": "2027-01-21",
         "before": {
-          "title": "Lungo | 4h45 - durability specifica"
+          "title": "Qualità | 105' 3x8' steady alto e 6' recupero"
         },
         "after": {
-          "title": "◆ Lungo | 4h45 - durability specifica"
+          "title": "◆ Qualità | 105' 3x8' steady alto e 6' recupero"
         }
       },
       {
-        "workout_id": 3996868271,
-        "expected_sport_id": 2,
-        "expected_workout_day": "2027-01-30",
-        "before": {
-          "title": "Lungo | 4h45 - 3x45' Ironman Pace"
-        },
-        "after": {
-          "title": "◆ Lungo | 4h45 - 3x45' Ironman Pace"
-        }
-      },
-      {
-        "workout_id": 3996868992,
+        "workout_id": 4000954310,
         "expected_sport_id": 2,
         "expected_workout_day": "2027-02-06",
         "before": {
-          "title": "Lungo | 5h00 - 2x60' + 30' Ironman Pace"
+          "title": "Lungo | 4h05 endurance sotto LT1"
         },
         "after": {
-          "title": "◆ Lungo | 5h00 - 2x60' + 30' Ironman Pace"
+          "title": "◆ Lungo | 4h05 endurance sotto LT1"
         }
       },
       {
-        "workout_id": 3996869780,
-        "expected_sport_id": 3,
+        "workout_id": 4000966582,
+        "expected_sport_id": 2,
         "expected_workout_day": "2027-02-13",
         "before": {
-          "title": "Lungo | 110' facile"
+          "title": "Lungo | 4h15 durability 3x15' aero +45' easy"
         },
         "after": {
-          "title": "◆ Lungo | 110' facile"
+          "title": "◆ Lungo | 4h15 durability 3x15' aero +45' easy"
         }
       },
       {
-        "workout_id": 3996869851,
-        "expected_sport_id": 2,
-        "expected_workout_day": "2027-02-14",
-        "before": {
-          "title": "Lungo | 5h15 - durability specifica"
-        },
-        "after": {
-          "title": "◆ Lungo | 5h15 - durability specifica"
-        }
-      },
-      {
-        "workout_id": 3996870399,
+        "workout_id": 4000973031,
         "expected_sport_id": 2,
         "expected_workout_day": "2027-02-20",
         "before": {
-          "title": "Simulazione | REHEARSAL - Bici 4h00 - execution Ironman"
+          "title": "Lungo | 3h40 3x10' aero facile +45' LT1"
         },
         "after": {
-          "title": "◆ Simulazione | REHEARSAL - Bici 4h00 - execution Ironman"
+          "title": "◆ Lungo | 3h40 3x10' aero facile +45' LT1"
         }
       },
       {
-        "workout_id": 3996870953,
+        "workout_id": 4001048502,
         "expected_sport_id": 2,
-        "expected_workout_day": "2027-02-27",
+        "expected_workout_day": "2027-03-06",
+        "before": {
+          "title": "Lungo | 4h30 durability 3x25' aero +45' LT1"
+        },
+        "after": {
+          "title": "◆ Lungo | 4h30 durability 3x25' aero +45' LT1"
+        }
+      },
+      {
+        "workout_id": 4001050384,
+        "expected_sport_id": 2,
+        "expected_workout_day": "2027-03-13",
+        "before": {
+          "title": "Lungo | 4h25 3x70' endurance e aero opzionale"
+        },
+        "after": {
+          "title": "◆ Lungo | 4h25 3x70' endurance e aero opzionale"
+        }
+      },
+      {
+        "workout_id": 4001053067,
+        "expected_sport_id": 2,
+        "expected_workout_day": "2027-03-21",
+        "before": {
+          "title": "Specifico | 4h45 3x25' IM Pace preliminare +50' easy"
+        },
+        "after": {
+          "title": "◆ Specifico | 4h45 3x25' IM Pace preliminare +50' easy"
+        }
+      },
+      {
+        "workout_id": 4001059223,
+        "expected_sport_id": 2,
+        "expected_workout_day": "2027-04-03",
+        "before": {
+          "title": "Lungo | 4h40 3x35' IM Pace +25' finale LT1"
+        },
+        "after": {
+          "title": "◆ Lungo | 4h40 3x35' IM Pace +25' finale LT1"
+        }
+      },
+      {
+        "workout_id": 4001062280,
+        "expected_sport_id": 2,
+        "expected_workout_day": "2027-04-10",
+        "before": {
+          "title": "Lungo | 3h35 2x30' IM Pace +15' endurance finale"
+        },
+        "after": {
+          "title": "◆ Lungo | 3h35 2x30' IM Pace +15' endurance finale"
+        }
+      },
+      {
+        "workout_id": 4001065380,
+        "expected_sport_id": 1,
+        "expected_workout_day": "2027-04-16",
+        "before": {
+          "title": "Specifico | 3500 m continuati no-stop - rehearsal"
+        },
+        "after": {
+          "title": "◆ Specifico | 3500 m continuati no-stop - rehearsal"
+        }
+      },
+      {
+        "workout_id": 4001065433,
+        "expected_sport_id": 2,
+        "expected_workout_day": "2027-04-18",
+        "before": {
+          "title": "Lungo | 5h 3x30' IM Pace +55' easy"
+        },
+        "after": {
+          "title": "◆ Lungo | 5h 3x30' IM Pace +55' easy"
+        }
+      },
+      {
+        "workout_id": 4001071997,
+        "expected_sport_id": 3,
+        "expected_workout_day": "2027-05-01",
+        "before": {
+          "title": "Lungo | 150' facile"
+        },
+        "after": {
+          "title": "◆ Lungo | 150' facile"
+        }
+      },
+      {
+        "workout_id": 4001072083,
+        "expected_sport_id": 2,
+        "expected_workout_day": "2027-05-02",
+        "before": {
+          "title": "Lungo | 4h10 3x35' IM Pace +25' LT1"
+        },
+        "after": {
+          "title": "◆ Lungo | 4h10 3x35' IM Pace +25' LT1"
+        }
+      },
+      {
+        "workout_id": 4001074565,
+        "expected_sport_id": 2,
+        "expected_workout_day": "2027-05-08",
+        "before": {
+          "title": "Lungo | 3h40 durability 3x15' aero"
+        },
+        "after": {
+          "title": "◆ Lungo | 3h40 durability 3x15' aero"
+        }
+      },
+      {
+        "workout_id": 4001076910,
+        "expected_sport_id": 1,
+        "expected_workout_day": "2027-05-14",
+        "before": {
+          "title": "Specifico | 4000 m continuati no-stop - rehearsal"
+        },
+        "after": {
+          "title": "◆ Specifico | 4000 m continuati no-stop - rehearsal"
+        }
+      },
+      {
+        "workout_id": 4001076968,
+        "expected_sport_id": 2,
+        "expected_workout_day": "2027-05-15",
+        "before": {
+          "title": "Lungo | 4h55 3x30' IM Pace +35' fondo facile"
+        },
+        "after": {
+          "title": "◆ Lungo | 4h55 3x30' IM Pace +35' fondo facile"
+        }
+      },
+      {
+        "workout_id": 4001081009,
+        "expected_sport_id": 3,
+        "expected_workout_day": "2027-05-29",
+        "before": {
+          "title": "Lungo | 150' facile"
+        },
+        "after": {
+          "title": "◆ Lungo | 150' facile"
+        }
+      },
+      {
+        "workout_id": 4001081215,
+        "expected_sport_id": 2,
+        "expected_workout_day": "2027-05-30",
         "before": {
           "title": "Lungo | 5h30 - peak race execution"
         },
@@ -528,50 +418,39 @@
         }
       },
       {
-        "workout_id": 3996871057,
-        "expected_sport_id": 3,
-        "expected_workout_day": "2027-02-28",
+        "workout_id": 4001083740,
+        "expected_sport_id": 2,
+        "expected_workout_day": "2027-06-05",
         "before": {
-          "title": "Lungo | 2h05 facile"
+          "title": "Specifico | 225' 2x20' IM Pace +55' facile"
         },
         "after": {
-          "title": "◆ Lungo | 2h05 facile"
+          "title": "◆ Specifico | 225' 2x20' IM Pace +55' facile"
         }
       },
       {
-        "workout_id": 3996871489,
+        "workout_id": 4001086537,
         "expected_sport_id": 2,
-        "expected_workout_day": "2027-03-06",
+        "expected_workout_day": "2027-06-12",
         "before": {
-          "title": "Lungo | 3h45 - specifico"
+          "title": "Specifico | 125' 2x8' IM Pace +16' easy"
         },
         "after": {
-          "title": "◆ Lungo | 3h45 - specifico"
-        }
-      },
-      {
-        "workout_id": 3996872429,
-        "expected_sport_id": 2,
-        "expected_workout_day": "2027-03-13",
-        "before": {
-          "title": "Specifico | 2h15 specifico"
-        },
-        "after": {
-          "title": "◆ Specifico | 2h15 specifico"
+          "title": "◆ Specifico | 125' 2x8' IM Pace +16' easy"
         }
       }
     ]
   },
   "windows": [
     [
-      "2026-10-05",
-      "2026-12-31"
+      "2027-01-04",
+      "2027-03-31"
     ],
     [
-      "2027-01-01",
-      "2027-03-21"
+      "2027-04-01",
+      "2027-06-18"
     ]
   ],
-  "expected_classic_count": 229,
-  "expected_note_count": 35
+  "expected_classic_count": 249,
+  "expected_note_count": 31
 }
