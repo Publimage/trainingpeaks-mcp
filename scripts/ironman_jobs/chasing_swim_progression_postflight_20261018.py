@@ -1,7 +1,7 @@
 """Read-only provider postflight for CHASING 685173 Swim rebuild."""
 import asyncio,json
 from tp_mcp.client import TPClient
-from scripts.ironman_jobs import chasing_swim_rebuild_20261018 as r
+try:\n    from scripts.ironman_jobs import chasing_swim_rebuild_20261018 as r\nexcept ModuleNotFoundError:\n    import chasing_swim_rebuild_20261018 as r
 
 async def main():
     specs=r.build_specs()
