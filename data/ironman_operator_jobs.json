@@ -2170,6 +2170,14 @@
       "scope": "trainingpeaks:public-plan:685173:start-note:2664007:replace-athlete-guide-v11-only",
       "script": "scripts/ironman_jobs/chasing_replace_athlete_guide_v11_20261019.py",
       "test": "tests/test_chasing_replace_athlete_guide_v11_20261019.py"
+    },
+    {
+      "name": "chasing_athlete_guide_v11_postflight_20261019",
+      "mode": "READ_ONLY",
+      "owner_id": 2116886,
+      "scope": "trainingpeaks:public-plan:685173:start-note:2664007:athlete-guide-v11-postflight-read",
+      "script": "scripts/ironman_jobs/chasing_athlete_guide_v11_postflight_20261019.py",
+      "test": "tests/test_chasing_athlete_guide_v11_postflight_20261019.py"
     }
   ]
 }
