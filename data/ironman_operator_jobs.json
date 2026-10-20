@@ -2191,7 +2191,7 @@
       "name": "half_beginner_16w_marketplace_html_20261020",
       "mode": "GUARDED_WRITE",
       "owner_id": 2116886,
-      "scope": "trainingpeaks:private-plan:686994:marketplace-description-html-only",
+      "scope": "trainingpeaks:coach-owned-plan:686994:description-html-only-preserve-visibility-price",
       "script": "scripts/ironman_jobs/half_beginner_16w_marketplace_html_20261020.py",
       "test": "tests/test_half_beginner_16w_marketplace_html_20261020.py"
     }
