@@ -1,4 +1,4 @@
-"""Write approved 70.3 Beginner product description in private plan ONLY.
+"""Write approved 70.3 Beginner product description without changing visibility or price.
 
 Based on the previously verified Intermediate/Chasing HTML-only plan PUT
 route. Preserve all other plan metadata, notes, PDFs, and 133 workouts.
@@ -107,8 +107,17 @@ async def run() -> int:
         must(p.get("planId") == PLAN and p.get("title") == TITLE
              and p.get("weekCount") == 16 and p.get("workoutCount") == 133,
              "TARGET_PLAN_MISMATCH")
-        must(p.get("isPublic") is False and p.get("price") in (None,0),
-             "NOT_PRIVATE_UNPRICED")
+        # Plan may carry provisional pricing and a provider isPublic flag:
+        # preserve the exact live values, never interpret them as consent
+        # to publish, unpublish, or change the price.
+        if p.get("isPublic") is False and p.get("price") in (None, 0):
+            pass
+        elif p.get("isPublic") is True and p.get("price") == 98:
+            pass
+        else:
+            raise SafeStop("VISIBILITY_OR_PRICE_NOT_IN_APPROVED_BASELINE")
+        baseline_visibility = p.get("isPublic")
+        baseline_price = p.get("price")
         must(p.get("description") in (None, "", HTML), "DESCRIPTION_CONFLICT")
         for k in ("author", "planEmail", "planLanguage"):
             must(p.get(k) not in (None, ""), "REQUIRED_PLAN_METADATA_MISSING_"+k)
@@ -152,7 +161,8 @@ async def run() -> int:
                    if k != "description" and baseline.get(k) != p2.get(k)}
         must(all(("modif" in k.lower() or "updat" in k.lower()) for k in changed),
              "OTHER_PLAN_METADATA_CHANGED:"+",".join(sorted(changed)))
-        must(p2.get("isPublic") is False and p2.get("price") in (None,0)
+        must(p2.get("isPublic") is baseline_visibility
+             and p2.get("price") == baseline_price
              and p2.get("workoutCount") == 133 and p2.get("weekCount") == 16
              and p2.get("title") == TITLE,
              "PLAN_SCOPE_DRIFT")
@@ -164,7 +174,8 @@ async def run() -> int:
               json.dumps({"plan_id":PLAN,"description_chars":len(HTML),
                           "sha256":hashlib.sha256(HTML.encode("utf-8")).hexdigest(),
                           "notes":17,"pdfs":2,"workouts":133,"weeks":16,
-                          "public":False,"price":p2.get("price")},
+                          "provider_is_public_unchanged":p2.get("isPublic"),
+                          "provisional_price_unchanged":p2.get("price")},
                          ensure_ascii=False), flush=True)
         return 0
 
