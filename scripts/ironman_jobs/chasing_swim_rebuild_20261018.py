@@ -230,26 +230,66 @@ def title_for(week,kind,total,main,groups,test_index=0):
     return f"Attivazione | sciolto + richiami brevi - {total} m"
 
 def structure_for(groups):
+    """Convert swim groups to native meters + zero-pace timed Recover steps.
+
+    The original builder emitted a swim-only repetition and put recovery
+    exclusively in the description. This version makes the prescribed
+    recovery executable in TrainingPeaks and compatible swim devices.
+    """
     cursor=0; blocks=[]
     for x in groups:
         distance=x["count"]*x["metres"]
+        steps=[{
+            "name":x["name"],
+            "length":{"value":x["metres"],"unit":"meter"},
+            "targets":[{"minValue":x["rpe"][0],"maxValue":x["rpe"][1]}],
+            "intensityClass":x["klass"],
+            "openDuration":False
+        }]
+        if x["count"]>1 and x["recovery"]>0:
+            steps.append({
+                "name":"Recover",
+                "length":{"value":x["recovery"],"unit":"second"},
+                "targets":[{"minValue":0,"maxValue":0}],
+                "intensityClass":"rest",
+                "openDuration":False
+            })
         block={
-          "type":"step" if x["count"]==1 else "repetition",
-          "length":{"value":1 if x["count"]==1 else x["count"],"unit":"repetition"},
-          "steps":[{
-             "name":x["name"],
-             "length":{"value":x["metres"],"unit":"meter"},
-             "targets":[{"minValue":x["rpe"][0],"maxValue":x["rpe"][1]}],
-             "intensityClass":x["klass"],
-             "openDuration":False
-          }],
-          "begin":cursor,"end":cursor+distance
+            "type":"step" if x["count"]==1 else "repetition",
+            "length":{"value":1 if x["count"]==1 else x["count"],"unit":"repetition"},
+            "steps":steps,
+            "begin":cursor,"end":cursor+distance
         }
-        blocks.append(block);cursor+=distance
+        blocks.append(block); cursor+=distance
     s={"structure":blocks,"primaryLengthMetric":"distance",
        "visualizationDistanceUnit":"meter",
        "primaryIntensityMetric":"rpe","primaryIntensityTargetOrRange":"range"}
     return _ensure_structure_preview(s)
+
+
+def audit_native_swim_rests(groups, structure):
+    """Block any product publish if prescribed rests are only textual."""
+    blocks=(structure or {}).get("structure") or []
+    need(len(blocks)==len(groups),"SWIM_REST_BLOCK_COUNT_MISMATCH")
+    missing=[]
+    for index,(source,block) in enumerate(zip(groups,blocks),1):
+        steps=block.get("steps") or []
+        expected=source["recovery"] if source["count"]>1 else 0
+        recover=[s for s in steps if s.get("name")=="Recover"]
+        if expected:
+            good=(len(recover)==1
+                  and (recover[0].get("length") or {}).get("unit")=="second"
+                  and (recover[0].get("length") or {}).get("value")==expected
+                  and recover[0].get("intensityClass")=="rest"
+                  and all((t.get("minValue")==0 and t.get("maxValue")==0)
+                          for t in (recover[0].get("targets") or [])))
+            if not good:missing.append(index)
+        elif recover:missing.append(index)
+    need(not missing,"SWIM_NATIVE_RESTS_NOT_EQUAL_TEXT_"+str(missing))
+    return {"swim_groups":len(groups),
+            "native_rest_groups":sum(1 for x in groups if x["count"]>1 and x["recovery"]>0)}
+
+
 
 def equipment_for(week,kind):
     if kind in ("tech","tech_easy"):
@@ -385,6 +425,7 @@ def final_content_gate(rows,specs):
         need(abs((w.get("distancePlanned") or 0)-s["metres"])<.01,"DISTANCE_DRIFT_"+str(s["id"]))
         need(abs((w.get("totalTimePlanned") or 0)*60-s["minutes"])<.02,"DURATION_DRIFT_"+str(s["id"]))
         st=w.get("structure") or {}
+        audit_native_swim_rests(s["groups"],st)
         need(st.get("primaryLengthMetric")=="distance" and st.get("primaryIntensityMetric")=="rpe"
              and len(st.get("structure") or [])>0 and len(st.get("polyline") or [])>0,
              "BUILDER_GATE_"+str(s["id"]))
