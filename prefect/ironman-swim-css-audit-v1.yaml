@@ -1,0 +1,23 @@
+prefect-version: "3.8.8"
+name: ironman-swim-css-audit-v1
+build: []
+push: []
+pull:
+  - prefect.deployments.steps.set_working_directory:
+      directory: "/opt/ironman-prefect/swim-audit-src"
+deployments:
+  - name: css2200-once-readonly
+    version: "v1-oneoff-readonly"
+    tags:
+      - ironman
+      - swim
+      - readonly
+      - css-canary
+    description: "One-off CSS 2200 m; read-only Drive/TrainingPeaks and private report. FAIL means negative workout QA, not failed execution."
+    entrypoint: "scripts/ironman_jobs/swim_css_prefect_flow.py:swim_css_flow"
+    parameters: {}
+    schedules: []
+    work_pool:
+      name: "ironman-prefect-staging-process"
+      work_queue_name: null
+      job_variables: {}
