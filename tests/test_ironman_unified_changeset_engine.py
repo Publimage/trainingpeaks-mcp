@@ -94,7 +94,7 @@ def test_one_engine_handles_different_plan_resources_and_provider_readback(ledge
     assert all(x["state"] == "DONE_VERIFIED" for x in done["results"])
     assert sum(a.writes for a in adapters.values()) == 5
     again = run(m, adapters, ledger)
-    assert all(x["source"] == "ledger_verified" for x in again["results"])
+    assert all(x["source"] == "provider_rechecked" for x in again["results"])
     assert sum(a.writes for a in adapters.values()) == 5
 
 
@@ -197,3 +197,17 @@ def test_preimage_drift_is_blocked_not_published(ledger):
     out = run(make_manifest(ch), {ch["kind"]: adapter}, ledger)
     assert out["results"][0]["state"] == "BLOCKED_CONFLICT"
     assert adapter.writes == 0
+
+
+def test_completed_item_provider_drift_on_resume_is_detected(ledger):
+    before, after = {"v": 1}, {"v": 2}
+    adapter = FakeAdapter(before)
+    change = item("test1", "plan.workout.patch", 51, before, after)
+    manifest = make_manifest(change)
+    first = run(manifest, {change["kind"]: adapter}, ledger)
+    assert first["results"][0]["state"] == "DONE_VERIFIED"
+    adapter.value = {"v": 3}  # another operator changed the provider
+    second = run(manifest, {change["kind"]: adapter}, ledger)
+    assert second["results"][0]["state"] == "BLOCKED_CONFLICT"
+    assert second["results"][0]["code"] == "POST_VERIFIED_PROVIDER_DRIFT"
+    assert adapter.writes == 1
