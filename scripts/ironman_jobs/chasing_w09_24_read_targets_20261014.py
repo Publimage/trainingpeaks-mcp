@@ -15,10 +15,10 @@ async def main():
    if q.is_error or not isinstance(q.data,list):raise RuntimeError("READ")
    rows+=q.data
   # W20 exact plan-copy DTOs for existing approved publisher (read only).
-  w20_ids={4001052939}
+  w20_ids={4001048384,4001048439,4001048502,4001048428}
   w20=[w for w in rows if w.get("workoutId") in w20_ids]
-  if len(w20)!=1:return 6
-  print(json.dumps({"stage":"CHASING_W11_EASY_NATIVE_READ","items":[
+  if len(w20)!=4:return 6
+  print(json.dumps({"stage":"CHASING_W09_NATIVE_READ","items":[
       {"workout_id":w["workoutId"],"day":w.get("workoutDay"),
        "sport_id":w.get("workoutTypeValueId"),"title":w.get("title"),
        "distancePlanned":w.get("distancePlanned"),"totalTimePlanned":w.get("totalTimePlanned"),
