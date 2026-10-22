@@ -246,6 +246,7 @@ def _handler_factory(config: dict[str, Any]):
             self.send_response(status)
             self.send_header("Content-Type", "application/json")
             self.send_header("Content-Length", str(len(raw)))
+            self.send_header("Cache-Control", "no-store")
             self.end_headers()
             self.wfile.write(raw)
 
@@ -294,8 +295,10 @@ def _handler_factory(config: dict[str, Any]):
                         self._write_json(403, {"error": "SWIM_ACCESS_DENIED"})
                     except (KeyError, TypeError, ValueError):
                         self._write_json(400, {"error": "SWIM_INPUT_UNVERIFIABLE"})
+                    except (TimeoutError, ConnectionError):
+                        self._write_json(503, {"error": "SWIM_TRANSPORT_UNAVAILABLE"})
                     except Exception:
-                        self._write_json(502, {"error": "SWIM_READER_UNAVAILABLE"})
+                        self._write_json(424, {"error": "SWIM_READER_REJECTED"})
                     else:
                         self._write_json(200, result)
                     return
