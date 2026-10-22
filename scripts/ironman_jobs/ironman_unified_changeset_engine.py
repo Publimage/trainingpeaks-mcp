@@ -275,7 +275,29 @@ def run_changeset(
         name, kind = item["id"], item["kind"]
         state = ledger.status(manifest["request_id"], name)
         if state == "DONE_VERIFIED":
-            outcomes.append({"id": name, "state": state, "source": "ledger_verified"})
+            # The ledger is not the provider source of truth. A resumed flow
+            # must recheck the actual object before it claims verification.
+            adapter = adapters.get(kind)
+            if adapter is None:
+                outcomes.append({"id": name, "state": "UNKNOWN_NEEDS_READBACK",
+                                 "code": "ADAPTER_NOT_INSTALLED"})
+                continue
+            try:
+                live_sha = digest(adapter.read(item))
+            except Exception:
+                outcomes.append({"id": name, "state": "UNKNOWN_NEEDS_READBACK",
+                                 "code": "VERIFIED_ITEM_READBACK_FAILED"})
+                continue
+            if live_sha != item["after_sha256"]:
+                if execute:
+                    ledger.set_state(manifest["request_id"], name,
+                                     "BLOCKED_CONFLICT", provider_sha=live_sha,
+                                     reason="POST_VERIFIED_PROVIDER_DRIFT")
+                outcomes.append({"id": name, "state": "BLOCKED_CONFLICT",
+                                 "code": "POST_VERIFIED_PROVIDER_DRIFT"})
+                continue
+            outcomes.append({"id": name, "state": "DONE_VERIFIED",
+                             "source": "provider_rechecked"})
             continue
         if state not in ("PENDING",):
             outcomes.append({"id": name, "state": state, "code": "RECONCILIATION_REQUIRED"})
