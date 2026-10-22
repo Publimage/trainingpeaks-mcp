@@ -8,12 +8,21 @@ async def main():
   u=await c._get_user_data()
   if u.get("personId")!=2116886:raise RuntimeError("OWNER")
   p=await c.get("/plans/v1/plans/685173")
-  if p.is_error or p.data.get("isPublic") is not False or p.data.get("workoutCount")!=276:raise RuntimeError("PLAN")
+  if p.is_error or p.data.get("isPublic") is not True or p.data.get("workoutCount")!=276:raise RuntimeError("PLAN")
   rows=[]
   for a,b in RANGES:
    q=await c.get(f"/plans/v1/plans/685173/workouts/{a}/{b}")
    if q.is_error or not isinstance(q.data,list):raise RuntimeError("READ")
    rows+=q.data
+  # W20 exact plan-copy DTOs for existing approved publisher (read only).
+  w20_ids={4001078766,4001078788,4001078883,4001078777}
+  w20=[w for w in rows if w.get("workoutId") in w20_ids]
+  if len(w20)!=4:return 6
+  print(json.dumps({"stage":"CHASING_W20_NATIVE_SNAPSHOT","items":[
+      {"workout_id":w["workoutId"],"day":w.get("workoutDay"),
+       "sport_id":w.get("workoutTypeValueId"),"title":w.get("title"),
+       "description":w.get("description"),"totalTimePlanned":w.get("totalTimePlanned"),
+       "structure":w.get("structure")} for w in w20]},ensure_ascii=False),flush=True)
   out=[]
   for w in rows:
    if w.get("workoutTypeValueId") not in (2,3):continue
