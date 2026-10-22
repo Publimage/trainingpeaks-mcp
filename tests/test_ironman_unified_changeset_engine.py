@@ -174,7 +174,7 @@ def test_manifest_reuse_with_different_payload_stops_before_write(ledger):
 
 def test_rejects_cross_owner_athlete_calendar_bad_ids_and_cycles():
     old, new = {"a": 1}, {"a": 2}
-    a = item("a", "plan.note.patch", 1, old, new)
+    a = item("aaa", "plan.note.patch", 1, old, new)
     bad = make_manifest(a)
     bad["changes"][0]["target"]["owner_id"] = 5
     with pytest.raises(ChangeStop, match="TARGET_OWNER"):
@@ -183,8 +183,8 @@ def test_rejects_cross_owner_athlete_calendar_bad_ids_and_cycles():
     bad["changes"][0]["target"]["container_kind"] = "athlete_calendar"
     with pytest.raises(ChangeStop, match="TARGET_CONTAINER"):
         validate_manifest(bad)
-    c = item("c", "plan.note.patch", 3, old, new, depends=["d"])
-    d = item("d", "plan.workout.patch", 4, old, new, depends=["c"])
+    c = item("ccc", "plan.note.patch", 3, old, new, depends=["ddd"])
+    d = item("ddd", "plan.workout.patch", 4, old, new, depends=["ccc"])
     with pytest.raises(ChangeStop, match="DEPENDENCY_CYCLE"):
         validate_manifest(make_manifest(c, d))
 
