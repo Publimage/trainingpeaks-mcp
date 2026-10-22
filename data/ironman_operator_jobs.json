@@ -2226,6 +2226,14 @@
       "scope": "trainingpeaks:public-plan:685173:start-note-2664007:replace-two-obsolete-guides-with-v12-only",
       "script": "scripts/ironman_jobs/chasing_guides_v12_publish_20261022.py",
       "test": "tests/test_chasing_guides_v12_pdf.py"
+    },
+    {
+      "name": "intermediate_native_baseline_readonly_20261022",
+      "mode": "READ_ONLY",
+      "owner_id": 2116886,
+      "scope": "trainingpeaks:public-plan:684602:24w-native-builder-and-strength-baseline-read-only",
+      "script": "scripts/ironman_jobs/intermediate_native_baseline_readonly_20261022.py",
+      "test": "tests/test_intermediate_native_baseline_readonly_20261022.py"
     }
   ]
 }
