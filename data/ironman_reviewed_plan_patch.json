@@ -8,301 +8,16 @@
     "expected_title": "ALBERTO FAZI ENDURANCE | CHASING THE SLOT | 24 settimane | Advanced | Italiano",
     "expected_is_public": true,
     "expected_workout_count": 276,
-    "scope": "trainingpeaks:plan:685173:w19-approved-five-duration-builder-reconciliation-20261022-v1",
+    "scope": "trainingpeaks:plan:685173:w20-approved-four-recovery-duration-builder-reconciliation-20261022-v1",
     "items": [
       {
-        "workout_id": 4001076949,
-        "expected_sport_id": 3,
-        "expected_workout_day": "2027-05-10",
-        "before": {
-          "title": "Aerobico | 60' fondo facile con tecnica opzionale",
-          "description": "OBIETTIVO\nCorsa aerobica principale o di continuità, a costo controllato, senza progressione obbligatoria.\n\nSTRUTTURA\n8' riscaldamento lento, 46' corsa RPE2–3, 6' defaticamento facile. Nessuna gara di passo.\n\nTECNICA OPZIONALE\nSe tecnicamente familiare, fino a 6–8' di A-March, ankling o pochissimi strides rilassati SOSTITUISCONO una quota dei minuti di fondo, senza prolungare la seduta; mai aggiunti come carico extra. Omettere se fatica muscolotendinea/DOMS dalla forza o tecnica peggiora.\n\nINTENSITÀ\nFondo conversazionale RPE 2–3; considerare FC, appoggi e recupero generale.\n\nFUELING\nAlimentazione ordinaria; acqua secondo sete, snack se lontano dal pasto.",
-          "totalTimePlanned": 1,
-          "structure": {
-            "structure": [
-              {
-                "type": "step",
-                "length": {
-                  "value": 1,
-                  "unit": "repetition"
-                },
-                "steps": [
-                  {
-                    "name": "Riscaldamento",
-                    "length": {
-                      "value": 480,
-                      "unit": "second"
-                    },
-                    "targets": [
-                      {
-                        "minValue": 76,
-                        "maxValue": 82
-                      }
-                    ],
-                    "intensityClass": "warmUp",
-                    "openDuration": false
-                  }
-                ],
-                "begin": 0,
-                "end": 480
-              },
-              {
-                "type": "step",
-                "length": {
-                  "value": 1,
-                  "unit": "repetition"
-                },
-                "steps": [
-                  {
-                    "name": "Fondo facile RPE2-3",
-                    "length": {
-                      "value": 2760,
-                      "unit": "second"
-                    },
-                    "targets": [
-                      {
-                        "minValue": 78,
-                        "maxValue": 84
-                      }
-                    ],
-                    "intensityClass": "active",
-                    "openDuration": false
-                  }
-                ],
-                "begin": 480,
-                "end": 3240
-              },
-              {
-                "type": "step",
-                "length": {
-                  "value": 1,
-                  "unit": "repetition"
-                },
-                "steps": [
-                  {
-                    "name": "Defaticamento",
-                    "length": {
-                      "value": 360,
-                      "unit": "second"
-                    },
-                    "targets": [
-                      {
-                        "minValue": 70,
-                        "maxValue": 78
-                      }
-                    ],
-                    "intensityClass": "coolDown",
-                    "openDuration": false
-                  }
-                ],
-                "begin": 3240,
-                "end": 3600
-              }
-            ],
-            "primaryLengthMetric": "duration",
-            "primaryIntensityMetric": "percentOfThresholdPace",
-            "primaryIntensityTargetOrRange": "range",
-            "polyline": [
-              [
-                0,
-                0
-              ],
-              [
-                0,
-                0.9762
-              ],
-              [
-                0.1333,
-                0.9762
-              ],
-              [
-                0.1333,
-                0
-              ],
-              [
-                0.1333,
-                0
-              ],
-              [
-                0.1333,
-                1
-              ],
-              [
-                0.9,
-                1
-              ],
-              [
-                0.9,
-                0
-              ],
-              [
-                0.9,
-                0
-              ],
-              [
-                0.9,
-                0.9286
-              ],
-              [
-                1,
-                0.9286
-              ],
-              [
-                1,
-                0
-              ]
-            ]
-          }
-        },
-        "after": {
-          "title": "Aerobico | 45' fondo facile con tecnica opzionale",
-          "description": "OBIETTIVO\nCorsa aerobica principale o di continuità, a costo controllato, senza progressione obbligatoria.\n\nSTRUTTURA\n8' riscaldamento lento, 31' corsa RPE2–3, 6' defaticamento facile. Nessuna gara di passo.\n\nTECNICA OPZIONALE\nSe tecnicamente familiare, fino a 6–8' di A-March, ankling o pochissimi strides rilassati SOSTITUISCONO una quota dei minuti di fondo, senza prolungare la seduta; mai aggiunti come carico extra. Omettere se fatica muscolotendinea/DOMS dalla forza o tecnica peggiora.\n\nINTENSITÀ\nFondo conversazionale RPE 2–3; considerare FC, appoggi e recupero generale.\n\nFUELING\nAlimentazione ordinaria; acqua secondo sete, snack se lontano dal pasto.",
-          "totalTimePlanned": 0.75,
-          "structure": {
-            "structure": [
-              {
-                "type": "step",
-                "length": {
-                  "value": 1,
-                  "unit": "repetition"
-                },
-                "steps": [
-                  {
-                    "name": "Riscaldamento",
-                    "length": {
-                      "value": 480,
-                      "unit": "second"
-                    },
-                    "targets": [
-                      {
-                        "minValue": 76,
-                        "maxValue": 82
-                      }
-                    ],
-                    "intensityClass": "warmUp",
-                    "openDuration": false
-                  }
-                ],
-                "begin": 0,
-                "end": 480
-              },
-              {
-                "type": "step",
-                "length": {
-                  "value": 1,
-                  "unit": "repetition"
-                },
-                "steps": [
-                  {
-                    "name": "Fondo facile RPE2-3",
-                    "length": {
-                      "value": 1860,
-                      "unit": "second"
-                    },
-                    "targets": [
-                      {
-                        "minValue": 78,
-                        "maxValue": 84
-                      }
-                    ],
-                    "intensityClass": "active",
-                    "openDuration": false
-                  }
-                ],
-                "begin": 480,
-                "end": 2340
-              },
-              {
-                "type": "step",
-                "length": {
-                  "value": 1,
-                  "unit": "repetition"
-                },
-                "steps": [
-                  {
-                    "name": "Defaticamento",
-                    "length": {
-                      "value": 360,
-                      "unit": "second"
-                    },
-                    "targets": [
-                      {
-                        "minValue": 70,
-                        "maxValue": 78
-                      }
-                    ],
-                    "intensityClass": "coolDown",
-                    "openDuration": false
-                  }
-                ],
-                "begin": 2340,
-                "end": 2700
-              }
-            ],
-            "primaryLengthMetric": "duration",
-            "primaryIntensityMetric": "percentOfThresholdPace",
-            "primaryIntensityTargetOrRange": "range",
-            "polyline": [
-              [
-                0,
-                0
-              ],
-              [
-                0,
-                0.9762
-              ],
-              [
-                0.1778,
-                0.9762
-              ],
-              [
-                0.1778,
-                0
-              ],
-              [
-                0.1778,
-                0
-              ],
-              [
-                0.1778,
-                1
-              ],
-              [
-                0.8667,
-                1
-              ],
-              [
-                0.8667,
-                0
-              ],
-              [
-                0.8667,
-                0
-              ],
-              [
-                0.8667,
-                0.9286
-              ],
-              [
-                1,
-                0.9286
-              ],
-              [
-                1,
-                0
-              ]
-            ]
-          }
-        }
-      },
-      {
-        "workout_id": 4001076818,
+        "workout_id": 4001078766,
         "expected_sport_id": 2,
-        "expected_workout_day": "2027-05-12",
+        "expected_workout_day": "2027-05-19",
         "before": {
-          "title": "Recupero | 45' pedalata agile senza qualità",
-          "description": "OBIETTIVO\nPedalata facile di recupero o assorbimento, prevalentemente sotto LT1, senza altra qualità obbligatoria.\n\nSTRUTTURA\n5' avvio + 35' fondo facile + 5' defaticamento = 45'.\n\nINTENSITÀ\nRPE 1–3 nei tratti facili, FC/respirazione sotto LT1 individuale; non forzare watts e non trasformare un ponte di assorbimento in una nuova seduta race pace.\n\nFUELING\nAlimentazione familiare e carburazione coerente con durata e contesto; idratazione secondo sete e clima. Evitare deficit energetici deliberati.",
-          "totalTimePlanned": 0.75,
+          "title": "Recupero | 50' pedalata agile senza qualità",
+          "description": "OBIETTIVO\nPedalata facile di recupero o assorbimento, prevalentemente sotto LT1, senza altra qualità obbligatoria.\n\nSTRUTTURA\n5' avvio + 40' fondo facile + 5' defaticamento = 50'.\n\nINTENSITÀ\nRPE 1–3 nei tratti facili, FC/respirazione sotto LT1 individuale; non forzare watts e non trasformare un ponte di assorbimento in una nuova seduta race pace.\n\nFUELING\nAlimentazione familiare e carburazione coerente con durata e contesto; idratazione secondo sete e clima. Evitare deficit energetici deliberati.",
+          "totalTimePlanned": 0.8333333333333334,
           "structure": {
             "structure": [
               {
@@ -341,7 +56,7 @@
                   {
                     "name": "Circolazione aerobica facile",
                     "length": {
-                      "value": 2100,
+                      "value": 2400,
                       "unit": "second"
                     },
                     "targets": [
@@ -355,7 +70,7 @@
                   }
                 ],
                 "begin": 300,
-                "end": 2400
+                "end": 2700
               },
               {
                 "type": "step",
@@ -380,8 +95,8 @@
                     "openDuration": false
                   }
                 ],
-                "begin": 2400,
-                "end": 2700
+                "begin": 2700,
+                "end": 3000
               }
             ],
             "primaryLengthMetric": "duration",
@@ -397,35 +112,35 @@
                 1
               ],
               [
-                0.1111,
+                0.1,
                 1
               ],
               [
-                0.1111,
+                0.1,
                 0
               ],
               [
-                0.1111,
+                0.1,
                 0
               ],
               [
-                0.1111,
+                0.1,
                 0.9167
               ],
               [
-                0.8889,
+                0.9,
                 0.9167
               ],
               [
-                0.8889,
+                0.9,
                 0
               ],
               [
-                0.8889,
+                0.9,
                 0
               ],
               [
-                0.8889,
+                0.9,
                 0.9167
               ],
               [
@@ -440,9 +155,9 @@
           }
         },
         "after": {
-          "title": "Recupero | 35' pedalata agile senza qualità",
-          "description": "OBIETTIVO\nPedalata facile di recupero o assorbimento, prevalentemente sotto LT1, senza altra qualità obbligatoria.\n\nSTRUTTURA\n5' avvio + 25' fondo facile + 5' defaticamento = 35'.\n\nINTENSITÀ\nRPE 1–3 nei tratti facili, FC/respirazione sotto LT1 individuale; non forzare watts e non trasformare un ponte di assorbimento in una nuova seduta race pace.\n\nFUELING\nAlimentazione familiare e carburazione coerente con durata e contesto; idratazione secondo sete e clima. Evitare deficit energetici deliberati.",
-          "totalTimePlanned": 0.5833333333333334,
+          "title": "Recupero | 40' pedalata agile senza qualità",
+          "description": "OBIETTIVO\nPedalata facile di recupero o assorbimento, prevalentemente sotto LT1, senza altra qualità obbligatoria.\n\nSTRUTTURA\n5' avvio + 30' fondo facile + 5' defaticamento = 40'.\n\nINTENSITÀ\nRPE 1–3 nei tratti facili, FC/respirazione sotto LT1 individuale; non forzare watts e non trasformare un ponte di assorbimento in una nuova seduta race pace.\n\nFUELING\nAlimentazione familiare e carburazione coerente con durata e contesto; idratazione secondo sete e clima. Evitare deficit energetici deliberati.",
+          "totalTimePlanned": 0.6666666666666666,
           "structure": {
             "structure": [
               {
@@ -481,7 +196,7 @@
                   {
                     "name": "Circolazione aerobica facile",
                     "length": {
-                      "value": 1500,
+                      "value": 1800,
                       "unit": "second"
                     },
                     "targets": [
@@ -495,7 +210,7 @@
                   }
                 ],
                 "begin": 300,
-                "end": 1800
+                "end": 2100
               },
               {
                 "type": "step",
@@ -520,8 +235,8 @@
                     "openDuration": false
                   }
                 ],
-                "begin": 1800,
-                "end": 2100
+                "begin": 2100,
+                "end": 2400
               }
             ],
             "primaryLengthMetric": "duration",
@@ -537,35 +252,35 @@
                 1
               ],
               [
-                0.1429,
+                0.125,
                 1
               ],
               [
-                0.1429,
+                0.125,
                 0
               ],
               [
-                0.1429,
+                0.125,
                 0
               ],
               [
-                0.1429,
+                0.125,
                 0.9167
               ],
               [
-                0.8571,
+                0.875,
                 0.9167
               ],
               [
-                0.8571,
+                0.875,
                 0
               ],
               [
-                0.8571,
+                0.875,
                 0
               ],
               [
-                0.8571,
+                0.875,
                 0.9167
               ],
               [
@@ -581,13 +296,13 @@
         }
       },
       {
-        "workout_id": 4001076854,
-        "expected_sport_id": 3,
-        "expected_workout_day": "2027-05-12",
+        "workout_id": 4001078788,
+        "expected_sport_id": 2,
+        "expected_workout_day": "2027-05-20",
         "before": {
-          "title": "Aerobico | 100' fondo facile",
-          "description": "OBIETTIVO\nFondo aerobico regolare, senza progressione e senza nuovo lavoro di qualità.\n\nSTRUTTURA\n12' avvio facile + 80' corsa easy + 8' defaticamento = 100' totali.\n\nINTENSITÀ\nRPE2–3 e attenzione a tecnica, meccanica e recupero, mai aggiungere soglia o strides non familiari.\n\nFUELING\nRoutine alimentare familiare, acqua secondo sete e condizioni. Nessun nuovo prodotto in taper.",
-          "totalTimePlanned": 1.6666666666666667,
+          "title": "Recupero | 130' endurance sotto LT1",
+          "description": "OBIETTIVO\nPedalata facile di recupero o assorbimento, prevalentemente sotto LT1, senza altra qualità obbligatoria.\n\nSTRUTTURA\n15' avvio + 105' fondo facile + 10' defaticamento = 130'.\n\nINTENSITÀ\nRPE 2 nei 105' centrali, FC/respirazione sotto LT1 individuale; non forzare watts e non trasformare un ponte di assorbimento in una nuova seduta race pace.\n\nFUELING\nAlimentazione familiare e carburazione coerente con durata e contesto; idratazione secondo sete e clima. Evitare deficit energetici deliberati.",
+          "totalTimePlanned": 2.1666666666666665,
           "structure": {
             "structure": [
               {
@@ -598,15 +313,15 @@
                 },
                 "steps": [
                   {
-                    "name": "Avvio molto facile",
+                    "name": "Avvio facile",
                     "length": {
-                      "value": 720,
+                      "value": 900,
                       "unit": "second"
                     },
                     "targets": [
                       {
-                        "minValue": 76,
-                        "maxValue": 82
+                        "minValue": 50,
+                        "maxValue": 60
                       }
                     ],
                     "intensityClass": "warmUp",
@@ -614,7 +329,7 @@
                   }
                 ],
                 "begin": 0,
-                "end": 720
+                "end": 900
               },
               {
                 "type": "step",
@@ -624,23 +339,23 @@
                 },
                 "steps": [
                   {
-                    "name": "Fondo facile RPE2-3",
+                    "name": "Circolazione aerobica facile",
                     "length": {
-                      "value": 4800,
+                      "value": 6300,
                       "unit": "second"
                     },
                     "targets": [
                       {
-                        "minValue": 78,
-                        "maxValue": 84
+                        "minValue": 50,
+                        "maxValue": 55
                       }
                     ],
                     "intensityClass": "active",
                     "openDuration": false
                   }
                 ],
-                "begin": 720,
-                "end": 5520
+                "begin": 900,
+                "end": 7200
               },
               {
                 "type": "step",
@@ -652,25 +367,25 @@
                   {
                     "name": "Defaticamento",
                     "length": {
-                      "value": 480,
+                      "value": 600,
                       "unit": "second"
                     },
                     "targets": [
                       {
-                        "minValue": 70,
-                        "maxValue": 78
+                        "minValue": 45,
+                        "maxValue": 55
                       }
                     ],
                     "intensityClass": "coolDown",
                     "openDuration": false
                   }
                 ],
-                "begin": 5520,
-                "end": 6000
+                "begin": 7200,
+                "end": 7800
               }
             ],
             "primaryLengthMetric": "duration",
-            "primaryIntensityMetric": "percentOfThresholdPace",
+            "primaryIntensityMetric": "percentOfFtp",
             "primaryIntensityTargetOrRange": "range",
             "polyline": [
               [
@@ -679,43 +394,43 @@
               ],
               [
                 0,
-                0.9762
-              ],
-              [
-                0.12,
-                0.9762
-              ],
-              [
-                0.12,
-                0
-              ],
-              [
-                0.12,
-                0
-              ],
-              [
-                0.12,
                 1
               ],
               [
-                0.92,
+                0.1154,
                 1
               ],
               [
-                0.92,
+                0.1154,
                 0
               ],
               [
-                0.92,
+                0.1154,
                 0
               ],
               [
-                0.92,
-                0.9286
+                0.1154,
+                0.9167
+              ],
+              [
+                0.9231,
+                0.9167
+              ],
+              [
+                0.9231,
+                0
+              ],
+              [
+                0.9231,
+                0
+              ],
+              [
+                0.9231,
+                0.9167
               ],
               [
                 1,
-                0.9286
+                0.9167
               ],
               [
                 1,
@@ -725,8 +440,438 @@
           }
         },
         "after": {
-          "title": "Aerobico | 80' fondo facile",
-          "description": "OBIETTIVO\nFondo aerobico regolare, senza progressione e senza nuovo lavoro di qualità.\n\nSTRUTTURA\n12' avvio facile + 60' corsa easy + 8' defaticamento = 80' totali.\n\nINTENSITÀ\nRPE2–3 e attenzione a tecnica, meccanica e recupero, mai aggiungere soglia o strides non familiari.\n\nFUELING\nRoutine alimentare familiare, acqua secondo sete e condizioni. Nessun nuovo prodotto in taper.",
+          "title": "Recupero | 110' endurance sotto LT1",
+          "description": "OBIETTIVO\nPedalata facile di recupero o assorbimento, prevalentemente sotto LT1, senza altra qualità obbligatoria.\n\nSTRUTTURA\n15' avvio + 85' fondo facile + 10' defaticamento = 110'.\n\nINTENSITÀ\nRPE 2 nei 85' centrali, FC/respirazione sotto LT1 individuale; non forzare watts e non trasformare un ponte di assorbimento in una nuova seduta race pace.\n\nFUELING\nAlimentazione familiare e carburazione coerente con durata e contesto; idratazione secondo sete e clima. Evitare deficit energetici deliberati.",
+          "totalTimePlanned": 1.8333333333333333,
+          "structure": {
+            "structure": [
+              {
+                "type": "step",
+                "length": {
+                  "value": 1,
+                  "unit": "repetition"
+                },
+                "steps": [
+                  {
+                    "name": "Avvio facile",
+                    "length": {
+                      "value": 900,
+                      "unit": "second"
+                    },
+                    "targets": [
+                      {
+                        "minValue": 50,
+                        "maxValue": 60
+                      }
+                    ],
+                    "intensityClass": "warmUp",
+                    "openDuration": false
+                  }
+                ],
+                "begin": 0,
+                "end": 900
+              },
+              {
+                "type": "step",
+                "length": {
+                  "value": 1,
+                  "unit": "repetition"
+                },
+                "steps": [
+                  {
+                    "name": "Circolazione aerobica facile",
+                    "length": {
+                      "value": 5100,
+                      "unit": "second"
+                    },
+                    "targets": [
+                      {
+                        "minValue": 50,
+                        "maxValue": 55
+                      }
+                    ],
+                    "intensityClass": "active",
+                    "openDuration": false
+                  }
+                ],
+                "begin": 900,
+                "end": 6000
+              },
+              {
+                "type": "step",
+                "length": {
+                  "value": 1,
+                  "unit": "repetition"
+                },
+                "steps": [
+                  {
+                    "name": "Defaticamento",
+                    "length": {
+                      "value": 600,
+                      "unit": "second"
+                    },
+                    "targets": [
+                      {
+                        "minValue": 45,
+                        "maxValue": 55
+                      }
+                    ],
+                    "intensityClass": "coolDown",
+                    "openDuration": false
+                  }
+                ],
+                "begin": 6000,
+                "end": 6600
+              }
+            ],
+            "primaryLengthMetric": "duration",
+            "primaryIntensityMetric": "percentOfFtp",
+            "primaryIntensityTargetOrRange": "range",
+            "polyline": [
+              [
+                0,
+                0
+              ],
+              [
+                0,
+                1
+              ],
+              [
+                0.1364,
+                1
+              ],
+              [
+                0.1364,
+                0
+              ],
+              [
+                0.1364,
+                0
+              ],
+              [
+                0.1364,
+                0.9167
+              ],
+              [
+                0.9091,
+                0.9167
+              ],
+              [
+                0.9091,
+                0
+              ],
+              [
+                0.9091,
+                0
+              ],
+              [
+                0.9091,
+                0.9167
+              ],
+              [
+                1,
+                0.9167
+              ],
+              [
+                1,
+                0
+              ]
+            ]
+          }
+        }
+      },
+      {
+        "workout_id": 4001078883,
+        "expected_sport_id": 2,
+        "expected_workout_day": "2027-05-22",
+        "before": {
+          "title": "Lungo | 4h fondo sotto LT1 e aero facoltativa",
+          "description": "OBIETTIVO\nLungo aerobico a costo controllato: continuità sotto LT1, senza test di forma.\n\nSTRUTTURA\n20' avvio facile, 210' fondo uniforme RPE2–3, 10' finale facile. 2–3 brevi esposizioni alla posizione aero sono facoltative, integrate nel blocco centrale senza aumento di potenza o durata, solo se sicure.\n\nINTENSITÀ\nRPE 2–3, respirazione e FC coerenti con LT1 individuale; FTP non equivale automaticamente a LT2. Evitare medio cronico.\n\nFUELING\nArrivare alimentati; carboidrati regolari già tollerati e idratazione adatta alle condizioni. Annotare RPE, tolleranza GI, capacità di alimentarsi in aero; nessun mix nuovo iperconcentrato.",
+          "totalTimePlanned": 4,
+          "structure": {
+            "structure": [
+              {
+                "type": "step",
+                "length": {
+                  "value": 1,
+                  "unit": "repetition"
+                },
+                "steps": [
+                  {
+                    "name": "Avvio facile",
+                    "length": {
+                      "value": 1200,
+                      "unit": "second"
+                    },
+                    "targets": [
+                      {
+                        "minValue": 50,
+                        "maxValue": 60
+                      }
+                    ],
+                    "intensityClass": "warmUp",
+                    "openDuration": false
+                  }
+                ],
+                "begin": 0,
+                "end": 1200
+              },
+              {
+                "type": "step",
+                "length": {
+                  "value": 1,
+                  "unit": "repetition"
+                },
+                "steps": [
+                  {
+                    "name": "Fondo prolungato sotto LT1",
+                    "length": {
+                      "value": 12600,
+                      "unit": "second"
+                    },
+                    "targets": [
+                      {
+                        "minValue": 60,
+                        "maxValue": 70
+                      }
+                    ],
+                    "intensityClass": "active",
+                    "openDuration": false
+                  }
+                ],
+                "begin": 1200,
+                "end": 13800
+              },
+              {
+                "type": "step",
+                "length": {
+                  "value": 1,
+                  "unit": "repetition"
+                },
+                "steps": [
+                  {
+                    "name": "Defaticamento",
+                    "length": {
+                      "value": 600,
+                      "unit": "second"
+                    },
+                    "targets": [
+                      {
+                        "minValue": 45,
+                        "maxValue": 55
+                      }
+                    ],
+                    "intensityClass": "coolDown",
+                    "openDuration": false
+                  }
+                ],
+                "begin": 13800,
+                "end": 14400
+              }
+            ],
+            "primaryLengthMetric": "duration",
+            "primaryIntensityMetric": "percentOfFtp",
+            "primaryIntensityTargetOrRange": "range",
+            "polyline": [
+              [
+                0,
+                0
+              ],
+              [
+                0,
+                0.8571
+              ],
+              [
+                0.0833,
+                0.8571
+              ],
+              [
+                0.0833,
+                0
+              ],
+              [
+                0.0833,
+                0
+              ],
+              [
+                0.0833,
+                1
+              ],
+              [
+                0.9583,
+                1
+              ],
+              [
+                0.9583,
+                0
+              ],
+              [
+                0.9583,
+                0
+              ],
+              [
+                0.9583,
+                0.7857
+              ],
+              [
+                1,
+                0.7857
+              ],
+              [
+                1,
+                0
+              ]
+            ]
+          }
+        },
+        "after": {
+          "title": "Lungo | 3h15 fondo sotto LT1 e aero facoltativa",
+          "description": "OBIETTIVO\nLungo aerobico a costo controllato: continuità sotto LT1, senza test di forma.\n\nSTRUTTURA\n20' avvio facile, 165' fondo uniforme RPE2–3, 10' finale facile. 2–3 brevi esposizioni alla posizione aero sono facoltative, integrate nel blocco centrale senza aumento di potenza o durata, solo se sicure.\n\nINTENSITÀ\nRPE 2–3, respirazione e FC coerenti con LT1 individuale; FTP non equivale automaticamente a LT2. Evitare medio cronico.\n\nFUELING\nArrivare alimentati; carboidrati regolari già tollerati e idratazione adatta alle condizioni. Annotare RPE, tolleranza GI, capacità di alimentarsi in aero; nessun mix nuovo iperconcentrato.",
+          "totalTimePlanned": 3.25,
+          "structure": {
+            "structure": [
+              {
+                "type": "step",
+                "length": {
+                  "value": 1,
+                  "unit": "repetition"
+                },
+                "steps": [
+                  {
+                    "name": "Avvio facile",
+                    "length": {
+                      "value": 1200,
+                      "unit": "second"
+                    },
+                    "targets": [
+                      {
+                        "minValue": 50,
+                        "maxValue": 60
+                      }
+                    ],
+                    "intensityClass": "warmUp",
+                    "openDuration": false
+                  }
+                ],
+                "begin": 0,
+                "end": 1200
+              },
+              {
+                "type": "step",
+                "length": {
+                  "value": 1,
+                  "unit": "repetition"
+                },
+                "steps": [
+                  {
+                    "name": "Fondo prolungato sotto LT1",
+                    "length": {
+                      "value": 9900,
+                      "unit": "second"
+                    },
+                    "targets": [
+                      {
+                        "minValue": 60,
+                        "maxValue": 70
+                      }
+                    ],
+                    "intensityClass": "active",
+                    "openDuration": false
+                  }
+                ],
+                "begin": 1200,
+                "end": 11100
+              },
+              {
+                "type": "step",
+                "length": {
+                  "value": 1,
+                  "unit": "repetition"
+                },
+                "steps": [
+                  {
+                    "name": "Defaticamento",
+                    "length": {
+                      "value": 600,
+                      "unit": "second"
+                    },
+                    "targets": [
+                      {
+                        "minValue": 45,
+                        "maxValue": 55
+                      }
+                    ],
+                    "intensityClass": "coolDown",
+                    "openDuration": false
+                  }
+                ],
+                "begin": 11100,
+                "end": 11700
+              }
+            ],
+            "primaryLengthMetric": "duration",
+            "primaryIntensityMetric": "percentOfFtp",
+            "primaryIntensityTargetOrRange": "range",
+            "polyline": [
+              [
+                0,
+                0
+              ],
+              [
+                0,
+                0.8571
+              ],
+              [
+                0.1026,
+                0.8571
+              ],
+              [
+                0.1026,
+                0
+              ],
+              [
+                0.1026,
+                0
+              ],
+              [
+                0.1026,
+                1
+              ],
+              [
+                0.9487,
+                1
+              ],
+              [
+                0.9487,
+                0
+              ],
+              [
+                0.9487,
+                0
+              ],
+              [
+                0.9487,
+                0.7857
+              ],
+              [
+                1,
+                0.7857
+              ],
+              [
+                1,
+                0
+              ]
+            ]
+          }
+        }
+      },
+      {
+        "workout_id": 4001078777,
+        "expected_sport_id": 3,
+        "expected_workout_day": "2027-05-23",
+        "before": {
+          "title": "Recupero | 80' corsa lenta",
+          "description": "OBIETTIVO\nCorsa a bassa intensità per assorbire il carico precedente senza aggiungere qualità o reattività.\n\nSTRUTTURA\n12' Avvio facile + 58' Fondo facile RPE2 + 10' Defaticamento = 80'.\n\nINTENSITÀ\nRPE2–3 per fondo facile. Nei blocchi a Ironman Run Pace senza target numerico, richiedere personalizzazione individuale; non si tratta di un'intensità libera. Se tecnica o appoggio peggiorano, ridurre/omettere. Drills opzionali se già familiari, sostituendo fondo e non sommando minuti.\n\nFUELING\nArrivare normalmente alimentati, acqua secondo sete. Per sedute di 90' o più, piccoli carboidrati già tollerati se utili; nel brick breve di norma non serve gel aggiuntivo separato dal fueling bici.",
           "totalTimePlanned": 1.3333333333333333,
           "structure": {
             "structure": [
@@ -738,7 +883,7 @@
                 },
                 "steps": [
                   {
-                    "name": "Avvio molto facile",
+                    "name": "Avvio facile",
                     "length": {
                       "value": 720,
                       "unit": "second"
@@ -764,15 +909,15 @@
                 },
                 "steps": [
                   {
-                    "name": "Fondo facile RPE2-3",
+                    "name": "Fondo facile RPE2",
                     "length": {
-                      "value": 3600,
+                      "value": 3480,
                       "unit": "second"
                     },
                     "targets": [
                       {
-                        "minValue": 78,
-                        "maxValue": 84
+                        "minValue": 70,
+                        "maxValue": 78
                       }
                     ],
                     "intensityClass": "active",
@@ -780,7 +925,7 @@
                   }
                 ],
                 "begin": 720,
-                "end": 4320
+                "end": 4200
               },
               {
                 "type": "step",
@@ -792,7 +937,7 @@
                   {
                     "name": "Defaticamento",
                     "length": {
-                      "value": 480,
+                      "value": 600,
                       "unit": "second"
                     },
                     "targets": [
@@ -805,7 +950,7 @@
                     "openDuration": false
                   }
                 ],
-                "begin": 4320,
+                "begin": 4200,
                 "end": 4800
               }
             ],
@@ -819,43 +964,43 @@
               ],
               [
                 0,
-                0.9762
-              ],
-              [
-                0.15,
-                0.9762
-              ],
-              [
-                0.15,
-                0
-              ],
-              [
-                0.15,
-                0
+                1
               ],
               [
                 0.15,
                 1
               ],
               [
-                0.9,
-                1
-              ],
-              [
-                0.9,
+                0.15,
                 0
               ],
               [
-                0.9,
+                0.15,
                 0
               ],
               [
-                0.9,
-                0.9286
+                0.15,
+                0.9512
+              ],
+              [
+                0.875,
+                0.9512
+              ],
+              [
+                0.875,
+                0
+              ],
+              [
+                0.875,
+                0
+              ],
+              [
+                0.875,
+                0.9512
               ],
               [
                 1,
-                0.9286
+                0.9512
               ],
               [
                 1,
@@ -863,16 +1008,11 @@
               ]
             ]
           }
-        }
-      },
-      {
-        "workout_id": 4001076968,
-        "expected_sport_id": 2,
-        "expected_workout_day": "2027-05-15",
-        "before": {
-          "title": "◆ Lungo | 4h55 3x30' IM Pace +35' fondo facile",
-          "description": "GUIDA BUILDER: il valore RPE 3-4 del blocco attivo e indicativo, non un ritmo o wattaggio Ironman universale; personalizzare con soglie, risposta e condizioni.\n\nOBIETTIVO\nRichiamo specifico di Ironman Bike Pace già verificato individualmente. Controllare costo interno, posizione e disponibilità di energie, senza trasformare in una gara.\n\nSTRUTTURA\n20' Avvio prudente + 3x(30' IM Bike Pace in aero personale + 35' Fondo facile) + 60' Fondo finale senza progressione + 20' Defaticamento = 295' totali.\n\nINTENSITÀ\n\nFUELING\nCarboidrati e liquidi con routine già tollerata e adeguati a durata/condizioni; annotare deriva FC/RPE, comfort GI e capacità di alimentazione in posizione aero.",
-          "totalTimePlanned": 4.916666666666667,
+        },
+        "after": {
+          "title": "Recupero | 60' corsa lenta",
+          "description": "OBIETTIVO\nCorsa a bassa intensità per assorbire il carico precedente senza aggiungere qualità o reattività.\n\nSTRUTTURA\n12' Avvio facile + 38' Fondo facile RPE2 + 10' Defaticamento = 60'.\n\nINTENSITÀ\nRPE2–3 per fondo facile. Nei blocchi a Ironman Run Pace senza target numerico, richiedere personalizzazione individuale; non si tratta di un'intensità libera. Se tecnica o appoggio peggiorano, ridurre/omettere. Drills opzionali se già familiari, sostituendo fondo e non sommando minuti.\n\nFUELING\nArrivare normalmente alimentati, acqua secondo sete. Per sedute di 90' o più, piccoli carboidrati già tollerati se utili; nel brick breve di norma non serve gel aggiuntivo separato dal fueling bici.",
+          "totalTimePlanned": 1,
           "structure": {
             "structure": [
               {
@@ -883,15 +1023,15 @@
                 },
                 "steps": [
                   {
-                    "name": "Avvio prudente",
+                    "name": "Avvio facile",
                     "length": {
-                      "value": 1200,
+                      "value": 720,
                       "unit": "second"
                     },
                     "targets": [
                       {
-                        "minValue": 50,
-                        "maxValue": 60
+                        "minValue": 76,
+                        "maxValue": 82
                       }
                     ],
                     "intensityClass": "warmUp",
@@ -899,48 +1039,7 @@
                   }
                 ],
                 "begin": 0,
-                "end": 1200
-              },
-              {
-                "type": "repetition",
-                "length": {
-                  "value": 3,
-                  "unit": "repetition"
-                },
-                "steps": [
-                  {
-                    "name": "IM Bike Pace in aero personale",
-                    "length": {
-                      "value": 1800,
-                      "unit": "second"
-                    },
-                    "targets": [
-                      {
-                        "minValue": 71,
-                        "maxValue": 75
-                      }
-                    ],
-                    "intensityClass": "active",
-                    "openDuration": false
-                  },
-                  {
-                    "name": "Fondo facile",
-                    "length": {
-                      "value": 2100,
-                      "unit": "second"
-                    },
-                    "targets": [
-                      {
-                        "minValue": 55,
-                        "maxValue": 65
-                      }
-                    ],
-                    "intensityClass": "rest",
-                    "openDuration": false
-                  }
-                ],
-                "begin": 1200,
-                "end": 12900
+                "end": 720
               },
               {
                 "type": "step",
@@ -950,23 +1049,23 @@
                 },
                 "steps": [
                   {
-                    "name": "Fondo finale senza progressione",
+                    "name": "Fondo facile RPE2",
                     "length": {
-                      "value": 3600,
+                      "value": 2280,
                       "unit": "second"
                     },
                     "targets": [
                       {
-                        "minValue": 60,
-                        "maxValue": 70
+                        "minValue": 70,
+                        "maxValue": 78
                       }
                     ],
                     "intensityClass": "active",
                     "openDuration": false
                   }
                 ],
-                "begin": 12900,
-                "end": 16500
+                "begin": 720,
+                "end": 3000
               },
               {
                 "type": "step",
@@ -978,689 +1077,25 @@
                   {
                     "name": "Defaticamento",
                     "length": {
-                      "value": 1200,
-                      "unit": "second"
-                    },
-                    "targets": [
-                      {
-                        "minValue": 45,
-                        "maxValue": 55
-                      }
-                    ],
-                    "intensityClass": "coolDown",
-                    "openDuration": false
-                  }
-                ],
-                "begin": 16500,
-                "end": 17700
-              }
-            ],
-            "primaryLengthMetric": "duration",
-            "primaryIntensityMetric": "percentOfFtp",
-            "primaryIntensityTargetOrRange": "range",
-            "polyline": [
-              [
-                0,
-                0
-              ],
-              [
-                0,
-                0.8
-              ],
-              [
-                0.0678,
-                0.8
-              ],
-              [
-                0.0678,
-                0
-              ],
-              [
-                0.0678,
-                0
-              ],
-              [
-                0.0678,
-                1
-              ],
-              [
-                0.1695,
-                1
-              ],
-              [
-                0.1695,
-                0
-              ],
-              [
-                0.1695,
-                0
-              ],
-              [
-                0.1695,
-                0.8667
-              ],
-              [
-                0.2881,
-                0.8667
-              ],
-              [
-                0.2881,
-                0
-              ],
-              [
-                0.2881,
-                0
-              ],
-              [
-                0.2881,
-                1
-              ],
-              [
-                0.3898,
-                1
-              ],
-              [
-                0.3898,
-                0
-              ],
-              [
-                0.3898,
-                0
-              ],
-              [
-                0.3898,
-                0.8667
-              ],
-              [
-                0.5085,
-                0.8667
-              ],
-              [
-                0.5085,
-                0
-              ],
-              [
-                0.5085,
-                0
-              ],
-              [
-                0.5085,
-                1
-              ],
-              [
-                0.6102,
-                1
-              ],
-              [
-                0.6102,
-                0
-              ],
-              [
-                0.6102,
-                0
-              ],
-              [
-                0.6102,
-                0.8667
-              ],
-              [
-                0.7288,
-                0.8667
-              ],
-              [
-                0.7288,
-                0
-              ],
-              [
-                0.7288,
-                0
-              ],
-              [
-                0.7288,
-                0.9333
-              ],
-              [
-                0.9322,
-                0.9333
-              ],
-              [
-                0.9322,
-                0
-              ],
-              [
-                0.9322,
-                0
-              ],
-              [
-                0.9322,
-                0.7333
-              ],
-              [
-                1,
-                0.7333
-              ],
-              [
-                1,
-                0
-              ]
-            ]
-          }
-        },
-        "after": {
-          "title": "◆ Lungo | 6h00 3x30' IM Pace +35' fondo facile",
-          "description": "GUIDA BUILDER: il valore RPE 3-4 del blocco attivo e indicativo, non un ritmo o wattaggio Ironman universale; personalizzare con soglie, risposta e condizioni.\n\nOBIETTIVO\nRichiamo specifico di Ironman Bike Pace già verificato individualmente. Controllare costo interno, posizione e disponibilità di energie, senza trasformare in una gara.\n\nSTRUTTURA\n20' Avvio prudente + 3x(30' IM Bike Pace in aero personale + 35' Fondo facile) + 125' Fondo finale senza progressione + 20' Defaticamento = 360' totali.\n\nINTENSITÀ\n\nFUELING\nCarboidrati e liquidi con routine già tollerata e adeguati a durata/condizioni; annotare deriva FC/RPE, comfort GI e capacità di alimentazione in posizione aero.",
-          "totalTimePlanned": 6,
-          "structure": {
-            "structure": [
-              {
-                "type": "step",
-                "length": {
-                  "value": 1,
-                  "unit": "repetition"
-                },
-                "steps": [
-                  {
-                    "name": "Avvio prudente",
-                    "length": {
-                      "value": 1200,
-                      "unit": "second"
-                    },
-                    "targets": [
-                      {
-                        "minValue": 50,
-                        "maxValue": 60
-                      }
-                    ],
-                    "intensityClass": "warmUp",
-                    "openDuration": false
-                  }
-                ],
-                "begin": 0,
-                "end": 1200
-              },
-              {
-                "type": "repetition",
-                "length": {
-                  "value": 3,
-                  "unit": "repetition"
-                },
-                "steps": [
-                  {
-                    "name": "IM Bike Pace in aero personale",
-                    "length": {
-                      "value": 1800,
-                      "unit": "second"
-                    },
-                    "targets": [
-                      {
-                        "minValue": 71,
-                        "maxValue": 75
-                      }
-                    ],
-                    "intensityClass": "active",
-                    "openDuration": false
-                  },
-                  {
-                    "name": "Fondo facile",
-                    "length": {
-                      "value": 2100,
-                      "unit": "second"
-                    },
-                    "targets": [
-                      {
-                        "minValue": 55,
-                        "maxValue": 65
-                      }
-                    ],
-                    "intensityClass": "rest",
-                    "openDuration": false
-                  }
-                ],
-                "begin": 1200,
-                "end": 12900
-              },
-              {
-                "type": "step",
-                "length": {
-                  "value": 1,
-                  "unit": "repetition"
-                },
-                "steps": [
-                  {
-                    "name": "Fondo finale senza progressione",
-                    "length": {
-                      "value": 7500,
-                      "unit": "second"
-                    },
-                    "targets": [
-                      {
-                        "minValue": 60,
-                        "maxValue": 70
-                      }
-                    ],
-                    "intensityClass": "active",
-                    "openDuration": false
-                  }
-                ],
-                "begin": 12900,
-                "end": 20400
-              },
-              {
-                "type": "step",
-                "length": {
-                  "value": 1,
-                  "unit": "repetition"
-                },
-                "steps": [
-                  {
-                    "name": "Defaticamento",
-                    "length": {
-                      "value": 1200,
-                      "unit": "second"
-                    },
-                    "targets": [
-                      {
-                        "minValue": 45,
-                        "maxValue": 55
-                      }
-                    ],
-                    "intensityClass": "coolDown",
-                    "openDuration": false
-                  }
-                ],
-                "begin": 20400,
-                "end": 21600
-              }
-            ],
-            "primaryLengthMetric": "duration",
-            "primaryIntensityMetric": "percentOfFtp",
-            "primaryIntensityTargetOrRange": "range",
-            "polyline": [
-              [
-                0,
-                0
-              ],
-              [
-                0,
-                0.8
-              ],
-              [
-                0.0556,
-                0.8
-              ],
-              [
-                0.0556,
-                0
-              ],
-              [
-                0.0556,
-                0
-              ],
-              [
-                0.0556,
-                1
-              ],
-              [
-                0.1389,
-                1
-              ],
-              [
-                0.1389,
-                0
-              ],
-              [
-                0.1389,
-                0
-              ],
-              [
-                0.1389,
-                0.8667
-              ],
-              [
-                0.2361,
-                0.8667
-              ],
-              [
-                0.2361,
-                0
-              ],
-              [
-                0.2361,
-                0
-              ],
-              [
-                0.2361,
-                1
-              ],
-              [
-                0.3194,
-                1
-              ],
-              [
-                0.3194,
-                0
-              ],
-              [
-                0.3194,
-                0
-              ],
-              [
-                0.3194,
-                0.8667
-              ],
-              [
-                0.4167,
-                0.8667
-              ],
-              [
-                0.4167,
-                0
-              ],
-              [
-                0.4167,
-                0
-              ],
-              [
-                0.4167,
-                1
-              ],
-              [
-                0.5,
-                1
-              ],
-              [
-                0.5,
-                0
-              ],
-              [
-                0.5,
-                0
-              ],
-              [
-                0.5,
-                0.8667
-              ],
-              [
-                0.5972,
-                0.8667
-              ],
-              [
-                0.5972,
-                0
-              ],
-              [
-                0.5972,
-                0
-              ],
-              [
-                0.5972,
-                0.9333
-              ],
-              [
-                0.9444,
-                0.9333
-              ],
-              [
-                0.9444,
-                0
-              ],
-              [
-                0.9444,
-                0
-              ],
-              [
-                0.9444,
-                0.7333
-              ],
-              [
-                1,
-                0.7333
-              ],
-              [
-                1,
-                0
-              ]
-            ]
-          }
-        }
-      },
-      {
-        "workout_id": 4001076980,
-        "expected_sport_id": 3,
-        "expected_workout_day": "2027-05-15",
-        "before": {
-          "title": "↳ Brick | 40' race execution",
-          "description": "OBIETTIVO\nLeggere la transizione senza inseguire il passo da fresco.\n\nPARTE CENTRALE\n10' RPE 2–3.\n20' RPE 3–4, ritmo realistico da gara.\n10' facili.\n\nINTENSITÀ\nRPE-first. Registra mentalmente ritmo, fluidità, sensazione muscolare e FC se disponibile.\n\nFUELING\nNessun target separato obbligatorio: usa il brick anche come feedback della gestione della bici. Piccoli sorsi di acqua secondo necessità.\n\nNOTE\nSe non trovi controllo nei primi 10', resta facile.",
-          "totalTimePlanned": 0.6666666666666666,
-          "structure": {
-            "primaryLengthMetric": "duration",
-            "primaryIntensityMetric": "rpe",
-            "structure": [
-              {
-                "type": "step",
-                "length": {
-                  "value": 1,
-                  "unit": "repetition"
-                },
-                "steps": [
-                  {
-                    "type": "step",
-                    "name": "Transizione",
-                    "length": {
                       "value": 600,
                       "unit": "second"
                     },
                     "targets": [
                       {
-                        "minValue": 2,
-                        "maxValue": 3
-                      }
-                    ],
-                    "intensityClass": "active",
-                    "openDuration": false
-                  }
-                ],
-                "begin": 0,
-                "end": 600
-              },
-              {
-                "type": "step",
-                "length": {
-                  "value": 1,
-                  "unit": "repetition"
-                },
-                "steps": [
-                  {
-                    "type": "step",
-                    "name": "RPE gara realistico",
-                    "length": {
-                      "value": 1200,
-                      "unit": "second"
-                    },
-                    "targets": [
-                      {
-                        "minValue": 3,
-                        "maxValue": 4
-                      }
-                    ],
-                    "intensityClass": "active",
-                    "openDuration": false
-                  }
-                ],
-                "begin": 600,
-                "end": 1800
-              },
-              {
-                "type": "step",
-                "length": {
-                  "value": 1,
-                  "unit": "repetition"
-                },
-                "steps": [
-                  {
-                    "type": "step",
-                    "name": "Chiusura facile",
-                    "length": {
-                      "value": 600,
-                      "unit": "second"
-                    },
-                    "targets": [
-                      {
-                        "minValue": 1,
-                        "maxValue": 2
+                        "minValue": 70,
+                        "maxValue": 78
                       }
                     ],
                     "intensityClass": "coolDown",
                     "openDuration": false
                   }
                 ],
-                "begin": 1800,
-                "end": 2400
+                "begin": 3000,
+                "end": 3600
               }
             ],
-            "primaryIntensityTargetOrRange": "range",
-            "polyline": [
-              [
-                0,
-                0
-              ],
-              [
-                0,
-                0.75
-              ],
-              [
-                0.25,
-                0.75
-              ],
-              [
-                0.25,
-                0
-              ],
-              [
-                0.25,
-                0
-              ],
-              [
-                0.25,
-                1
-              ],
-              [
-                0.75,
-                1
-              ],
-              [
-                0.75,
-                0
-              ],
-              [
-                0.75,
-                0
-              ],
-              [
-                0.75,
-                0.5
-              ],
-              [
-                1,
-                0.5
-              ],
-              [
-                1,
-                0
-              ]
-            ]
-          }
-        },
-        "after": {
-          "title": "↳ Brick | 20' race execution",
-          "description": "OBIETTIVO\nLeggere la transizione senza inseguire il passo da fresco.\n\nPARTE CENTRALE\n5' RPE 2–3.\n10' RPE 2–3, passo di transizione controllato.\n5' facili.\n\nINTENSITÀ\nRPE-first. Registra mentalmente ritmo, fluidità, sensazione muscolare e FC se disponibile.\n\nFUELING\nNessun target separato obbligatorio: usa il brick anche come feedback della gestione della bici. Piccoli sorsi di acqua secondo necessità.\n\nNOTE\nSe non trovi controllo nei primi 5', resta facile.",
-          "totalTimePlanned": 0.3333333333333333,
-          "structure": {
             "primaryLengthMetric": "duration",
-            "primaryIntensityMetric": "rpe",
-            "structure": [
-              {
-                "type": "step",
-                "length": {
-                  "value": 1,
-                  "unit": "repetition"
-                },
-                "steps": [
-                  {
-                    "type": "step",
-                    "name": "Transizione",
-                    "length": {
-                      "value": 300,
-                      "unit": "second"
-                    },
-                    "targets": [
-                      {
-                        "minValue": 2,
-                        "maxValue": 3
-                      }
-                    ],
-                    "intensityClass": "active",
-                    "openDuration": false
-                  }
-                ],
-                "begin": 0,
-                "end": 300
-              },
-              {
-                "type": "step",
-                "length": {
-                  "value": 1,
-                  "unit": "repetition"
-                },
-                "steps": [
-                  {
-                    "type": "step",
-                    "name": "RPE facile controllato",
-                    "length": {
-                      "value": 600,
-                      "unit": "second"
-                    },
-                    "targets": [
-                      {
-                        "minValue": 2,
-                        "maxValue": 3
-                      }
-                    ],
-                    "intensityClass": "active",
-                    "openDuration": false
-                  }
-                ],
-                "begin": 300,
-                "end": 900
-              },
-              {
-                "type": "step",
-                "length": {
-                  "value": 1,
-                  "unit": "repetition"
-                },
-                "steps": [
-                  {
-                    "type": "step",
-                    "name": "Chiusura facile",
-                    "length": {
-                      "value": 300,
-                      "unit": "second"
-                    },
-                    "targets": [
-                      {
-                        "minValue": 1,
-                        "maxValue": 2
-                      }
-                    ],
-                    "intensityClass": "coolDown",
-                    "openDuration": false
-                  }
-                ],
-                "begin": 900,
-                "end": 1200
-              }
-            ],
+            "primaryIntensityMetric": "percentOfThresholdPace",
             "primaryIntensityTargetOrRange": "range",
             "polyline": [
               [
@@ -1672,40 +1107,40 @@
                 1
               ],
               [
-                0.25,
+                0.2,
                 1
               ],
               [
-                0.25,
+                0.2,
                 0
               ],
               [
-                0.25,
+                0.2,
                 0
               ],
               [
-                0.25,
-                1
+                0.2,
+                0.9512
               ],
               [
-                0.75,
-                1
+                0.8333,
+                0.9512
               ],
               [
-                0.75,
+                0.8333,
                 0
               ],
               [
-                0.75,
+                0.8333,
                 0
               ],
               [
-                0.75,
-                0.6667
+                0.8333,
+                0.9512
               ],
               [
                 1,
-                0.6667
+                0.9512
               ],
               [
                 1,
