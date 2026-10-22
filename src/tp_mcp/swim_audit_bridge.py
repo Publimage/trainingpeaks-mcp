@@ -139,7 +139,7 @@ def _http_read(payload: dict) -> dict:
     except HTTPError as exc:
         if exc.code in (401, 403):
             raise PermissionError("SWIM_BRIDGE_ACCESS_DENIED") from None
-        if exc.code in (500, 502, 503, 504):
+        if exc.code == 503:
             raise ConnectionError("SWIM_BRIDGE_TEMPORARILY_UNAVAILABLE") from None
         raise RuntimeError("SWIM_BRIDGE_HTTP_REJECTED") from None
     except (URLError, TimeoutError, ConnectionError):
