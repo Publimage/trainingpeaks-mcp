@@ -9,12 +9,15 @@ on:
       - scripts/ironman_jobs/swim_recovery_audit.py
       - scripts/ironman_jobs/swim_audit_report.py
       - scripts/ironman_jobs/swim_audit_acquisition.py
+      - scripts/ironman_jobs/swim_audit_drive_reader.py
       - tests/test_swim_distance_audit.py
       - tests/test_swim_distance_audit_edges.py
       - tests/test_swim_recovery_audit.py
       - tests/test_swim_audit_report.py
       - tests/test_swim_audit_acquisition.py
+      - tests/test_swim_audit_drive_reader.py
       - docs/IRONMAN_DETERMINISTIC_SWIM_AUDIT.md
+      - docs/IRONMAN_SWIM_SOURCE_TRANSPORT.md
       - .github/workflows/swim_distance_audit_ci.yml
 
 permissions:
@@ -45,8 +48,8 @@ jobs:
           set -euo pipefail
           QA_DIR="$RUNNER_TEMP/swim-distance-audit"
           mkdir -p "$QA_DIR/scripts/ironman_jobs" "$QA_DIR/tests"
-          cp scripts/ironman_jobs/swim_distance_audit.py scripts/ironman_jobs/swim_recovery_audit.py scripts/ironman_jobs/swim_audit_report.py scripts/ironman_jobs/swim_audit_acquisition.py "$QA_DIR/scripts/ironman_jobs/"
-          cp tests/test_swim_distance_audit.py tests/test_swim_distance_audit_edges.py tests/test_swim_recovery_audit.py tests/test_swim_audit_report.py tests/test_swim_audit_acquisition.py "$QA_DIR/tests/"
+          cp scripts/ironman_jobs/swim_distance_audit.py scripts/ironman_jobs/swim_recovery_audit.py scripts/ironman_jobs/swim_audit_report.py scripts/ironman_jobs/swim_audit_acquisition.py scripts/ironman_jobs/swim_audit_drive_reader.py "$QA_DIR/scripts/ironman_jobs/"
+          cp tests/test_swim_distance_audit.py tests/test_swim_distance_audit_edges.py tests/test_swim_recovery_audit.py tests/test_swim_audit_report.py tests/test_swim_audit_acquisition.py tests/test_swim_audit_drive_reader.py "$QA_DIR/tests/"
           cd "$QA_DIR"
           python -m pytest -q tests --junitxml=swim-distance-audit.xml
-          printf 'SWIM_ACQUISITION_OFFLINE_TESTS_PASS\n'
+          printf 'SWIM_PLAINTEXT_SOURCE_OFFLINE_TESTS_PASS\n'
