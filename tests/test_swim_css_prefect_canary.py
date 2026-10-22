@@ -25,7 +25,7 @@ def conf():
         "schema": "IRONMAN_CSS_PREFECT_CANARY_V1",
         "revision": REV,
         "request": {
-            "target": TARGET,
+            "target": dict(TARGET),
             "document_id": "synthetic-document-id",
             "document_title": "11_AGENT_ORCHESTRATION_ROADMAP",
             "section": "css2200_pause300_after1200_v1",
