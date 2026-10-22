@@ -8,16 +8,16 @@
     "expected_title": "ALBERTO FAZI ENDURANCE | CHASING THE SLOT | 24 settimane | Advanced | Italiano",
     "expected_is_public": true,
     "expected_workout_count": 276,
-    "scope": "trainingpeaks:plan:685173:w10-p20-test-protocol-identical-to-w01-w05-20261022-v1",
+    "scope": "trainingpeaks:plan:685173:w11-endurance-budget-16h30-one-easy-bike-20261022-v1",
     "items": [
       {
-        "workout_id": 4001050288,
+        "workout_id": 4001052939,
         "expected_sport_id": 2,
-        "expected_workout_day": "2027-03-11",
+        "expected_workout_day": "2027-03-16",
         "before": {
-          "title": "◎ Test | 140' retest FTP P20 + endurance facile",
-          "description": "OBIETTIVO\nRetest della potenza di riferimento in un protocollo da 20' eseguibile all'interno della seduta bici del giovedì, senza aggiungere ore. Conservare la salita progressiva 3x6' del martedì.\n\nPROTOCOLLO — 140'\n20' warm-up progressivo; 3x(1' di attivazione 105–115% vecchia FTP + 2' facili); 6' molto facili; 20' test a massima potenza media sostenibile con partenza prudente; 10' recupero facile; 70' fondo sotto LT1; 5' defaticamento. Il 20' TEST non è un intervallo a potenza bersaglio fissa: gestire lo sforzo su RPE 8–10, uniformità e condizioni del giorno.\n\nCALCOLO E ZONE\nRegistrare la migliore potenza media sui 20'. Stima convenzionale FTP = P20 × 0,95; confrontare la stima con cronologia, durata e risposta, non trattarla come misura esatta di LT2. Aggiornare le zone solo dopo valutazione del risultato. Alternativa CTS 2x8' utilizzabile soltanto applicando l'intero protocollo alternativo, non mescolare le formule.\n\nRECUPERO E FUELING\nIl resto della seduta è facile, senza altra qualità. Arrivare alimentati, idratarsi secondo condizioni, non fare test se malato o con forte affaticamento.",
-          "totalTimePlanned": 2.3333333333333335,
+          "title": "Aerobico | 95' endurance sotto LT1",
+          "description": "STRUTTURA AGGIORNATA: 15 min Avvio facile; 70 min Fondo sotto LT1; 10 min Defaticamento; durata 95 min.\n\nOBIETTIVO\nFondo aerobico facile, economico e sotto LT1, senza qualità obbligatoria.\n\nINTENSITÀ\nRPE2–3 nella parte di fondo, sotto LT1 secondo respirazione e FC individuale. Eventuale postura aero breve e confortevole solo se sicura, inclusa nei minuti già previsti senza incremento di potenza. FTP non coincide automaticamente con LT2.\n\nFUELING\nArrivare alimentati, scegliere carburazione adeguata alla durata e alle sedute della giornata, senza restrizione deliberata.",
+          "totalTimePlanned": 1.5833333333333333,
           "structure": {
             "structure": [
               {
@@ -28,410 +28,7 @@
                 },
                 "steps": [
                   {
-                    "name": "Riscaldamento progressivo",
-                    "length": {
-                      "value": 1200,
-                      "unit": "second"
-                    },
-                    "targets": [
-                      {
-                        "minValue": 50,
-                        "maxValue": 70
-                      }
-                    ],
-                    "intensityClass": "warmUp",
-                    "openDuration": false
-                  }
-                ],
-                "begin": 0,
-                "end": 1200
-              },
-              {
-                "type": "repetition",
-                "length": {
-                  "value": 3,
-                  "unit": "repetition"
-                },
-                "steps": [
-                  {
-                    "name": "Attivazione 1 minuto",
-                    "length": {
-                      "value": 60,
-                      "unit": "second"
-                    },
-                    "targets": [
-                      {
-                        "minValue": 105,
-                        "maxValue": 115
-                      }
-                    ],
-                    "intensityClass": "active",
-                    "openDuration": false
-                  },
-                  {
-                    "name": "Recupero facile 2 minuti",
-                    "length": {
-                      "value": 120,
-                      "unit": "second"
-                    },
-                    "targets": [
-                      {
-                        "minValue": 45,
-                        "maxValue": 55
-                      }
-                    ],
-                    "intensityClass": "rest",
-                    "openDuration": false
-                  }
-                ],
-                "begin": 1200,
-                "end": 1740
-              },
-              {
-                "type": "step",
-                "length": {
-                  "value": 1,
-                  "unit": "repetition"
-                },
-                "steps": [
-                  {
-                    "name": "Preparazione al test molto facile",
-                    "length": {
-                      "value": 360,
-                      "unit": "second"
-                    },
-                    "targets": [
-                      {
-                        "minValue": 45,
-                        "maxValue": 55
-                      }
-                    ],
-                    "intensityClass": "rest",
-                    "openDuration": false
-                  }
-                ],
-                "begin": 1740,
-                "end": 2100
-              },
-              {
-                "type": "step",
-                "length": {
-                  "value": 1,
-                  "unit": "repetition"
-                },
-                "steps": [
-                  {
-                    "name": "TEST P20 massima potenza media controllata",
-                    "length": {
-                      "value": 1200,
-                      "unit": "second"
-                    },
-                    "targets": [
-                      {
-                        "minValue": 90,
-                        "maxValue": 125
-                      }
-                    ],
-                    "intensityClass": "active",
-                    "openDuration": false
-                  }
-                ],
-                "begin": 2100,
-                "end": 3300
-              },
-              {
-                "type": "step",
-                "length": {
-                  "value": 1,
-                  "unit": "repetition"
-                },
-                "steps": [
-                  {
-                    "name": "Recupero post test",
-                    "length": {
-                      "value": 600,
-                      "unit": "second"
-                    },
-                    "targets": [
-                      {
-                        "minValue": 45,
-                        "maxValue": 55
-                      }
-                    ],
-                    "intensityClass": "rest",
-                    "openDuration": false
-                  }
-                ],
-                "begin": 3300,
-                "end": 3900
-              },
-              {
-                "type": "step",
-                "length": {
-                  "value": 1,
-                  "unit": "repetition"
-                },
-                "steps": [
-                  {
-                    "name": "Endurance sotto LT1",
-                    "length": {
-                      "value": 4200,
-                      "unit": "second"
-                    },
-                    "targets": [
-                      {
-                        "minValue": 55,
-                        "maxValue": 65
-                      }
-                    ],
-                    "intensityClass": "active",
-                    "openDuration": false
-                  }
-                ],
-                "begin": 3900,
-                "end": 8100
-              },
-              {
-                "type": "step",
-                "length": {
-                  "value": 1,
-                  "unit": "repetition"
-                },
-                "steps": [
-                  {
-                    "name": "Defaticamento",
-                    "length": {
-                      "value": 300,
-                      "unit": "second"
-                    },
-                    "targets": [
-                      {
-                        "minValue": 45,
-                        "maxValue": 55
-                      }
-                    ],
-                    "intensityClass": "coolDown",
-                    "openDuration": false
-                  }
-                ],
-                "begin": 8100,
-                "end": 8400
-              }
-            ],
-            "primaryLengthMetric": "duration",
-            "primaryIntensityMetric": "percentOfFtp",
-            "primaryIntensityTargetOrRange": "range",
-            "polyline": [
-              [
-                0,
-                0
-              ],
-              [
-                0,
-                0.56
-              ],
-              [
-                0.1429,
-                0.56
-              ],
-              [
-                0.1429,
-                0
-              ],
-              [
-                0.1429,
-                0
-              ],
-              [
-                0.1429,
-                0.92
-              ],
-              [
-                0.15,
-                0.92
-              ],
-              [
-                0.15,
-                0
-              ],
-              [
-                0.15,
-                0
-              ],
-              [
-                0.15,
-                0.44
-              ],
-              [
-                0.1643,
-                0.44
-              ],
-              [
-                0.1643,
-                0
-              ],
-              [
-                0.1643,
-                0
-              ],
-              [
-                0.1643,
-                0.92
-              ],
-              [
-                0.1714,
-                0.92
-              ],
-              [
-                0.1714,
-                0
-              ],
-              [
-                0.1714,
-                0
-              ],
-              [
-                0.1714,
-                0.44
-              ],
-              [
-                0.1857,
-                0.44
-              ],
-              [
-                0.1857,
-                0
-              ],
-              [
-                0.1857,
-                0
-              ],
-              [
-                0.1857,
-                0.92
-              ],
-              [
-                0.1929,
-                0.92
-              ],
-              [
-                0.1929,
-                0
-              ],
-              [
-                0.1929,
-                0
-              ],
-              [
-                0.1929,
-                0.44
-              ],
-              [
-                0.2071,
-                0.44
-              ],
-              [
-                0.2071,
-                0
-              ],
-              [
-                0.2071,
-                0
-              ],
-              [
-                0.2071,
-                0.44
-              ],
-              [
-                0.25,
-                0.44
-              ],
-              [
-                0.25,
-                0
-              ],
-              [
-                0.25,
-                0
-              ],
-              [
-                0.25,
-                1
-              ],
-              [
-                0.3929,
-                1
-              ],
-              [
-                0.3929,
-                0
-              ],
-              [
-                0.3929,
-                0
-              ],
-              [
-                0.3929,
-                0.44
-              ],
-              [
-                0.4643,
-                0.44
-              ],
-              [
-                0.4643,
-                0
-              ],
-              [
-                0.4643,
-                0
-              ],
-              [
-                0.4643,
-                0.52
-              ],
-              [
-                0.9643,
-                0.52
-              ],
-              [
-                0.9643,
-                0
-              ],
-              [
-                0.9643,
-                0
-              ],
-              [
-                0.9643,
-                0.44
-              ],
-              [
-                1,
-                0.44
-              ],
-              [
-                1,
-                0
-              ]
-            ]
-          }
-        },
-        "after": {
-          "title": "◎ Test | 140' retest FTP P20 + endurance facile",
-          "description": "OBIETTIVO\nRetest della potenza di riferimento 20' con lo STESSO protocollo iniziale W01/W05, incorporato nel workout bici da 140' senza aggiungere allenamenti. Conservare la seduta in salita 3x6' del martedì.\n\nPROTOCOLLO TEST COMPARABILE — primi 60'\n15' riscaldamento progressivo; 5' attivazione SUBMASSIMALE a circa RPE5–6 (non all-out); 10' facili; 20' a migliore potenza media sostenibile con pacing regolare; 10' facili. È il protocollo W01/W05, non un test diverso.\n\nRESTO DELLA SEDUTA\n80' endurance EASY sotto LT1 per un totale di 140'. Non aggiungere soglia, sprint o ulteriori progressioni dopo il test.\n\nRISULTATO\nRegistrare P20, RPE, FC, cadenza, strumento e condizioni. P20×0,95 è una stima FTP convenzionale, NON una misura automatica della LT2; interpretarla con dati e storico individuali. Se si adotta l'alternativa CTS 2x8' occorre utilizzare integralmente il protocollo specifico e la diversa formula, non mescolare le due procedure.\n\nRECUPERO E FUELING\nEffettuare il test solo se sufficientemente recuperato; arrivare alimentati con routine replicabile e mantenere il resto della bici facile.",
-          "totalTimePlanned": 2.3333333333333335,
-          "structure": {
-            "structure": [
-              {
-                "type": "step",
-                "length": {
-                  "value": 1,
-                  "unit": "repetition"
-                },
-                "steps": [
-                  {
-                    "name": "Riscaldamento progressivo",
+                    "name": "Avvio facile",
                     "length": {
                       "value": 900,
                       "unit": "second"
@@ -439,7 +36,7 @@
                     "targets": [
                       {
                         "minValue": 50,
-                        "maxValue": 70
+                        "maxValue": 60
                       }
                     ],
                     "intensityClass": "warmUp",
@@ -457,15 +54,15 @@
                 },
                 "steps": [
                   {
-                    "name": "Attivazione submassimale RPE5-6",
+                    "name": "Fondo sotto LT1",
                     "length": {
-                      "value": 300,
+                      "value": 4200,
                       "unit": "second"
                     },
                     "targets": [
                       {
-                        "minValue": 80,
-                        "maxValue": 95
+                        "minValue": 60,
+                        "maxValue": 70
                       }
                     ],
                     "intensityClass": "active",
@@ -473,7 +70,7 @@
                   }
                 ],
                 "begin": 900,
-                "end": 1200
+                "end": 5100
               },
               {
                 "type": "step",
@@ -483,7 +80,7 @@
                 },
                 "steps": [
                   {
-                    "name": "Preparazione facile prima del test",
+                    "name": "Defaticamento",
                     "length": {
                       "value": 600,
                       "unit": "second"
@@ -494,90 +91,12 @@
                         "maxValue": 55
                       }
                     ],
-                    "intensityClass": "rest",
+                    "intensityClass": "coolDown",
                     "openDuration": false
                   }
                 ],
-                "begin": 1200,
-                "end": 1800
-              },
-              {
-                "type": "step",
-                "length": {
-                  "value": 1,
-                  "unit": "repetition"
-                },
-                "steps": [
-                  {
-                    "name": "TEST P20 massima potenza media",
-                    "length": {
-                      "value": 1200,
-                      "unit": "second"
-                    },
-                    "targets": [
-                      {
-                        "minValue": 90,
-                        "maxValue": 125
-                      }
-                    ],
-                    "intensityClass": "active",
-                    "openDuration": false
-                  }
-                ],
-                "begin": 1800,
-                "end": 3000
-              },
-              {
-                "type": "step",
-                "length": {
-                  "value": 1,
-                  "unit": "repetition"
-                },
-                "steps": [
-                  {
-                    "name": "Recupero post-test",
-                    "length": {
-                      "value": 600,
-                      "unit": "second"
-                    },
-                    "targets": [
-                      {
-                        "minValue": 45,
-                        "maxValue": 55
-                      }
-                    ],
-                    "intensityClass": "rest",
-                    "openDuration": false
-                  }
-                ],
-                "begin": 3000,
-                "end": 3600
-              },
-              {
-                "type": "step",
-                "length": {
-                  "value": 1,
-                  "unit": "repetition"
-                },
-                "steps": [
-                  {
-                    "name": "Endurance sotto LT1",
-                    "length": {
-                      "value": 4800,
-                      "unit": "second"
-                    },
-                    "targets": [
-                      {
-                        "minValue": 55,
-                        "maxValue": 65
-                      }
-                    ],
-                    "intensityClass": "active",
-                    "openDuration": false
-                  }
-                ],
-                "begin": 3600,
-                "end": 8400
+                "begin": 5100,
+                "end": 5700
               }
             ],
             "primaryLengthMetric": "duration",
@@ -590,91 +109,183 @@
               ],
               [
                 0,
-                0.56
+                0.8571
               ],
               [
-                0.1071,
-                0.56
+                0.1579,
+                0.8571
               ],
               [
-                0.1071,
+                0.1579,
                 0
               ],
               [
-                0.1071,
+                0.1579,
                 0
               ],
               [
-                0.1071,
-                0.76
-              ],
-              [
-                0.1429,
-                0.76
-              ],
-              [
-                0.1429,
-                0
-              ],
-              [
-                0.1429,
-                0
-              ],
-              [
-                0.1429,
-                0.44
-              ],
-              [
-                0.2143,
-                0.44
-              ],
-              [
-                0.2143,
-                0
-              ],
-              [
-                0.2143,
-                0
-              ],
-              [
-                0.2143,
+                0.1579,
                 1
               ],
               [
-                0.3571,
+                0.8947,
                 1
               ],
               [
-                0.3571,
+                0.8947,
                 0
               ],
               [
-                0.3571,
+                0.8947,
                 0
               ],
               [
-                0.3571,
-                0.44
-              ],
-              [
-                0.4286,
-                0.44
-              ],
-              [
-                0.4286,
-                0
-              ],
-              [
-                0.4286,
-                0
-              ],
-              [
-                0.4286,
-                0.52
+                0.8947,
+                0.7857
               ],
               [
                 1,
-                0.52
+                0.7857
+              ],
+              [
+                1,
+                0
+              ]
+            ]
+          }
+        },
+        "after": {
+          "title": "Aerobico | 150' endurance sotto LT1",
+          "description": "OBIETTIVO\nVolume aerobico facile per il budget endurance W11 di 16h30, senza nuova intensità e senza aggiungere sedute. L'estensione rispetto alla vecchia prescrizione serve a costruire durata recuperabile, non a forzare il ritmo.\n\nSTRUTTURA — 150'\n15' avvio facile + 125' endurance costante sotto LT1 + 10' defaticamento. Conservare RPE 2–3 e la possibilità di pedalare in aero solo dove familiare e sicuro, senza aumentare potenza. Se il carico della settimana risulta eccessivo, non recuperare altrove minuti omessi.\n\nINTENSITÀ\nCirca 60–70% FTP nel tratto aerobico come riferimento orientativo, verificando FC, respirazione e LT1 individuale; FTP non determina automaticamente LT2. Niente steady o VO₂ supplementare.\n\nFUELING\nRifornimento coerente con 2h30, con carboidrati e liquidi già tollerati secondo intensità, disponibilità e condizioni.",
+          "totalTimePlanned": 2.5,
+          "structure": {
+            "structure": [
+              {
+                "type": "step",
+                "length": {
+                  "value": 1,
+                  "unit": "repetition"
+                },
+                "steps": [
+                  {
+                    "name": "Avvio facile",
+                    "length": {
+                      "value": 900,
+                      "unit": "second"
+                    },
+                    "targets": [
+                      {
+                        "minValue": 50,
+                        "maxValue": 60
+                      }
+                    ],
+                    "intensityClass": "warmUp",
+                    "openDuration": false
+                  }
+                ],
+                "begin": 0,
+                "end": 900
+              },
+              {
+                "type": "step",
+                "length": {
+                  "value": 1,
+                  "unit": "repetition"
+                },
+                "steps": [
+                  {
+                    "name": "Fondo sotto LT1",
+                    "length": {
+                      "value": 7500,
+                      "unit": "second"
+                    },
+                    "targets": [
+                      {
+                        "minValue": 60,
+                        "maxValue": 70
+                      }
+                    ],
+                    "intensityClass": "active",
+                    "openDuration": false
+                  }
+                ],
+                "begin": 900,
+                "end": 8400
+              },
+              {
+                "type": "step",
+                "length": {
+                  "value": 1,
+                  "unit": "repetition"
+                },
+                "steps": [
+                  {
+                    "name": "Defaticamento",
+                    "length": {
+                      "value": 600,
+                      "unit": "second"
+                    },
+                    "targets": [
+                      {
+                        "minValue": 45,
+                        "maxValue": 55
+                      }
+                    ],
+                    "intensityClass": "coolDown",
+                    "openDuration": false
+                  }
+                ],
+                "begin": 8400,
+                "end": 9000
+              }
+            ],
+            "primaryLengthMetric": "duration",
+            "primaryIntensityMetric": "percentOfFtp",
+            "primaryIntensityTargetOrRange": "range",
+            "polyline": [
+              [
+                0,
+                0
+              ],
+              [
+                0,
+                0.8571
+              ],
+              [
+                0.1,
+                0.8571
+              ],
+              [
+                0.1,
+                0
+              ],
+              [
+                0.1,
+                0
+              ],
+              [
+                0.1,
+                1
+              ],
+              [
+                0.9333,
+                1
+              ],
+              [
+                0.9333,
+                0
+              ],
+              [
+                0.9333,
+                0
+              ],
+              [
+                0.9333,
+                0.7857
+              ],
+              [
+                1,
+                0.7857
               ],
               [
                 1,
