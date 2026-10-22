@@ -6,6 +6,8 @@ on:
     paths:
       - src/tp_mcp/tools/ironman_operator.py
       - tests/test_ironman_operator.py
+      - scripts/ironman_jobs/ironman_unified_changeset_engine.py
+      - tests/test_ironman_unified_changeset_engine.py
       - .github/workflows/ironman_operator_contract_ci.yml
 permissions:
   contents: read
@@ -28,4 +30,4 @@ jobs:
       - name: Install package and test dependencies
         run: python -m pip install -e '.[dev]'
       - name: Verify common operator safety and conflict diagnostics
-        run: python -m pytest -q tests/test_ironman_operator.py
+        run: python -m pytest -q tests/test_ironman_operator.py tests/test_ironman_unified_changeset_engine.py
