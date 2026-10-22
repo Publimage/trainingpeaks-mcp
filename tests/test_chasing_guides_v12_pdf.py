@@ -4,11 +4,14 @@ def test_pdf_small_render_source_is_structurally_valid():
     d=g.Sheet("Smoke Test")
     d.heading("TEST PDF")
     d.paragraph("Documento di prova con testo lungo e ripetuto. " * 10)
+    for _ in range(3):
+        d.page_break()
+        d.paragraph('Pagina addizionale di prova.')
     b=g.pdf(d.finish())
     assert b.startswith(b"%PDF-1.4")
     assert b.rstrip().endswith(b"%%EOF")
     assert b"/Type /Catalog" in b
-    assert b"xref" in b and b"/Count 1" in b
+    assert b"xref" in b and b"/Count 4" in b
 
 def test_release_constants():
     assert g.PLAN==685173 and g.PERSON==6682479
