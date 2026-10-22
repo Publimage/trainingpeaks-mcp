@@ -1,0 +1,31 @@
+name: IRONMAN unified operator - offline contract
+on:
+  pull_request:
+    branches:
+      - feat/mcp-test-training-plan-lab
+    paths:
+      - src/tp_mcp/tools/ironman_operator.py
+      - tests/test_ironman_operator.py
+      - .github/workflows/ironman_operator_contract_ci.yml
+permissions:
+  contents: read
+concurrency:
+  group: ironman-operator-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+jobs:
+  operator-offline:
+    if: github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install package and test dependencies
+        run: python -m pip install -e '.[dev]'
+      - name: Verify common operator safety and conflict diagnostics
+        run: python -m pytest -q tests/test_ironman_operator.py
