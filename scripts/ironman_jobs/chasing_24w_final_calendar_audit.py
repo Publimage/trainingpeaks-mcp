@@ -57,7 +57,7 @@ async def main():
       if step.get("length",{}).get("unit")=="meter":
        actual+=step["length"]["value"]*reps
     need(abs(actual-x["distancePlanned"])<.5,"SWIM_METER_DRIFT_"+str(x.get("workoutId")))
-   if "test" in (x.get("title") or "").lower():
+   if (x.get("title") or "").startswith("◎ Test |"):
     tests.append({"week":w,"sport":sp,"id":x["workoutId"]})
   need(dict(sport_count)=={1:71,2:84,3:94},"SPORT_COUNTS")
   continuous=sorted(w for w,x in swims if "no-stop" in (x.get("title") or "").lower() or "continuati" in (x.get("title") or "").lower())
