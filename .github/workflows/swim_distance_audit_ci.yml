@@ -1,0 +1,46 @@
+name: IRONMAN swim distance audit - offline tests
+
+on:
+  pull_request:
+    branches:
+      - feat/mcp-test-training-plan-lab
+    paths:
+      - scripts/ironman_jobs/swim_distance_audit.py
+      - tests/test_swim_distance_audit.py
+      - tests/test_swim_distance_audit_edges.py
+      - docs/IRONMAN_DETERMINISTIC_SWIM_AUDIT.md
+      - .github/workflows/swim_distance_audit_ci.yml
+
+permissions:
+  contents: read
+
+concurrency:
+  group: swim-distance-audit-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  offline-swim-audit:
+    if: github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install pinned test runtime
+        run: python -m pip install 'pytest==9.0.2'
+      - name: Run only pure validator tests in an isolated directory
+        shell: bash
+        run: |
+          set -euo pipefail
+          QA_DIR="$RUNNER_TEMP/swim-distance-audit"
+          mkdir -p "$QA_DIR/scripts/ironman_jobs" "$QA_DIR/tests"
+          cp scripts/ironman_jobs/swim_distance_audit.py "$QA_DIR/scripts/ironman_jobs/"
+          cp tests/test_swim_distance_audit.py tests/test_swim_distance_audit_edges.py "$QA_DIR/tests/"
+          cd "$QA_DIR"
+          python -m pytest -q tests --junitxml=swim-distance-audit.xml
+          printf 'SWIM_DISTANCE_OFFLINE_TESTS_PASS\n'
