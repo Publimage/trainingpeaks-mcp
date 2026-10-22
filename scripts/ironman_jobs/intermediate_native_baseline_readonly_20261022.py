@@ -75,6 +75,15 @@ async def run():
         require(dict(bysport)=={1:71,2:71,3:87},f"SPORT_COUNTS_{dict(bysport)}")
         focus={x.get("workoutId"):x for x in classic if x.get("workoutId") in FOCUS}
         require(len(focus)==len(FOCUS),f"FOCUS_COUNT_{len(focus)}")
+        patch_ids={3996858792,3996859347,3996860483,3996863151,3996864785,3996868548}
+        for workout in classic:
+            if workout.get("workoutId") in patch_ids:
+                print(json.dumps({"stage":"INTERMEDIATE_PATCH_FULL_NATIVE","workoutId":workout.get("workoutId"),
+                    "workoutTypeValueId":workout.get("workoutTypeValueId"),
+                    "workoutDay":workout.get("workoutDay"),"title":workout.get("title"),
+                    "description":workout.get("description"),
+                    "totalTimePlanned":workout.get("totalTimePlanned"),
+                    "structure":workout.get("structure")},ensure_ascii=False,default=str),flush=True)
         print(json.dumps({"stage":"INTERMEDIATE_NATIVE_CLASSIC_AUDIT","plan":PLAN,
              "count":len(classic),"sports":dict(bysport),"issue_count":len(issues),
              "issues":issues[:75]},ensure_ascii=False),flush=True)
