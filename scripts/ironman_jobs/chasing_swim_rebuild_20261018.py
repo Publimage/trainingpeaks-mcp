@@ -218,6 +218,9 @@ def title_for(week,kind,total,main,groups,test_index=0):
     if kind=="cont":
         if main==total:return f"Specifico | {main} m continuati no-stop - rehearsal"
         return f"Continuo | {main} m no-stop, pacing Ironman - {total} m"
+    if kind == "long":
+        work=max((g for g in groups if g["count"]>1),key=lambda g:g["count"]*g["metres"])
+        return f"Fondo | {work['count']}x{work['metres']} m {work['name']} - {total} m"
     if kind in ("tech","tech_easy"):
         key=next((x["name"] for x in groups if "Pull" in x["name"] or "Palette" in x["name"] or "Pinne" in x["name"]),groups[1]["name"])
         short=key.split(",")[0]
@@ -348,6 +351,7 @@ def objective_for(week,kind,main):
     if kind=="cont":
         if main>=3500:return f"Specificità full-distance in fase di {phase}: sostenere {main} m realmente continuati, senza recuperi, con tecnica e costo interno stabili."
         return f"Costruire continuità aerobica in fase di {phase}: {main} m senza pause con assetto e pacing controllati."
+    if kind=="long":return f"Endurance frazionata in fase di {phase}: mantenere volume, tecnica e recuperabilità senza continuo lungo."
     if kind in ("tech","tech_easy"):return f"Economia e forza specifica in acqua in fase di {phase}: trasferire presa, assetto e controllo al nuoto completo."
     if kind.startswith("q"):return f"Qualità nuoto in fase di {phase}: variare lunghezza delle ripetute e ritmo senza perdere tecnica."
     if kind=="aero":return f"Assorbire il carico in fase di {phase} mantenendo economia, ritmo aerobico e negative split controllato."
@@ -382,13 +386,52 @@ def description_for(week,kind,total,minutes,main,groups):
               f"Settimana {week}, fase {PHASE[week]}. La funzione di questa seduta è distinta dagli altri due nuoti della settimana; non trasformarla automaticamente nel workout della settimana precedente."]
     return "\n".join(lines)
 
+
+# Candidate layout approved in principle, 2026-10-22. Material details need release QA.
+# (count, metres, label, RPE_low, RPE_high, timed rest between repetitions, class)
+CHASING_SWIM_V15 = {1: [[1,300,'Ingresso facile',2,3,0,'warmUp'],[4,500,'Fondo aerobico e assetto',2,3,20,'active'],[5,100,'Economia e respirazione',2,3,15,'active']],
+2: [[1,400,'Ingresso facile',2,3,0,'warmUp'],[3,700,'Fondo regolare e postura',2,3,25,'active'],[5,100,'Controllo passo',2,3,15,'active']],
+3: [[1,400,'Ingresso facile',2,3,0,'warmUp'],[4,600,'Economia sotto carico',2,3,25,'active'],[1,400,'Defaticamento',1,2,0,'coolDown']],
+4: [[1,300,'Ingresso facile',1,2,0,'warmUp'],[5,400,'Fondo facile di recupero',1,2,20,'active'],[1,300,'Sciolti',1,2,0,'coolDown']],
+5: [[1,400,'Ingresso facile',2,3,0,'warmUp'],[4,600,'Fondo facile dopo retest',2,3,25,'active'],[1,500,'Sciolti',1,2,0,'coolDown']],
+6: [[1,400,'Ingresso facile',2,3,0,'warmUp'],[4,700,'Endurance a tecnica stabile',2,3,30,'active'],[1,200,'Sciolti',1,2,0,'coolDown']],
+7: [[1,300,'Ingresso facile',2,3,0,'warmUp'],[3,900,'Resistenza aerobica controllata',2,3,30,'active'],[5,100,'Economia senza qualità aggiuntiva',2,3,15,'active']],
+8: [[1,300,'Ingresso facile',1,2,0,'warmUp'],[4,500,'Fondo leggero di scarico',1,2,20,'active'],[5,100,'Gestualità sciolta',1,2,15,'active']],
+9: [[1,400,'Ingresso facile',2,3,0,'warmUp'],[4,700,'Aerobico sotto controllo',2,3,25,'active'],[1,400,'Sciolti',1,2,0,'coolDown']],
+10: [[1,400,'Ingresso facile',2,3,0,'warmUp'],[3,900,'Passo lungo regolare',2,3,30,'active'],[6,100,'Controllo tecnico',2,3,15,'active']],
+11: [[1,400,'Ingresso facile',2,3,0,'warmUp'],[4,100,'Preparazione tecnica',2,3,15,'active'],[1,2600,'Continuo senza pause a ritmo gara',3,4,0,'active'],[1,400,'Sciolti',1,2,0,'coolDown']],
+12: [[1,300,'Ingresso facile',1,2,0,'warmUp'],[4,600,'Fondo facile di assorbimento',1,2,20,'active'],[1,400,'Sciolti',1,2,0,'coolDown']],
+13: [[1,400,'Ingresso facile',2,3,0,'warmUp'],[1,3000,'Continuo senza pause a passo gara',3,4,0,'active'],[1,500,'Sciolti',1,2,0,'coolDown']],
+14: [[1,400,'Ingresso facile',2,3,0,'warmUp'],[2,1600,'Ritmo gara frazionato',3,4,45,'active'],[1,400,'Sciolti',1,2,0,'coolDown']],
+15: [[1,300,'Ingresso facile',2,3,0,'warmUp'],[1,3000,'Continuo senza pause controllato',3,4,0,'active'],[1,200,'Sciolti',1,2,0,'coolDown']],
+16: [[1,400,'Ingresso facile',1,2,0,'warmUp'],[4,600,'Fondo facile post picco',1,2,20,'active'],[1,400,'Sciolti',1,2,0,'coolDown']],
+17: [[1,400,'Ingresso facile',1,2,0,'warmUp'],[4,800,'Endurance facile in settimana di retest',1,2,30,'active'],[1,600,'Sciolti',1,2,0,'coolDown']],
+18: [[1,400,'Ingresso facile',2,3,0,'warmUp'],[3,1000,'Ritmo Ironman controllato',3,4,40,'active'],[4,200,'Tenuta tecnica senza soglia',3,4,20,'active']],
+19: [[1,4000,'Nuoto continuo no-stop',3,4,0,'active']],
+20: [[1,400,'Ingresso facile',1,2,0,'warmUp'],[4,600,'Fondo facile post rehearsal',1,2,20,'active'],[1,600,'Sciolti',1,2,0,'coolDown']],
+21: [[1,300,'Ingresso facile',2,3,0,'warmUp'],[4,700,'Fondo agevole in settimana di volume',2,3,25,'active'],[1,400,'Sciolti',1,2,0,'coolDown']],
+22: [[1,300,'Ingresso facile',2,3,0,'warmUp'],[2,1200,'Passo gara confortevole',2,3,45,'active'],[4,200,'Economia e respirazione',2,3,20,'active']],
+23: [[1,300,'Ingresso facile',2,3,0,'warmUp'],[4,500,'Fondo sciolto da taper',2,3,20,'active'],[5,100,'Assetto e sensibilità',2,3,15,'active']]}
+TRUE_CONTINUOUS_WEEKS = {11: 2600, 13: 3000, 15: 3000, 19: 4000}
+
+def redesigned_groups(week):
+    return [_group(count, metres, name, (low, high), klass, recovery)
+            for count, metres, name, low, high, recovery, klass in CHASING_SWIM_V15[week]]
+
 def build_specs():
     specs=[]
     for week in range(1,25):
         need(len(IDS[week])==len(CFG[week]),"ID_CFG_LEN_W"+str(week))
         for slot,(wid,cfg) in enumerate(zip(IDS[week],CFG[week]),1):
             kind,total,minutes,main=cfg
-            groups=build_groups(week,kind,total,main)
+            if kind == "cont":
+                main = TRUE_CONTINUOUS_WEEKS.get(week, 0)
+                kind = "cont" if main else "long"
+                groups = redesigned_groups(week)
+                need(sum(g["count"]*g["metres"] for g in groups) == total,
+                     "SWIM_V15_DISTANCE_DRIFT_W"+str(week))
+            else:
+                groups = build_groups(week,kind,total,main)
             specs.append({"id":wid,"week":week,"slot":slot,"kind":kind,"metres":total,
               "minutes":minutes,"main":main,"groups":groups,
               "title":title_for(week,kind,total,main,groups),
@@ -402,9 +445,9 @@ def design_gate(specs):
     need(all(week_counts[w]==3 for w in range(1,24)) and week_counts[24]==2,"WEEK_COUNTS")
     cont=[x for x in specs if x["kind"]=="cont"]
     mains=[x["main"] for x in cont]
-    need(any(v>=3500 for v in mains) and any(v>=3800 for v in mains) and 4000 in mains,
-         "CONTINUOUS_3500_3800_4000_GATE")
-    need(sum(v>=3000 for v in mains)>=10,"TOO_FEW_LONG_CONTINUOUS")
+    need({x["week"]:x["main"] for x in cont}==TRUE_CONTINUOUS_WEEKS,
+         "FOUR_CONTINUOUS_GATED")
+    need(len(cont)==4,"NOT_FOUR_CONTINUOUS")
     need(any(x["main"]==x["metres"]==4000 for x in cont),"NO_TRUE_4000_NO_STOP")
     desc="\n".join(x["description"].lower() for x in specs)
     need(desc.count("palette")>=10 and desc.count("pull buoy")>=10 and desc.count("pinne")>=6,
