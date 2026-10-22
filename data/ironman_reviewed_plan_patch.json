@@ -3474,6 +3474,1105 @@
             ]
           }
         }
+      },
+      {
+        "workout_id": 4001072067,
+        "expected_sport_id": 3,
+        "expected_workout_day": "2027-04-26",
+        "before": {
+          "title": "Aerobico | 45' facile con tecnica opzionale",
+          "description": "OBIETTIVO\nCorsa aerobica principale o di continuità, a costo controllato, senza progressione obbligatoria.\n\nSTRUTTURA\n8' riscaldamento lento, 31' corsa RPE2–3, 6' defaticamento facile. Nessuna gara di passo.\n\nTECNICA OPZIONALE\nSe tecnicamente familiare, fino a 6–8' di A-March, ankling o pochissimi strides rilassati SOSTITUISCONO una quota dei minuti di fondo, senza prolungare la seduta; mai aggiunti come carico extra. Omettere se fatica muscolotendinea/DOMS dalla forza o tecnica peggiora.\n\nINTENSITÀ\nFondo conversazionale RPE 2–3; considerare FC, appoggi e recupero generale.\n\nFUELING\nAlimentazione ordinaria, acqua secondo sete, snack familiare quando utile.",
+          "totalTimePlanned": 0.75,
+          "structure": {
+            "structure": [
+              {
+                "type": "step",
+                "length": {
+                  "value": 1,
+                  "unit": "repetition"
+                },
+                "steps": [
+                  {
+                    "name": "Riscaldamento",
+                    "length": {
+                      "value": 480,
+                      "unit": "second"
+                    },
+                    "targets": [
+                      {
+                        "minValue": 76,
+                        "maxValue": 82
+                      }
+                    ],
+                    "intensityClass": "warmUp",
+                    "openDuration": false
+                  }
+                ],
+                "begin": 0,
+                "end": 480
+              },
+              {
+                "type": "step",
+                "length": {
+                  "value": 1,
+                  "unit": "repetition"
+                },
+                "steps": [
+                  {
+                    "name": "Fondo facile RPE2-3",
+                    "length": {
+                      "value": 1860,
+                      "unit": "second"
+                    },
+                    "targets": [
+                      {
+                        "minValue": 78,
+                        "maxValue": 84
+                      }
+                    ],
+                    "intensityClass": "active",
+                    "openDuration": false
+                  }
+                ],
+                "begin": 480,
+                "end": 2340
+              },
+              {
+                "type": "step",
+                "length": {
+                  "value": 1,
+                  "unit": "repetition"
+                },
+                "steps": [
+                  {
+                    "name": "Defaticamento",
+                    "length": {
+                      "value": 360,
+                      "unit": "second"
+                    },
+                    "targets": [
+                      {
+                        "minValue": 70,
+                        "maxValue": 78
+                      }
+                    ],
+                    "intensityClass": "coolDown",
+                    "openDuration": false
+                  }
+                ],
+                "begin": 2340,
+                "end": 2700
+              }
+            ],
+            "primaryLengthMetric": "duration",
+            "primaryIntensityMetric": "percentOfThresholdPace",
+            "primaryIntensityTargetOrRange": "range",
+            "polyline": [
+              [
+                0,
+                0
+              ],
+              [
+                0,
+                0.9762
+              ],
+              [
+                0.1778,
+                0.9762
+              ],
+              [
+                0.1778,
+                0
+              ],
+              [
+                0.1778,
+                0
+              ],
+              [
+                0.1778,
+                1
+              ],
+              [
+                0.8667,
+                1
+              ],
+              [
+                0.8667,
+                0
+              ],
+              [
+                0.8667,
+                0
+              ],
+              [
+                0.8667,
+                0.9286
+              ],
+              [
+                1,
+                0.9286
+              ],
+              [
+                1,
+                0
+              ]
+            ]
+          },
+          "distancePlanned": null
+        },
+        "after": {
+          "title": "◎ Test | RETEST W17 - 5 km",
+          "description": "RETEST RUN 5 km a inizio W17, ripetere esattamente il test 5 km del W13, inclusi warm-up, 4x20'' veloci sciolti con 40'' facili, 3' easy pre-test, 5 km massima velocità media sostenibile e defaticamento 10'. Confrontare passo medio, percorso, meteo, RPE e condizioni; aggiornare Run Threshold solo se risultato valido. Evitare qualità complementari in questo giorno. Totale TrainingPeaks 55' stimati, distanza prestativa test 5 km.",
+          "totalTimePlanned": 0.9166666666666666,
+          "structure": {
+            "primaryLengthMetric": "distance",
+            "primaryIntensityMetric": "rpe",
+            "visualizationDistanceUnit": "meter",
+            "structure": [
+              {
+                "type": "step",
+                "length": {
+                  "value": 1,
+                  "unit": "repetition"
+                },
+                "steps": [
+                  {
+                    "type": "step",
+                    "name": "Riscaldamento",
+                    "length": {
+                      "value": 900,
+                      "unit": "second"
+                    },
+                    "targets": [
+                      {
+                        "minValue": 2,
+                        "maxValue": 3
+                      }
+                    ],
+                    "intensityClass": "warmUp",
+                    "openDuration": false
+                  }
+                ],
+                "begin": 0,
+                "end": 0
+              },
+              {
+                "type": "repetition",
+                "length": {
+                  "value": 4,
+                  "unit": "repetition"
+                },
+                "steps": [
+                  {
+                    "type": "step",
+                    "name": "Veloce sciolto",
+                    "length": {
+                      "value": 20,
+                      "unit": "second"
+                    },
+                    "targets": [
+                      {
+                        "minValue": 6,
+                        "maxValue": 7
+                      }
+                    ],
+                    "intensityClass": "active",
+                    "openDuration": false
+                  },
+                  {
+                    "type": "step",
+                    "name": "Facile",
+                    "length": {
+                      "value": 40,
+                      "unit": "second"
+                    },
+                    "targets": [
+                      {
+                        "minValue": 1,
+                        "maxValue": 2
+                      }
+                    ],
+                    "intensityClass": "rest",
+                    "openDuration": false
+                  }
+                ],
+                "begin": 0,
+                "end": 0
+              },
+              {
+                "type": "step",
+                "length": {
+                  "value": 1,
+                  "unit": "repetition"
+                },
+                "steps": [
+                  {
+                    "type": "step",
+                    "name": "Facile",
+                    "length": {
+                      "value": 180,
+                      "unit": "second"
+                    },
+                    "targets": [
+                      {
+                        "minValue": 2,
+                        "maxValue": 2
+                      }
+                    ],
+                    "intensityClass": "active",
+                    "openDuration": false
+                  }
+                ],
+                "begin": 0,
+                "end": 0
+              },
+              {
+                "type": "step",
+                "length": {
+                  "value": 1,
+                  "unit": "repetition"
+                },
+                "steps": [
+                  {
+                    "type": "step",
+                    "name": "TEST 5 km",
+                    "length": {
+                      "value": 5000,
+                      "unit": "meter",
+                      "visualizationDistanceUnit": "meter"
+                    },
+                    "targets": [
+                      {
+                        "minValue": 9,
+                        "maxValue": 10
+                      }
+                    ],
+                    "intensityClass": "active",
+                    "openDuration": false
+                  }
+                ],
+                "begin": 0,
+                "end": 5000
+              },
+              {
+                "type": "step",
+                "length": {
+                  "value": 1,
+                  "unit": "repetition"
+                },
+                "steps": [
+                  {
+                    "type": "step",
+                    "name": "Defaticamento",
+                    "length": {
+                      "value": 600,
+                      "unit": "second"
+                    },
+                    "targets": [
+                      {
+                        "minValue": 1,
+                        "maxValue": 2
+                      }
+                    ],
+                    "intensityClass": "coolDown",
+                    "openDuration": false
+                  }
+                ],
+                "begin": 5000,
+                "end": 5000
+              }
+            ],
+            "primaryIntensityTargetOrRange": "range",
+            "polyline": [
+              [
+                0,
+                0
+              ],
+              [
+                0,
+                0.3
+              ],
+              [
+                0.1301,
+                0.3
+              ],
+              [
+                0.1301,
+                0
+              ],
+              [
+                0.1301,
+                0
+              ],
+              [
+                0.1301,
+                0.7
+              ],
+              [
+                0.1329,
+                0.7
+              ],
+              [
+                0.1329,
+                0
+              ],
+              [
+                0.1329,
+                0
+              ],
+              [
+                0.1329,
+                0.2
+              ],
+              [
+                0.1387,
+                0.2
+              ],
+              [
+                0.1387,
+                0
+              ],
+              [
+                0.1387,
+                0
+              ],
+              [
+                0.1387,
+                0.7
+              ],
+              [
+                0.1416,
+                0.7
+              ],
+              [
+                0.1416,
+                0
+              ],
+              [
+                0.1416,
+                0
+              ],
+              [
+                0.1416,
+                0.2
+              ],
+              [
+                0.1474,
+                0.2
+              ],
+              [
+                0.1474,
+                0
+              ],
+              [
+                0.1474,
+                0
+              ],
+              [
+                0.1474,
+                0.7
+              ],
+              [
+                0.1503,
+                0.7
+              ],
+              [
+                0.1503,
+                0
+              ],
+              [
+                0.1503,
+                0
+              ],
+              [
+                0.1503,
+                0.2
+              ],
+              [
+                0.1561,
+                0.2
+              ],
+              [
+                0.1561,
+                0
+              ],
+              [
+                0.1561,
+                0
+              ],
+              [
+                0.1561,
+                0.7
+              ],
+              [
+                0.159,
+                0.7
+              ],
+              [
+                0.159,
+                0
+              ],
+              [
+                0.159,
+                0
+              ],
+              [
+                0.159,
+                0.2
+              ],
+              [
+                0.1647,
+                0.2
+              ],
+              [
+                0.1647,
+                0
+              ],
+              [
+                0.1647,
+                0
+              ],
+              [
+                0.1647,
+                0.2
+              ],
+              [
+                0.1908,
+                0.2
+              ],
+              [
+                0.1908,
+                0
+              ],
+              [
+                0.1908,
+                0
+              ],
+              [
+                0.1908,
+                1
+              ],
+              [
+                0.9133,
+                1
+              ],
+              [
+                0.9133,
+                0
+              ],
+              [
+                0.9133,
+                0
+              ],
+              [
+                0.9133,
+                0.2
+              ],
+              [
+                1,
+                0.2
+              ],
+              [
+                1,
+                0
+              ]
+            ]
+          },
+          "distancePlanned": 5000
+        }
+      },
+      {
+        "workout_id": 4001071935,
+        "expected_sport_id": 1,
+        "expected_workout_day": "2027-04-27",
+        "before": {
+          "title": "Fondo | 4x800 m Endurance facile in settimana di retest - 4200 m",
+          "description": "OBIETTIVO\nEndurance frazionata in fase di specificità avanzata: mantenere volume, tecnica e recuperabilità senza continuo lungo.\n\nSTRUTTURA\n400 m — Ingresso facile.\n4x800 m — Endurance facile in settimana di retest; rec. 30\".\n600 m — Sciolti.\n\nINTENSITÀ\nRPE indicata nei blocchi. CSS/Swim Threshold individuale può aiutare a leggere il ritmo, ma non sostituisce tecnica, respirazione e controllo del costo interno.\n\nATTREZZI\nNessun attrezzo necessario.\n\nDURATA\n4200 m effettivi. Planned Duration TrainingPeaks: circa 80' come stima di calendario, non tempo limite universale.\n\nFUELING\nArriva alimentato e ben idratato. Per sedute lunghe o molto dense tieni una borraccia a bordo vasca; se sei lontano dai pasti o la seduta supera circa 70', una piccola quota di carboidrati già tollerata può essere utile. Nessun prodotto nuovo nei rehearsal.\n\nNOTE\nSettimana 17, fase specificità avanzata. La funzione di questa seduta è distinta dagli altri due nuoti della settimana; non trasformarla automaticamente nel workout della settimana precedente.",
+          "totalTimePlanned": 1.3333333333333333,
+          "structure": {
+            "structure": [
+              {
+                "type": "step",
+                "length": {
+                  "value": 1,
+                  "unit": "repetition"
+                },
+                "steps": [
+                  {
+                    "name": "Ingresso facile",
+                    "length": {
+                      "value": 400,
+                      "unit": "meter"
+                    },
+                    "targets": [
+                      {
+                        "minValue": 1,
+                        "maxValue": 2
+                      }
+                    ],
+                    "intensityClass": "warmUp",
+                    "openDuration": false
+                  }
+                ],
+                "begin": 0,
+                "end": 400
+              },
+              {
+                "type": "repetition",
+                "length": {
+                  "value": 3,
+                  "unit": "repetition"
+                },
+                "steps": [
+                  {
+                    "name": "Endurance facile in settimana di retest",
+                    "length": {
+                      "value": 800,
+                      "unit": "meter"
+                    },
+                    "targets": [
+                      {
+                        "minValue": 1,
+                        "maxValue": 2
+                      }
+                    ],
+                    "intensityClass": "active",
+                    "openDuration": false
+                  },
+                  {
+                    "name": "Recover",
+                    "length": {
+                      "value": 30,
+                      "unit": "second"
+                    },
+                    "targets": [
+                      {
+                        "minValue": 0,
+                        "maxValue": 0
+                      }
+                    ],
+                    "intensityClass": "rest",
+                    "openDuration": false
+                  }
+                ],
+                "begin": 400,
+                "end": 2800
+              },
+              {
+                "type": "step",
+                "length": {
+                  "value": 1,
+                  "unit": "repetition"
+                },
+                "steps": [
+                  {
+                    "name": "Endurance facile in settimana di retest",
+                    "length": {
+                      "value": 800,
+                      "unit": "meter"
+                    },
+                    "targets": [
+                      {
+                        "minValue": 1,
+                        "maxValue": 2
+                      }
+                    ],
+                    "intensityClass": "active",
+                    "openDuration": false
+                  }
+                ],
+                "begin": 2800,
+                "end": 3600
+              },
+              {
+                "type": "step",
+                "length": {
+                  "value": 1,
+                  "unit": "repetition"
+                },
+                "steps": [
+                  {
+                    "name": "Sciolti",
+                    "length": {
+                      "value": 600,
+                      "unit": "meter"
+                    },
+                    "targets": [
+                      {
+                        "minValue": 1,
+                        "maxValue": 2
+                      }
+                    ],
+                    "intensityClass": "coolDown",
+                    "openDuration": false
+                  }
+                ],
+                "begin": 3600,
+                "end": 4200
+              }
+            ],
+            "primaryLengthMetric": "distance",
+            "visualizationDistanceUnit": "meter",
+            "primaryIntensityMetric": "rpe",
+            "primaryIntensityTargetOrRange": "range",
+            "polyline": [
+              [
+                0,
+                0
+              ],
+              [
+                0,
+                1
+              ],
+              [
+                0.0952,
+                1
+              ],
+              [
+                0.0952,
+                0
+              ],
+              [
+                0.0952,
+                0
+              ],
+              [
+                0.0952,
+                1
+              ],
+              [
+                0.2857,
+                1
+              ],
+              [
+                0.2857,
+                0
+              ],
+              [
+                0.2857,
+                0
+              ],
+              [
+                0.2857,
+                1
+              ],
+              [
+                0.4762,
+                1
+              ],
+              [
+                0.4762,
+                0
+              ],
+              [
+                0.4762,
+                0
+              ],
+              [
+                0.4762,
+                1
+              ],
+              [
+                0.6667,
+                1
+              ],
+              [
+                0.6667,
+                0
+              ],
+              [
+                0.6667,
+                0
+              ],
+              [
+                0.6667,
+                1
+              ],
+              [
+                0.8571,
+                1
+              ],
+              [
+                0.8571,
+                0
+              ],
+              [
+                0.8571,
+                0
+              ],
+              [
+                0.8571,
+                1
+              ],
+              [
+                1,
+                1
+              ],
+              [
+                1,
+                0
+              ]
+            ]
+          },
+          "distancePlanned": 4200
+        },
+        "after": {
+          "title": "◎ Test | RETEST W17 T1500 + 500 m easy - 3000 m",
+          "description": "RETEST T1500 W17: ripetere integralmente il protocollo già usato in W09, con 400m warm-up, 4x50m build (15 secondi recupero SOLO fra ripetizioni), 200m facili, T1500 a sforzo massimo ben distribuito, 200m defaticamento. Poi ulteriori 500m molto facili per mantenere 3000m complessivi, senza interferire con il test. Planned Duration 60' indicativa; registrare tempo T1500, ritmo, RPE, condizioni e zona CSS da aggiornare se risultato valido. Nessun attrezzo nella prova.",
+          "totalTimePlanned": 1,
+          "structure": {
+            "structure": [
+              {
+                "type": "step",
+                "length": {
+                  "value": 1,
+                  "unit": "repetition"
+                },
+                "steps": [
+                  {
+                    "name": "Riscaldamento",
+                    "length": {
+                      "value": 400,
+                      "unit": "meter"
+                    },
+                    "targets": [
+                      {
+                        "minValue": 2,
+                        "maxValue": 3
+                      }
+                    ],
+                    "intensityClass": "warmUp",
+                    "openDuration": false
+                  }
+                ],
+                "begin": 0,
+                "end": 400
+              },
+              {
+                "type": "repetition",
+                "length": {
+                  "value": 3,
+                  "unit": "repetition"
+                },
+                "steps": [
+                  {
+                    "name": "Build controllato",
+                    "length": {
+                      "value": 50,
+                      "unit": "meter"
+                    },
+                    "targets": [
+                      {
+                        "minValue": 4,
+                        "maxValue": 6
+                      }
+                    ],
+                    "intensityClass": "active",
+                    "openDuration": false
+                  },
+                  {
+                    "name": "Recover",
+                    "length": {
+                      "value": 15,
+                      "unit": "second"
+                    },
+                    "targets": [
+                      {
+                        "minValue": 0,
+                        "maxValue": 0
+                      }
+                    ],
+                    "intensityClass": "rest",
+                    "openDuration": false
+                  }
+                ],
+                "begin": 400,
+                "end": 550
+              },
+              {
+                "type": "step",
+                "length": {
+                  "value": 1,
+                  "unit": "repetition"
+                },
+                "steps": [
+                  {
+                    "name": "Build controllato",
+                    "length": {
+                      "value": 50,
+                      "unit": "meter"
+                    },
+                    "targets": [
+                      {
+                        "minValue": 4,
+                        "maxValue": 6
+                      }
+                    ],
+                    "intensityClass": "active",
+                    "openDuration": false
+                  }
+                ],
+                "begin": 550,
+                "end": 600
+              },
+              {
+                "type": "step",
+                "length": {
+                  "value": 1,
+                  "unit": "repetition"
+                },
+                "steps": [
+                  {
+                    "name": "Facile",
+                    "length": {
+                      "value": 200,
+                      "unit": "meter"
+                    },
+                    "targets": [
+                      {
+                        "minValue": 2,
+                        "maxValue": 3
+                      }
+                    ],
+                    "intensityClass": "active",
+                    "openDuration": false
+                  }
+                ],
+                "begin": 600,
+                "end": 800
+              },
+              {
+                "type": "step",
+                "length": {
+                  "value": 1,
+                  "unit": "repetition"
+                },
+                "steps": [
+                  {
+                    "name": "T1500",
+                    "length": {
+                      "value": 1500,
+                      "unit": "meter"
+                    },
+                    "targets": [
+                      {
+                        "minValue": 9,
+                        "maxValue": 10
+                      }
+                    ],
+                    "intensityClass": "active",
+                    "openDuration": false
+                  }
+                ],
+                "begin": 800,
+                "end": 2300
+              },
+              {
+                "type": "step",
+                "length": {
+                  "value": 1,
+                  "unit": "repetition"
+                },
+                "steps": [
+                  {
+                    "name": "Defaticamento",
+                    "length": {
+                      "value": 200,
+                      "unit": "meter"
+                    },
+                    "targets": [
+                      {
+                        "minValue": 1,
+                        "maxValue": 2
+                      }
+                    ],
+                    "intensityClass": "coolDown",
+                    "openDuration": false
+                  }
+                ],
+                "begin": 2300,
+                "end": 2500
+              },
+              {
+                "type": "step",
+                "length": {
+                  "value": 1,
+                  "unit": "repetition"
+                },
+                "steps": [
+                  {
+                    "name": "500m sciolti post-retest",
+                    "length": {
+                      "value": 500,
+                      "unit": "meter"
+                    },
+                    "targets": [
+                      {
+                        "minValue": 1,
+                        "maxValue": 2
+                      }
+                    ],
+                    "intensityClass": "coolDown",
+                    "openDuration": false
+                  }
+                ],
+                "begin": 2500,
+                "end": 3000
+              }
+            ],
+            "primaryLengthMetric": "distance",
+            "visualizationDistanceUnit": "meter",
+            "primaryIntensityMetric": "rpe",
+            "primaryIntensityTargetOrRange": "range",
+            "polyline": [
+              [
+                0,
+                0
+              ],
+              [
+                0,
+                0.3
+              ],
+              [
+                0.1333,
+                0.3
+              ],
+              [
+                0.1333,
+                0
+              ],
+              [
+                0.1333,
+                0
+              ],
+              [
+                0.1333,
+                0.6
+              ],
+              [
+                0.15,
+                0.6
+              ],
+              [
+                0.15,
+                0
+              ],
+              [
+                0.15,
+                0
+              ],
+              [
+                0.15,
+                0.6
+              ],
+              [
+                0.1667,
+                0.6
+              ],
+              [
+                0.1667,
+                0
+              ],
+              [
+                0.1667,
+                0
+              ],
+              [
+                0.1667,
+                0.6
+              ],
+              [
+                0.1833,
+                0.6
+              ],
+              [
+                0.1833,
+                0
+              ],
+              [
+                0.1833,
+                0
+              ],
+              [
+                0.1833,
+                0.6
+              ],
+              [
+                0.2,
+                0.6
+              ],
+              [
+                0.2,
+                0
+              ],
+              [
+                0.2,
+                0
+              ],
+              [
+                0.2,
+                0.3
+              ],
+              [
+                0.2667,
+                0.3
+              ],
+              [
+                0.2667,
+                0
+              ],
+              [
+                0.2667,
+                0
+              ],
+              [
+                0.2667,
+                1
+              ],
+              [
+                0.7667,
+                1
+              ],
+              [
+                0.7667,
+                0
+              ],
+              [
+                0.7667,
+                0
+              ],
+              [
+                0.7667,
+                0.2
+              ],
+              [
+                0.8333,
+                0.2
+              ],
+              [
+                0.8333,
+                0
+              ],
+              [
+                0.8333,
+                0
+              ],
+              [
+                0.8333,
+                0.2
+              ],
+              [
+                1,
+                0.2
+              ],
+              [
+                1,
+                0
+              ]
+            ]
+          },
+          "distancePlanned": 3000
+        }
       }
     ]
   },
