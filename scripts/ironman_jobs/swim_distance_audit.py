@@ -17,9 +17,14 @@ class UnsupportedSwimStructure(ValueError):
 
 
 def _positive_integer(value: Any, label: str) -> int:
-    if type(value) not in (int, float) or not math.isfinite(value):
+    # Do not cast integers to float: large integers can overflow or lose precision.
+    if type(value) is int:
+        if value <= 0:
+            raise UnsupportedSwimStructure(f"{label}:NOT_A_POSITIVE_INTEGER")
+        return value
+    if type(value) is not float or not math.isfinite(value):
         raise UnsupportedSwimStructure(f"{label}:NOT_A_FINITE_NUMBER")
-    if value <= 0 or not float(value).is_integer():
+    if value <= 0 or not value.is_integer():
         raise UnsupportedSwimStructure(f"{label}:NOT_A_POSITIVE_INTEGER")
     return int(value)
 
@@ -44,6 +49,8 @@ def _count_block_metres(block: Any) -> int:
     for step in steps:
         if not isinstance(step, dict) or not isinstance(step.get("length"), dict):
             raise UnsupportedSwimStructure("STEP_LENGTH_MISSING")
+        if "openDuration" in step and type(step["openDuration"]) is not bool:
+            raise UnsupportedSwimStructure("OPEN_DURATION_FLAG_INVALID")
         if step.get("openDuration") is True:
             raise UnsupportedSwimStructure("OPEN_DURATION_UNSUPPORTED")
         unit = step["length"].get("unit")
