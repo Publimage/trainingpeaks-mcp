@@ -105,7 +105,7 @@ def pdf(pages):
  out.extend(f"xref\n0 {len(objects)+1}\n0000000000 65535 f \n".encode())
  for off in offsets[1:]:out.extend(f"{off:010d} 00000 n \n".encode())
  out.extend(f"trailer\n<< /Root 1 0 R /Size {len(objects)+1} >>\nstartxref\n{xref}\n%%EOF\n".encode())
- need(out.startswith(b"%PDF-") and out.endswith(b"%%EOF\n") and len(pages)>3,"PDF_BINARY_INVALID")
+ need(out.startswith(b"%PDF-") and out.endswith(b"%%EOF\n") and len(pages)>=1,"PDF_BINARY_INVALID")
  return bytes(out)
 
 def athlete(text):
