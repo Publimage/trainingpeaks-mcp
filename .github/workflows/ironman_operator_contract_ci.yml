@@ -34,6 +34,6 @@ jobs:
       - name: Install package and test dependencies
         run: |
           python -m pip install -e '.[dev]'
-          python -m pip install 'prefect==3.8.8'
+          python -m pip install 'prefect==3.8.8' 'fastapi<0.155'
       - name: Verify common operator safety and conflict diagnostics
         run: python -m pytest -q tests/test_ironman_operator.py tests/test_ironman_unified_changeset_engine.py tests/test_ironman_unified_trainingpeaks_reads.py tests/test_ironman_unified_prefect_flow.py
