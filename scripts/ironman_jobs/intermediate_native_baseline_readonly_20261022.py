@@ -121,8 +121,26 @@ async def run():
             summary.sort(key=lambda v:(v["week"],v["day"]))
             print(json.dumps({"stage":"INTERMEDIATE_NATIVE_STRENGTH_AUDIT","plan":PLAN,
                 "count":len(summary),"total_minutes":minutes,"workouts":summary},ensure_ascii=False),flush=True)
+        # Exact selected native DTO structures for manifest compilation; private-use codebook
+        # keeps the read-only log bounded without removing any provider fields.
+        symbols=[
+            '"intensityClass":','"openDuration":','"targets":[{"minValue":','"minValue":',
+            '"maxValue":','"length":{"value":','"unit":"second"','"unit":"repetition"',
+            '"primaryLengthMetric":','"primaryIntensityMetric":','"primaryIntensityTargetOrRange":',
+            '"polyline":','"structure":','"begin":','"end":','"steps":',
+            '"type":"step"','"targets":','"name":','"value":','"repetition"',
+            '"warmUp"','"active"','"rest"','"coolDown"','"percentOfFtp"','"duration"','"range"'
+        ]
+        bike_ids=[3996858792,3996859347,3996860483,3996863151,3996864785,3996868548]
+        raw=json.dumps([{"id":wid,"structure":focus[wid]["structure"]} for wid in bike_ids],
+                       ensure_ascii=False,separators=(",",":"))
+        enc=raw
+        for i,word in enumerate(symbols):enc=enc.replace(word,chr(0xe000+i))
+        print("INTERMEDIATE_NATIVE_COMPACT|"+enc,flush=True)
         print(json.dumps({"stage":"INTERMEDIATE_BASELINE_READONLY_PASS","plan":PLAN,
-            "classic":229,"strength":30,"total":259,"mutations":0},ensure_ascii=False),flush=True)
+            "classic":229,"strength":30,"total":259,"mutations":0,
+            "classic_issues":len(issues),"native_payload_raw_chars":len(raw),
+            "native_payload_encoded_chars":len(enc)},ensure_ascii=False),flush=True)
 
 if __name__=="__main__":
     try: asyncio.run(run())
