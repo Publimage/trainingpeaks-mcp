@@ -2234,6 +2234,22 @@
       "scope": "trainingpeaks:public-plan:684602:24w-native-builder-and-strength-baseline-read-only",
       "script": "scripts/ironman_jobs/intermediate_native_baseline_readonly_20261022.py",
       "test": "tests/test_intermediate_native_baseline_readonly_20261022.py"
+    },
+    {
+      "name": "intermediate_strength_move_canary_20261022",
+      "mode": "GUARDED_WRITE",
+      "owner_id": 2116886,
+      "scope": "trainingpeaks:public-plan:684602:native-strength-approved-canary-relayout-20261022",
+      "script": "scripts/ironman_jobs/intermediate_strength_move_canary_20261022.py",
+      "test": "tests/test_intermediate_strength_relayout_20261022.py"
+    },
+    {
+      "name": "intermediate_strength_move_remaining_20261022",
+      "mode": "GUARDED_WRITE",
+      "owner_id": 2116886,
+      "scope": "trainingpeaks:public-plan:684602:native-strength-approved-remaining-relayout-20261022",
+      "script": "scripts/ironman_jobs/intermediate_strength_move_remaining_20261022.py",
+      "test": "tests/test_intermediate_strength_relayout_20261022.py"
     }
   ]
 }
