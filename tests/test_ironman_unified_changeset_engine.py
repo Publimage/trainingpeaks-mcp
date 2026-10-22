@@ -179,6 +179,7 @@ def test_rejects_cross_owner_athlete_calendar_bad_ids_and_cycles():
     bad["changes"][0]["target"]["owner_id"] = 5
     with pytest.raises(ChangeStop, match="TARGET_OWNER"):
         validate_manifest(bad)
+    a = item("aaa", "plan.note.patch", 1, old, new)
     bad = make_manifest(a)
     bad["changes"][0]["target"]["container_kind"] = "athlete_calendar"
     with pytest.raises(ChangeStop, match="TARGET_CONTAINER"):
