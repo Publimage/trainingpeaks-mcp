@@ -71,3 +71,31 @@ No universal N versus N-1 rule is imposed. A final recovery passes only when exp
 The previously inspected test template was reread through the live connector. An independently transcribed targeted requirement was limited to its explicit five-minute pause after the easy swimming before the second test. The local projection of current native fields still passed distance arithmetic and failed the required pause check. Adding that one pause ONLY in a local counterfactual kept the metres unchanged and returned PARTIAL for the targeted check. This does not approve the whole workout or resolve the remaining interval-recovery prescription.
 
 No private template payload, identity or complete prescription is stored in these public tests. The parser does not automatically understand arbitrary prose, and no complete plan audit, provider correction, merge or server deployment has occurred. Next gate: consolidate the two checks into one scoped report and verify an authorized read-only execution on the existing server before making them mandatory in production.
+
+## Increment 3: combined report with versioned input bindings
+
+`audit_swim_report` in `swim_audit_report.py` calls the two existing validators without changing them. It returns a single serializable report with separate binding, distance and recovery results. A successful targeted recovery check remains PARTIAL; unsupported data remains UNVERIFIABLE. A real detected failure stays visible even if another check cannot conclude. PASS means only that these two technical checks passed, never complete workout approval.
+
+Required input contracts:
+
+- Snapshot (`IRONMAN_SWIM_SNAPSHOT_V1`): `schema`, `target`, `distance_planned`, `structure`.
+- Prescription envelope (`IRONMAN_SWIM_PRESCRIPTION_ENVELOPE_V1`): `schema`, `target`, `source`, `snapshot_sha256`, `recovery`.
+- Target: `provider`, `owner_id`, `resource_kind`, `container_id`, `workout_id`, all explicit non-empty strings. Supported resource kinds are `library_template` and `training_plan_workout`; these are not interchangeable.
+- Source: `source_id`, `revision`, `section`, all explicit non-empty strings. The existing `recovery.source_ref` must match `source_id`.
+- Separate caller inputs: `expected_target`, `expected_source`, `expected_prescription_sha256`, `validator_revision` (full 40-character commit SHA).
+
+The expected target, source revision and prescription digest must be obtained from the independently reviewed job manifest. Do not fill them by simply copying the untrusted envelope. The envelope binds the exact snapshot with a SHA256 fingerprint. The external prescription fingerprint binds the entire envelope, including source version and recovery contents. A changed source revision, workout, container, owner, resource kind, snapshot or prescription blocks the combined check before a success can be reported. A new fingerprint must never be silently generated to conceal a discrepancy.
+
+The SHA256 helper uses sorted compact JSON, exact integer handling and no NaN/Infinity. The report is deterministic for identical inputs and does not mutate them. It records hashes, identity, source and the caller-supplied validator revision; no clock or file I/O is used.
+
+### Trust boundary and what is still missing
+
+These bindings establish internal consistency only. They do NOT authenticate a Google Drive source, prove it is the latest revision, prove coach approval, verify live TrainingPeaks ownership, or attest the actual executing code revision. `external_authenticity_verified` and `publishing_authorized` are always false. The report explicitly lists those limitations alongside physiological quality, total duration, graph and free-text checks that have not been performed.
+
+The production source adapter must still read current canonical evidence through authorized connectors and populate a trusted job manifest. The runtime must separately verify its pinned code revision. A matching self-supplied hash is not a signature or authorization.
+
+### Increment 3 evidence
+
+40 new synthetic combined-report tests passed locally against byte-for-byte Git-blob-verified copies of the two existing validators. Tests cover wrong identities, library-versus-plan confusion, changed revisions, changed snapshot/prescription, malformed input, partial checks, explicit failures and input immutability. The unchanged 67 prior tests and these 40 tests are included in the updated CI workflow; consult the actual run and log for completion evidence.
+
+No new TrainingPeaks live audit, provider write, merge, deployment, schedule or paid resource is part of this increment. The existing private source of truth remains Google Drive. The next step is the authorized source adapter and a pinned read-only server canary, not an automatic production release.
