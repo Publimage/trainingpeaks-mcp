@@ -38,7 +38,11 @@ GUARDED_WRITE = "GUARDED_WRITE"
 
 
 class BridgeStop(Exception):
-    pass
+    """Fail closed with a machine-readable operational failure category."""
+
+    def __init__(self, message: str, *, code: str = "SAFE_STOP") -> None:
+        super().__init__(message)
+        self.code = code
 
 
 def _run(*argv: str, timeout: int = 30) -> subprocess.CompletedProcess[str]:
@@ -142,17 +146,21 @@ def _execute_blocking(job: str, revision: str, operation: str, ack_scope: str | 
         try:
             fcntl.flock(lock.fileno(), fcntl.LOCK_EX | fcntl.LOCK_NB)
         except BlockingIOError as exc:
-            raise BridgeStop("Another IRONMAN job is running; no concurrent execution.") from exc
+            raise BridgeStop("Another IRONMAN job is running; no concurrent execution.", code="OPERATOR_BUSY") from exc
         origin = _require_ok(_run("git", "remote", "get-url", "origin"), "Origin")
         if not ORIGIN.fullmatch(origin):
             raise BridgeStop("Untrusted GitHub origin.")
         change = _require_ok(_run("git", "status", "--porcelain", "--untracked-files=normal"), "Worktree")
         if change:
-            raise BridgeStop("Local working tree is not clean; preserving local modifications.")
+            raise BridgeStop("Local working tree is not clean; preserving local modifications.", code="WORKTREE_DIRTY")
         _require_ok(_run("git", "fetch", "--no-tags", "--depth=1", "origin", BRANCH, timeout=60), "Fetch")
         sha = _require_ok(_run("git", "rev-parse", "FETCH_HEAD"), "Revision")
         if sha != revision:
-            raise BridgeStop("Pinned revision differs from current trusted branch tip.")
+            raise BridgeStop(
+                f"Pinned revision differs from current trusted branch tip "
+                f"(requested={revision[:12]}, current={sha[:12]}). No checkout performed.",
+                code="REVISION_DRIFT",
+            )
         # Do not mutate the server until a matching, trusted, explicit revision exists.
         if operation == "execute":
             _require_ok(_run("git", "checkout", "--detach", revision, timeout=35), "Checkout")
@@ -178,7 +186,8 @@ def _execute_blocking(job: str, revision: str, operation: str, ack_scope: str | 
             receipt_path = STATE_DIR / f"{fingerprint}.json"
             if receipt_path.exists():
                 raise BridgeStop(
-                    "Protected job already attempted; inspect provider state before any repeat."
+                    "Protected job already attempted; inspect provider state before any repeat.",
+                    code="WRITE_RECEIPT_EXISTS",
                 )
             pending = {
                 "job": job, "revision": revision, "scope": spec["scope"],
@@ -220,6 +229,7 @@ def _execute_blocking(job: str, revision: str, operation: str, ack_scope: str | 
             "mode": kind, "scope": spec["scope"], "output": output,
             "exit_code": proc.returncode,
             "never_retry_ambiguous_post": kind == GUARDED_WRITE,
+            "error_code": "JOB_SCRIPT_FAILED" if proc.returncode != 0 else None,
         }
 
 
@@ -242,4 +252,4 @@ async def tp_ironman_operator(
             outcome["isError"] = True
         return outcome
     except BridgeStop as exc:
-        return {"isError": True, "error_code": "SAFE_STOP", "message": str(exc)}
+        return {"isError": True, "error_code": exc.code, "message": str(exc)}
