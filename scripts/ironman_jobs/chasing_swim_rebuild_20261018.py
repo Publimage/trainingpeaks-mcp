@@ -229,65 +229,102 @@ def title_for(week,kind,total,main,groups,test_index=0):
     if kind=="activation":return f"Attivazione | tecnica + 8x100 controllo - {total} m"
     return f"Attivazione | sciolto + richiami brevi - {total} m"
 
-def structure_for(groups):
-    """Convert swim groups to native meters + zero-pace timed Recover steps.
+def _swim_distance_polyline(blocks):
+    """Preview X axis is swim distance; timed rest is not swim distance."""
+    spans = []
+    for block in blocks:
+        reps = block["length"]["value"] if block.get("type") == "repetition" else 1
+        for _ in range(reps):
+            for step in block["steps"]:
+                if step["length"]["unit"] == "meter":
+                    spans.append((step["length"]["value"], step["targets"][0]["maxValue"]))
+    total = sum(m for m, _ in spans)
+    high = max((v for _, v in spans), default=0)
+    need(total > 0 and high > 0, "SWIM_PREVIEW_INVALID")
+    poly = []
+    pos = 0
+    for metres, rpe in spans:
+        left = round(pos / total, 4)
+        pos += metres
+        right = round(pos / total, 4)
+        val = round(rpe / high, 4)
+        poly.extend([[left, 0], [left, val], [right, val], [right, 0]])
+    return poly
 
-    The original builder emitted a swim-only repetition and put recovery
-    exclusively in the description. This version makes the prescribed
-    recovery executable in TrainingPeaks and compatible swim devices.
-    """
-    cursor=0; blocks=[]
-    for x in groups:
-        distance=x["count"]*x["metres"]
-        steps=[{
-            "name":x["name"],
-            "length":{"value":x["metres"],"unit":"meter"},
-            "targets":[{"minValue":x["rpe"][0],"maxValue":x["rpe"][1]}],
-            "intensityClass":x["klass"],
-            "openDuration":False
-        }]
-        if x["count"]>1 and x["recovery"]>0:
-            steps.append({
+
+def structure_for(groups):
+    """Use (n-1) work/rest cycles plus a final rep without a trailing rest."""
+    blocks = []
+    cursor = 0
+    for group in groups:
+        n, metres = group["count"], group["metres"]
+        work = {
+            "name":group["name"],
+            "length":{"value":metres,"unit":"meter"},
+            "targets":[{"minValue":group["rpe"][0],"maxValue":group["rpe"][1]}],
+            "intensityClass":group["klass"],"openDuration":False}
+        if n > 1 and group["recovery"] > 0:
+            recovery = {
                 "name":"Recover",
-                "length":{"value":x["recovery"],"unit":"second"},
+                "length":{"value":group["recovery"],"unit":"second"},
                 "targets":[{"minValue":0,"maxValue":0}],
-                "intensityClass":"rest",
-                "openDuration":False
-            })
-        block={
-            "type":"step" if x["count"]==1 else "repetition",
-            "length":{"value":1 if x["count"]==1 else x["count"],"unit":"repetition"},
-            "steps":steps,
-            "begin":cursor,"end":cursor+distance
-        }
-        blocks.append(block); cursor+=distance
-    s={"structure":blocks,"primaryLengthMetric":"distance",
-       "visualizationDistanceUnit":"meter",
-       "primaryIntensityMetric":"rpe","primaryIntensityTargetOrRange":"range"}
-    return _ensure_structure_preview(s)
+                "intensityClass":"rest","openDuration":False}
+            before_last = (n-1)*metres
+            blocks.append({
+                "type":"repetition","length":{"value":n-1,"unit":"repetition"},
+                "steps":[copy.deepcopy(work),recovery],
+                "begin":cursor,"end":cursor+before_last})
+            cursor += before_last
+            blocks.append({
+                "type":"step","length":{"value":1,"unit":"repetition"},
+                "steps":[copy.deepcopy(work)],
+                "begin":cursor,"end":cursor+metres})
+            cursor += metres
+        else:
+            blocks.append({
+                "type":"step" if n==1 else "repetition",
+                "length":{"value":n,"unit":"repetition"},
+                "steps":[work],"begin":cursor,"end":cursor+n*metres})
+            cursor += n*metres
+    data = {
+        "structure":blocks,"primaryLengthMetric":"distance",
+        "visualizationDistanceUnit":"meter",
+        "primaryIntensityMetric":"rpe",
+        "primaryIntensityTargetOrRange":"range",
+        "polyline":_swim_distance_polyline(blocks)}
+    return _ensure_structure_preview(data)
 
 
 def audit_native_swim_rests(groups, structure):
-    """Block any product publish if prescribed rests are only textual."""
-    blocks=(structure or {}).get("structure") or []
-    need(len(blocks)==len(groups),"SWIM_REST_BLOCK_COUNT_MISMATCH")
-    missing=[]
-    for index,(source,block) in enumerate(zip(groups,blocks),1):
-        steps=block.get("steps") or []
-        expected=source["recovery"] if source["count"]>1 else 0
-        recover=[s for s in steps if s.get("name")=="Recover"]
-        if expected:
-            good=(len(recover)==1
-                  and (recover[0].get("length") or {}).get("unit")=="second"
-                  and (recover[0].get("length") or {}).get("value")==expected
-                  and recover[0].get("intensityClass")=="rest"
-                  and all((t.get("minValue")==0 and t.get("maxValue")==0)
-                          for t in (recover[0].get("targets") or [])))
-            if not good:missing.append(index)
-        elif recover:missing.append(index)
-    need(not missing,"SWIM_NATIVE_RESTS_NOT_EQUAL_TEXT_"+str(missing))
+    """Check full step order and N-1 Recover events, including final rep."""
+    blocks = (structure or {}).get("structure") or []
+    actual_steps = []
+    for block in blocks:
+        n = block["length"]["value"] if block.get("type")=="repetition" else 1
+        for _ in range(n):
+            actual_steps.extend(block["steps"])
+    observed = [(s["length"]["unit"],s["length"]["value"],s["name"]) for s in actual_steps]
+    expected = []
+    for group in groups:
+        for k in range(group["count"]):
+            expected.append(("meter",group["metres"],group["name"]))
+            if k < group["count"]-1 and group["recovery"]>0:
+                expected.append(("second",group["recovery"],"Recover"))
+    need(observed==expected,"SWIM_NATIVE_RESTS_NOT_EQUAL_TEXT")
+    for step in actual_steps:
+        if step["name"]=="Recover":
+            need(step.get("targets")==[{"minValue":0,"maxValue":0}]
+                 and step.get("intensityClass")=="rest","SWIM_RECOVER_TARGET_INVALID")
+        else:
+            need(bool(step.get("targets")),"SWIM_ACTIVE_TARGET_MISSING")
+    sum_metres = sum(g["count"]*g["metres"] for g in groups)
+    need(blocks and blocks[-1]["end"]==sum_metres,"SWIM_BLOCK_METRES_DRIFT")
+    need(structure.get("primaryLengthMetric")=="distance"
+         and bool(structure.get("polyline")),"SWIM_GRAPH_MISSING")
     return {"swim_groups":len(groups),
-            "native_rest_groups":sum(1 for x in groups if x["count"]>1 and x["recovery"]>0)}
+            "native_rest_groups":sum(max(0,g["count"]-1)
+                                     for g in groups if g["recovery"]>0),
+            "native_metres":sum_metres}
 
 
 
