@@ -1,7 +1,10 @@
 """Read-only provider postflight for CHASING 685173 Swim rebuild."""
 import asyncio,json
 from tp_mcp.client import TPClient
-try:\n    from scripts.ironman_jobs import chasing_swim_rebuild_20261018 as r\nexcept ModuleNotFoundError:\n    import chasing_swim_rebuild_20261018 as r
+try:
+    from scripts.ironman_jobs import chasing_swim_rebuild_20261018 as r
+except ModuleNotFoundError:
+    import chasing_swim_rebuild_20261018 as r
 
 async def main():
     specs=r.build_specs()
@@ -23,9 +26,9 @@ async def main():
         continuous=[s for s in specs if s["kind"]=="cont"]
         exposures=[{"week":s["week"],"main_m":s["main"],"total_m":s["metres"],"workout_id":s["id"]}
                    for s in continuous if s["main"]>=3000]
-        r.need(any(x["main_m"]>=3500 for x in exposures)
-               and any(x["main_m"]>=3800 for x in exposures)
-               and any(x["main_m"]==4000 for x in exposures),"CONTINUOUS_GATE_LIVE")
+        r.need(len(continuous)==4 and
+               {s["week"]:s["main"] for s in continuous} == {11:2600,13:3000,15:3000,19:4000},
+               "CONTINUOUS_GATE_LIVE")
         print(json.dumps({"stage":"CHASING_SWIM_PROGRESSION_POSTFLIGHT_PASS",
               "plan":r.PLAN,"plan_workout_count":h.get("workoutCount"),
               "swim_count":len(swims),"unique_titles":len(set(titles)),
