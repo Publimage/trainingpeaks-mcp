@@ -8,6 +8,8 @@ on:
       - scripts/ironman_jobs/swim*.py
       - src/tp_mcp/private_bridge.py
       - src/tp_mcp/swim_audit_bridge.py
+      - src/tp_mcp/tools/ironman_operator.py
+      - data/ironman_swim_operator_jobs.json
       - tests/test_swim*.py
       - docs/IRONMAN_DETERMINISTIC_SWIM_AUDIT.md
       - docs/IRONMAN_SWIM_SOURCE_TRANSPORT.md
@@ -40,14 +42,15 @@ jobs:
         run: |
           set -euo pipefail
           QA_DIR="$RUNNER_TEMP/swim-distance-audit"
-          mkdir -p "$QA_DIR/scripts/ironman_jobs" "$QA_DIR/tests" "$QA_DIR/src/tp_mcp"
-          cp scripts/ironman_jobs/swim_distance_audit.py scripts/ironman_jobs/swim_recovery_audit.py scripts/ironman_jobs/swim_audit_report.py scripts/ironman_jobs/swim_audit_acquisition.py scripts/ironman_jobs/swim_audit_drive_reader.py "$QA_DIR/scripts/ironman_jobs/"
+          mkdir -p "$QA_DIR/scripts/ironman_jobs" "$QA_DIR/tests" "$QA_DIR/src/tp_mcp/tools"
+          cp scripts/ironman_jobs/swim_distance_audit.py scripts/ironman_jobs/swim_recovery_audit.py scripts/ironman_jobs/swim_audit_report.py scripts/ironman_jobs/swim_audit_acquisition.py scripts/ironman_jobs/swim_audit_drive_reader.py scripts/ironman_jobs/swim_audit_runtime_activation.py scripts/ironman_jobs/swim_audit_runtime_readback.py "$QA_DIR/scripts/ironman_jobs/"
           cp src/tp_mcp/private_bridge.py src/tp_mcp/swim_audit_bridge.py "$QA_DIR/src/tp_mcp/"
-          cp tests/test_swim_distance_audit.py tests/test_swim_distance_audit_edges.py tests/test_swim_recovery_audit.py tests/test_swim_audit_report.py tests/test_swim_audit_acquisition.py tests/test_swim_audit_drive_reader.py tests/test_swim_audit_bridge.py tests/test_swim_audit_bridge_acquisition.py "$QA_DIR/tests/"
+          cp src/tp_mcp/tools/ironman_operator.py "$QA_DIR/src/tp_mcp/tools/"
+          cp tests/test_swim_distance_audit.py tests/test_swim_distance_audit_edges.py tests/test_swim_recovery_audit.py tests/test_swim_audit_report.py tests/test_swim_audit_acquisition.py tests/test_swim_audit_drive_reader.py tests/test_swim_audit_bridge.py tests/test_swim_audit_bridge_acquisition.py tests/test_swim_audit_activation.py "$QA_DIR/tests/"
           cd "$QA_DIR"
           export PYTHONPATH="$QA_DIR/src:$QA_DIR"
           python -m pytest -q tests --junitxml=swim-distance-audit.xml
-          printf 'SWIM_BRIDGE_ACQUISITION_OFFLINE_TESTS_PASS\n'
+          printf 'SWIM_ACTIVATION_OFFLINE_TESTS_PASS\n'
       - name: Package tracked source for independent review
         shell: bash
         run: |
