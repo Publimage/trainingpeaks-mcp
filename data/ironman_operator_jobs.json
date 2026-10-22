@@ -2194,6 +2194,22 @@
       "scope": "trainingpeaks:coach-owned-plan:686994:description-html-only-preserve-visibility-price",
       "script": "scripts/ironman_jobs/half_beginner_16w_marketplace_html_20261020.py",
       "test": "tests/test_half_beginner_16w_marketplace_html_20261020.py"
+    },
+    {
+      "name": "chasing_strength_relayout_canary_w19_20261022",
+      "mode": "GUARDED_WRITE",
+      "owner_id": 2116886,
+      "scope": "trainingpeaks:plan:685173:native-strength-w19-tue-to-mon-canary-only",
+      "script": "scripts/ironman_jobs/chasing_strength_relayout_canary_w19_20261022.py",
+      "test": "tests/test_chasing_strength_relayout_20261022.py"
+    },
+    {
+      "name": "chasing_strength_relayout_remaining_20261022",
+      "mode": "GUARDED_WRITE",
+      "owner_id": 2116886,
+      "scope": "trainingpeaks:plan:685173:native-strength-17-inplace-repositions-after-w19-canary",
+      "script": "scripts/ironman_jobs/chasing_strength_relayout_remaining_20261022.py",
+      "test": "tests/test_chasing_strength_relayout_20261022.py"
     }
   ]
 }
