@@ -227,6 +227,18 @@ class Ledger:
             self.db.rollback()
             raise
 
+    def release(self, request: str, item: dict[str, Any]) -> None:
+        target = item["target"]
+        key = ":".join(str(x) for x in (
+            target["provider"], target["owner_id"], target["container_kind"],
+            target["container_id"], target["resource_id"],
+        ))
+        with self.db:
+            self.db.execute(
+                "DELETE FROM resource_claims WHERE resource_key=? AND request_id=? AND change_id=?",
+                (key, request, item["id"]),
+            )
+
 
 def run_changeset(
     manifest: dict[str, Any],
@@ -312,6 +324,7 @@ def run_changeset(
                 ledger.set_state(manifest["request_id"], name,
                                  "BLOCKED_SECURITY", provider_sha=after,
                                  reason="PROVIDER_DENIAL_NO_RETRY")
+                ledger.release(manifest["request_id"], item)
                 outcomes.append({"id": name, "state": "BLOCKED_SECURITY"})
                 continue
             except Exception:
@@ -320,6 +333,7 @@ def run_changeset(
                 if after == item["after_sha256"]:
                     ledger.set_state(manifest["request_id"], name,
                                      "DONE_VERIFIED", provider_sha=after)
+                    ledger.release(manifest["request_id"], item)
                     outcomes.append({"id": name, "state": "DONE_VERIFIED",
                                      "source": "provider_reconciled"})
                 else:
@@ -337,6 +351,7 @@ def run_changeset(
             else:
                 ledger.set_state(manifest["request_id"], name,
                                  "DONE_VERIFIED", provider_sha=after)
+                ledger.release(manifest["request_id"], item)
                 outcomes.append({"id": name, "state": "DONE_VERIFIED",
                                  "source": "provider_postflight"})
         except SecurityDenied:
