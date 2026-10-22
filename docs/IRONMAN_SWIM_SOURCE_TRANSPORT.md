@@ -61,3 +61,75 @@ it does not establish a completed swim canary. Authenticated source acquisition,
 provider transport, pinned runtime execution and result readback remain required
 before claiming an end-to-end server result. `publishing_authorized` and
 `external_authenticity_verified` remain false in the existing report.
+
+## Two-server transport added in the same draft PR
+
+The existing private bridge serves Radar input, not Workout Library templates.
+The Google read-only session belongs on Prefect; the TrainingPeaks session
+belongs on the TP server. Do not copy either credential to the other server.
+
+`src/tp_mcp/swim_audit_bridge.py` adds a bounded data reader and a client adapter.
+`private_bridge.py` wires `POST /v1/swim-audit-input` into the existing listener.
+This POST only submits a read request to our bridge; all TrainingPeaks operations
+are GETs through the already authenticated TPClient.
+
+Activation requires a separate server-local `allowed_swim_templates` list,
+containing exact provider, owner, resource kind, library and template identities.
+It defaults to an empty list. The athlete allowlist does not authorize library
+reads. Both the existing source-IP boundary and this separate allowlist apply.
+The connected person ID and library owner must match before an item is returned.
+Unknown templates are denied before opening the provider client.
+
+Only the item's identity, sport/type, planned distance and native structure are
+transported. Other templates, free descriptions and attachments are not exported.
+The envelope is marked `AUDIT_FIELDS_V1`: its digest is an audit-field projection,
+not proof that every field of the entire original workout remained unchanged.
+In the existing acquisition report, `raw_template_sha256` therefore hashes this
+returned projection when this transport is used. Source and template are still
+re-read; each adapter GET obtains a fresh bridge response, without a cache.
+
+On Prefect, the narrow composition becomes:
+
+```python
+from tp_mcp.swim_audit_bridge import SwimAuditBridgeClient
+
+result = await acquire_swim_audit(
+    independently_reviewed_private_request,
+    drive_reader=GoogleDriveSwimSourceReader(existing_readonly_google_session),
+    tp_client=SwimAuditBridgeClient(independently_reviewed_private_request["target"]),
+)
+```
+
+The client only supports the two existing library read paths. Its HTTP destination
+is fixed to the existing VPC bridge, with no redirects or environment proxies.
+Response size is bounded and the envelope's identity and read timestamp are
+validated. Explicit access denial and unclassified provider rejection do not
+become retryable connection errors. Only typed transport failures use the
+acquisition layer's existing bounded retry policy.
+
+This preserves the existing private-network/source-IP trust boundary. It does
+not add cryptographic peer authentication, TLS, administrative execution or a new
+public port, and must not be described as doing so.
+
+## Test evidence and remaining operational blocker
+
+45 new transport/handler tests passed locally, including a real localhost HTTP
+listener with synthetic provider data, default-off behavior, no provider access
+on denied targets/sources, and preservation of health/Radar behavior and no-store.
+Three additional CI cases compose the bridge with the existing acquisition and
+report validators: complete prescription -> PASS; targeted -> PARTIAL; missing
+pause -> FAIL. These are synthetic cases, not the private live CSS template.
+The CI workflow retains all prior tests; check the exact revision/run for results.
+
+No configuration, service, listener or deployment on either real server is changed
+by this draft PR. No new keys, paid resources, provider writes, operator jobs,
+admin-agent operations or Radar schedules were introduced.
+
+The runtime gate remains OPEN: review/promote the code; deploy it through an
+authorized path; enable only the privately reviewed canary target; execute the
+composition on Prefect with its existing Google session and pinned code; retain
+and read back the resulting report. Merely reaching the SSH port, testing on CI,
+or running an unrelated TP-side inventory does not close this gate. The current
+connected DigitalOcean toolset does not expose command execution inside Prefect;
+an authorized execution path there must actually be available before a live run
+can be claimed. Do not repurpose fixed Radar administration actions as a shell.
