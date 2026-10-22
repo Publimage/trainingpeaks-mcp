@@ -23,6 +23,7 @@ async def main():
        "sport_id":w.get("workoutTypeValueId"),"title":w.get("title"),
        "description":w.get("description"),"totalTimePlanned":w.get("totalTimePlanned"),
        "structure":w.get("structure")} for w in w20]},ensure_ascii=False),flush=True)
+  return 0  # Short read-only W20 native snapshot; avoid unrelated historical audit output.
   out=[]
   for w in rows:
    if w.get("workoutTypeValueId") not in (2,3):continue
