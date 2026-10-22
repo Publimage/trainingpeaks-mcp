@@ -130,3 +130,52 @@ def test_execute_without_any_shell_injection(monkeypatch, tmp_path):
     assert "SCRITTURE_PROVIDER: 0" in result["output"]
     assert all(isinstance(a, str) for call in calls for a in call)
     assert any(call[:3] == ("git", "checkout", "--detach") for call in calls)
+
+
+def test_busy_operator_has_actionable_error_code(monkeypatch, tmp_path):
+    job = _setup(monkeypatch, tmp_path)
+    def busy(*args, **kwargs):
+        raise BlockingIOError("another process holds the lock")
+    monkeypatch.setattr(op.fcntl, "flock", busy)
+    with pytest.raises(op.BridgeStop, match="Another IRONMAN job") as caught:
+        op._execute_blocking(job, "a" * 40, "execute", None)
+    assert caught.value.code == "OPERATOR_BUSY"
+
+
+def test_revision_drift_reports_revisions_and_never_checkouts(monkeypatch, tmp_path):
+    job = _setup(monkeypatch, tmp_path)
+    revisions = []
+    def fake(*args, timeout=30):
+        revisions.append(args)
+        if args[:3] == ("git", "remote", "get-url"):
+            value = "https://github.com/Publimage/trainingpeaks-mcp.git\n"
+        elif args[:3] == ("git", "rev-parse", "FETCH_HEAD"):
+            value = "b" * 40 + "\n"
+        else:
+            value = ""
+        return subprocess.CompletedProcess(args, 0, value, "")
+    monkeypatch.setattr(op, "_run", fake)
+    with pytest.raises(op.BridgeStop, match="Pinned revision differs") as caught:
+        op._execute_blocking(job, "a" * 40, "execute", None)
+    assert caught.value.code == "REVISION_DRIFT"
+    assert "requested=aaaaaaaaaaaa" in str(caught.value)
+    assert "current=bbbbbbbbbbbb" in str(caught.value)
+    assert not any(x[:3] == ("git", "checkout", "--detach") for x in revisions)
+
+
+def test_failed_registered_job_has_failure_code_without_retry(monkeypatch, tmp_path):
+    job = _setup(monkeypatch, tmp_path)
+    revision = "a" * 40
+    def fake(*args, timeout=30):
+        if args[:3] == ("git", "remote", "get-url"):
+            return subprocess.CompletedProcess(args, 0, "https://github.com/Publimage/trainingpeaks-mcp.git\n", "")
+        if args[:3] == ("git", "rev-parse", "FETCH_HEAD"):
+            return subprocess.CompletedProcess(args, 0, revision + "\n", "")
+        if args[0] == str(tmp_path / "python") and args[1].endswith(".py"):
+            return subprocess.CompletedProcess(args, 2, '{"stage":"SAFE_STOP"}', "")
+        return subprocess.CompletedProcess(args, 0, "", "")
+    monkeypatch.setattr(op, "_run", fake)
+    result = op._execute_blocking(job, revision, "execute", None)
+    assert result["stage"] == "STOP_REVIEW"
+    assert result["error_code"] == "JOB_SCRIPT_FAILED"
+    assert result["never_retry_ambiguous_post"] is False
