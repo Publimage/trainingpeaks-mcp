@@ -68,8 +68,15 @@ async def run():
             if st.get("primaryLengthMetric")=="duration":
                 end=st["structure"][-1].get("end")
                 target=(w.get("totalTimePlanned") or 0)*3600
+                if not isinstance(end,(int,float)):
+                    # Some valid provider Builders encode consecutive group steps without
+                    # begin/end attributes; sum group repetition lengths instead.
+                    end=sum((group.get("length") or {}).get("value",1) *
+                            sum((step.get("length") or {}).get("value",0)
+                                for step in group.get("steps") or [])
+                            for group in st["structure"])
                 if not isinstance(end,(int,float)) or abs(end-target)>2:
-                    issues.append({"workoutId":w.get("workoutId"),"week":wk,"day":d,"problem":"DURATION_MISMATCH","end":end,"planned_sec":target})
+                    issues.append({"workoutId":w.get("workoutId"),"week":wk,"day":d,"problem":"DURATION_MISMATCH","computed_sec":end,"planned_sec":target})
             if t==1 and (not w.get("distancePlanned") or not w.get("totalTimePlanned")):
                 issues.append({"workoutId":w.get("workoutId"),"problem":"SWIM_DISTANCE_OR_DURATION_MISSING"})
         require(dict(bysport)=={1:71,2:71,3:87},f"SPORT_COUNTS_{dict(bysport)}")
