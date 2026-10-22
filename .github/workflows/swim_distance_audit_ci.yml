@@ -1,4 +1,4 @@
-name: IRONMAN swim distance audit - offline tests
+name: IRONMAN swim distance and recovery audit - offline tests
 
 on:
   pull_request:
@@ -6,8 +6,10 @@ on:
       - feat/mcp-test-training-plan-lab
     paths:
       - scripts/ironman_jobs/swim_distance_audit.py
+      - scripts/ironman_jobs/swim_recovery_audit.py
       - tests/test_swim_distance_audit.py
       - tests/test_swim_distance_audit_edges.py
+      - tests/test_swim_recovery_audit.py
       - docs/IRONMAN_DETERMINISTIC_SWIM_AUDIT.md
       - .github/workflows/swim_distance_audit_ci.yml
 
@@ -39,8 +41,8 @@ jobs:
           set -euo pipefail
           QA_DIR="$RUNNER_TEMP/swim-distance-audit"
           mkdir -p "$QA_DIR/scripts/ironman_jobs" "$QA_DIR/tests"
-          cp scripts/ironman_jobs/swim_distance_audit.py "$QA_DIR/scripts/ironman_jobs/"
-          cp tests/test_swim_distance_audit.py tests/test_swim_distance_audit_edges.py "$QA_DIR/tests/"
+          cp scripts/ironman_jobs/swim_distance_audit.py scripts/ironman_jobs/swim_recovery_audit.py "$QA_DIR/scripts/ironman_jobs/"
+          cp tests/test_swim_distance_audit.py tests/test_swim_distance_audit_edges.py tests/test_swim_recovery_audit.py "$QA_DIR/tests/"
           cd "$QA_DIR"
           python -m pytest -q tests --junitxml=swim-distance-audit.xml
-          printf 'SWIM_DISTANCE_OFFLINE_TESTS_PASS\n'
+          printf 'SWIM_DISTANCE_AND_RECOVERY_OFFLINE_TESTS_PASS\n'
