@@ -148,7 +148,7 @@ async def run():
         print("INTERMEDIATE_NATIVE_COMPACT|"+enc,flush=True)
         print(json.dumps({"stage":"INTERMEDIATE_BASELINE_READONLY_PASS","plan":PLAN,
             "classic":229,"strength":30,"total":259,"mutations":0,
-            "classic_issues":len(issues),"native_payload_raw_chars":len(raw),
+            "classic_issues":len(issues),"classic_issue_details":issues,"native_payload_raw_chars":len(raw),
             "native_payload_encoded_chars":len(enc)},ensure_ascii=False),flush=True)
 
 if __name__=="__main__":
