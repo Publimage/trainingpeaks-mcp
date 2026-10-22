@@ -75,7 +75,27 @@ def _registry() -> dict[str, Any]:
     entries = data.get("jobs")
     if not isinstance(entries, list) or not entries:
         raise BridgeStop("Empty approved job registry.")
-    return {x["name"]: x for x in entries if isinstance(x, dict) and "name" in x}
+    # Fixed optional feature registry; same trusted checkout and _check_job gates.
+    # No caller-controlled paths, branch changes, or execution permissions.
+    extension_path = REPO / "data/ironman_swim_operator_jobs.json"
+    if extension_path.exists():
+        try:
+            extra = json.loads(extension_path.read_text(encoding="utf-8"))
+        except (OSError, ValueError) as exc:
+            raise BridgeStop("Swim job registry missing or invalid.") from exc
+        if (extra.get("schema") != "IRONMAN_OPERATOR_JOBS_V1"
+            or extra.get("owner") != OWNER
+            or not isinstance(extra.get("jobs"), list)):
+            raise BridgeStop("Unapproved swim job registry.")
+        entries = entries + extra["jobs"]
+    result = {}
+    for entry in entries:
+        if not isinstance(entry, dict) or not isinstance(entry.get("name"), str):
+            raise BridgeStop("Invalid registry entry.")
+        if entry["name"] in result:
+            raise BridgeStop("Duplicate job registration.")
+        result[entry["name"]] = entry
+    return result
 
 
 def _check_job(job: str, operation: str, ack_scope: str | None) -> dict[str, Any]:
