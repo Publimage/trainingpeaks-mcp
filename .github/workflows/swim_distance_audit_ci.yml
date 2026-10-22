@@ -1,0 +1,65 @@
+name: IRONMAN swim audit acquisition - offline tests
+
+on:
+  pull_request:
+    branches:
+      - feat/mcp-test-training-plan-lab
+    paths:
+      - scripts/ironman_jobs/swim*.py
+      - src/tp_mcp/private_bridge.py
+      - src/tp_mcp/swim_audit_bridge.py
+      - tests/test_swim*.py
+      - docs/IRONMAN_DETERMINISTIC_SWIM_AUDIT.md
+      - docs/IRONMAN_SWIM_SOURCE_TRANSPORT.md
+      - .github/workflows/swim_distance_audit_ci.yml
+
+permissions:
+  contents: read
+
+concurrency:
+  group: swim-distance-audit-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  offline-swim-audit:
+    if: github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install pinned test runtime
+        run: python -m pip install 'pytest==9.0.2'
+      - name: Run validators and localhost bridge with synthetic provider data
+        shell: bash
+        run: |
+          set -euo pipefail
+          QA_DIR="$RUNNER_TEMP/swim-distance-audit"
+          mkdir -p "$QA_DIR/scripts/ironman_jobs" "$QA_DIR/tests" "$QA_DIR/src/tp_mcp"
+          cp scripts/ironman_jobs/swim_distance_audit.py scripts/ironman_jobs/swim_recovery_audit.py scripts/ironman_jobs/swim_audit_report.py scripts/ironman_jobs/swim_audit_acquisition.py scripts/ironman_jobs/swim_audit_drive_reader.py "$QA_DIR/scripts/ironman_jobs/"
+          cp src/tp_mcp/private_bridge.py src/tp_mcp/swim_audit_bridge.py "$QA_DIR/src/tp_mcp/"
+          cp tests/test_swim_distance_audit.py tests/test_swim_distance_audit_edges.py tests/test_swim_recovery_audit.py tests/test_swim_audit_report.py tests/test_swim_audit_acquisition.py tests/test_swim_audit_drive_reader.py tests/test_swim_audit_bridge.py tests/test_swim_audit_bridge_acquisition.py "$QA_DIR/tests/"
+          cd "$QA_DIR"
+          export PYTHONPATH="$QA_DIR/src:$QA_DIR"
+          python -m pytest -q tests --junitxml=swim-distance-audit.xml
+          printf 'SWIM_BRIDGE_ACQUISITION_OFFLINE_TESTS_PASS\n'
+      - name: Package tracked source for independent review
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/swim-review"
+          git rev-parse HEAD > "$RUNNER_TEMP/swim-review/revision.txt"
+          git archive --format=tar HEAD > "$RUNNER_TEMP/swim-review/source.tar"
+          cp "$RUNNER_TEMP/swim-distance-audit/swim-distance-audit.xml" "$RUNNER_TEMP/swim-review/"
+          sha256sum "$RUNNER_TEMP/swim-review/source.tar" > "$RUNNER_TEMP/swim-review/source.sha256"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: swim-audit-review-source
+          path: ${{ runner.temp }}/swim-review/
+          retention-days: 3
+          if-no-files-found: error

@@ -2,7 +2,8 @@
 
 The bridge is disabled unless an explicit server-local JSON config exists.
 It binds only to the configured private interface, accepts only allowlisted
-source IPs and athlete IDs, and exposes one bounded read-only radar endpoint.
+source IPs and athlete IDs. Swim template reads require a separate, explicit
+server-local allowlist. Existing Radar behavior is preserved.
 No TrainingPeaks write tools are imported or reachable here.
 """
 from __future__ import annotations
@@ -20,6 +21,7 @@ from urllib.parse import urlparse
 from tp_mcp.client.context import athlete_override
 from tp_mcp.tools.metrics import tp_get_metrics
 from tp_mcp.tools.workouts import tp_get_workout, tp_get_workouts
+from tp_mcp.swim_audit_bridge import authorize_request, build_swim_input, validate_allowlist
 
 DEFAULT_CONFIG = Path("/home/ironman/.config/ironman/private_bridge.json")
 MAX_BODY_BYTES = 65536
@@ -51,7 +53,12 @@ def _load_config(path: Path | None = None) -> dict[str, Any] | None:
         raise BridgeConfigError("RESULT_WRITER_ALLOWLIST_REQUIRED")
     if not 1 <= max_window_days <= 31:
         raise BridgeConfigError("INVALID_MAX_WINDOW_DAYS")
+    try:
+        allowed_swim_templates = validate_allowlist(raw.get("allowed_swim_templates", []))
+    except ValueError as exc:
+        raise BridgeConfigError("INVALID_SWIM_TEMPLATE_ALLOWLIST") from exc
     return {
+        "allowed_swim_templates": allowed_swim_templates,
         "host": host,
         "port": port,
         "allowed_sources": allowed_sources,
@@ -217,6 +224,15 @@ def _persist_admin_result(payload: dict[str, Any], config: dict[str, Any]) -> di
     return {"stored": True, "job_id": job_id, "operation": operation, "state": state}
 
 
+async def _build_swim_audit_input(payload: Any, config: dict[str, Any]) -> dict:
+    allowed = config.get("allowed_swim_templates", [])
+    authorize_request(payload, allowed)  # Deny before opening the provider client.
+    from tp_mcp.client import TPClient
+
+    async with TPClient() as client:
+        return await build_swim_input(payload, allowed, client=client)
+
+
 def _handler_factory(config: dict[str, Any]):
     class Handler(BaseHTTPRequestHandler):
         server_version = "IRONMANPrivateBridge/1"
@@ -255,12 +271,15 @@ def _handler_factory(config: dict[str, Any]):
                 self._write_json(403, {"error": "SOURCE_NOT_ALLOWED"})
                 return
             path = urlparse(self.path).path
-            if path not in {"/v1/radar-input", "/v1/radar-result", "/v1/admin-result"}:
+            if path not in {"/v1/radar-input", "/v1/radar-result", "/v1/admin-result",
+                            "/v1/swim-audit-input"}:
                 self._write_json(404, {"error": "NOT_FOUND"})
                 return
             try:
                 length = int(self.headers.get("Content-Length") or "0")
-                if path == "/v1/radar-result":
+                if path == "/v1/swim-audit-input":
+                    limit = 4096
+                elif path == "/v1/radar-result":
                     limit = MAX_RESULT_BYTES
                 elif path == "/v1/admin-result":
                     limit = ADMIN_RESULT_MAX_BYTES
@@ -269,6 +288,20 @@ def _handler_factory(config: dict[str, Any]):
                 if length <= 0 or length > limit:
                     raise ValueError("INVALID_BODY_SIZE")
                 payload = json.loads(self.rfile.read(length))
+                if path == "/v1/swim-audit-input":
+                    try:
+                        result = asyncio.run(_build_swim_audit_input(payload, config))
+                    except PermissionError:
+                        self._write_json(403, {"error": "SWIM_ACCESS_DENIED"})
+                    except (KeyError, TypeError, ValueError):
+                        self._write_json(400, {"error": "SWIM_INPUT_UNVERIFIABLE"})
+                    except (TimeoutError, ConnectionError):
+                        self._write_json(503, {"error": "SWIM_TRANSPORT_UNAVAILABLE"})
+                    except Exception:
+                        self._write_json(424, {"error": "SWIM_READER_REJECTED"})
+                    else:
+                        self._write_json(200, result)
+                    return
                 if path in {"/v1/radar-result", "/v1/admin-result"}:
                     if str(self.client_address[0]) not in config["result_writer_sources"]:
                         self._write_json(403, {"error": "RESULT_WRITER_NOT_ALLOWED"})
