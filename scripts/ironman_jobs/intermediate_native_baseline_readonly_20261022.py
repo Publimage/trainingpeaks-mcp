@@ -17,7 +17,7 @@ OWNER=2116886
 TITLE="ALBERTO FAZI ENDURANCE | IRONMAN | 24 settimane | Intermediate | Italiano"
 START=date(2026,10,5)
 WINDOWS=[("2026-10-05","2026-11-29"),("2026-11-30","2027-01-24"),("2027-01-25","2027-03-21")]
-FOCUS={3996858792,3996859347,3996860483,3996863151,3996864785,3996868548,3996861535,3996872965,3996862048}
+FOCUS={3996858792,3996859347,3996860483,3996863151,3996864785,3996868548,3996861535,3996872965,3996862048,3996858851}
 
 def require(check, label):
     if not check: raise RuntimeError(label)
@@ -148,7 +148,8 @@ async def run():
         print("INTERMEDIATE_NATIVE_COMPACT|"+enc,flush=True)
         print(json.dumps({"stage":"INTERMEDIATE_BASELINE_READONLY_PASS","plan":PLAN,
             "classic":229,"strength":30,"total":259,"mutations":0,
-            "classic_issues":len(issues),"classic_issue_details":issues,"native_payload_raw_chars":len(raw),
+            "classic_issues":len(issues),"classic_issue_details":issues,
+            "w2_native_structure":focus[3996858851]["structure"],"native_payload_raw_chars":len(raw),
             "native_payload_encoded_chars":len(enc)},ensure_ascii=False),flush=True)
 
 if __name__=="__main__":
