@@ -74,3 +74,26 @@ E. Deprecate per-workout and per-PDF one-off jobs only after coverage parity, wi
 ## Non-negotiable
 
 Prefect is the orchestration platform; do not invent a new homegrown scheduler or remote shell gateway. An adapter difference is normal, a new script for each individual edit is not. New feature work should use the common manifest, not append another 8-line job to `data/ironman_operator_jobs.json`.
+
+## Implementation checkpoint — 2026-10-22, PR 18 (offline CI PASS)
+
+The reviewed branch now includes a typed change-set engine, a generic READ-ONLY TrainingPeaks resource gateway for classic plan workouts, native Calendar Notes (and PDF attachments), native StructuredStrength and Workout Library items, and one Prefect flow named ironman-unified-changeset-v1.
+Resource IDs are data rather than hard-coded scripts. On resume, a DONE_VERIFIED ledger item is rechecked against the provider before its state is reaffirmed. Explicit security denials are never retried through another route.
+
+## Critical cross-host boundary
+
+The new gateway uses TPClient credentials and therefore can run only on the authenticated TP-MCP runtime. The separate Prefect staging worker does NOT have coach TP credentials and must not receive them. The existing limited CSS private bridge is not a universal plan/resource read gateway.
+
+Before deploying the common Prefect flow on the staging worker, separately review a READ-ONLY, resource-scoped private VPC bridge to the TP-MCP host, with exact owner, resource identity, caller/IP allowlist, no redirects and bounded payload. Alternatively execute read adapters on the TP-MCP host through a reviewed, typed worker. No arbitrary shell or broad credential forwarding.
+
+Publishing is intentionally disabled: the Prefect flow rejects mode=publish before any provider access. Write-capable adapters must be integrated ONCE per resource kind, with existing Proven Paths, official endpoints and individual disposable-plan canaries. This does NOT authorize a previously denied PDF deletion or swim description change.
+
+Prefect's local SQLite resource claim is not a distributed lock. Before any real multi-host publishing, every writer must also respect the existing TP-host operator lock; uncertain provider writes require readback before release of claims.
+
+## Verified and pending
+
+CI now runs the existing operator suite, the generic change-set/idempotency suite, synthetic TrainingPeaks read tests for all resource kinds, and a live local Prefect flow over a synthetic provider. This demonstrates code integration, not an authenticated end-to-end TP operation.
+
+CI uses prefect==3.8.8 and fastapi<0.155 to avoid a backward-incompatible FastAPI Body(min_items) removal. This is dependency pinning, not a TP failure.
+
+Still OPEN: controlled private-bridge read access, dedicated staging work-pool smoke test, shared multi-host write lock, review of reusable write adapters per type, crash/dedup canary on approved disposable plan, production release gate.
