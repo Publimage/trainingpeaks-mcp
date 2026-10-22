@@ -2210,6 +2210,22 @@
       "scope": "trainingpeaks:plan:685173:native-strength-17-inplace-repositions-after-w19-canary",
       "script": "scripts/ironman_jobs/chasing_strength_relayout_remaining_20261022.py",
       "test": "tests/test_chasing_strength_relayout_20261022.py"
+    },
+    {
+      "name": "chasing_guides_v12_preview_20261022",
+      "mode": "READ_ONLY",
+      "owner_id": 2116886,
+      "scope": "trainingpeaks:public-plan:685173:athlete-and-weekly-guide-v12-preview-read",
+      "script": "scripts/ironman_jobs/chasing_guides_v12_preview_20261022.py",
+      "test": "tests/test_chasing_guides_v12_pdf.py"
+    },
+    {
+      "name": "chasing_guides_v12_publish_20261022",
+      "mode": "GUARDED_WRITE",
+      "owner_id": 2116886,
+      "scope": "trainingpeaks:public-plan:685173:start-note-2664007:replace-two-obsolete-guides-with-v12-only",
+      "script": "scripts/ironman_jobs/chasing_guides_v12_publish_20261022.py",
+      "test": "tests/test_chasing_guides_v12_pdf.py"
     }
   ]
 }
