@@ -2266,6 +2266,14 @@
       "scope": "trainingpeaks:public-plan:684602:correct-six-native-calendar-notes-monday-strength-remaining-20261022",
       "script": "scripts/ironman_jobs/intermediate_monday_native_notes_remaining_20261022.py",
       "test": "tests/test_intermediate_monday_native_notes_20261022.py"
+    },
+    {
+      "name": "intermediate_readme_current_guides_20261022",
+      "mode": "GUARDED_WRITE",
+      "owner_id": 2116886,
+      "scope": "trainingpeaks:public-plan:684602:readme2653899:description-only-current-guides-notice-retain-five-pdfs-20261022",
+      "script": "scripts/ironman_jobs/intermediate_readme_current_guides_20261022.py",
+      "test": "tests/test_intermediate_readme_current_guides_20261022.py"
     }
   ]
 }
