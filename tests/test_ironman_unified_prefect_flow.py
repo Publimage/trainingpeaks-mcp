@@ -1,0 +1,70 @@
+"""Prefect flow contract: one entrypoint, synthetic adapter, no live writes."""
+from __future__ import annotations
+
+from pathlib import Path
+
+import pytest
+
+from scripts.ironman_jobs.ironman_unified_changeset_engine import ChangeStop, digest
+from scripts.ironman_jobs import ironman_unified_prefect_flow as pipeline
+
+
+def manifest():
+    old, new = {"id": 77, "description": "old"}, {"id": 77, "description": "new"}
+    return {
+        "schema": "IRONMAN_CHANGESET_V1",
+        "request_id": "offline-universal-001",
+        "owner_id": 2116886,
+        "reviewed_revision": "a" * 40,
+        "approval_scope": "offline:preview:all-plans",
+        "changes": [{
+            "id": "change1",
+            "kind": "plan.workout.patch",
+            "target": {
+                "provider": "trainingpeaks", "owner_id": 2116886,
+                "container_kind": "training_plan",
+                "container_id": 684602, "resource_id": 77,
+            },
+            "before_sha256": digest(old), "after_sha256": digest(new),
+            "depends_on": [], "payload": {"desired": new},
+        }]
+    }
+
+
+class SyntheticReadAdapter:
+    def read(self, _):
+        return {"id": 77, "description": "old"}
+
+    def apply(self, _):
+        raise AssertionError("PREVIEW_MUST_NEVER_WRITE")
+
+
+def test_one_prefect_flow_accepts_generic_manifest_and_previews_only(tmp_path, monkeypatch):
+    monkeypatch.setattr(pipeline, "create_read_registry",
+                        lambda: {"plan.workout.patch": SyntheticReadAdapter()})
+    result = pipeline.unified_changeset_flow(manifest(), str(tmp_path/"ledger.sqlite3"))
+    assert result["results"][0]["state"] == "PREFLIGHT_PASS"
+    assert result["provider_writes"] == 0
+    assert result["publication_enabled"] is False
+    assert result["source"] == "trainingpeaks_live_read_only"
+    assert pipeline.unified_changeset_flow.name == "ironman-unified-changeset-v1"
+
+
+def test_refuses_publish_before_any_provider_work(tmp_path, monkeypatch):
+    monkeypatch.setattr(pipeline, "create_read_registry",
+                        lambda: (_ for _ in ()).throw(AssertionError("SHOULD_NOT_READ")))
+    with pytest.raises(ChangeStop, match="PUBLISHING_NOT_YET_ENABLED"):
+        pipeline.unified_changeset_flow.fn(
+            manifest(), str(tmp_path/"ledger.sqlite3"), mode="publish"
+        )
+    assert not (tmp_path/"ledger.sqlite3").exists()
+
+
+def test_schema_validation_precedes_any_adapter_call(tmp_path, monkeypatch):
+    invalid = manifest()
+    invalid["changes"][0]["target"]["container_kind"] = "athlete_calendar"
+    monkeypatch.setattr(pipeline, "create_read_registry",
+                        lambda: (_ for _ in ()).throw(AssertionError("SHOULD_NOT_READ")))
+    with pytest.raises(ChangeStop, match="TARGET_CONTAINER"):
+        pipeline.unified_changeset_flow.fn(invalid, str(tmp_path/"ledger.sqlite3"))
+    assert not (tmp_path/"ledger.sqlite3").exists()
