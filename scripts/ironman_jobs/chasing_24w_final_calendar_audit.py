@@ -23,7 +23,7 @@ async def main():
   p=await c.get(f"/plans/v1/plans/{PLAN}")
   if u.get("personId")!=OWNER or p.is_error:return 2
   meta=p.data
-  if meta.get("planId")!=PLAN or meta.get("planPersonId")!=PERSON or meta.get("isPublic") is not False or meta.get("workoutCount")!=276:return 3
+  if meta.get("planId")!=PLAN or meta.get("planPersonId")!=PERSON or meta.get("isPublic") is not True or meta.get("workoutCount")!=276:return 3
   for startw in range(1,25,4):
    a=(date(2027,1,4)+timedelta(weeks=startw-1)).isoformat()
    b=(date(2027,1,4)+timedelta(weeks=min(startw+3,24))).isoformat()
@@ -51,6 +51,6 @@ async def main():
      native.append({"date":dt,"title":x.get("title"),"id":x.get("id")})
  missing=list((expected-actual).elements())
  extra=list((actual-expected).elements())
- print(json.dumps({"stage":"FULL_24W_AUDIT","plan":PLAN,"expected":sum(expected.values()),"observed":sum(actual.values()),"classic":sum(v for (d,k),v in actual.items() if k!="ST"),"native_strength":len(native),"missing":missing[:20],"extra":extra[:20],"duplicate_slots":[[d,k,n] for (d,k),n in actual.items() if n>1],"test_templates":titles,"private":True},ensure_ascii=False),flush=True)
+ print(json.dumps({"stage":"FULL_24W_AUDIT","plan":PLAN,"expected":sum(expected.values()),"observed":sum(actual.values()),"classic":sum(v for (d,k),v in actual.items() if k!="ST"),"native_strength":len(native),"strength_positions":native,"missing":missing[:20],"extra":extra[:20],"duplicate_slots":[[d,k,n] for (d,k),n in actual.items() if n>1],"test_templates":titles,"public":True},ensure_ascii=False),flush=True)
  return 0 if not missing and not extra and sum(actual.values())==276 else 7
 if __name__=="__main__":raise SystemExit(asyncio.run(main()))
