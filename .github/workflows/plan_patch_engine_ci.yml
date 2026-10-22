@@ -13,6 +13,9 @@ on:
       - scripts/ironman_jobs/reviewed_plan_patch_publish.py
       - tests/test_reviewed_plan_patch_pipeline.py
       - data/ironman_reviewed_plan_patch.json
+      - scripts/ironman_jobs/chasing_swim_rebuild_20261018.py
+      - tests/test_chasing_swim_native_rest_gate.py
+      - tests/test_chasing_swim_rebuild_20261018.py
       - scripts/ironman_jobs/tp_private_lab_write_gateway.py
       - scripts/ironman_jobs/plan_patch_private_lab_write_canary_20261018.py
       - tests/test_tp_private_lab_write_gateway.py
@@ -45,6 +48,10 @@ jobs:
         run: python -m pip install 'pytest>=8,<10'
       - name: Verify offline patch engine (no provider calls)
         run: python -m pytest -q tests/test_plan_patch_batch_core.py tests/test_tp_plan_readonly_gateway.py tests/test_tp_private_lab_write_gateway.py tests/test_reviewed_plan_patch_pipeline.py tests/test_ironman_publisher_status.py
+      - name: Test CHASING 71-swim regression and native recovery semantics
+        run: |
+          python -m pip install -e .
+          PYTHONPATH=src python -m pytest -q tests/test_chasing_swim_native_rest_gate.py tests/test_chasing_swim_rebuild_20261018.py
       - name: Verify direct-run imports as used on DigitalOcean
         run: |
           cd scripts/ironman_jobs

@@ -12,11 +12,11 @@ def test_progression_and_continuous_gate():
     gate=x.design_gate(specs)
     assert gate["continuous_max"]==4000
     assert gate["whole_4000"]==1
-    assert gate["long_continuous_3k_plus"]>=10
-    mains=[s["main"] for s in specs if s["kind"]=="cont"]
-    assert any(v>=3500 for v in mains)
-    assert any(v>=3800 for v in mains)
-    assert 4000 in mains
+    assert gate["continuous_sessions"]==4
+    assert gate["long_continuous_3k_plus"]==3
+    assert {s["week"]:s["main"] for s in specs if s["kind"]=="cont"}=={
+        11:2600,13:3000,15:3000,19:4000
+    }
 
 def test_metres_and_equipment_variety():
     specs=x.build_specs()
