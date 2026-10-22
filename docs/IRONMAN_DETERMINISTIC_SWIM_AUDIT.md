@@ -37,3 +37,37 @@ The suite now contains 29 passing local tests (8 original plus 21 edge cases). T
 The module is a pure function: no network, credentials, file writes or TrainingPeaks access. Synthetic tests contain no private athlete or product payloads. Real sample identifiers and operational evidence belong in the private project checkpoint, not in public fixtures.
 
 Before production integration: review the CI result, extend representative provider-schema coverage, define a separate recovery-prescription validator, then wire the reviewed version into an existing audit flow with an explicit distance-only result. No automatic merge, deploy, schedule, publisher registration or TrainingPeaks modification is authorized merely by a PASS here.
+
+## Increment 2: separate recovery-prescription checker
+
+`audit_swim_recoveries(spec, native_structure)` in `swim_recovery_audit.py` now checks stationary recovery duration, location in cumulative metres, order, repeated occurrences and zero native rest targets. It reuses the distance validator and generalizes the ordered comparison principle in PR13 without importing or modifying that product-specific generator or any provider writer.
+
+The prescription must be independently supplied, not reverse-engineered from the structure being audited:
+
+```json
+{
+  "schema": "IRONMAN_SWIM_RECOVERY_V1",
+  "source_ref": "independent-reviewed-prescription:version-and-reference",
+  "coverage": "complete",
+  "total_m": 400,
+  "pauses": [
+    {"after_m": 100, "seconds": 20},
+    {"after_m": 200, "seconds": 20},
+    {"after_m": 300, "seconds": 20}
+  ]
+}
+```
+
+The source reference records provenance; it is not authenticated proof of approval. The production adapter must bind it to the approved source revision, workout identity and input fingerprint. This adapter is NOT yet implemented.
+
+`complete` compares every stationary pause in order and can return PASS only for this narrow scope. `targeted` checks specific required pauses; success returns PARTIAL, never a full PASS. Missing requirements return FAIL; missing, malformed or unsupported input returns UNVERIFIABLE. All non-PASS statuses block a full validation gate. An explicit empty complete pause list represents a no-stop prescription; an empty targeted list is invalid.
+
+No universal N versus N-1 rule is imposed. A final recovery passes only when explicitly prescribed. Metres labelled rest remain swimming and cannot satisfy a stationary pause. Text in a step name does not substitute for a timed native rest. Flexible duration ranges, open-ended recovery, active timed swimming and nested native blocks remain unsupported in this increment; no guessed values are substituted. A 10,000 expanded-step bound is computational, not physiological.
+
+### Increment 2 evidence and limitations
+
+38 new synthetic recovery tests passed locally. The CI workflow now runs these together with the 29 existing distance tests; actual CI completion must be checked separately.
+
+The previously inspected test template was reread through the live connector. An independently transcribed targeted requirement was limited to its explicit five-minute pause after the easy swimming before the second test. The local projection of current native fields still passed distance arithmetic and failed the required pause check. Adding that one pause ONLY in a local counterfactual kept the metres unchanged and returned PARTIAL for the targeted check. This does not approve the whole workout or resolve the remaining interval-recovery prescription.
+
+No private template payload, identity or complete prescription is stored in these public tests. The parser does not automatically understand arbitrary prose, and no complete plan audit, provider correction, merge or server deployment has occurred. Next gate: consolidate the two checks into one scoped report and verify an authorized read-only execution on the existing server before making them mandatory in production.
