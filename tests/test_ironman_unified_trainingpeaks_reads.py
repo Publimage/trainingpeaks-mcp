@@ -155,3 +155,14 @@ def test_rejects_wrong_owner_before_provider_read(monkeypatch):
     target["target"]["owner_id"] = 44
     with pytest.raises(Exception, match="PROVIDER_OWNER_MISMATCH"):
         asyncio.run(read_trainingpeaks_item(target))
+
+
+def test_same_generic_registry_selects_vpc_read_transport():
+    from tp_mcp.unified_read_bridge import PrivateBridgeReadAdapter
+    registry = create_read_registry("private_bridge")
+    assert set(registry) == VALID_KINDS
+    assert all(isinstance(a, PrivateBridgeReadAdapter) for a in registry.values())
+    with pytest.raises(SecurityDenied, match="UNIFIED_PRIVATE_BRIDGE_WRITES_NOT_AUTHORIZED"):
+        registry["plan.note.attachment.retire"].apply(spec("plan.note.attachment.retire", NOTE))
+    with pytest.raises(Exception, match="UNIFIED_UNSUPPORTED_READ_TRANSPORT"):
+        create_read_registry("arbitrary_url")
