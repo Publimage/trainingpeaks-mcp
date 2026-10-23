@@ -1,0 +1,3 @@
+# CHASING THE SLOT - distribution invariant
+
+Coach correction 2026-10-12: distribute sessions across all seven days; do not hardcode Monday OFF or silently omit Saturdays. Before marking any week complete, compare canonical planned workouts with TrainingPeaks actual by weekday, sport, duration, and workout content. A missing long Saturday ride is a blocking QA failure. Avoid triple-loading Friday while leaving weekend days empty. Redistribute existing workload without automatically adding volume; preserve sensible recovery intensity. Keep plan private and detached from athlete calendars. This supersedes earlier generic OFF assumptions for the product; individual exceptional recovery days require explicit methodological justification.

@@ -1,0 +1,232 @@
+{
+  "schema": "CHASING_PLAN_NOTE_NATIVE_V1",
+  "source_document_id": "1zr41PjXW_y-xzs3jvH3dnhSmjHZr3LzLeFqqF9GQvyA",
+  "source_revision": "AHj4eMSpWkryeeS4tOxIvwNFCI2nGJE18rIMUwlbFgDC4Zs-eEK4X3IyGsYKFNxD_OUZBO4mKVodg9BorLZsLIHetDfPSZLzh3edKEqEaOg",
+  "plan_id": 685173,
+  "coach_owner": 2116886,
+  "notes": [
+    {
+      "uid": "CHS-NOTE-001",
+      "week": 1,
+      "day": 0,
+      "title": "START | Come usare Chasing the Slot",
+      "description": "Questo piano è pensato per chi ha già preparato e disputato un Ironman e conosce il costo reale di una settimana impegnativa. Le 24 settimane partono dal lavoro costruito prima di oggi: se arrivi da un periodo discontinuo o non hai ancora tollerato carichi simili, non cercare di recuperare il divario facendo tutto subito.\nOgni allenamento ha una funzione. Guarda prima obiettivo e parte centrale, poi durata, intensità e indicazioni su alimentazione e recupero. I giorni facili e quelli di riposo fanno parte della programmazione; una seduta saltata non va aggiunta automaticamente al giorno successivo.\nNelle settimane più specifiche dovremo valutare insieme potenza o passo, sensazioni e capacità di continuare a lavorare quando compare stanchezza. La gara scelta è il riferimento per le decisioni: una qualificazione resta un obiettivo possibile, mai una conseguenza garantita del completamento del piano. Il calendario è un modello per un atleta preparato, non un obbligo di ignorare segnali di salute o recupero."
+    },
+    {
+      "uid": "CHS-NOTE-002",
+      "week": 1,
+      "day": 0,
+      "title": "INTENSITÀ | Watt, soglie e percezione",
+      "description": "In bici i segmenti strutturati usano soprattutto percentuali della tua FTP; nella corsa, quando indicato, il riferimento è la velocità o il passo di soglia impostato in TrainingPeaks. Per il nuoto servono i riferimenti individuali del test previsto. Prima di eseguire i blocchi verifica che soglie, unità di misura e dispositivi siano impostati correttamente: una soglia vecchia produce numeri precisi ma sedute sbagliate.\nRPE significa percezione dello sforzo, su una scala da 1 (molto leggero) a 10 (massimale). Frequenza cardiaca e respirazione aiutano a capire quanto costa internamente una certa potenza. LT1 è il riferimento del lavoro aerobico facile: non coincide automaticamente con una percentuale fissa di FTP. LT2 identifica un'intensità fisiologica più alta, ma FTP e LT2 non sono sinonimi perfetti.\nQuando watt, frequenza cardiaca e sensazioni divergono chiaramente, non forzare il target soltanto perché compare sullo schermo. Verifica condizioni, fatica, caldo, alimentazione e affidabilità del dato."
+    },
+    {
+      "uid": "CHS-NOTE-003",
+      "week": 1,
+      "day": 0,
+      "title": "TRAININGPEAKS | Leggere i numeri senza inseguirli",
+      "description": "TrainingPeaks è utile per eseguire gli intervalli, rileggere le sedute e riconoscere tendenze. TSS è una stima del carico basata su durata e intensità; IF esprime l'intensità relativa, mentre NP è una stima della potenza normalizzata. CTL, ATL e TSB sintetizzano carico cronico, recente e loro differenza attraverso modelli matematici. Sono indicatori da interpretare, non misure dirette di adattamento o di prontezza.\nDue uscite con TSS simile possono produrre costi molto diversi per muscoli, tendini e sistema nervoso. Prima di attribuire valore al numero, chiediti se le zone sono attendibili, se il lavoro previsto è stato eseguito e se sei tornato a recuperare normalmente.\nUn dato particolarmente utile è il rapporto fra output esterno e costo interno: a pari watt o passo, quanto cambiano frequenza cardiaca, respirazione, percezione, posizione e capacità di alimentarti? Confronta sedute abbastanza simili per condizioni, non giornate che non sono confrontabili."
+    },
+    {
+      "uid": "CHS-NOTE-004",
+      "week": 1,
+      "day": 3,
+      "title": "TEST | Dalle prove ai riferimenti di allenamento",
+      "description": "Questa prima settimana include riferimenti nel nuoto, nella corsa e in bici. Non servono tre dimostrazioni di forma: servono valori abbastanza affidabili da orientare il lavoro successivo. Segui il protocollo scritto nella singola seduta, arrivando alimentato e cercando condizioni replicabili.\nPer il nuoto annota il tempo e la regolarità dei passaggi; per la corsa valuta distribuzione dello sforzo e passo; in bici controlla potenza, gestione dei minuti centrali e coerenza fra dato e sensazioni. La formula per ricavare una soglia, quando prevista, è quella del protocollo usato: non applicare automaticamente una percentuale presa da un test diverso.\nSe il risultato è palesemente anomalo per malessere, condizioni o pacing errato, non cambiare tutte le zone sulla base di quel solo giorno. Conserva il dato, indica il motivo dell'incertezza e usa i primi allenamenti per verificarne la plausibilità."
+    },
+    {
+      "uid": "CHS-NOTE-005",
+      "week": 2,
+      "day": 0,
+      "title": "FONDO | Il lavoro sotto LT1",
+      "description": "Le sedute facili diventano davvero utili quando riusciamo a ripeterle senza trasformarle in un costo da recuperare per due giorni. Su un'uscita sotto LT1 osserva respirazione, fluidità e stabilità della frequenza cardiaca, soprattutto quando la durata aumenta.\nSu strada i watt oscillano per pendenza, vento e traffico. Non è necessario correggere ogni secondo: conta il comportamento dell'intera seduta. Se dopo mezz'ora cominci a spingere perché ti senti bene, chiediti se stai migliorando l'allenamento o soltanto modificandone lo scopo.\nIl facile può sembrare poco impegnativo a un atleta esperto. Proprio questa sostenibilità lascia spazio ai richiami più intensi e alle settimane lunghe che arriveranno. A fine uscita valuta anche quanto tempo ti serve per tornare alle normali energie della giornata."
+    },
+    {
+      "uid": "CHS-NOTE-006",
+      "week": 4,
+      "day": 0,
+      "title": "SCARICO | Leggere quello che abbiamo costruito",
+      "description": "Il volume scende rispetto alle settimane precedenti. È il momento di osservare la risposta, non di riempire gli spazi liberi con altre ore. Cerca segnali semplici: sonno più regolare, gambe meno rigide, ritorno di appetito e voglia di allenarti, frequenza cardiaca più coerente a intensità abituali.\nNon aspettarti necessariamente sensazioni brillanti dal primo giorno. Dopo settimane di carico può servire tempo perché la fatica residua si riduca. Se invece emergono dolore, disturbi persistenti o affaticamento sproporzionato, trattali come informazioni concrete, non come mancanza di motivazione.\nQuesto scarico prepara il blocco successivo. Valuta cosa ha funzionato nella gestione delle giornate e quale dettaglio organizzativo va corretto prima che le durate aumentino di nuovo."
+    },
+    {
+      "uid": "CHS-NOTE-007",
+      "week": 5,
+      "day": 0,
+      "title": "ZONE | Aggiornare un riferimento con criterio",
+      "description": "Un test o un benchmark può indicare che la condizione è cambiata. Prima di modificare FTP, passo di soglia o zone controlla come è stato ottenuto il numero: protocollo, terreno o rullo, temperatura, freschezza, pacing e ripetibilità. Il valore deve essere utile alla prescrizione, non soltanto migliore di quello precedente.\nSe un dato recente e credibile suggerisce un aggiustamento, applicalo alla disciplina pertinente e verifica le sedute successive. Non trasferire automaticamente una variazione della FTP ai ritmi di corsa o alle velocità del nuoto. Un buon riferimento produce intervalli eseguibili con il costo previsto.\nLa sensazione di essere più forte può anticipare una misura affidabile, e a volte accade il contrario. Non c'è bisogno di cambiare un numero ogni volta che una seduta viene particolarmente bene."
+    },
+    {
+      "uid": "CHS-NOTE-008",
+      "week": 6,
+      "day": 0,
+      "title": "FUELING | Allenare una routine ripetibile",
+      "description": "Quando iniziano a crescere le durate, alimentarti durante l'uscita diventa parte dell'allenamento. Parti da prodotti e quantità che già tolleri; definisci un intervallo regolare di assunzione e osserva energia, sete e risposta gastrointestinale. Non usare i lunghi come occasioni per restrizioni caloriche deliberate.\nLe quantità precise vanno rapportate alla durata, all'intensità, alla tolleranza personale e alle indicazioni delle singole sedute. Anche i liquidi e il sodio cambiano con temperatura, sudorazione e condizioni: non esiste un dosaggio identico per tutti.\nAnnota cose concrete: cosa hai preso, quando, con quanta acqua e come sono andati i minuti finali. Se un prodotto crea fastidio, il dato utile è capire in quali condizioni è successo. La nutrizione di gara si costruisce per tentativi progressivi, non con una miscela mai provata nella settimana della gara."
+    },
+    {
+      "uid": "CHS-NOTE-009",
+      "week": 8,
+      "day": 0,
+      "title": "BILANCIO | Prima verifica della continuità",
+      "description": "Dopo otto settimane la domanda utile non è quante sedute perfette hai collezionato. Guarda quali adattamenti riesci a riconoscere in condizioni confrontabili: stessi watt con un costo cardiaco diverso, corsa più composta alla fine di una giornata lunga, posizione in bici più stabile, recupero più prevedibile.\nRivedi anche gli allenamenti meno riusciti. Una giornata storta può dipendere da sonno, lavoro, caldo, alimentazione o accumulo di fatica; da sola non riscrive il giudizio su un blocco. Cerca piuttosto errori che si ripetono.\nIl piano entra ora in una parte nella quale resistenza alla fatica e gestione della giornata conteranno sempre di più. Conserva una o due osservazioni utili, senza trasformare il bilancio in una ricerca continua di conferme."
+    },
+    {
+      "uid": "CHS-NOTE-010",
+      "week": 9,
+      "day": 0,
+      "title": "DURABILITY | Cosa succede dopo molte ore",
+      "description": "Nei prossimi lunghi guarderemo sempre di più la capacità di mantenere prestazione e controllo man mano che cresce il lavoro accumulato. È il senso operativo della durability: non semplicemente andare forte da fresco, ma preservare gesto, postura, alimentazione e ritmo dopo molte ore.\nPer valutare una seduta osserva almeno tre piani: output (watt o passo), costo interno (frequenza cardiaca e percezione) ed esecuzione (posizione, cadenza, tecnica, capacità di assumere carboidrati). Se a potenza stabile il costo sale molto, considera anche caldo, vento, disidratazione e condizioni: il confronto ha valore solo se il contesto è abbastanza simile.\nL'obiettivo del lungo non è arrivare svuotato. Preferisco un lavoro concluso con dati leggibili e recupero gestibile a un finale forzato che compromette tre giorni."
+    },
+    {
+      "uid": "CHS-NOTE-011",
+      "week": 9,
+      "day": 5,
+      "title": "BRICK | I primi minuti di corsa dopo la bici",
+      "description": "Dopo una bici lunga, i primi minuti di corsa possono sembrare sorprendentemente facili oppure scomposti. Non giudicarli subito. Cambiano appoggio, cadenza, coordinazione e percezione dello sforzo; usa l'avvio previsto per rimettere ordine, senza inseguire il passo.\nQuesto brick serve soprattutto a capire come esci dalla bici: alimentazione ancora tollerabile, capacità di stabilizzare il respiro, appoggio regolare, passo coerente con la fatica reale. Una corsa breve dopo il lungo non va trasformata in un altro lungo.\nRegistra un'osservazione utilizzabile: per esempio se parti troppo forte, se hai bisogno di qualche minuto per scioglierti o se il problema compare dopo una certa quantità di carboidrati. Sono informazioni utili per la gara, non voti."
+    },
+    {
+      "uid": "CHS-NOTE-012",
+      "week": 10,
+      "day": 0,
+      "title": "AERO | Tenere la posizione senza irrigidirsi",
+      "description": "La posizione aerodinamica ha valore se riesci a mantenerla in sicurezza, respirare, alimentarti e continuare a pedalare con efficienza. Non basta abbassarsi il più possibile per pochi minuti. Le esposizioni previste vanno considerate come lavoro di familiarità e sostenibilità, non come una prova di resistenza al dolore.\nOsserva quando cambiano spalle, collo, mani, bacino e cadenza; se una posizione produce fastidio crescente o limita il controllo della bici, correggila. Su strada privilegia sicurezza e visibilità, senza imporre l'aero in tratti inadatti.\nUn assetto molto aggressivo che non riesci a conservare dopo due ore può avere meno valore pratico di uno leggermente meno chiuso ma sostenibile per tutta la gara. Questo è un buon momento per individuare eventuali problemi prima delle settimane più specifiche."
+    },
+    {
+      "uid": "CHS-NOTE-013",
+      "week": 11,
+      "day": 0,
+      "title": "LUNGO | Lasciare qualcosa per domani",
+      "description": "Le settimane di carico insegnano anche a gestire quello che viene dopo il lungo. Una seduta conclusa bene non è necessariamente quella in cui hai spremuto tutto il possibile. Il metro è se hai mantenuto lo scopo previsto e puoi affrontare il resto del microciclo senza trascinarti una fatica evitabile.\nNei lunghi controlla la regolarità della posizione, l'alimentazione, le variazioni della frequenza cardiaca e la qualità dei minuti finali. Una potenza più alta del prescritto non è automaticamente un risultato migliore.\nIn una preparazione Ironman avanzata c'è spesso la tentazione di trasformare ogni sabato in una verifica della forma. Le verifiche servono, ma devono essere riconoscibili e ripetibili. Nelle altre giornate è più utile allenarsi esattamente per la funzione prevista."
+    },
+    {
+      "uid": "CHS-NOTE-014",
+      "week": 12,
+      "day": 0,
+      "title": "SCARICO | Il lavoro continua anche quando le ore scendono",
+      "description": "Questa settimana abbassa il carico dopo la prima fase di endurance prolungata. Non aggiungere una seduta per compensare il tempo libero: l'obiettivo è arrivare alle settimane specifiche con una risposta migliore, non con un altro allenamento nascosto nelle gambe.\nUsa i riferimenti che già conosci. Il facile dovrebbe tornare progressivamente più naturale, ma le sensazioni possono oscillare. Osserva insieme sonno, appetito, rigidità muscolare, volontà di allenarti e costo delle sedute abituali.\nSe durante il blocco precedente hai raccolto dati su potenza finale, frequenza cardiaca e fueling, ora rileggili senza trarre conclusioni da una sola uscita. Il prossimo passaggio chiederà maggior precisione sul ritmo gara; arrivarci recuperato conta più di guadagnare un'ora in questa settimana."
+    },
+    {
+      "uid": "CHS-NOTE-015",
+      "week": 13,
+      "day": 0,
+      "title": "FASE | Dal lavoro aerobico all'esecuzione Ironman",
+      "description": "Entra una parte più specifica del piano: lunghe esposizioni in posizione gara, blocchi a ritmo Ironman, cambi bici-corsa e prove di alimentazione sempre più realistiche. A questo punto non serve dimostrare soltanto di possedere una certa potenza o un certo passo. Serve capire per quanto tempo riesci a sostenerli senza alterare il resto della giornata.\nIl ritmo gara non è un numero da imporre a ogni costo. Deve lasciare margine per temperatura, percorso, nutrizione e soprattutto maratona. I blocchi in bici, le corse lunghe e i brick hanno compiti differenti: rispettare queste differenze impedisce che tutta la settimana diventi un unico carico indistinto.\nPrendi nota dei segnali che anticipano la perdita di controllo: alimentazione che rallenta, posizione che si deteriora, frequenza cardiaca che sale troppo a parità di watt, corsa che perde regolarità. È su questi dettagli che lavoreremo."
+    },
+    {
+      "uid": "CHS-NOTE-016",
+      "week": 13,
+      "day": 1,
+      "title": "PACE | Ironman Pace e Ironman Pace+",
+      "description": "In alcune sedute bici vedrai due indicazioni distinte nel Workout Builder. Ironman Pace è il riferimento ordinario dei blocchi specifici; Ironman Pace+ è un richiamo leggermente più alto, inserito per tratti brevi all'interno di un lavoro che continua a includere la quota principale di ritmo gara.\nPer CHASING le fasce operative impostate nei segmenti sono 71–75% FTP per Ironman Pace e 76–80% FTP per Pace+. Sono riferimenti di lavoro individuali, non la previsione automatica della potenza da tenere per 180 km: quella dipende anche da durata, condizioni e capacità di correre dopo la bici.\nNon anticipare il Pace+ e non allungare gli intervalli perché ti senti bene. Osserva se dopo il richiamo riesci a tornare fluido, alimentarti e mantenere la posizione. Se il richiamo altera tutto il resto della seduta, il dato importante è il costo reale, non avere raggiunto il watt più alto."
+    },
+    {
+      "uid": "CHS-NOTE-017",
+      "week": 14,
+      "day": 0,
+      "title": "CORSA | La meccanica ha un costo",
+      "description": "La corsa è la parte della preparazione in cui il carico meccanico può diventare il limite prima del fiato. Le sedute di questa settimana vanno lette insieme alle ore di bici e ai giorni vicini, non come un elenco indipendente di chilometri.\nNei lunghi osserva se l'appoggio resta naturale, se la cadenza cambia in modo evidente e se l'indolenzimento rientra con i tempi abituali. Un fastidio persistente o un'alterazione dell'appoggio richiedono di ridurre e valutare, non di completare a ogni costo il minutaggio.\nL'obiettivo non è arrivare alla gara avendo corso il maggior numero possibile di chilometri in allenamento. Conta presentarsi con una corsa che puoi ancora usare dopo una lunga bici. È una capacità costruita con continuità, recupero e dosi sostenibili."
+    },
+    {
+      "uid": "CHS-NOTE-018",
+      "week": 15,
+      "day": 0,
+      "title": "CARICO | Una settimana importante, senza improvvisazioni",
+      "description": "Questa è una delle settimane più impegnative della programmazione. Le ore totali contano, ma conta di più il modo in cui sono distribuite: sedute chiave, richiami di forza, giorni a minore costo e alimentazione adeguata a sostenere l'intero blocco.\nPrepara in anticipo gli aspetti pratici: quando mangiare fra due sessioni, cosa portare nel lungo, quanto tempo lasciare per il sonno e quali impegni di lavoro potrebbero interferire. Un cambio dell'ultimo minuto che rende impossibile recuperare non è un dettaglio trascurabile.\nNon aggiungere qualità alle sedute facili. Se compare fatica anomala, privilegia la funzione delle sedute principali e il recupero, senza comprimere ciò che hai saltato nei giorni successivi. Arrivare in fondo a questa settimana con un quadro leggibile della risposta vale molto più di spuntare ogni casella in condizioni peggiori."
+    },
+    {
+      "uid": "CHS-NOTE-019",
+      "week": 15,
+      "day": 5,
+      "title": "FUELING | Provare la routine che userai in gara",
+      "description": "Durante il lungo specifico usa materiale e alimenti che potresti realisticamente avere il giorno dell'Ironman. Pianifica l'assunzione prima di partire: prodotti, frequenza, liquidi, eventuali soste per rifornirti e alternative in caso di fastidio gastrointestinale.\nNon fare del lungo una gara nella gara. La prova deve dirci se riesci a mantenere il ritmo previsto mentre mangi, bevi e conservi una posizione sostenibile. Annotare soltanto i watt medi lascia fuori metà dell'esecuzione.\nRegistra la quantità realmente assunta, i tempi, la tolleranza intestinale e l'andamento degli ultimi 60–90 minuti. Se qualcosa non funziona, modifica una variabile alla volta nei test successivi: quantità, concentrazione, prodotto o frequenza. L'obiettivo è arrivare al rehearsal con una strategia già familiare, non inventarla quel giorno."
+    },
+    {
+      "uid": "CHS-NOTE-020",
+      "week": 16,
+      "day": 0,
+      "title": "SCARICO | Assorbire prima del blocco decisivo",
+      "description": "Dopo una settimana molto piena è normale che il sistema impieghi qualche giorno per restituire sensazioni migliori. Il volume viene ridotto proprio per lasciare spazio a questo processo. Non serve inserire un test extra per scoprire se sei migliorato.\nNelle uscite facili osserva se il gesto ritorna naturale, se riesci a respirare e pedalare ai ritmi abituali e se la fatica quotidiana diminuisce. Se qualche valore di potenza o passo sembra meno brillante del previsto, non interpretarlo isolatamente.\nRivedi anche l'organizzazione del prossimo blocco: alimentazione nei lunghi, posizione, materiali, recupero fra weekend impegnativi. I problemi logistici che emergono ora sono più facili da correggere rispetto a quelli scoperti a pochi giorni dalla gara."
+    },
+    {
+      "uid": "CHS-NOTE-021",
+      "week": 17,
+      "day": 0,
+      "title": "FASE | Mantenere qualità quando cresce la fatica",
+      "description": "Nelle prossime settimane la specificità di gara diventa molto concreta. Abbiamo già lavorato su potenza, tecnica e resistenza; ora conta vedere quanto bene questi elementi restano insieme quando la seduta si allunga e il margine si riduce.\nPer ogni lungo specifico controlla output e costo interno, ma anche alimentazione e posizione. Un intervallo rispettato sulla carta perde valore se per sostenerlo smetti di assumere carboidrati o esci continuamente dalla posizione senza accorgertene.\nIl lavoro non richiede di arrivare ogni volta al limite. Cerca una esecuzione ripetibile: ritmo controllato nei primi blocchi, attenzione ai segnali intermedi, lucidità nei minuti finali. Sono competenze che servono il giorno in cui avrai ancora una maratona davanti."
+    },
+    {
+      "uid": "CHS-NOTE-022",
+      "week": 17,
+      "day": 6,
+      "title": "BRICK | La corsa dopo un lungo specifico",
+      "description": "Il passaggio bici-corsa di oggi arriva dentro una settimana impegnativa. Parti con la disciplina di chi sa che i primi chilometri possono ingannare: le gambe girano veloci dopo la bici, ma questo non garantisce che il passo sia sostenibile più avanti.\nSegui il minutaggio previsto senza trasformarlo in una prova di mezza maratona. Cerca rapidamente respirazione stabile, appoggio regolare e percezione coerente con la fatica accumulata. Valuta anche l'effetto degli ultimi rifornimenti in bici.\nA fine sessione bastano poche osservazioni: quanto ti è servito per trovare il passo, che cosa è successo alla frequenza cardiaca, se la nutrizione ti ha permesso di correre con continuità. Sono informazioni più spendibili di un record sul breve tratto finale."
+    },
+    {
+      "uid": "CHS-NOTE-023",
+      "week": 19,
+      "day": 0,
+      "title": "REHEARSAL | Una prova generale selettiva",
+      "description": "Il lungo combinato di questa settimana è uno dei momenti più utili per verificare il tuo sistema gara. Prepara bici, scarpe, abbigliamento, rifornimenti e gestione delle soste in modo vicino alla realtà, senza trasformare l'uscita in una simulazione completa da esaurimento.\nLa domanda è se il piano tiene insieme ritmo, posizione, alimentazione e transizione. I valori di potenza vanno confrontati con percezione, frequenza cardiaca e qualità della corsa successiva. Condizioni meteo, dislivello e percorso possono rendere non confrontabili due prove apparentemente simili.\nNelle preparazioni Ironman ho visto spesso problemi che non dipendevano dalla forma, ma da piccoli dettagli lasciati al caso: una borraccia difficile da prendere, pasti ritardati, partenza troppo veloce. Cerca di individuarli qui, dove possiamo ancora correggerli. Non serve una prestazione da raccontare; serve un piano gara più affidabile."
+    },
+    {
+      "uid": "CHS-NOTE-024",
+      "week": 19,
+      "day": 6,
+      "title": "RIPOSO | Oggi non c'è niente da recuperare",
+      "description": "Il giorno libero dopo il rehearsal è previsto. Evita di spostare qui una corsa o una bici saltata per il desiderio di completare il calendario. Il recupero ha una funzione precisa dopo un lungo con impegno specifico e cambio di disciplina.\nSe vuoi fare una passeggiata leggera per piacere o necessità quotidiane, non trasformarla in un allenamento supplementare. Dedica piuttosto qualche minuto a rileggere il rehearsal: alimentazione effettiva, andamento degli ultimi blocchi, comportamento del brick e materiali da cambiare.\nSe la fatica resta fuori dall'ordinario anche nei giorni successivi, è un dato da prendere sul serio prima del prossimo picco. Non c'è utilità nell'entrare nelle ultime settimane portandosi dietro un problema che potevamo riconoscere adesso."
+    },
+    {
+      "uid": "CHS-NOTE-025",
+      "week": 20,
+      "day": 0,
+      "title": "BILANCIO | Usare la prova, non ripeterla",
+      "description": "Dopo il rehearsal il lavoro più utile è interpretare quello che abbiamo osservato. Se il ritmo è stato stabile ma la corsa è partita male, controlla sequenza dei rifornimenti, ultimi minuti in bici e velocità della transizione. Se la frequenza cardiaca è salita, considera temperatura, idratazione, durata e confronto con situazioni realmente simili.\nScegli pochi cambiamenti verificabili. Non riscrivere simultaneamente posizione, potenza gara e piano nutrizionale sulla base di un solo lungo; rischieresti di non sapere quale modifica produce il risultato.\nQuesta fase contiene ancora allenamento, ma non richiede una seconda gara di prova. L'obiettivo è arrivare all'ultima esposizione specifica con decisioni più chiare e un costo di fatica sotto controllo."
+    },
+    {
+      "uid": "CHS-NOTE-026",
+      "week": 21,
+      "day": 0,
+      "title": "ULTIMO PICCO | Il lavoro che conta, e quello che basta",
+      "description": "L'ultima grande esposizione specifica è collocata qui perché abbiamo ancora una finestra per recuperare prima della gara. Non è il momento di aggiungere un lungo extra, inseguire un volume tondo o dimostrare una condizione che dovrebbe essere già costruita.\nOrganizza la settimana in funzione delle sedute principali e proteggi alimentazione e sonno. La vicinanza fra lungo di corsa e lunga bici con brick rende particolarmente importante osservare la fatica muscolare: ciò che in una settimana ordinaria sarebbe sostenibile può pesare diversamente qui.\nSe il carico si rivela sproporzionato rispetto al recupero reale, la scelta utile è ridurre e rivalutare. L'obiettivo resta arrivare alla partenza capace di utilizzare il lavoro fatto, non conservare come trofeo un ultimo weekend eccessivo."
+    },
+    {
+      "uid": "CHS-NOTE-027",
+      "week": 21,
+      "day": 5,
+      "title": "CORSA | Preparare il weekend senza cercare conferme",
+      "description": "Il lungo di corsa di oggi precede un'altra seduta molto impegnativa. Mantieni intensità e durata prescritte senza aggiungere progressioni finali. Osserva la qualità dell'appoggio e interrompi la ricerca del ritmo se il gesto cambia in modo evidente.\nLa gestione dopo la seduta conta: rifornirti, reidratarti secondo condizioni e perdite, mangiare normalmente e recuperare. Non usare la sensazione di avere ancora energia come motivo per aggiungere chilometri.\nLa domenica va letta alla luce della risposta di oggi. Se compaiono dolore, alterazione dell'appoggio o fatica anomala, il programma non deve diventare più importante della possibilità di recuperare. La parte difficile di una preparazione avanzata è spesso riconoscere quando la dose prevista è già sufficiente."
+    },
+    {
+      "uid": "CHS-NOTE-028",
+      "week": 22,
+      "day": 0,
+      "title": "TAPER | Ridurre carico, mantenere familiarità",
+      "description": "Con il taper diminuiamo progressivamente il lavoro per lasciare emergere freschezza, senza cancellare d'un tratto la familiarità con ritmo gara e frequenza degli allenamenti. Alcuni richiami rimangono: servono a mantenere sensazioni e coordinazione, non a produrre nuovi adattamenti di grande entità.\nNon trasformare il tempo liberato in allenamenti supplementari. Organizza materiale, logistica, sonno e alimentazione, mantenendo abitudini già collaudate. È un buon momento per controllare pneumatici, borracce, scarpe, abbigliamento e disponibilità dei prodotti che userai.\nSe un giorno ti senti eccezionalmente bene, non usare quella sensazione per fare una verifica di potenza. Se ti senti piatto, non è una diagnosi di perdita della forma. Leggi il taper su più giorni, non su un singolo allenamento."
+    },
+    {
+      "uid": "CHS-NOTE-029",
+      "week": 23,
+      "day": 0,
+      "title": "TAPER | Quando le sensazioni cambiano",
+      "description": "Nelle ultime settimane può succedere di sentirsi poco brillanti, irrequieti o insolitamente pieni di energia. Dopo mesi di carico, una riduzione delle ore cambia le abitudini e il modo in cui percepisci il corpo. Una sensazione isolata non predice il risultato di gara.\nMantieni le sedute brevi nella funzione prevista. Non aggiungere un test o un lungo per tranquillizzarti, e non cambiare attrezzatura senza motivo. Meglio arrivare con riferimenti familiari e qualche dubbio normale che con una prova dell'ultimo minuto nelle gambe.\nDedica l'attenzione a ciò che puoi ancora controllare: orari, viaggio, pasti, preparazione della bici, piano dei ristori e risposte semplici agli imprevisti. Il lavoro che ti ha portato qui non ha bisogno di un'ultima dimostrazione."
+    },
+    {
+      "uid": "CHS-NOTE-030",
+      "week": 24,
+      "day": 0,
+      "title": "GARA | La settimana della partenza",
+      "description": "Questa settimana contiene soltanto brevi attivazioni e preparazione alla gara. Il volume degli allenamenti non comprende l'Ironman: la competizione va considerata a parte. Usa il tempo per semplificare, non per cambiare quello che hai provato nei mesi precedenti.\nControlla la sequenza reale della giornata: orario di partenza, deposito bici, accesso alla zona cambio, percorso, previsioni meteo, materiale e distribuzione dei rifornimenti. Prepara un piano principale e una soluzione semplice se una borraccia, un ristoro o una parte del percorso non funzionano come previsto.\nRivedi i riferimenti di ritmo tenendo conto delle condizioni della gara scelta. La potenza prevista in bici deve permettere di correre una maratona, non soltanto di uscire dalla T2 con un buon tempo. Se la tensione aumenta, riduci le decisioni da prendere all'ultimo minuto: ciò che puoi predisporre oggi non dovrà occuparti la testa al via."
+    },
+    {
+      "uid": "CHS-NOTE-031",
+      "week": 24,
+      "day": 4,
+      "title": "GARA | Pacing, imprevisti e ultimi controlli",
+      "description": "In acqua cerca subito spazio, ritmo e respirazione gestibile: i primi minuti non devono diventare un debito da pagare nel resto della gara. In bici controlla soprattutto l'avvio. Sentirsi freschi dopo il nuoto non autorizza a portarsi sopra il ritmo previsto per recuperare qualche posizione; continua a mangiare e bere con la routine provata.\nAll'inizio della maratona lascia che il passo si stabilizzi. Nei tratti più difficili riduci l'orizzonte: il prossimo ristoro, un chilometro, una decisione pratica. Se arriva una crisi, valuta temperatura, alimentazione, idratazione e ritmo senza fare subito conclusioni sull'intera gara; se compaiono segnali di malessere serio, fermati e chiedi assistenza.\nIl giorno precedente prepara l'essenziale, controlla le condizioni e poi lascia in pace l'attrezzatura. Non servono gesti particolari per convincerti di essere pronto. Ti serviranno lucidità nelle prime ore e capacità di scegliere bene quando la fatica aumenterà."
+    }
+  ],
+  "policy": {
+    "public_titles": "semantic only; UID and relative day internal",
+    "no_workout_writes": true,
+    "no_library_writes": true,
+    "no_athlete_writes": true
+  }
+}

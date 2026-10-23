@@ -1,0 +1,2361 @@
+{
+  "schema": "IRONMAN_NATIVE_STRENGTH_LIBRARY_QUEUE_V1",
+  "kind": "SNAPSHOT_NOT_SOURCE_OF_TRUTH",
+  "snapshot_date": "2026-10-10",
+  "source_sheet": "IRONMAN — WORKOUT ARCHIVE MASTER / CANONICAL_WORKOUTS",
+  "source_spreadsheet_id": "1ulKJfLdr3X2WK32XP7TSXbF90OIDXSmkjkWULpNTIgk",
+  "provider_plan_id": 684602,
+  "provider_library_id": 3891875,
+  "provider_library_name": "IRONMAN MASTER | Forza",
+  "native_type_required": "StructuredStrength",
+  "state": "PREPARED_NOT_PUBLISHED",
+  "source_status": "30/30 canonical PUBLISHED/PASS; W01 strength object live-readback, 29 structured payloads from approved GitHub training-plan assembly snapshot; other 29 provider workout IDs require live rebind",
+  "canonical_workout_instances": 30,
+  "unique_native_variants": 19,
+  "total_sets_in_instances": 316,
+  "publishing_rule": "Exact exercise IDs, ordered blocks, per-set prescriptions, coachNotes and full instructions must survive. Lab canary and native readback required before creating production library items; do not substitute cardio WorkoutTemplate.",
+  "variants": [
+    {
+      "variant_id": "IM-SBL-001",
+      "base_title": "Forza A | Base 35'",
+      "representative_uid": "IMINT24W-W01-WED-STRENGTH-02",
+      "blocks": [
+        {
+          "type": "SingleExercise",
+          "title": "Goblet Squat",
+          "exercises": [
+            {
+              "id": "144",
+              "notes": "RPE 6-7; recupero 90-120 s",
+              "sets": [
+                {
+                  "Reps": 6
+                },
+                {
+                  "Reps": 6
+                },
+                {
+                  "Reps": 6
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "SingleExercise",
+          "title": "Romanian Deadlift",
+          "exercises": [
+            {
+              "id": "154",
+              "notes": "RPE 6-7; recupero 90-120 s",
+              "sets": [
+                {
+                  "Reps": 6
+                },
+                {
+                  "Reps": 6
+                },
+                {
+                  "Reps": 6
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "SingleExercise",
+          "title": "Split Squat",
+          "exercises": [
+            {
+              "id": "158",
+              "notes": "RPE 6-7; recupero 75-90 s",
+              "sets": [
+                {
+                  "RepsPerSide": 6
+                },
+                {
+                  "RepsPerSide": 6
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "SingleExercise",
+          "title": "Elevated Body Weight Calf Raise",
+          "exercises": [
+            {
+              "id": "553",
+              "notes": "Recupero 60 s",
+              "sets": [
+                {
+                  "Reps": 10
+                },
+                {
+                  "Reps": 10
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "SingleExercise",
+          "title": "Single Arm DB Row",
+          "exercises": [
+            {
+              "id": "151",
+              "notes": "RPE 6-7; recupero 60-75 s",
+              "sets": [
+                {
+                  "RepsPerSide": 8
+                },
+                {
+                  "RepsPerSide": 8
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "SingleExercise",
+          "title": "Side Plank",
+          "exercises": [
+            {
+              "id": "79",
+              "notes": "30 s per lato; recupero 30 s",
+              "sets": [
+                {
+                  "RepsPerSide": 1,
+                  "Duration": 30
+                },
+                {
+                  "RepsPerSide": 1,
+                  "Duration": 30
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "instructions": "OBIETTIVO\nForza generale utile al triathlon, senza cedimento né interferenze con le sedute chiave.\n\nRISCALDAMENTO\n5' mobilità dinamica anche, caviglie e torace + una serie leggera dei primi due esercizi.\n\nESECUZIONE\nSegui i sei esercizi e le serie indicati nei blocchi Strength Builder. RPE 6–7 nei fondamentali; recuperi: Goblet Squat e RDL 90–120 s, Split Squat 75–90 s, Calf Raise 60 s, Row 60–75 s, Side Plank 30 s. Mantieni 2–4 ripetizioni in riserva, senza cedimento. Video dimostrativi integrati.\n\nFUELING\nAlimentazione ordinaria; se l'ultimo pasto risale a oltre 3 h, snack semplice con carboidrati e proteine 1–2 h prima. Assumi circa 20–40 g di proteine di qualità nelle ore prima/dopo. Con sedute multiple, cura il recupero con carboidrati e proteine. Durante: acqua secondo sete.",
+      "canonical_uids": [
+        "IMINT24W-W01-WED-STRENGTH-02"
+      ],
+      "source_workout_ids": [
+        "33973000"
+      ],
+      "library_title": "Forza A | Base 35' | Variante 01",
+      "block_count": 6,
+      "total_sets": 14
+    },
+    {
+      "variant_id": "IM-SBL-002",
+      "base_title": "Forza B | Richiamo 20'",
+      "representative_uid": "IMINT24W-W01-FRI-STRENGTH-03",
+      "blocks": [
+        {
+          "type": "SingleExercise",
+          "title": "Weighted Step Up",
+          "exercises": [
+            {
+              "id": "165",
+              "notes": "2x5 per lato Step-up — RPE 6 — rec. 60\" Variante nativa Step Up: usa carico solo se previsto/tollerato.",
+              "sets": [
+                {
+                  "RepsPerSide": 5
+                },
+                {
+                  "RepsPerSide": 5
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "SingleExercise",
+          "title": "Single Leg Romanian Deadlift",
+          "exercises": [
+            {
+              "id": "156",
+              "notes": "2x5 per lato Single-leg RDL — RPE 6 — rec. 60\"",
+              "sets": [
+                {
+                  "RepsPerSide": 5
+                },
+                {
+                  "RepsPerSide": 5
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "SingleExercise",
+          "title": "Push Up",
+          "exercises": [
+            {
+              "id": "5366",
+              "notes": "2x8 Push-up o Chest Press — RPE 6–7 — rec. 60\"",
+              "sets": [
+                {
+                  "Reps": 8
+                },
+                {
+                  "Reps": 8
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "SingleExercise",
+          "title": "Single Arm DB Row",
+          "exercises": [
+            {
+              "id": "151",
+              "notes": "2x8 Lat Pulldown / Row — RPE 6–7 — rec. 60\"",
+              "sets": [
+                {
+                  "RepsPerSide": 8
+                },
+                {
+                  "RepsPerSide": 8
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "SingleExercise",
+          "title": "Bird Dog",
+          "exercises": [
+            {
+              "id": "440",
+              "notes": "2x8 per lato Pallof Press — rec. 30–45\" Bird Dog nativo come equivalente funzionale di stabilità/antirotazione: non equivale letteralmente al Pallof Press.",
+              "sets": [
+                {
+                  "RepsPerSide": 8
+                },
+                {
+                  "RepsPerSide": 8
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "instructions": "OBIETTIVO\n\nSecondo richiamo settimanale breve: stabilità, unilateralità e mantenimento della qualità di movimento.\n\nRISCALDAMENTO\n\n4' mobilità e attivazione.\n\nPARTE CENTRALE\nSegui i blocchi nativi: serie/ripetizioni, RPE e recuperi nelle note degli esercizi. Nessuna serie a cedimento.\n\nFUELING\nAlimentazione abituale; se ultimo pasto oltre 3 h, snack con carboidrati e proteine 1–2 h prima. Circa 20–40 g di proteine di qualità nelle ore prima/dopo. Se è la seconda/terza seduta, cura il recupero con carboidrati e proteine. Acqua secondo sete.\n\nNOTE\nSeduta volutamente corta. Interrompi la serie se perdi controllo o velocità.",
+      "canonical_uids": [
+        "IMINT24W-W01-FRI-STRENGTH-03",
+        "IMINT24W-W02-FRI-STRENGTH-03",
+        "IMINT24W-W03-FRI-STRENGTH-03",
+        "IMINT24W-W04-WED-STRENGTH-02",
+        "IMINT24W-W05-FRI-STRENGTH-03",
+        "IMINT24W-W06-FRI-STRENGTH-03",
+        "IMINT24W-W07-FRI-STRENGTH-03",
+        "IMINT24W-W08-WED-STRENGTH-02"
+      ],
+      "source_workout_ids": [],
+      "library_title": "Forza B | Richiamo 20'",
+      "block_count": 5,
+      "total_sets": 10
+    },
+    {
+      "variant_id": "IM-SBL-003",
+      "base_title": "Forza A | Base 35'",
+      "representative_uid": "IMINT24W-W02-WED-STRENGTH-02",
+      "blocks": [
+        {
+          "type": "SingleExercise",
+          "title": "Goblet Squat",
+          "exercises": [
+            {
+              "id": "144",
+              "notes": "3x6 Squat o Goblet Squat — RPE 6–7 — rec. 90–120\"",
+              "sets": [
+                {
+                  "Reps": 6
+                },
+                {
+                  "Reps": 6
+                },
+                {
+                  "Reps": 6
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "SingleExercise",
+          "title": "Romanian Deadlift",
+          "exercises": [
+            {
+              "id": "154",
+              "notes": "3x6 Romanian Deadlift / hip hinge — RPE 6–7 — rec. 90–120\"",
+              "sets": [
+                {
+                  "Reps": 6
+                },
+                {
+                  "Reps": 6
+                },
+                {
+                  "Reps": 6
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "SingleExercise",
+          "title": "Split Squat",
+          "exercises": [
+            {
+              "id": "158",
+              "notes": "2x6 per lato Split Squat — RPE 6–7 — rec. 75–90\"",
+              "sets": [
+                {
+                  "RepsPerSide": 6
+                },
+                {
+                  "RepsPerSide": 6
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "SingleExercise",
+          "title": "Elevated Body Weight Calf Raise",
+          "exercises": [
+            {
+              "id": "553",
+              "notes": "2x10 Calf Raise controllato — rec. 60\"",
+              "sets": [
+                {
+                  "Reps": 10
+                },
+                {
+                  "Reps": 10
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "SingleExercise",
+          "title": "Single Arm DB Row",
+          "exercises": [
+            {
+              "id": "151",
+              "notes": "2x8 Row / rematore — RPE 6–7 — rec. 60–75\"",
+              "sets": [
+                {
+                  "RepsPerSide": 8
+                },
+                {
+                  "RepsPerSide": 8
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "SingleExercise",
+          "title": "Side Plank",
+          "exercises": [
+            {
+              "id": "79",
+              "notes": "2x30\" per lato Side Plank — rec. 30\"",
+              "sets": [
+                {
+                  "RepsPerSide": 1,
+                  "Duration": 30
+                },
+                {
+                  "RepsPerSide": 1,
+                  "Duration": 30
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "instructions": "OBIETTIVO\n\nCostruire forza generale utile al triathlon senza cedimento e senza compromettere le sedute chiave.\n\nRISCALDAMENTO\n\n5' mobilità dinamica di anche, caviglie e torace + 1 serie leggera dei primi due esercizi.\n\nPARTE CENTRALE\nSegui i blocchi nativi: serie/ripetizioni, RPE e recuperi nelle note degli esercizi. Nessuna serie a cedimento.\n\nFUELING\nAlimentazione abituale; se ultimo pasto oltre 3 h, snack con carboidrati e proteine 1–2 h prima. Circa 20–40 g di proteine di qualità nelle ore prima/dopo. Se è la seconda/terza seduta, cura il recupero con carboidrati e proteine. Acqua secondo sete.\n\nNOTE\nTecnica pulita; lascia 2–4 ripetizioni in riserva. Nessuna serie a cedimento.",
+      "canonical_uids": [
+        "IMINT24W-W02-WED-STRENGTH-02",
+        "IMINT24W-W03-WED-STRENGTH-02",
+        "IMINT24W-W05-WED-STRENGTH-02",
+        "IMINT24W-W06-WED-STRENGTH-02",
+        "IMINT24W-W07-WED-STRENGTH-02"
+      ],
+      "source_workout_ids": [],
+      "library_title": "Forza A | Base 35' | Variante 02",
+      "block_count": 6,
+      "total_sets": 14
+    },
+    {
+      "variant_id": "IM-SBL-004",
+      "base_title": "Forza | Neurale 35'",
+      "representative_uid": "IMINT24W-W09-TUE-STRENGTH-03",
+      "blocks": [
+        {
+          "type": "SingleExercise",
+          "title": "Goblet Squat",
+          "exercises": [
+            {
+              "id": "144",
+              "notes": "3x5 Goblet Squat o Back Squat se già conosciuto — RPE 7–8 — rec. 2–3'.",
+              "sets": [
+                {
+                  "Reps": 5
+                },
+                {
+                  "Reps": 5
+                },
+                {
+                  "Reps": 5
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "SingleExercise",
+          "title": "Romanian Deadlift",
+          "exercises": [
+            {
+              "id": "154",
+              "notes": "3x5 Romanian Deadlift — RPE 7–8 — rec. 2–3'.",
+              "sets": [
+                {
+                  "Reps": 5
+                },
+                {
+                  "Reps": 5
+                },
+                {
+                  "Reps": 5
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "SingleExercise",
+          "title": "Split Squat",
+          "exercises": [
+            {
+              "id": "158",
+              "notes": "2x5/lato Split Squat — RPE 7 — rec. 90\".",
+              "sets": [
+                {
+                  "RepsPerSide": 5
+                },
+                {
+                  "RepsPerSide": 5
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "SingleExercise",
+          "title": "Elevated Body Weight Calf Raise",
+          "exercises": [
+            {
+              "id": "553",
+              "notes": "2x8 Calf Raise controllato — rec. 60\".",
+              "sets": [
+                {
+                  "Reps": 8
+                },
+                {
+                  "Reps": 8
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "SingleExercise",
+          "title": "Single Arm DB Row",
+          "exercises": [
+            {
+              "id": "151",
+              "notes": "2x6 Row / rematore — RPE 7 — rec. 60–90\".",
+              "sets": [
+                {
+                  "RepsPerSide": 6
+                },
+                {
+                  "RepsPerSide": 6
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "SingleExercise",
+          "title": "Side Plank",
+          "exercises": [
+            {
+              "id": "79",
+              "notes": "2x30\"/lato Side Plank.",
+              "sets": [
+                {
+                  "RepsPerSide": 1,
+                  "Duration": 30
+                },
+                {
+                  "RepsPerSide": 1,
+                  "Duration": 30
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "instructions": "OBIETTIVO\nPassare dalla forza generale alla fase più neurale senza creare DOMS rilevanti.\n\nRISCALDAMENTO\n5' mobilità dinamica + serie di avvicinamento.\n\nPARTE CENTRALE\nSegui i blocchi nativi: serie/ripetizioni, RPE e recuperi nelle note degli esercizi. Nessuna serie a cedimento.\n\nFUELING\nAlimentazione abituale; se ultimo pasto oltre 3 h, snack con carboidrati e proteine 1–2 h prima. Circa 20–40 g di proteine di qualità nelle ore prima/dopo. Se è la seconda/terza seduta, cura il recupero con carboidrati e proteine. Acqua secondo sete.\n\nNOTE\nLascia 2–3 ripetizioni in riserva. Nessuna serie a cedimento.",
+      "canonical_uids": [
+        "IMINT24W-W09-TUE-STRENGTH-03"
+      ],
+      "source_workout_ids": [],
+      "library_title": "Forza | Neurale 35' | Variante 01",
+      "block_count": 6,
+      "total_sets": 14
+    },
+    {
+      "variant_id": "IM-SBL-005",
+      "base_title": "Forza | Microdose 15'",
+      "representative_uid": "IMINT24W-W09-FRI-STRENGTH-03",
+      "blocks": [
+        {
+          "type": "SingleExercise",
+          "title": "Weighted Step Up",
+          "exercises": [
+            {
+              "id": "165",
+              "notes": "2x5/lato Step-Up — RPE 6. Variante nativa Step Up: usa carico solo se previsto/tollerato.",
+              "sets": [
+                {
+                  "RepsPerSide": 5
+                },
+                {
+                  "RepsPerSide": 5
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "SingleExercise",
+          "title": "Single Leg Romanian Deadlift",
+          "exercises": [
+            {
+              "id": "156",
+              "notes": "2x5/lato Single-Leg RDL — RPE 6.",
+              "sets": [
+                {
+                  "RepsPerSide": 5
+                },
+                {
+                  "RepsPerSide": 5
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "SingleExercise",
+          "title": "Push Up",
+          "exercises": [
+            {
+              "id": "5366",
+              "notes": "2x8 Push-Up o Chest Press — RPE 6–7.",
+              "sets": [
+                {
+                  "Reps": 8
+                },
+                {
+                  "Reps": 8
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "SingleExercise",
+          "title": "Single Arm DB Row",
+          "exercises": [
+            {
+              "id": "151",
+              "notes": "2x8 Row / Lat Pulldown — RPE 6–7.",
+              "sets": [
+                {
+                  "RepsPerSide": 8
+                },
+                {
+                  "RepsPerSide": 8
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "SingleExercise",
+          "title": "Bird Dog",
+          "exercises": [
+            {
+              "id": "440",
+              "notes": "2x8/lato Pallof Press. Bird Dog nativo come equivalente funzionale di stabilità/antirotazione: non equivale letteralmente al Pallof Press.",
+              "sets": [
+                {
+                  "RepsPerSide": 8
+                },
+                {
+                  "RepsPerSide": 8
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "instructions": "RISCALDAMENTO\n3' mobilità e attivazione.\n\nPARTE CENTRALE\nSegui i blocchi nativi: serie/ripetizioni, RPE e recuperi nelle note degli esercizi. Nessuna serie a cedimento.\n\nFUELING\nAlimentazione abituale; se ultimo pasto oltre 3 h, snack con carboidrati e proteine 1–2 h prima. Circa 20–40 g di proteine di qualità nelle ore prima/dopo. Se è la seconda/terza seduta, cura il recupero con carboidrati e proteine. Acqua secondo sete.\n\nNOTE\nSeduta volutamente breve. Se resta fatica dal lavoro principale, riduci a una sola serie per esercizio.",
+      "canonical_uids": [
+        "IMINT24W-W09-FRI-STRENGTH-03"
+      ],
+      "source_workout_ids": [],
+      "library_title": "Forza | Microdose 15' | Variante 01",
+      "block_count": 5,
+      "total_sets": 10
+    },
+    {
+      "variant_id": "IM-SBL-006",
+      "base_title": "Forza | Neurale 35'",
+      "representative_uid": "IMINT24W-W10-TUE-STRENGTH-03",
+      "blocks": [
+        {
+          "type": "SingleExercise",
+          "title": "Goblet Squat",
+          "exercises": [
+            {
+              "id": "144",
+              "notes": "3x5 Goblet Squat o Back Squat se già conosciuto — RPE 7–8 — rec. 2–3'.",
+              "sets": [
+                {
+                  "Reps": 5
+                },
+                {
+                  "Reps": 5
+                },
+                {
+                  "Reps": 5
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "SingleExercise",
+          "title": "Romanian Deadlift",
+          "exercises": [
+            {
+              "id": "154",
+              "notes": "3x5 Romanian Deadlift — RPE 7–8 — rec. 2–3'.",
+              "sets": [
+                {
+                  "Reps": 5
+                },
+                {
+                  "Reps": 5
+                },
+                {
+                  "Reps": 5
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "SingleExercise",
+          "title": "Split Squat",
+          "exercises": [
+            {
+              "id": "158",
+              "notes": "2x5/lato Split Squat — RPE 7–8.",
+              "sets": [
+                {
+                  "RepsPerSide": 5
+                },
+                {
+                  "RepsPerSide": 5
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "SingleExercise",
+          "title": "Elevated Body Weight Calf Raise",
+          "exercises": [
+            {
+              "id": "553",
+              "notes": "2x8 Calf Raise.",
+              "sets": [
+                {
+                  "Reps": 8
+                },
+                {
+                  "Reps": 8
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "SingleExercise",
+          "title": "Single Arm DB Row",
+          "exercises": [
+            {
+              "id": "151",
+              "notes": "2x6 Row / rematore — RPE 7.",
+              "sets": [
+                {
+                  "RepsPerSide": 6
+                },
+                {
+                  "RepsPerSide": 6
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "SingleExercise",
+          "title": "Side Plank",
+          "exercises": [
+            {
+              "id": "79",
+              "notes": "2x30\"/lato Side Plank.",
+              "sets": [
+                {
+                  "RepsPerSide": 1,
+                  "Duration": 30
+                },
+                {
+                  "RepsPerSide": 1,
+                  "Duration": 30
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "instructions": "RISCALDAMENTO\n5' mobilità + avvicinamento.\n\nPARTE CENTRALE\nSegui i blocchi nativi: serie/ripetizioni, RPE e recuperi nelle note degli esercizi. Nessuna serie a cedimento.\n\nFUELING\nAlimentazione abituale; se ultimo pasto oltre 3 h, snack con carboidrati e proteine 1–2 h prima. Circa 20–40 g di proteine di qualità nelle ore prima/dopo. Se è la seconda/terza seduta, cura il recupero con carboidrati e proteine. Acqua secondo sete.\n\nNOTE\nProgredisci il carico solo se tutte le ripetizioni restano pulite. Nessun cedimento.",
+      "canonical_uids": [
+        "IMINT24W-W10-TUE-STRENGTH-03"
+      ],
+      "source_workout_ids": [],
+      "library_title": "Forza | Neurale 35' | Variante 02",
+      "block_count": 6,
+      "total_sets": 14
+    },
+    {
+      "variant_id": "IM-SBL-007",
+      "base_title": "Forza | Microdose 15'",
+      "representative_uid": "IMINT24W-W10-FRI-STRENGTH-03",
+      "blocks": [
+        {
+          "type": "SingleExercise",
+          "title": "Weighted Step Up",
+          "exercises": [
+            {
+              "id": "165",
+              "notes": "2x5/lato Step-Up — RPE 6. Variante nativa Step Up: usa carico solo se previsto/tollerato.",
+              "sets": [
+                {
+                  "RepsPerSide": 5
+                },
+                {
+                  "RepsPerSide": 5
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "SingleExercise",
+          "title": "Single Leg Romanian Deadlift",
+          "exercises": [
+            {
+              "id": "156",
+              "notes": "2x5/lato Single-Leg RDL — RPE 6.",
+              "sets": [
+                {
+                  "RepsPerSide": 5
+                },
+                {
+                  "RepsPerSide": 5
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "SingleExercise",
+          "title": "Push Up",
+          "exercises": [
+            {
+              "id": "5366",
+              "notes": "2x8 Push-Up o Chest Press — RPE 6–7.",
+              "sets": [
+                {
+                  "Reps": 8
+                },
+                {
+                  "Reps": 8
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "SingleExercise",
+          "title": "Single Arm DB Row",
+          "exercises": [
+            {
+              "id": "151",
+              "notes": "2x8 Row / Lat Pulldown — RPE 6–7.",
+              "sets": [
+                {
+                  "RepsPerSide": 8
+                },
+                {
+                  "RepsPerSide": 8
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "SingleExercise",
+          "title": "Bird Dog",
+          "exercises": [
+            {
+              "id": "440",
+              "notes": "2x8/lato Pallof Press. Bird Dog nativo come equivalente funzionale di stabilità/antirotazione: non equivale letteralmente al Pallof Press.",
+              "sets": [
+                {
+                  "RepsPerSide": 8
+                },
+                {
+                  "RepsPerSide": 8
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "instructions": "PARTE CENTRALE\nSegui i blocchi nativi: serie/ripetizioni, RPE e recuperi nelle note degli esercizi. Nessuna serie a cedimento.\n\nFUELING\nAlimentazione abituale; se ultimo pasto oltre 3 h, snack con carboidrati e proteine 1–2 h prima. Circa 20–40 g di proteine di qualità nelle ore prima/dopo. Se è la seconda/terza seduta, cura il recupero con carboidrati e proteine. Acqua secondo sete.\n\nNOTE\nRiduci il volume se senti residuo della seduta principale del martedì.",
+      "canonical_uids": [
+        "IMINT24W-W10-FRI-STRENGTH-03"
+      ],
+      "source_workout_ids": [],
+      "library_title": "Forza | Microdose 15' | Variante 02",
+      "block_count": 5,
+      "total_sets": 10
+    },
+    {
+      "variant_id": "IM-SBL-008",
+      "base_title": "Forza | Mantenimento neurale 30'",
+      "representative_uid": "IMINT24W-W11-TUE-STRENGTH-03",
+      "blocks": [
+        {
+          "type": "SingleExercise",
+          "title": "Goblet Squat",
+          "exercises": [
+            {
+              "id": "144",
+              "notes": "2x5 Goblet Squat o Back Squat se già conosciuto — RPE 7.",
+              "sets": [
+                {
+                  "Reps": 5
+                },
+                {
+                  "Reps": 5
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "SingleExercise",
+          "title": "Romanian Deadlift",
+          "exercises": [
+            {
+              "id": "154",
+              "notes": "2x5 Romanian Deadlift — RPE 7.",
+              "sets": [
+                {
+                  "Reps": 5
+                },
+                {
+                  "Reps": 5
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "SingleExercise",
+          "title": "Split Squat",
+          "exercises": [
+            {
+              "id": "158",
+              "notes": "2x5/lato Split Squat — RPE 7.",
+              "sets": [
+                {
+                  "RepsPerSide": 5
+                },
+                {
+                  "RepsPerSide": 5
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "SingleExercise",
+          "title": "Elevated Body Weight Calf Raise",
+          "exercises": [
+            {
+              "id": "553",
+              "notes": "2x8 Calf Raise.",
+              "sets": [
+                {
+                  "Reps": 8
+                },
+                {
+                  "Reps": 8
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "SingleExercise",
+          "title": "Single Arm DB Row",
+          "exercises": [
+            {
+              "id": "151",
+              "notes": "2x6 Row / rematore.",
+              "sets": [
+                {
+                  "RepsPerSide": 6
+                },
+                {
+                  "RepsPerSide": 6
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "SingleExercise",
+          "title": "Side Plank",
+          "exercises": [
+            {
+              "id": "79",
+              "notes": "2x30\"/lato Side Plank.",
+              "sets": [
+                {
+                  "RepsPerSide": 1,
+                  "Duration": 30
+                },
+                {
+                  "RepsPerSide": 1,
+                  "Duration": 30
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "instructions": "RISCALDAMENTO\n5' mobilità + avvicinamento.\n\nPARTE CENTRALE\nSegui i blocchi nativi: serie/ripetizioni, RPE e recuperi nelle note degli esercizi. Nessuna serie a cedimento.\n\nFUELING\nAlimentazione abituale; se ultimo pasto oltre 3 h, snack con carboidrati e proteine 1–2 h prima. Circa 20–40 g di proteine di qualità nelle ore prima/dopo. Se è la seconda/terza seduta, cura il recupero con carboidrati e proteine. Acqua secondo sete.\n\nNOTE\nVolume ridotto intenzionalmente. Nessun cedimento e nessuna ricerca di DOMS. Il riferimento video non modifica la prescrizione del workout.",
+      "canonical_uids": [
+        "IMINT24W-W11-TUE-STRENGTH-03"
+      ],
+      "source_workout_ids": [],
+      "library_title": "Forza | Mantenimento neurale 30' | Variante 01",
+      "block_count": 6,
+      "total_sets": 12
+    },
+    {
+      "variant_id": "IM-SBL-009",
+      "base_title": "Forza | Scarico 25'",
+      "representative_uid": "IMINT24W-W12-TUE-STRENGTH-03",
+      "blocks": [
+        {
+          "type": "SingleExercise",
+          "title": "Goblet Squat",
+          "exercises": [
+            {
+              "id": "144",
+              "notes": "2x5 Goblet Squat — RPE 6–7.",
+              "sets": [
+                {
+                  "Reps": 5
+                },
+                {
+                  "Reps": 5
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "SingleExercise",
+          "title": "Romanian Deadlift",
+          "exercises": [
+            {
+              "id": "154",
+              "notes": "2x5 Romanian Deadlift — RPE 6–7.",
+              "sets": [
+                {
+                  "Reps": 5
+                },
+                {
+                  "Reps": 5
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "SingleExercise",
+          "title": "Split Squat",
+          "exercises": [
+            {
+              "id": "158",
+              "notes": "2x5/lato Split Squat — RPE 6.",
+              "sets": [
+                {
+                  "RepsPerSide": 5
+                },
+                {
+                  "RepsPerSide": 5
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "SingleExercise",
+          "title": "Single Arm DB Row",
+          "exercises": [
+            {
+              "id": "151",
+              "notes": "2x8 Row.",
+              "sets": [
+                {
+                  "RepsPerSide": 8
+                },
+                {
+                  "RepsPerSide": 8
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "SingleExercise",
+          "title": "Side Plank",
+          "exercises": [
+            {
+              "id": "79",
+              "notes": "2x30\"/lato Side Plank.",
+              "sets": [
+                {
+                  "RepsPerSide": 1,
+                  "Duration": 30
+                },
+                {
+                  "RepsPerSide": 1,
+                  "Duration": 30
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "instructions": "RISCALDAMENTO\n5' mobilità.\n\nPARTE CENTRALE\nSegui i blocchi nativi: serie/ripetizioni, RPE e recuperi nelle note degli esercizi. Nessuna serie a cedimento.\n\nFUELING\nAlimentazione abituale; se ultimo pasto oltre 3 h, snack con carboidrati e proteine 1–2 h prima. Circa 20–40 g di proteine di qualità nelle ore prima/dopo. Se è la seconda/terza seduta, cura il recupero con carboidrati e proteine. Acqua secondo sete.\n\nNOTE\nNessun cedimento, nessuna progressione di carico in settimana di assorbimento.",
+      "canonical_uids": [
+        "IMINT24W-W12-TUE-STRENGTH-03"
+      ],
+      "source_workout_ids": [],
+      "library_title": "Forza | Scarico 25' | Variante 01",
+      "block_count": 5,
+      "total_sets": 10
+    },
+    {
+      "variant_id": "IM-SBL-010",
+      "base_title": "Forza | Mantenimento neurale 30'",
+      "representative_uid": "IMINT24W-W13-TUE-STRENGTH-03",
+      "blocks": [
+        {
+          "type": "SingleExercise",
+          "title": "Goblet Squat",
+          "exercises": [
+            {
+              "id": "144",
+              "notes": "2x5 Goblet Squat o Back Squat se già conosciuto — RPE 7 — rec. 2–3'.",
+              "sets": [
+                {
+                  "Reps": 5
+                },
+                {
+                  "Reps": 5
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "SingleExercise",
+          "title": "Romanian Deadlift",
+          "exercises": [
+            {
+              "id": "154",
+              "notes": "2x5 Romanian Deadlift — RPE 7 — rec. 2–3'.",
+              "sets": [
+                {
+                  "Reps": 5
+                },
+                {
+                  "Reps": 5
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "SingleExercise",
+          "title": "Split Squat",
+          "exercises": [
+            {
+              "id": "158",
+              "notes": "2x5/lato Split Squat — RPE 7 — rec. 90\".",
+              "sets": [
+                {
+                  "RepsPerSide": 5
+                },
+                {
+                  "RepsPerSide": 5
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "SingleExercise",
+          "title": "Elevated Body Weight Calf Raise",
+          "exercises": [
+            {
+              "id": "553",
+              "notes": "2x8 Calf Raise controllato — rec. 60\".",
+              "sets": [
+                {
+                  "Reps": 8
+                },
+                {
+                  "Reps": 8
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "SingleExercise",
+          "title": "Single Arm DB Row",
+          "exercises": [
+            {
+              "id": "151",
+              "notes": "2x6 Row / rematore — RPE 7 — rec. 60–90\".",
+              "sets": [
+                {
+                  "RepsPerSide": 6
+                },
+                {
+                  "RepsPerSide": 6
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "SingleExercise",
+          "title": "Side Plank",
+          "exercises": [
+            {
+              "id": "79",
+              "notes": "2x30\"/lato Side Plank.",
+              "sets": [
+                {
+                  "RepsPerSide": 1,
+                  "Duration": 30
+                },
+                {
+                  "RepsPerSide": 1,
+                  "Duration": 30
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "instructions": "OBIETTIVO\nMantenere forza e qualità neuromuscolare con volume basso mentre cresce il lavoro specifico.\n\nRISCALDAMENTO\n5' mobilità dinamica + serie di avvicinamento.\n\nPARTE CENTRALE\nSegui i blocchi nativi: serie/ripetizioni, RPE e recuperi nelle note degli esercizi. Nessuna serie a cedimento.\n\nFUELING\nAlimentazione abituale; se ultimo pasto oltre 3 h, snack con carboidrati e proteine 1–2 h prima. Circa 20–40 g di proteine di qualità nelle ore prima/dopo. Se è la seconda/terza seduta, cura il recupero con carboidrati e proteine. Acqua secondo sete.\n\nNOTE\nVolume intenzionalmente contenuto: lascia 2–3 ripetizioni in riserva e non cercare DOMS.",
+      "canonical_uids": [
+        "IMINT24W-W13-TUE-STRENGTH-03"
+      ],
+      "source_workout_ids": [],
+      "library_title": "Forza | Mantenimento neurale 30' | Variante 02",
+      "block_count": 6,
+      "total_sets": 12
+    },
+    {
+      "variant_id": "IM-SBL-011",
+      "base_title": "Forza | Mantenimento neurale 30'",
+      "representative_uid": "IMINT24W-W14-TUE-STRENGTH-03",
+      "blocks": [
+        {
+          "type": "SingleExercise",
+          "title": "Goblet Squat",
+          "exercises": [
+            {
+              "id": "144",
+              "notes": "2x5 Goblet Squat o Back Squat se già conosciuto — RPE 7 — rec. 2–3'.",
+              "sets": [
+                {
+                  "Reps": 5
+                },
+                {
+                  "Reps": 5
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "SingleExercise",
+          "title": "Romanian Deadlift",
+          "exercises": [
+            {
+              "id": "154",
+              "notes": "2x5 Romanian Deadlift — RPE 7 — rec. 2–3'.",
+              "sets": [
+                {
+                  "Reps": 5
+                },
+                {
+                  "Reps": 5
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "SingleExercise",
+          "title": "Split Squat",
+          "exercises": [
+            {
+              "id": "158",
+              "notes": "2x5/lato Split Squat — RPE 7 — rec. 90\".",
+              "sets": [
+                {
+                  "RepsPerSide": 5
+                },
+                {
+                  "RepsPerSide": 5
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "SingleExercise",
+          "title": "Elevated Body Weight Calf Raise",
+          "exercises": [
+            {
+              "id": "553",
+              "notes": "2x8 Calf Raise controllato — rec. 60\".",
+              "sets": [
+                {
+                  "Reps": 8
+                },
+                {
+                  "Reps": 8
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "SingleExercise",
+          "title": "Single Arm DB Row",
+          "exercises": [
+            {
+              "id": "151",
+              "notes": "2x6 Row / rematore — RPE 7 — rec. 60–90\".",
+              "sets": [
+                {
+                  "RepsPerSide": 6
+                },
+                {
+                  "RepsPerSide": 6
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "SingleExercise",
+          "title": "Side Plank",
+          "exercises": [
+            {
+              "id": "79",
+              "notes": "2x30\"/lato Side Plank.",
+              "sets": [
+                {
+                  "RepsPerSide": 1,
+                  "Duration": 30
+                },
+                {
+                  "RepsPerSide": 1,
+                  "Duration": 30
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "instructions": "OBIETTIVO\nMantenere la forza con dose minima utile mentre aumenta la specificità di gara.\n\nRISCALDAMENTO\n5' mobilità dinamica + serie di avvicinamento.\n\nPARTE CENTRALE\nSegui i blocchi nativi: serie/ripetizioni, RPE e recuperi nelle note degli esercizi. Nessuna serie a cedimento.\n\nFUELING\nAlimentazione abituale; se ultimo pasto oltre 3 h, snack con carboidrati e proteine 1–2 h prima. Circa 20–40 g di proteine di qualità nelle ore prima/dopo. Se è la seconda/terza seduta, cura il recupero con carboidrati e proteine. Acqua secondo sete.\n\nNOTE\nVolume intenzionalmente contenuto: lascia 2–3 ripetizioni in riserva e non cercare DOMS.",
+      "canonical_uids": [
+        "IMINT24W-W14-TUE-STRENGTH-03"
+      ],
+      "source_workout_ids": [],
+      "library_title": "Forza | Mantenimento neurale 30' | Variante 03",
+      "block_count": 6,
+      "total_sets": 12
+    },
+    {
+      "variant_id": "IM-SBL-012",
+      "base_title": "Forza | Minimo efficace 25'",
+      "representative_uid": "IMINT24W-W15-TUE-STRENGTH-03",
+      "blocks": [
+        {
+          "type": "SingleExercise",
+          "title": "Goblet Squat",
+          "exercises": [
+            {
+              "id": "144",
+              "notes": "2x5 Goblet Squat o Back Squat se già conosciuto — RPE 7 — rec. 2–3'.",
+              "sets": [
+                {
+                  "Reps": 5
+                },
+                {
+                  "Reps": 5
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "SingleExercise",
+          "title": "Romanian Deadlift",
+          "exercises": [
+            {
+              "id": "154",
+              "notes": "2x5 Romanian Deadlift — RPE 7 — rec. 2–3'.",
+              "sets": [
+                {
+                  "Reps": 5
+                },
+                {
+                  "Reps": 5
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "SingleExercise",
+          "title": "Split Squat",
+          "exercises": [
+            {
+              "id": "158",
+              "notes": "2x5/lato Split Squat — RPE 7 — rec. 90\".",
+              "sets": [
+                {
+                  "RepsPerSide": 5
+                },
+                {
+                  "RepsPerSide": 5
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "SingleExercise",
+          "title": "Elevated Body Weight Calf Raise",
+          "exercises": [
+            {
+              "id": "553",
+              "notes": "2x8 Calf Raise controllato — rec. 60\".",
+              "sets": [
+                {
+                  "Reps": 8
+                },
+                {
+                  "Reps": 8
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "SingleExercise",
+          "title": "Single Arm DB Row",
+          "exercises": [
+            {
+              "id": "151",
+              "notes": "2x6 Row / rematore — RPE 7 — rec. 60–90\".",
+              "sets": [
+                {
+                  "RepsPerSide": 6
+                },
+                {
+                  "RepsPerSide": 6
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "SingleExercise",
+          "title": "Side Plank",
+          "exercises": [
+            {
+              "id": "79",
+              "notes": "2x30\"/lato Side Plank.",
+              "sets": [
+                {
+                  "RepsPerSide": 1,
+                  "Duration": 30
+                },
+                {
+                  "RepsPerSide": 1,
+                  "Duration": 30
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "instructions": "OBIETTIVO\nPreservare forza e qualità del movimento riducendo ulteriormente il costo residuo.\n\nRISCALDAMENTO\n5' mobilità dinamica + serie di avvicinamento.\n\nPARTE CENTRALE\nSegui i blocchi nativi: serie/ripetizioni, RPE e recuperi nelle note degli esercizi. Nessuna serie a cedimento.\n\nFUELING\nAlimentazione abituale; se ultimo pasto oltre 3 h, snack con carboidrati e proteine 1–2 h prima. Circa 20–40 g di proteine di qualità nelle ore prima/dopo. Se è la seconda/terza seduta, cura il recupero con carboidrati e proteine. Acqua secondo sete.\n\nNOTE\nVolume intenzionalmente contenuto: lascia 2–3 ripetizioni in riserva e non cercare DOMS.",
+      "canonical_uids": [
+        "IMINT24W-W15-TUE-STRENGTH-03"
+      ],
+      "source_workout_ids": [],
+      "library_title": "Forza | Minimo efficace 25'",
+      "block_count": 6,
+      "total_sets": 12
+    },
+    {
+      "variant_id": "IM-SBL-013",
+      "base_title": "Forza | Scarico 25'",
+      "representative_uid": "IMINT24W-W16-THU-STRENGTH-02",
+      "blocks": [
+        {
+          "type": "SingleExercise",
+          "title": "Goblet Squat",
+          "exercises": [
+            {
+              "id": "144",
+              "notes": "2x5 Goblet Squat — RPE 6–7.",
+              "sets": [
+                {
+                  "Reps": 5
+                },
+                {
+                  "Reps": 5
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "SingleExercise",
+          "title": "Romanian Deadlift",
+          "exercises": [
+            {
+              "id": "154",
+              "notes": "2x5 Romanian Deadlift — RPE 6–7.",
+              "sets": [
+                {
+                  "Reps": 5
+                },
+                {
+                  "Reps": 5
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "SingleExercise",
+          "title": "Split Squat",
+          "exercises": [
+            {
+              "id": "158",
+              "notes": "2x5/lato Split Squat — RPE 6.",
+              "sets": [
+                {
+                  "RepsPerSide": 5
+                },
+                {
+                  "RepsPerSide": 5
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "SingleExercise",
+          "title": "Single Arm DB Row",
+          "exercises": [
+            {
+              "id": "151",
+              "notes": "2x8 Row / rematore.",
+              "sets": [
+                {
+                  "RepsPerSide": 8
+                },
+                {
+                  "RepsPerSide": 8
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "SingleExercise",
+          "title": "Side Plank",
+          "exercises": [
+            {
+              "id": "79",
+              "notes": "2x30\"/lato Side Plank.",
+              "sets": [
+                {
+                  "RepsPerSide": 1,
+                  "Duration": 30
+                },
+                {
+                  "RepsPerSide": 1,
+                  "Duration": 30
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "instructions": "OBIETTIVO\nMantenere il gesto riducendo volume e intensità nella settimana di assorbimento.\n\nRISCALDAMENTO\n5' mobilità dinamica + serie di avvicinamento.\n\nPARTE CENTRALE\nSegui i blocchi nativi: serie/ripetizioni, RPE e recuperi nelle note degli esercizi. Nessuna serie a cedimento.\n\nFUELING\nAlimentazione abituale; se ultimo pasto oltre 3 h, snack con carboidrati e proteine 1–2 h prima. Circa 20–40 g di proteine di qualità nelle ore prima/dopo. Se è la seconda/terza seduta, cura il recupero con carboidrati e proteine. Acqua secondo sete.\n\nNOTE\nNessun cedimento e nessuna progressione di carico in settimana di assorbimento.",
+      "canonical_uids": [
+        "IMINT24W-W16-THU-STRENGTH-02"
+      ],
+      "source_workout_ids": [],
+      "library_title": "Forza | Scarico 25' | Variante 02",
+      "block_count": 5,
+      "total_sets": 10
+    },
+    {
+      "variant_id": "IM-SBL-014",
+      "base_title": "Forza | Minimo efficace 20'",
+      "representative_uid": "IMINT24W-W17-TUE-STRENGTH-03",
+      "blocks": [
+        {
+          "type": "SingleExercise",
+          "title": "Goblet Squat",
+          "exercises": [
+            {
+              "id": "144",
+              "notes": "2x4 Goblet Squat o Back Squat se già conosciuto — RPE 6–7 — rec. 2'.",
+              "sets": [
+                {
+                  "Reps": 4
+                },
+                {
+                  "Reps": 4
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "SingleExercise",
+          "title": "Romanian Deadlift",
+          "exercises": [
+            {
+              "id": "154",
+              "notes": "2x4 Romanian Deadlift — RPE 6–7 — rec. 2'.",
+              "sets": [
+                {
+                  "Reps": 4
+                },
+                {
+                  "Reps": 4
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "SingleExercise",
+          "title": "Split Squat",
+          "exercises": [
+            {
+              "id": "158",
+              "notes": "1x5/lato Split Squat — RPE 6–7 — rec. 60–90\".",
+              "sets": [
+                {
+                  "RepsPerSide": 5
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "SingleExercise",
+          "title": "Single Arm DB Row",
+          "exercises": [
+            {
+              "id": "151",
+              "notes": "1x6 Row / rematore — RPE 6–7.",
+              "sets": [
+                {
+                  "RepsPerSide": 6
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "SingleExercise",
+          "title": "Side Plank",
+          "exercises": [
+            {
+              "id": "79",
+              "notes": "1x30\"/lato Side Plank.",
+              "sets": [
+                {
+                  "RepsPerSide": 1,
+                  "Duration": 30
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "instructions": "OBIETTIVO\nMantenere forza e qualità neuromuscolare con il minimo costo residuo nella fase specifica.\n\nRISCALDAMENTO\n4–5' mobilità dinamica + serie di avvicinamento.\n\nPARTE CENTRALE\nSegui i blocchi nativi: serie/ripetizioni, RPE e recuperi nelle note degli esercizi. Nessuna serie a cedimento.\n\nFUELING\nAlimentazione abituale; se ultimo pasto oltre 3 h, snack con carboidrati e proteine 1–2 h prima. Circa 20–40 g di proteine di qualità nelle ore prima/dopo. Se è la seconda/terza seduta, cura il recupero con carboidrati e proteine. Acqua secondo sete.\n\nNOTE\nMinimo efficace: nessun cedimento, nessun DOMS cercato, nessuna progressione di carico obbligatoria.",
+      "canonical_uids": [
+        "IMINT24W-W17-TUE-STRENGTH-03"
+      ],
+      "source_workout_ids": [],
+      "library_title": "Forza | Minimo efficace 20' | Variante 01",
+      "block_count": 5,
+      "total_sets": 7
+    },
+    {
+      "variant_id": "IM-SBL-015",
+      "base_title": "Forza | Minimo efficace 20'",
+      "representative_uid": "IMINT24W-W18-TUE-STRENGTH-03",
+      "blocks": [
+        {
+          "type": "SingleExercise",
+          "title": "Goblet Squat",
+          "exercises": [
+            {
+              "id": "144",
+              "notes": "2x4 Goblet Squat o Back Squat se già conosciuto — RPE 6–7 — rec. 2'.",
+              "sets": [
+                {
+                  "Reps": 4
+                },
+                {
+                  "Reps": 4
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "SingleExercise",
+          "title": "Romanian Deadlift",
+          "exercises": [
+            {
+              "id": "154",
+              "notes": "2x4 Romanian Deadlift — RPE 6–7 — rec. 2'.",
+              "sets": [
+                {
+                  "Reps": 4
+                },
+                {
+                  "Reps": 4
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "SingleExercise",
+          "title": "Split Squat",
+          "exercises": [
+            {
+              "id": "158",
+              "notes": "1x5/lato Split Squat — RPE 6–7 — rec. 60–90\".",
+              "sets": [
+                {
+                  "RepsPerSide": 5
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "SingleExercise",
+          "title": "Single Arm DB Row",
+          "exercises": [
+            {
+              "id": "151",
+              "notes": "1x6 Row / rematore — RPE 6–7.",
+              "sets": [
+                {
+                  "RepsPerSide": 6
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "SingleExercise",
+          "title": "Side Plank",
+          "exercises": [
+            {
+              "id": "79",
+              "notes": "1x30\"/lato Side Plank.",
+              "sets": [
+                {
+                  "RepsPerSide": 1,
+                  "Duration": 30
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "instructions": "OBIETTIVO\nPreservare forza con poche serie di qualità e minima fatica residua.\n\nRISCALDAMENTO\n4–5' mobilità dinamica + serie di avvicinamento.\n\nPARTE CENTRALE\nSegui i blocchi nativi: serie/ripetizioni, RPE e recuperi nelle note degli esercizi. Nessuna serie a cedimento.\n\nFUELING\nAlimentazione abituale; se ultimo pasto oltre 3 h, snack con carboidrati e proteine 1–2 h prima. Circa 20–40 g di proteine di qualità nelle ore prima/dopo. Se è la seconda/terza seduta, cura il recupero con carboidrati e proteine. Acqua secondo sete.\n\nNOTE\nMinimo efficace: nessun cedimento, nessun DOMS cercato, nessuna progressione di carico obbligatoria.",
+      "canonical_uids": [
+        "IMINT24W-W18-TUE-STRENGTH-03"
+      ],
+      "source_workout_ids": [],
+      "library_title": "Forza | Minimo efficace 20' | Variante 02",
+      "block_count": 5,
+      "total_sets": 7
+    },
+    {
+      "variant_id": "IM-SBL-016",
+      "base_title": "Forza | Minimo efficace 20'",
+      "representative_uid": "IMINT24W-W19-TUE-STRENGTH-03",
+      "blocks": [
+        {
+          "type": "SingleExercise",
+          "title": "Goblet Squat",
+          "exercises": [
+            {
+              "id": "144",
+              "notes": "1–2x4 Goblet Squat o Back Squat se già conosciuto — RPE 6–7.",
+              "sets": [
+                {
+                  "Reps": 4
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "SingleExercise",
+          "title": "Romanian Deadlift",
+          "exercises": [
+            {
+              "id": "154",
+              "notes": "1–2x4 Romanian Deadlift — RPE 6–7.",
+              "sets": [
+                {
+                  "Reps": 4
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "SingleExercise",
+          "title": "Split Squat",
+          "exercises": [
+            {
+              "id": "158",
+              "notes": "1x5/lato Split Squat — RPE 6.",
+              "sets": [
+                {
+                  "RepsPerSide": 5
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "SingleExercise",
+          "title": "Single Arm DB Row",
+          "exercises": [
+            {
+              "id": "151",
+              "notes": "1x6 Row / rematore — RPE 6–7.",
+              "sets": [
+                {
+                  "RepsPerSide": 6
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "SingleExercise",
+          "title": "Side Plank",
+          "exercises": [
+            {
+              "id": "79",
+              "notes": "1x25–30\"/lato Side Plank.",
+              "sets": [
+                {
+                  "RepsPerSide": 1,
+                  "Duration": 30
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "instructions": "OBIETTIVO\nMantenere il gesto con carico minimo e nessuna fatica residua significativa.\n\nRISCALDAMENTO\n4–5' mobilità dinamica + serie di avvicinamento.\n\nPARTE CENTRALE\nSegui i blocchi nativi: serie/ripetizioni, RPE e recuperi nelle note degli esercizi. Nessuna serie a cedimento.\n\nFUELING\nAlimentazione abituale; se ultimo pasto oltre 3 h, snack con carboidrati e proteine 1–2 h prima. Circa 20–40 g di proteine di qualità nelle ore prima/dopo. Se è la seconda/terza seduta, cura il recupero con carboidrati e proteine. Acqua secondo sete.\n\nNOTE\nMinimo efficace: nessun cedimento, nessun DOMS cercato.",
+      "canonical_uids": [
+        "IMINT24W-W19-TUE-STRENGTH-03"
+      ],
+      "source_workout_ids": [],
+      "library_title": "Forza | Minimo efficace 20' | Variante 03",
+      "block_count": 5,
+      "total_sets": 5
+    },
+    {
+      "variant_id": "IM-SBL-017",
+      "base_title": "Forza | Attivazione minima 15'",
+      "representative_uid": "IMINT24W-W20-TUE-STRENGTH-03",
+      "blocks": [
+        {
+          "type": "SingleExercise",
+          "title": "Goblet Squat",
+          "exercises": [
+            {
+              "id": "144",
+              "notes": "1–2x4 Goblet Squat o Back Squat se già conosciuto — RPE 6–7.",
+              "sets": [
+                {
+                  "Reps": 4
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "SingleExercise",
+          "title": "Romanian Deadlift",
+          "exercises": [
+            {
+              "id": "154",
+              "notes": "1–2x4 Romanian Deadlift — RPE 6–7.",
+              "sets": [
+                {
+                  "Reps": 4
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "SingleExercise",
+          "title": "Split Squat",
+          "exercises": [
+            {
+              "id": "158",
+              "notes": "1x5/lato Split Squat — RPE 6.",
+              "sets": [
+                {
+                  "RepsPerSide": 5
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "SingleExercise",
+          "title": "Single Arm DB Row",
+          "exercises": [
+            {
+              "id": "151",
+              "notes": "1x6 Row / rematore — RPE 6–7.",
+              "sets": [
+                {
+                  "RepsPerSide": 6
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "SingleExercise",
+          "title": "Side Plank",
+          "exercises": [
+            {
+              "id": "79",
+              "notes": "1x25–30\"/lato Side Plank.",
+              "sets": [
+                {
+                  "RepsPerSide": 1,
+                  "Duration": 30
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "instructions": "OBIETTIVO\nMantenere il gesto senza lasciare traccia.\n\nRISCALDAMENTO\n4–5' mobilità dinamica + serie di avvicinamento.\n\nPARTE CENTRALE\nSegui i blocchi nativi: serie/ripetizioni, RPE e recuperi nelle note degli esercizi. Nessuna serie a cedimento.\n\nFUELING\nAlimentazione abituale; se ultimo pasto oltre 3 h, snack con carboidrati e proteine 1–2 h prima. Circa 20–40 g di proteine di qualità nelle ore prima/dopo. Se è la seconda/terza seduta, cura il recupero con carboidrati e proteine. Acqua secondo sete.\n\nNOTE\nMinimo efficace: nessun cedimento, nessun DOMS cercato.",
+      "canonical_uids": [
+        "IMINT24W-W20-TUE-STRENGTH-03"
+      ],
+      "source_workout_ids": [],
+      "library_title": "Forza | Attivazione minima 15'",
+      "block_count": 5,
+      "total_sets": 5
+    },
+    {
+      "variant_id": "IM-SBL-018",
+      "base_title": "Forza | Microdose peak 20'",
+      "representative_uid": "IMINT24W-W21-TUE-STRENGTH-03",
+      "blocks": [
+        {
+          "type": "SingleExercise",
+          "title": "Goblet Squat",
+          "exercises": [
+            {
+              "id": "144",
+              "notes": "2x4 Goblet Squat o Back Squat se già conosciuto — RPE 6.",
+              "sets": [
+                {
+                  "Reps": 4
+                },
+                {
+                  "Reps": 4
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "SingleExercise",
+          "title": "Romanian Deadlift",
+          "exercises": [
+            {
+              "id": "154",
+              "notes": "2x4 Romanian Deadlift — RPE 6.",
+              "sets": [
+                {
+                  "Reps": 4
+                },
+                {
+                  "Reps": 4
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "SingleExercise",
+          "title": "Split Squat",
+          "exercises": [
+            {
+              "id": "158",
+              "notes": "1x5/lato Split Squat — RPE 6.",
+              "sets": [
+                {
+                  "RepsPerSide": 5
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "SingleExercise",
+          "title": "Single Arm DB Row",
+          "exercises": [
+            {
+              "id": "151",
+              "notes": "1x6 Row / rematore — RPE 6.",
+              "sets": [
+                {
+                  "RepsPerSide": 6
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "SingleExercise",
+          "title": "Side Plank",
+          "exercises": [
+            {
+              "id": "79",
+              "notes": "1x25–30\"/lato Side Plank.",
+              "sets": [
+                {
+                  "RepsPerSide": 1,
+                  "Duration": 30
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "instructions": "OBIETTIVO\nMantenere il segnale di forza con il minimo costo possibile nella settimana di picco.\n\nRISCALDAMENTO\n3–4' mobilità dinamica + serie di avvicinamento.\n\nPARTE CENTRALE\nSegui i blocchi nativi: serie/ripetizioni, RPE e recuperi nelle note degli esercizi. Nessuna serie a cedimento.\n\nFUELING\nAlimentazione abituale; se ultimo pasto oltre 3 h, snack con carboidrati e proteine 1–2 h prima. Circa 20–40 g di proteine di qualità nelle ore prima/dopo. Se è la seconda/terza seduta, cura il recupero con carboidrati e proteine. Acqua secondo sete.\n\nNOTE\nNessun cedimento e nessun DOMS ricercato.",
+      "canonical_uids": [
+        "IMINT24W-W21-TUE-STRENGTH-03"
+      ],
+      "source_workout_ids": [],
+      "library_title": "Forza | Microdose peak 20'",
+      "block_count": 5,
+      "total_sets": 7
+    },
+    {
+      "variant_id": "IM-SBL-019",
+      "base_title": "Forza | Attivazione 15'",
+      "representative_uid": "IMINT24W-W22-TUE-STRENGTH-03",
+      "blocks": [
+        {
+          "type": "SingleExercise",
+          "title": "Goblet Squat",
+          "exercises": [
+            {
+              "id": "144",
+              "notes": "1x4 Goblet Squat o Back Squat se già conosciuto — RPE 5–6.",
+              "sets": [
+                {
+                  "Reps": 4
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "SingleExercise",
+          "title": "Romanian Deadlift",
+          "exercises": [
+            {
+              "id": "154",
+              "notes": "1x4 Romanian Deadlift — RPE 5–6.",
+              "sets": [
+                {
+                  "Reps": 4
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "SingleExercise",
+          "title": "Split Squat",
+          "exercises": [
+            {
+              "id": "158",
+              "notes": "1x5/lato Split Squat — RPE 5–6.",
+              "sets": [
+                {
+                  "RepsPerSide": 5
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "SingleExercise",
+          "title": "Single Arm DB Row",
+          "exercises": [
+            {
+              "id": "151",
+              "notes": "1x6 Row / rematore — RPE 5–6.",
+              "sets": [
+                {
+                  "RepsPerSide": 6
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "SingleExercise",
+          "title": "Side Plank",
+          "exercises": [
+            {
+              "id": "79",
+              "notes": "1x20–25\"/lato Side Plank.",
+              "sets": [
+                {
+                  "RepsPerSide": 1,
+                  "Duration": 25
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "instructions": "OBIETTIVO\nConservare tono neuromuscolare con una dose minima che non lasci indolenzimento.\n\nRISCALDAMENTO\n3–4' mobilità dinamica + serie di avvicinamento.\n\nPARTE CENTRALE\nSegui i blocchi nativi: serie/ripetizioni, RPE e recuperi nelle note degli esercizi. Nessuna serie a cedimento.\n\nFUELING\nAlimentazione abituale; se ultimo pasto oltre 3 h, snack con carboidrati e proteine 1–2 h prima. Circa 20–40 g di proteine di qualità nelle ore prima/dopo. Se è la seconda/terza seduta, cura il recupero con carboidrati e proteine. Acqua secondo sete.\n\nNOTE\nNessun cedimento e nessun DOMS ricercato.",
+      "canonical_uids": [
+        "IMINT24W-W22-TUE-STRENGTH-03"
+      ],
+      "source_workout_ids": [],
+      "library_title": "Forza | Attivazione 15'",
+      "block_count": 5,
+      "total_sets": 5
+    }
+  ],
+  "uid_map": [
+    {
+      "canonical_uid": "IMINT24W-W01-WED-STRENGTH-02",
+      "week": 1,
+      "day": "WED",
+      "variant_id": "IM-SBL-001",
+      "provider_workout_id": "33973000"
+    },
+    {
+      "canonical_uid": "IMINT24W-W01-FRI-STRENGTH-03",
+      "week": 1,
+      "day": "FRI",
+      "variant_id": "IM-SBL-002",
+      "provider_workout_id": null
+    },
+    {
+      "canonical_uid": "IMINT24W-W02-WED-STRENGTH-02",
+      "week": 2,
+      "day": "WED",
+      "variant_id": "IM-SBL-003",
+      "provider_workout_id": null
+    },
+    {
+      "canonical_uid": "IMINT24W-W02-FRI-STRENGTH-03",
+      "week": 2,
+      "day": "FRI",
+      "variant_id": "IM-SBL-002",
+      "provider_workout_id": null
+    },
+    {
+      "canonical_uid": "IMINT24W-W03-WED-STRENGTH-02",
+      "week": 3,
+      "day": "WED",
+      "variant_id": "IM-SBL-003",
+      "provider_workout_id": null
+    },
+    {
+      "canonical_uid": "IMINT24W-W03-FRI-STRENGTH-03",
+      "week": 3,
+      "day": "FRI",
+      "variant_id": "IM-SBL-002",
+      "provider_workout_id": null
+    },
+    {
+      "canonical_uid": "IMINT24W-W04-WED-STRENGTH-02",
+      "week": 4,
+      "day": "WED",
+      "variant_id": "IM-SBL-002",
+      "provider_workout_id": null
+    },
+    {
+      "canonical_uid": "IMINT24W-W05-WED-STRENGTH-02",
+      "week": 5,
+      "day": "WED",
+      "variant_id": "IM-SBL-003",
+      "provider_workout_id": null
+    },
+    {
+      "canonical_uid": "IMINT24W-W05-FRI-STRENGTH-03",
+      "week": 5,
+      "day": "FRI",
+      "variant_id": "IM-SBL-002",
+      "provider_workout_id": null
+    },
+    {
+      "canonical_uid": "IMINT24W-W06-WED-STRENGTH-02",
+      "week": 6,
+      "day": "WED",
+      "variant_id": "IM-SBL-003",
+      "provider_workout_id": null
+    },
+    {
+      "canonical_uid": "IMINT24W-W06-FRI-STRENGTH-03",
+      "week": 6,
+      "day": "FRI",
+      "variant_id": "IM-SBL-002",
+      "provider_workout_id": null
+    },
+    {
+      "canonical_uid": "IMINT24W-W07-WED-STRENGTH-02",
+      "week": 7,
+      "day": "WED",
+      "variant_id": "IM-SBL-003",
+      "provider_workout_id": null
+    },
+    {
+      "canonical_uid": "IMINT24W-W07-FRI-STRENGTH-03",
+      "week": 7,
+      "day": "FRI",
+      "variant_id": "IM-SBL-002",
+      "provider_workout_id": null
+    },
+    {
+      "canonical_uid": "IMINT24W-W08-WED-STRENGTH-02",
+      "week": 8,
+      "day": "WED",
+      "variant_id": "IM-SBL-002",
+      "provider_workout_id": null
+    },
+    {
+      "canonical_uid": "IMINT24W-W09-TUE-STRENGTH-03",
+      "week": 9,
+      "day": "TUE",
+      "variant_id": "IM-SBL-004",
+      "provider_workout_id": null
+    },
+    {
+      "canonical_uid": "IMINT24W-W09-FRI-STRENGTH-03",
+      "week": 9,
+      "day": "FRI",
+      "variant_id": "IM-SBL-005",
+      "provider_workout_id": null
+    },
+    {
+      "canonical_uid": "IMINT24W-W10-TUE-STRENGTH-03",
+      "week": 10,
+      "day": "TUE",
+      "variant_id": "IM-SBL-006",
+      "provider_workout_id": null
+    },
+    {
+      "canonical_uid": "IMINT24W-W10-FRI-STRENGTH-03",
+      "week": 10,
+      "day": "FRI",
+      "variant_id": "IM-SBL-007",
+      "provider_workout_id": null
+    },
+    {
+      "canonical_uid": "IMINT24W-W11-TUE-STRENGTH-03",
+      "week": 11,
+      "day": "TUE",
+      "variant_id": "IM-SBL-008",
+      "provider_workout_id": null
+    },
+    {
+      "canonical_uid": "IMINT24W-W12-TUE-STRENGTH-03",
+      "week": 12,
+      "day": "TUE",
+      "variant_id": "IM-SBL-009",
+      "provider_workout_id": null
+    },
+    {
+      "canonical_uid": "IMINT24W-W13-TUE-STRENGTH-03",
+      "week": 13,
+      "day": "TUE",
+      "variant_id": "IM-SBL-010",
+      "provider_workout_id": null
+    },
+    {
+      "canonical_uid": "IMINT24W-W14-TUE-STRENGTH-03",
+      "week": 14,
+      "day": "TUE",
+      "variant_id": "IM-SBL-011",
+      "provider_workout_id": null
+    },
+    {
+      "canonical_uid": "IMINT24W-W15-TUE-STRENGTH-03",
+      "week": 15,
+      "day": "TUE",
+      "variant_id": "IM-SBL-012",
+      "provider_workout_id": null
+    },
+    {
+      "canonical_uid": "IMINT24W-W16-THU-STRENGTH-02",
+      "week": 16,
+      "day": "THU",
+      "variant_id": "IM-SBL-013",
+      "provider_workout_id": null
+    },
+    {
+      "canonical_uid": "IMINT24W-W17-TUE-STRENGTH-03",
+      "week": 17,
+      "day": "TUE",
+      "variant_id": "IM-SBL-014",
+      "provider_workout_id": null
+    },
+    {
+      "canonical_uid": "IMINT24W-W18-TUE-STRENGTH-03",
+      "week": 18,
+      "day": "TUE",
+      "variant_id": "IM-SBL-015",
+      "provider_workout_id": null
+    },
+    {
+      "canonical_uid": "IMINT24W-W19-TUE-STRENGTH-03",
+      "week": 19,
+      "day": "TUE",
+      "variant_id": "IM-SBL-016",
+      "provider_workout_id": null
+    },
+    {
+      "canonical_uid": "IMINT24W-W20-TUE-STRENGTH-03",
+      "week": 20,
+      "day": "TUE",
+      "variant_id": "IM-SBL-017",
+      "provider_workout_id": null
+    },
+    {
+      "canonical_uid": "IMINT24W-W21-TUE-STRENGTH-03",
+      "week": 21,
+      "day": "TUE",
+      "variant_id": "IM-SBL-018",
+      "provider_workout_id": null
+    },
+    {
+      "canonical_uid": "IMINT24W-W22-TUE-STRENGTH-03",
+      "week": 22,
+      "day": "TUE",
+      "variant_id": "IM-SBL-019",
+      "provider_workout_id": null
+    }
+  ]
+}

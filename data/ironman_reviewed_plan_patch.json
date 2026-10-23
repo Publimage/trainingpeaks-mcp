@@ -1,0 +1,49 @@
+{
+  "schema": "IRONMAN_REVIEWED_PLAN_PATCH_CONFIG_V1",
+  "configured": true,
+  "manifest": {
+    "schema": "IRONMAN_PLAN_PATCH_V1",
+    "owner_id": 2116886,
+    "plan_id": 684602,
+    "expected_title": "ALBERTO FAZI ENDURANCE | IRONMAN | 24 settimane | Intermediate | Italiano",
+    "expected_is_public": true,
+    "expected_workout_count": 259,
+    "scope": "trainingpeaks:plan:684602:correct-two-t1500-description-only-20261022",
+    "items": [
+      {
+        "workout_id": 3996872965,
+        "before": {
+          "description": "OBIETTIVO\nOttenere un riferimento operativo di passo sui 1500 m con pacing regolare.\n\nRISCALDAMENTO\nRiscaldamento: 400 m @ RPE 2–3.\n\nTECNICA / ATTIVAZIONE\n4x50 m build controllati: aumenta progressivamente senza affaticarti. Nessun drill tecnico specifico prima del test.\n\nPARTE CENTRALE\n4x50 build: 4x 50 m @ RPE 4–6.\nFacile: 200 m @ RPE 2–3.\nT1500: 1500 m @ RPE 9–10.\n\nDEFATICAMENTO\nDefaticamento: 200 m @ RPE 1–2.\n\nINTENSITÀ\nRPE 9–10 sul T1500; il resto facile e controllato.\n\nATTREZZI\nNessun attrezzo obbligatorio in questo workout. Se usi snorkel/pull per un drill, deve restare opzionale e non cambiare la funzione della seduta.\n\nFUELING\nArriva al test con buona disponibilità di carboidrati e usa una routine che puoi replicare. 2–4 ore prima scegli un pasto familiare ricco di carboidrati, facile da digerire e non eccessivo in grassi/fibre. Se hai solo 30–60', usa un top-up di circa 20–40 g di carboidrati facilmente digeribili (banana, pane bianco con miele/marmellata o bevanda sportiva).\nDurante non serve un fueling aggressivo per un test di questa durata: acqua secondo sete; una piccola quota di carboidrati o bevanda sportiva è facoltativa. Nei retest prova a replicare orario, pasto/snack e prodotti usati.\n\nNOTE\nTotale 2500 m. Questo è il primo riferimento nuoto del piano: se il test è palesemente anomalo o mal gestito, non usarlo per impostare la Swim Threshold. Le istruzioni complete sono nella Guida Atleta/PDF."
+        },
+        "after": {
+          "description": "OBIETTIVO\nOttenere un riferimento operativo di passo sui 1500 m con pacing regolare.\n\nRISCALDAMENTO\nRiscaldamento: 400 m @ RPE 2–3.\n\nTECNICA / ATTIVAZIONE\n4x50 m build controllati @ RPE 4–6: aumenta progressivamente senza affaticarti. Nessun drill tecnico specifico prima del test.\n\nPARTE CENTRALE\nFacile: 200 m @ RPE 2–3.\nT1500: 1500 m @ RPE 9–10.\n\nDEFATICAMENTO\nDefaticamento: 200 m @ RPE 1–2.\n\nINTENSITÀ\nRPE 9–10 sul T1500; il resto facile e controllato.\n\nATTREZZI\nNessun attrezzo obbligatorio in questo workout. Se usi snorkel/pull per un drill, deve restare opzionale e non cambiare la funzione della seduta.\n\nFUELING\nArriva al test con buona disponibilità di carboidrati e usa una routine che puoi replicare. 2–4 ore prima scegli un pasto familiare ricco di carboidrati, facile da digerire e non eccessivo in grassi/fibre. Se hai solo 30–60', usa un top-up di circa 20–40 g di carboidrati facilmente digeribili (banana, pane bianco con miele/marmellata o bevanda sportiva).\nDurante non serve un fueling aggressivo per un test di questa durata: acqua secondo sete; una piccola quota di carboidrati o bevanda sportiva è facoltativa. Nei retest prova a replicare orario, pasto/snack e prodotti usati.\n\nNOTE\nTotale 2500 m. Questo è il primo riferimento nuoto del piano: se il test è palesemente anomalo o mal gestito, non usarlo per impostare la Swim Threshold. Le istruzioni complete sono nella Guida Atleta/PDF."
+        }
+      },
+      {
+        "workout_id": 3996862048,
+        "before": {
+          "description": "OBIETTIVO\nVerificare il riferimento nuoto dopo il primo blocco con protocollo coerente.\n\nRISCALDAMENTO\nRiscaldamento: 400 m @ RPE 2–3.\n\nTECNICA / ATTIVAZIONE\n4x50 m build controllati: aumenta progressivamente senza affaticarti. Nessun drill tecnico specifico prima del test.\n\nPARTE CENTRALE\n4x50 build: 4x 50 m @ RPE 4–6.\nFacile: 300 m @ RPE 2–3.\nT1500: 1500 m @ RPE 9–10.\n\nDEFATICAMENTO\nDefaticamento: 200 m @ RPE 1–2.\n\nINTENSITÀ\nRPE 9–10 sul T1500; il resto facile e controllato.\n\nATTREZZI\nNessun attrezzo obbligatorio in questo workout. Se usi snorkel/pull per un drill, deve restare opzionale e non cambiare la funzione della seduta.\n\nFUELING\nArriva al test con buona disponibilità di carboidrati e usa una routine che puoi replicare. 2–4 ore prima scegli un pasto familiare ricco di carboidrati, facile da digerire e non eccessivo in grassi/fibre. Se hai solo 30–60', usa un top-up di circa 20–40 g di carboidrati facilmente digeribili (banana, pane bianco con miele/marmellata o bevanda sportiva).\nDurante non serve un fueling aggressivo per un test di questa durata: acqua secondo sete; una piccola quota di carboidrati o bevanda sportiva è facoltativa. Nei retest prova a replicare orario, pasto/snack e prodotti usati.\n\nNOTE\nTotale 2600 m. Aggiorna il riferimento solo se il retest è valido; se è dubbio, conserva la Swim Threshold precedente."
+        },
+        "after": {
+          "description": "OBIETTIVO\nVerificare il riferimento nuoto dopo il primo blocco con protocollo coerente.\n\nRISCALDAMENTO\nRiscaldamento: 400 m @ RPE 2–3.\n\nTECNICA / ATTIVAZIONE\n4x50 m build controllati @ RPE 4–6: aumenta progressivamente senza affaticarti. Nessun drill tecnico specifico prima del test.\n\nPARTE CENTRALE\nFacile: 300 m @ RPE 2–3.\nT1500: 1500 m @ RPE 9–10.\n\nDEFATICAMENTO\nDefaticamento: 200 m @ RPE 1–2.\n\nINTENSITÀ\nRPE 9–10 sul T1500; il resto facile e controllato.\n\nATTREZZI\nNessun attrezzo obbligatorio in questo workout. Se usi snorkel/pull per un drill, deve restare opzionale e non cambiare la funzione della seduta.\n\nFUELING\nArriva al test con buona disponibilità di carboidrati e usa una routine che puoi replicare. 2–4 ore prima scegli un pasto familiare ricco di carboidrati, facile da digerire e non eccessivo in grassi/fibre. Se hai solo 30–60', usa un top-up di circa 20–40 g di carboidrati facilmente digeribili (banana, pane bianco con miele/marmellata o bevanda sportiva).\nDurante non serve un fueling aggressivo per un test di questa durata: acqua secondo sete; una piccola quota di carboidrati o bevanda sportiva è facoltativa. Nei retest prova a replicare orario, pasto/snack e prodotti usati.\n\nNOTE\nTotale 2600 m. Aggiorna il riferimento solo se il retest è valido; se è dubbio, conserva la Swim Threshold precedente."
+        }
+      }
+    ]
+  },
+  "windows": [
+    [
+      "2026-10-05",
+      "2026-11-29"
+    ],
+    [
+      "2026-11-30",
+      "2027-01-24"
+    ],
+    [
+      "2027-01-25",
+      "2027-03-21"
+    ]
+  ],
+  "expected_classic_count": 229,
+  "expected_note_count": 35
+}

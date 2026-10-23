@@ -1,0 +1,258 @@
+{
+  "schema": "CHASING_NATIVE_NOTE_PROVIDER_IDS_V1",
+  "plan_id": 685173,
+  "source_doc_id": "1zr41PjXW_y-xzs3jvH3dnhSmjHZr3LzLeFqqF9GQvyA",
+  "native_count": 31,
+  "published_in_private_plan": true,
+  "workouts_untouched": true,
+  "notes": [
+    {
+      "internal_uid": "CHS-NOTE-001",
+      "plan_id": 685173,
+      "provider_note_id": 2664007,
+      "week": 1,
+      "weekday": 1,
+      "public_title": "START | Come usare Chasing the Slot"
+    },
+    {
+      "internal_uid": "CHS-NOTE-002",
+      "plan_id": 685173,
+      "provider_note_id": 2664008,
+      "week": 1,
+      "weekday": 1,
+      "public_title": "INTENSITÀ | Watt, soglie e percezione"
+    },
+    {
+      "internal_uid": "CHS-NOTE-003",
+      "plan_id": 685173,
+      "provider_note_id": 2664009,
+      "week": 1,
+      "weekday": 1,
+      "public_title": "TRAININGPEAKS | Leggere i numeri senza inseguirli"
+    },
+    {
+      "internal_uid": "CHS-NOTE-004",
+      "plan_id": 685173,
+      "provider_note_id": 2664010,
+      "week": 1,
+      "weekday": 4,
+      "public_title": "TEST | Dalle prove ai riferimenti di allenamento"
+    },
+    {
+      "internal_uid": "CHS-NOTE-005",
+      "plan_id": 685173,
+      "provider_note_id": 2664011,
+      "week": 2,
+      "weekday": 1,
+      "public_title": "FONDO | Il lavoro sotto LT1"
+    },
+    {
+      "internal_uid": "CHS-NOTE-006",
+      "plan_id": 685173,
+      "provider_note_id": 2664012,
+      "week": 4,
+      "weekday": 1,
+      "public_title": "SCARICO | Leggere quello che abbiamo costruito"
+    },
+    {
+      "internal_uid": "CHS-NOTE-007",
+      "plan_id": 685173,
+      "provider_note_id": 2664013,
+      "week": 5,
+      "weekday": 1,
+      "public_title": "ZONE | Aggiornare un riferimento con criterio"
+    },
+    {
+      "internal_uid": "CHS-NOTE-008",
+      "plan_id": 685173,
+      "provider_note_id": 2664014,
+      "week": 6,
+      "weekday": 1,
+      "public_title": "FUELING | Allenare una routine ripetibile"
+    },
+    {
+      "internal_uid": "CHS-NOTE-009",
+      "plan_id": 685173,
+      "provider_note_id": 2664015,
+      "week": 8,
+      "weekday": 1,
+      "public_title": "BILANCIO | Prima verifica della continuità"
+    },
+    {
+      "internal_uid": "CHS-NOTE-010",
+      "plan_id": 685173,
+      "provider_note_id": 2664016,
+      "week": 9,
+      "weekday": 1,
+      "public_title": "DURABILITY | Cosa succede dopo molte ore"
+    },
+    {
+      "internal_uid": "CHS-NOTE-011",
+      "plan_id": 685173,
+      "provider_note_id": 2664017,
+      "week": 9,
+      "weekday": 6,
+      "public_title": "BRICK | I primi minuti di corsa dopo la bici"
+    },
+    {
+      "internal_uid": "CHS-NOTE-012",
+      "plan_id": 685173,
+      "provider_note_id": 2664019,
+      "week": 10,
+      "weekday": 1,
+      "public_title": "AERO | Tenere la posizione senza irrigidirsi"
+    },
+    {
+      "internal_uid": "CHS-NOTE-013",
+      "plan_id": 685173,
+      "provider_note_id": 2664020,
+      "week": 11,
+      "weekday": 1,
+      "public_title": "LUNGO | Lasciare qualcosa per domani"
+    },
+    {
+      "internal_uid": "CHS-NOTE-014",
+      "plan_id": 685173,
+      "provider_note_id": 2664021,
+      "week": 12,
+      "weekday": 1,
+      "public_title": "SCARICO | Il lavoro continua anche quando le ore scendono"
+    },
+    {
+      "internal_uid": "CHS-NOTE-015",
+      "plan_id": 685173,
+      "provider_note_id": 2664022,
+      "week": 13,
+      "weekday": 1,
+      "public_title": "FASE | Dal lavoro aerobico all'esecuzione Ironman"
+    },
+    {
+      "internal_uid": "CHS-NOTE-016",
+      "plan_id": 685173,
+      "provider_note_id": 2664023,
+      "week": 13,
+      "weekday": 2,
+      "public_title": "PACE | Ironman Pace e Ironman Pace+"
+    },
+    {
+      "internal_uid": "CHS-NOTE-017",
+      "plan_id": 685173,
+      "provider_note_id": 2664024,
+      "week": 14,
+      "weekday": 1,
+      "public_title": "CORSA | La meccanica ha un costo"
+    },
+    {
+      "internal_uid": "CHS-NOTE-018",
+      "plan_id": 685173,
+      "provider_note_id": 2664025,
+      "week": 15,
+      "weekday": 1,
+      "public_title": "CARICO | Una settimana importante, senza improvvisazioni"
+    },
+    {
+      "internal_uid": "CHS-NOTE-019",
+      "plan_id": 685173,
+      "provider_note_id": 2664026,
+      "week": 15,
+      "weekday": 6,
+      "public_title": "FUELING | Provare la routine che userai in gara"
+    },
+    {
+      "internal_uid": "CHS-NOTE-020",
+      "plan_id": 685173,
+      "provider_note_id": 2664027,
+      "week": 16,
+      "weekday": 1,
+      "public_title": "SCARICO | Assorbire prima del blocco decisivo"
+    },
+    {
+      "internal_uid": "CHS-NOTE-021",
+      "plan_id": 685173,
+      "provider_note_id": 2664028,
+      "week": 17,
+      "weekday": 1,
+      "public_title": "FASE | Mantenere qualità quando cresce la fatica"
+    },
+    {
+      "internal_uid": "CHS-NOTE-022",
+      "plan_id": 685173,
+      "provider_note_id": 2664029,
+      "week": 17,
+      "weekday": 7,
+      "public_title": "BRICK | La corsa dopo un lungo specifico"
+    },
+    {
+      "internal_uid": "CHS-NOTE-023",
+      "plan_id": 685173,
+      "provider_note_id": 2664030,
+      "week": 19,
+      "weekday": 1,
+      "public_title": "REHEARSAL | Una prova generale selettiva"
+    },
+    {
+      "internal_uid": "CHS-NOTE-024",
+      "plan_id": 685173,
+      "provider_note_id": 2664031,
+      "week": 19,
+      "weekday": 7,
+      "public_title": "RIPOSO | Oggi non c'è niente da recuperare"
+    },
+    {
+      "internal_uid": "CHS-NOTE-025",
+      "plan_id": 685173,
+      "provider_note_id": 2664032,
+      "week": 20,
+      "weekday": 1,
+      "public_title": "BILANCIO | Usare la prova, non ripeterla"
+    },
+    {
+      "internal_uid": "CHS-NOTE-026",
+      "plan_id": 685173,
+      "provider_note_id": 2664033,
+      "week": 21,
+      "weekday": 1,
+      "public_title": "ULTIMO PICCO | Il lavoro che conta, e quello che basta"
+    },
+    {
+      "internal_uid": "CHS-NOTE-027",
+      "plan_id": 685173,
+      "provider_note_id": 2664034,
+      "week": 21,
+      "weekday": 6,
+      "public_title": "CORSA | Preparare il weekend senza cercare conferme"
+    },
+    {
+      "internal_uid": "CHS-NOTE-028",
+      "plan_id": 685173,
+      "provider_note_id": 2664035,
+      "week": 22,
+      "weekday": 1,
+      "public_title": "TAPER | Ridurre carico, mantenere familiarità"
+    },
+    {
+      "internal_uid": "CHS-NOTE-029",
+      "plan_id": 685173,
+      "provider_note_id": 2664036,
+      "week": 23,
+      "weekday": 1,
+      "public_title": "TAPER | Quando le sensazioni cambiano"
+    },
+    {
+      "internal_uid": "CHS-NOTE-030",
+      "plan_id": 685173,
+      "provider_note_id": 2664037,
+      "week": 24,
+      "weekday": 1,
+      "public_title": "GARA | La settimana della partenza"
+    },
+    {
+      "internal_uid": "CHS-NOTE-031",
+      "plan_id": 685173,
+      "provider_note_id": 2664038,
+      "week": 24,
+      "weekday": 5,
+      "public_title": "GARA | Pacing, imprevisti e ultimi controlli"
+    }
+  ]
+}
