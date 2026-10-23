@@ -101,7 +101,9 @@ def authorize(spec: Any, policy: Any) -> dict:
 SENSITIVE_PROVIDER_KEYS = {
     "authorization", "accesstoken", "refreshtoken", "idtoken", "password",
     "secret", "cookie", "signedurl", "downloadurl", "contenturl",
-    "presignedurl", "accessurl", "authheader",
+    "presignedurl", "accessurl", "authheader", "apikey", "accesskey",
+    "signeduri", "downloaduri", "uploadurl", "fileurl", "resourceurl",
+    "href", "uri", "url", "link", "sessionid",
 }
 
 
