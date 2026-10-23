@@ -1,0 +1,149 @@
+"""Offline contract tests for the existing private VPC bridge's unified reads.
+
+All data is synthetic. No TrainingPeaks credentials or external network.
+"""
+import asyncio
+import json
+import threading
+from http.client import HTTPConnection
+from http.server import ThreadingHTTPServer
+from pathlib import Path
+
+import pytest
+
+from tp_mcp.private_bridge import _handler_factory, _load_config
+from tp_mcp.unified_read_bridge import (
+    READ_PATH, PrivateBridgeReadAdapter, authorize, build_private_read,
+    validate_policy, validate_spec,
+)
+
+OWNER = 2116886
+
+
+def spec(kind="plan.workout.patch", container=684602, item=3996858792):
+    return {"kind": kind, "target": {
+        "provider": "trainingpeaks", "owner_id": OWNER,
+        "container_kind": "workout_library" if kind.startswith("library.") else "training_plan",
+        "container_id": container, "resource_id": item,
+    }}
+
+
+def policy(kinds=None, container=684602, container_kind="training_plan"):
+    return [{"provider": "trainingpeaks", "owner_id": OWNER,
+             "container_kind": container_kind, "container_id": container,
+             "kinds": kinds or ["plan.workout.patch"]}]
+
+
+def test_default_absent_config_is_deny_by_default(tmp_path):
+    p=tmp_path/"private.json"
+    p.write_text(json.dumps({
+        "host": "10.114.0.2", "port": 8787,
+        "allowed_sources": ["10.114.0.3"],
+        "allowed_athletes": ["111"],
+        "result_writer_sources": ["10.114.0.3"],
+        "max_window_days": 21,
+    }))
+    cfg=_load_config(p)
+    assert cfg["allowed_unified_reads"] == []
+
+
+def test_explicit_plan_allowlist_works_without_per_week_job():
+    allowed=validate_policy(policy(kinds=[
+        "plan.workout.patch", "plan.note.patch", "plan.note.attachment.retire",
+        "plan.note.attachment.add", "plan.strength.relocate",
+    ]))
+    assert authorize(spec("plan.workout.patch", item=1), allowed)
+    assert authorize(spec("plan.note.attachment.retire", item=2), allowed)
+    with pytest.raises(PermissionError, match="UNIFIED_RESOURCE_NOT_ALLOWED"):
+        authorize(spec("library.workout.patch", container=3891872, item=5), allowed)
+    with pytest.raises(PermissionError, match="UNIFIED_RESOURCE_NOT_ALLOWED"):
+        authorize(spec("plan.workout.patch", container=685173, item=5), allowed)
+
+
+def test_bad_spec_or_policy_rejected_before_provider_read():
+    s=spec()
+    s["target"]["owner_id"] = 0
+    with pytest.raises(ValueError, match="UNIFIED_PROVIDER_OWNER"):
+        validate_spec(s)
+    s=spec()
+    s["target"]["container_kind"]="athlete_calendar"
+    with pytest.raises(ValueError, match="UNIFIED_CONTAINER_KIND"):
+        validate_spec(s)
+    bad=policy()
+    bad[0]["kinds"]=["plan.workout.patch", "plan.workout.patch"]
+    with pytest.raises(ValueError, match="UNIFIED_POLICY_KINDS"):
+        validate_policy(bad)
+
+
+def test_provider_is_never_called_for_unapproved_plan():
+    touched=[]
+    async def reader(x):
+        touched.append(x)
+        return {"id": x["target"]["resource_id"]}
+    with pytest.raises(PermissionError):
+        asyncio.run(build_private_read({"spec": spec()}, [], read_item=reader))
+    assert touched==[]
+    out=asyncio.run(build_private_read(
+        {"spec":spec()},policy(),read_item=reader))
+    assert out["schema"] == "IRONMAN_UNIFIED_PRIVATE_READ_V1"
+    assert out["trainingpeaks_writes"] == 0
+    assert out["record"]["id"] == 3996858792
+    assert len(touched)==1
+
+
+def test_policy_opt_in_never_enables_url_or_command_input():
+    s=spec()
+    s["target"]["url"]="https://evil.example"
+    with pytest.raises(ValueError,match="UNIFIED_TARGET_FIELDS"):
+        authorize(s,policy())
+    with pytest.raises(ValueError,match="UNIFIED_REQUEST_FIELDS"):
+        asyncio.run(build_private_read({"spec":spec(),"shell":"id"},policy()))
+
+
+def test_http_endpoint_requires_existing_vpc_source_and_explicit_plan(monkeypatch):
+    import tp_mcp.private_bridge as bridge
+    read_calls=[]
+    async def read(payload, cfg):
+        read_calls.append(payload)
+        return await build_private_read(payload, cfg["allowed_unified_reads"],
+                                        read_item=lambda spec: _fake_async(spec))
+    monkeypatch.setattr(bridge,"_build_unified_resource_input",read)
+    cfg={
+        "allowed_sources":{"127.0.0.1"},
+        "allowed_unified_reads":policy(),
+        "allowed_athletes":set(),
+        "result_writer_sources":set(),
+        "max_window_days":21,
+    }
+    server=ThreadingHTTPServer(("127.0.0.1",0), _handler_factory(cfg))
+    thread=threading.Thread(target=server.serve_forever,daemon=True)
+    thread.start()
+    try:
+        conn=HTTPConnection("127.0.0.1",server.server_address[1],timeout=5)
+        conn.request("POST",READ_PATH,json.dumps({"spec":spec()}),
+                     {"Content-Type":"application/json"})
+        response=conn.getresponse()
+        body=json.loads(response.read())
+        assert response.status==200
+        assert body["record"]["title"]=="synthetic"
+        assert body["trainingpeaks_writes"]==0
+        assert len(read_calls)==1
+        conn.close()
+        conn=HTTPConnection("127.0.0.1",server.server_address[1],timeout=5)
+        conn.request("POST",READ_PATH,json.dumps({"spec":spec(container=999999)}),
+                     {"Content-Type":"application/json"})
+        response=conn.getresponse()
+        body=json.loads(response.read())
+        assert response.status==403
+        assert body["error"]=="UNIFIED_RESOURCE_NOT_ALLOWED"
+        # Rejected before provider read.
+        assert len(read_calls)==2  # transport handler called; provider reader was not
+        conn.close()
+    finally:
+        server.shutdown()
+        server.server_close()
+        thread.join(timeout=3)
+
+
+async def _fake_async(spec):
+    return {"title":"synthetic","id":spec["target"]["resource_id"]}
