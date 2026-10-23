@@ -340,8 +340,9 @@ def run_changeset(
                 preview_passed.add(name)
                 preview_images[resource_key] = observed
             continue
-        if state == "UNKNOWN_NEEDS_READBACK":
-            # Reconcile a timed-out provider mutation by READ only, never replay.
+        if state in ("UNKNOWN_NEEDS_READBACK", "RUNNING"):
+            # A timed-out mutation or process crash is reconciled by READ only.
+            # Never replay a potentially completed provider operation.
             adapter = adapters.get(kind)
             try:
                 observed_sha = digest(adapter.read(item)) if adapter else None
@@ -357,6 +358,11 @@ def run_changeset(
                 if not execute:
                     preview_passed.add(name)
             else:
+                if execute and state == "RUNNING":
+                    ledger.set_state(manifest["request_id"], name,
+                                     "UNKNOWN_NEEDS_READBACK",
+                                     provider_sha=observed_sha,
+                                     reason="CRASH_OR_WRITE_OUTCOME_NOT_VERIFIED")
                 outcomes.append({"id": name, "state": "UNKNOWN_NEEDS_READBACK",
                                  "code": "RECONCILIATION_REQUIRED"})
             continue
