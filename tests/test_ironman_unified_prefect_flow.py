@@ -68,3 +68,32 @@ def test_schema_validation_precedes_any_adapter_call(tmp_path, monkeypatch):
     with pytest.raises(ChangeStop, match="TARGET_CONTAINER"):
         pipeline.unified_changeset_flow.fn(invalid, str(tmp_path/"ledger.sqlite3"))
     assert not (tmp_path/"ledger.sqlite3").exists()
+
+
+
+def test_prefect_routes_one_manifest_through_vpc_read_transport(tmp_path, monkeypatch):
+    selected = []
+    def registry(transport):
+        selected.append(transport)
+        return {"plan.workout.patch": SyntheticReadAdapter()}
+    monkeypatch.setattr(pipeline, "create_read_registry", registry)
+    result = pipeline.unified_changeset_flow(
+        manifest(), str(tmp_path/"vpc-ledger.sqlite3"),
+        read_transport="private_bridge",
+    )
+    assert selected == ["private_bridge"]
+    assert result["mode"] == "preview"
+    assert result["provider_writes"] == 0
+    assert result["publication_enabled"] is False
+
+
+def test_deployment_is_unscheduled_private_preview_only():
+    from pathlib import Path
+    import yaml
+    cfg = yaml.safe_load((Path(__file__).resolve().parents[1] /
+                          "prefect/ironman-unified-changeset-v1.yaml").read_text())
+    dep = cfg["deployments"][0]
+    assert dep["parameters"]["mode"] == "preview"
+    assert dep["parameters"]["read_transport"] == "private_bridge"
+    assert dep["schedules"] == []
+    assert "readonly" in dep["tags"]
