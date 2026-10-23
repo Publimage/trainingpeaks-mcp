@@ -22,6 +22,7 @@ from tp_mcp.client.context import athlete_override
 from tp_mcp.tools.metrics import tp_get_metrics
 from tp_mcp.tools.workouts import tp_get_workout, tp_get_workouts
 from tp_mcp.swim_audit_bridge import authorize_request, build_swim_input, validate_allowlist
+from tp_mcp.unified_read_bridge import READ_PATH, build_private_read, validate_policy
 
 DEFAULT_CONFIG = Path("/home/ironman/.config/ironman/private_bridge.json")
 MAX_BODY_BYTES = 65536
@@ -57,8 +58,13 @@ def _load_config(path: Path | None = None) -> dict[str, Any] | None:
         allowed_swim_templates = validate_allowlist(raw.get("allowed_swim_templates", []))
     except ValueError as exc:
         raise BridgeConfigError("INVALID_SWIM_TEMPLATE_ALLOWLIST") from exc
+    try:
+        allowed_unified_reads = validate_policy(raw.get("allowed_unified_reads", []))
+    except ValueError as exc:
+        raise BridgeConfigError("INVALID_UNIFIED_READ_ALLOWLIST") from exc
     return {
         "allowed_swim_templates": allowed_swim_templates,
+        "allowed_unified_reads": allowed_unified_reads,
         "host": host,
         "port": port,
         "allowed_sources": allowed_sources,
@@ -224,6 +230,11 @@ def _persist_admin_result(payload: dict[str, Any], config: dict[str, Any]) -> di
     return {"stored": True, "job_id": job_id, "operation": operation, "state": state}
 
 
+async def _build_unified_resource_input(payload: Any, config: dict[str, Any]) -> dict:
+    # authorize() runs before read_trainingpeaks_item creates a provider session.
+    return await build_private_read(payload, config.get("allowed_unified_reads", []))
+
+
 async def _build_swim_audit_input(payload: Any, config: dict[str, Any]) -> dict:
     allowed = config.get("allowed_swim_templates", [])
     authorize_request(payload, allowed)  # Deny before opening the provider client.
@@ -272,12 +283,12 @@ def _handler_factory(config: dict[str, Any]):
                 return
             path = urlparse(self.path).path
             if path not in {"/v1/radar-input", "/v1/radar-result", "/v1/admin-result",
-                            "/v1/swim-audit-input"}:
+                            "/v1/swim-audit-input", READ_PATH}:
                 self._write_json(404, {"error": "NOT_FOUND"})
                 return
             try:
                 length = int(self.headers.get("Content-Length") or "0")
-                if path == "/v1/swim-audit-input":
+                if path in ("/v1/swim-audit-input", READ_PATH):
                     limit = 4096
                 elif path == "/v1/radar-result":
                     limit = MAX_RESULT_BYTES
@@ -288,6 +299,20 @@ def _handler_factory(config: dict[str, Any]):
                 if length <= 0 or length > limit:
                     raise ValueError("INVALID_BODY_SIZE")
                 payload = json.loads(self.rfile.read(length))
+                if path == READ_PATH:
+                    try:
+                        result = asyncio.run(_build_unified_resource_input(payload, config))
+                    except PermissionError:
+                        self._write_json(403, {"error": "UNIFIED_RESOURCE_NOT_ALLOWED"})
+                    except (KeyError, TypeError, ValueError):
+                        self._write_json(400, {"error": "UNIFIED_RESOURCE_UNVERIFIABLE"})
+                    except (TimeoutError, ConnectionError):
+                        self._write_json(503, {"error": "UNIFIED_PROVIDER_UNAVAILABLE"})
+                    except Exception:
+                        self._write_json(424, {"error": "UNIFIED_PROVIDER_READER_FAILED"})
+                    else:
+                        self._write_json(200, result)
+                    return
                 if path == "/v1/swim-audit-input":
                     try:
                         result = asyncio.run(_build_swim_audit_input(payload, config))
