@@ -10,6 +10,9 @@ on:
       - tests/test_ironman_unified_changeset_engine.py
       - scripts/ironman_jobs/ironman_unified_trainingpeaks_reads.py
       - tests/test_ironman_unified_trainingpeaks_reads.py
+      - src/tp_mcp/unified_read_bridge.py
+      - src/tp_mcp/private_bridge.py
+      - tests/test_ironman_unified_private_bridge.py
       - scripts/ironman_jobs/ironman_unified_prefect_flow.py
       - tests/test_ironman_unified_prefect_flow.py
       - .github/workflows/ironman_operator_contract_ci.yml
@@ -36,4 +39,4 @@ jobs:
           python -m pip install -e '.[dev]'
           python -m pip install 'prefect==3.8.8' 'fastapi<0.155'
       - name: Verify common operator safety and conflict diagnostics
-        run: python -m pytest -q tests/test_ironman_operator.py tests/test_ironman_unified_changeset_engine.py tests/test_ironman_unified_trainingpeaks_reads.py tests/test_ironman_unified_prefect_flow.py
+        run: python -m pytest -q tests/test_ironman_operator.py tests/test_ironman_unified_changeset_engine.py tests/test_ironman_unified_trainingpeaks_reads.py tests/test_ironman_unified_prefect_flow.py tests/test_ironman_unified_private_bridge.py tests/test_private_bridge.py
