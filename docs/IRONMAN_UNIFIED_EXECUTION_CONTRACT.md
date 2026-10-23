@@ -146,8 +146,8 @@ the proven attachment DELETE route remains one guarded callback per reviewed
 operation, disabled by default.
 
 Actual independent local verification (GitHub blob hashes compared before
-execution): **39 pytest tests passed in 0.56 seconds** on the engine, PDF
-adapter, classic plan adapter and TrainingPeaks read gateway. All provider
+execution): **52 pytest tests passed in 0.55 seconds** on the engine, PDF adapter, classic plan adapter, TrainingPeaks read gateway,
+and all existing `plan_patch_batch_core` validator regressions. All provider
 objects were synthetic; TPClient imports were isolated by local stubs.
 Covered: two distinct plan IDs using the same adapter, two sequential PDF
 removals with clean preview, 100% unrelated-field preservation, rejected
