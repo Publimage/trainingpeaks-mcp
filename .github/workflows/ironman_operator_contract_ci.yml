@@ -1,5 +1,12 @@
 name: IRONMAN unified operator - offline contract
 on:
+  push:
+    branches:
+      - fix/ironman-unified-operator-errors-20261022
+    paths:
+      - 'scripts/ironman_jobs/ironman_unified_note_pdf_adapter.py'
+      - 'tests/test_ironman_unified_note_pdf_adapter.py'
+      - '.github/workflows/ironman_operator_contract_ci.yml'
   pull_request:
     branches:
       - feat/mcp-test-training-plan-lab
