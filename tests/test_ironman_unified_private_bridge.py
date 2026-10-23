@@ -11,7 +11,7 @@ from pathlib import Path
 
 import pytest
 
-from tp_mcp.private_bridge import _handler_factory, _load_config
+from tp_mcp.private_bridge import BridgeConfigError, _handler_factory, _load_config
 from tp_mcp.unified_read_bridge import (
     READ_PATH, PrivateBridgeReadAdapter, authorize, build_private_read,
     validate_policy, validate_spec,
@@ -45,6 +45,24 @@ def test_default_absent_config_is_deny_by_default(tmp_path):
     }))
     cfg=_load_config(p)
     assert cfg["allowed_unified_reads"] == []
+
+
+def test_invalid_unified_allowlist_reports_specific_config_error(tmp_path):
+    p = tmp_path / "private.json"
+    p.write_text(json.dumps({
+        "host": "10.114.0.2", "port": 8787,
+        "allowed_sources": ["10.114.0.3"],
+        "allowed_athletes": ["111"],
+        "result_writer_sources": ["10.114.0.3"],
+        "max_window_days": 21,
+        "allowed_unified_reads": [{
+            "provider": "trainingpeaks", "owner_id": OWNER,
+            "container_kind": "training_plan", "container_id": 684602,
+            "kinds": ["library.workout.patch"],
+        }],
+    }))
+    with pytest.raises(BridgeConfigError, match="INVALID_UNIFIED_READ_ALLOWLIST"):
+        _load_config(p)
 
 
 def test_explicit_plan_allowlist_works_without_per_week_job():
