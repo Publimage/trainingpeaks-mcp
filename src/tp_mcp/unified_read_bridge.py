@@ -126,11 +126,16 @@ PROJECTION_FIELDS = {
         "id", "calendarId", "workoutType", "title", "description",
         "date", "startDate", "duration", "plannedDuration",
         "exercises", "sets", "workout", "structure", "status", "metadata",
+        "blocks", "coachNotes", "workoutId", "plannedDurationSeconds",
     }),
     "library.workout.patch": frozenset({
         "exerciseLibraryItemId", "id", "exerciseLibraryId",
+        "exerciseLibraryItemType", "itemName", "workoutTypeId",
         "title", "description", "sportId", "distancePlanned",
         "totalTimePlanned", "structure", "workoutTypeValueId",
+        "caloriesPlanned", "tssPlanned", "ifPlanned",
+        "velocityPlanned", "energyPlanned", "elevationGainPlanned",
+        "coachComments", "workoutSubTypeId", "fromLegacy",
         "tags", "notes", "duration", "distance",
     }),
 }
