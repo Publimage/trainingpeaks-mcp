@@ -306,7 +306,27 @@ def run_changeset(
                 outcomes.append({"id": name, "state": "UNKNOWN_NEEDS_READBACK",
                                  "code": "VERIFIED_ITEM_READBACK_FAILED"})
                 continue
-            if live_sha != item["after_sha256"]:
+            # A verified change may have been intentionally superseded by a
+            # later, verified change on the SAME note/workout. Compare the
+            # provider with the allowed final chain, not a stale mid-state.
+            acceptable_shas = {item["after_sha256"]}
+            later = False
+            for next_item in ordered:
+                if next_item["id"] == name:
+                    later = True
+                    continue
+                if not later:
+                    continue
+                next_t = next_item["target"]
+                next_key = tuple(next_t[k] for k in (
+                    "provider", "owner_id", "container_kind",
+                    "container_id", "resource_id"
+                ))
+                if next_key == resource_key and ledger.status(
+                        manifest["request_id"], next_item["id"]
+                ) in {"DONE_VERIFIED", "UNKNOWN_NEEDS_READBACK", "RUNNING"}:
+                    acceptable_shas.add(next_item["after_sha256"])
+            if live_sha not in acceptable_shas:
                 if execute:
                     ledger.set_state(manifest["request_id"], name,
                                      "BLOCKED_CONFLICT", provider_sha=live_sha,
