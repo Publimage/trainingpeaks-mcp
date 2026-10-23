@@ -34,7 +34,8 @@ def validate_change_request(manifest: dict[str, Any]) -> str:
 @task(name="preview-one-ironman-changeset", retries=0, persist_result=False,
       log_prints=False)
 def preview_change_request(manifest: dict[str, Any],
-                           ledger_path: str) -> dict[str, Any]:
+                           ledger_path: str,
+                           read_transport: str = "local") -> dict[str, Any]:
     path = Path(ledger_path)
     if not path.is_absolute() or path.is_symlink():
         raise ChangeStop("LEDGER_PATH_NOT_ABSOLUTE_OR_SYMLINK")
@@ -45,7 +46,7 @@ def preview_change_request(manifest: dict[str, Any],
     ledger = Ledger(path)
     try:
         result = run_changeset(
-            manifest, create_read_registry(), ledger, execute=False,
+            manifest, create_read_registry(read_transport), ledger, execute=False,
         )
     finally:
         ledger.close()
@@ -62,6 +63,7 @@ def unified_changeset_flow(
     ledger_path: str,
     *,
     mode: str = "preview",
+    read_transport: str = "local",
 ) -> dict[str, Any]:
     """One generic flow: any plan/library resource type and any target ID.
 
@@ -70,8 +72,10 @@ def unified_changeset_flow(
     """
     if mode != "preview":
         raise ChangeStop("PUBLISHING_NOT_YET_ENABLED_FOR_UNIFIED_FLOW")
+    if read_transport not in {"local", "private_bridge"}:
+        raise ChangeStop("UNIFIED_UNSUPPORTED_READ_TRANSPORT")
     validate_change_request(manifest)
-    return preview_change_request(manifest, ledger_path)
+    return preview_change_request(manifest, ledger_path, read_transport)
 
 
 def load_manifest(path: Path) -> dict[str, Any]:
