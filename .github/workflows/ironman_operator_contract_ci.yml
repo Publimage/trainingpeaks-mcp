@@ -8,6 +8,14 @@ on:
       - 'tests/test_ironman_unified_*.py'
       - 'src/tp_mcp/unified_read_bridge.py'
       - 'src/tp_mcp/private_bridge.py'
+      - 'src/tp_mcp/tools/ironman_operator.py'
+      - 'tests/test_ironman_operator.py'
+      - 'tests/test_private_bridge.py'
+      - 'scripts/ironman_jobs/plan_patch_batch_core.py'
+      - 'tests/test_plan_patch_batch_core.py'
+      - 'prefect/ironman-unified-changeset-v1.yaml'
+      - 'docs/IRONMAN_UNIFIED_EXECUTION_CONTRACT.md'
+      - 'docs/IRONMAN_UNIFIED_PRIVATE_BRIDGE_RUNBOOK.md'
       - '.github/workflows/ironman_operator_contract_ci.yml'
   pull_request:
     branches:
@@ -30,6 +38,9 @@ on:
       - tests/test_ironman_unified_private_bridge.py
       - scripts/ironman_jobs/ironman_unified_prefect_flow.py
       - tests/test_ironman_unified_prefect_flow.py
+      - prefect/ironman-unified-changeset-v1.yaml
+      - docs/IRONMAN_UNIFIED_EXECUTION_CONTRACT.md
+      - docs/IRONMAN_UNIFIED_PRIVATE_BRIDGE_RUNBOOK.md
       - .github/workflows/ironman_operator_contract_ci.yml
 permissions:
   contents: read
