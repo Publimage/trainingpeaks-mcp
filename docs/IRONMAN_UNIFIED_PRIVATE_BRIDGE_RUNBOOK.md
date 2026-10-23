@@ -7,7 +7,7 @@ Purpose: connect the **existing** Prefect staging worker to the **existing** pri
 - Source of truth: canonical Drive `11_AGENT_ORCHESTRATION_ROADMAP`, `00B_IRONMAN_EMERGENCY_ACCESS_AND_RECOVERY`, `00C_IRONMAN_PROVEN_PATHS_REGISTRY`.
 - Endpoint in existing `tp_mcp.private_bridge`: `POST /v1/unified-resource-read`, bound to the currently configured private VPC address, not public interfaces.
 - Caller allowlist uses the existing `allowed_sources` IP control. Do not expand it or alter the existing Radar or CSS policies unless independently approved.
-- New opt-in key `allowed_unified_reads` defaults to `[]` (deny all). It lists exact Training Plan or Workout Library IDs plus allowed resource kinds; resource IDs in requests remain validated and belong to those containers.
+- New opt-in key `allowed_unified_reads` defaults to `[]` (deny all). Each entry must list the exact Training Plan/Workout Library container, resource kinds, and nonempty `resource_ids` allowlist. A resource ID outside that list is denied before the provider read. Older entries without `resource_ids` are invalid and must not be silently broadened.
 - Only exact `{"spec":{"kind": "...", "target":{...}}}` payloads. Every target is bound to owner ID `2116886`, typed container ID, resource ID and provider.
 - TP authentication and native data reads remain in the existing TrainingPeaks host process. The read-only VPC response is strictly bounded and strips credential-like keys and signed URLs.
 - The Prefect client disallows HTTP redirects, network proxies, arbitrary URL selection and writer methods. An out-of-scope response is rejected.
@@ -25,7 +25,8 @@ Purpose: connect the **existing** Prefect staging worker to the **existing** pri
     "owner_id": 2116886,
     "container_kind": "training_plan",
     "container_id": 123456,
-    "kinds": ["plan.workout.patch", "plan.note.patch"]
+    "kinds": ["plan.workout.patch", "plan.note.patch"],
+    "resource_ids": [111111, 222222]
   }
 ]
 ```
