@@ -1,0 +1,49 @@
+{
+  "schema": "IRONMAN_NOTE_ATTACHMENT_CLEANUP_V1",
+  "configured": true,
+  "owner_person_id": 2116886,
+  "plan_id": 684602,
+  "plan_person_id": 6678583,
+  "plan_title": "ALBERTO FAZI ENDURANCE | IRONMAN | 24 settimane | Intermediate | Italiano",
+  "plan_week_count": 24,
+  "plan_workout_count": 259,
+  "plan_notes_count": 35,
+  "plan_public": true,
+  "plan_price": 179,
+  "notes_date_from": "2026-10-05",
+  "notes_date_to": "2027-04-01",
+  "note_id": 2653899,
+  "note_title": "README FIRST | INIZIA DA QUI",
+  "attachments": [
+    {
+      "id": 95193,
+      "name": "IRONMAN_Intermediate_24W_Guida_Settimana_per_Settimana_v1.0.pdf",
+      "bytes": 169368,
+      "action": "remove"
+    },
+    {
+      "id": 95194,
+      "name": "IRONMAN_Intermediate_24W_Guida_Fueling_Nutrizione_v1.0.pdf",
+      "bytes": 109724,
+      "action": "keep"
+    },
+    {
+      "id": 95228,
+      "name": "IRONMAN_Intermediate_24W_Guida_Atleta_v3_Verificata.pdf",
+      "bytes": 396936,
+      "action": "remove"
+    },
+    {
+      "id": 98909,
+      "name": "IRONMAN_Intermediate_24W_Guida_Settimana_per_Settimana_v1.1.pdf",
+      "bytes": 170439,
+      "action": "keep"
+    },
+    {
+      "id": 98910,
+      "name": "IRONMAN_Intermediate_24W_Guida_Atleta_v3.1_20261022.pdf",
+      "bytes": 968230,
+      "action": "keep"
+    }
+  ]
+}
