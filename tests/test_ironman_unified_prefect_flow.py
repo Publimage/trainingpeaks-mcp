@@ -41,7 +41,7 @@ class SyntheticReadAdapter:
 
 def test_one_prefect_flow_accepts_generic_manifest_and_previews_only(tmp_path, monkeypatch):
     monkeypatch.setattr(pipeline, "create_read_registry",
-                        lambda: {"plan.workout.patch": SyntheticReadAdapter()})
+                        lambda read_transport="local": {"plan.workout.patch": SyntheticReadAdapter()})
     result = pipeline.unified_changeset_flow(manifest(), str(tmp_path/"ledger.sqlite3"))
     assert result["results"][0]["state"] == "PREFLIGHT_PASS"
     assert result["provider_writes"] == 0
@@ -52,7 +52,7 @@ def test_one_prefect_flow_accepts_generic_manifest_and_previews_only(tmp_path, m
 
 def test_refuses_publish_before_any_provider_work(tmp_path, monkeypatch):
     monkeypatch.setattr(pipeline, "create_read_registry",
-                        lambda: (_ for _ in ()).throw(AssertionError("SHOULD_NOT_READ")))
+                        lambda read_transport="local": (_ for _ in ()).throw(AssertionError("SHOULD_NOT_READ")))
     with pytest.raises(ChangeStop, match="PUBLISHING_NOT_YET_ENABLED"):
         pipeline.unified_changeset_flow.fn(
             manifest(), str(tmp_path/"ledger.sqlite3"), mode="publish"
