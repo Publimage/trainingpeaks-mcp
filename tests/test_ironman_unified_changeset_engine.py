@@ -159,6 +159,46 @@ def test_unknown_timeout_remains_claimed_and_no_auto_retry(ledger):
     assert adapter.writes == 1
 
 
+def test_crashed_running_receipt_is_readback_only(ledger):
+    before, after = {"v": 1}, {"v": 2}
+    change = item("one", "plan.workout.patch", 52, before, after)
+    m = make_manifest(change)
+    adapter = FakeAdapter(before)
+    run(m, {change["kind"]: adapter}, ledger, execute=False)
+    ledger.claim(m["request_id"], change)
+    ledger.set_state(m["request_id"], change["id"], "RUNNING")
+    adapter.value = after.copy()  # provider applied, process crashed before receipt
+    resumed = run(m, {change["kind"]: adapter}, ledger)
+    assert resumed["results"][0]["state"] == "DONE_VERIFIED"
+    assert resumed["results"][0]["source"] == "provider_reconciled_on_resume"
+    assert adapter.writes == 0
+    assert ledger.db.execute("SELECT COUNT(*) FROM resource_claims").fetchone()[0] == 0
+
+
+def test_unavailable_postwrite_readback_is_uncertain_not_lost(ledger):
+    before, after = {"v": 1}, {"v": 2}
+    change = item("one", "plan.note.patch", 53, before, after)
+    m = make_manifest(change)
+
+    class LostRead(FakeAdapter):
+        unavailable = True
+
+        def read(self, spec):
+            if self.writes and self.unavailable:
+                raise OSError("synthetic provider readback unavailable")
+            return super().read(spec)
+
+    adapter = LostRead(before)
+    result = run(m, {change["kind"]: adapter}, ledger)
+    assert result["results"][0]["state"] == "UNKNOWN_NEEDS_READBACK"
+    assert ledger.db.execute("SELECT COUNT(*) FROM resource_claims").fetchone()[0] == 1
+    adapter.unavailable = False
+    replay = run(m, {change["kind"]: adapter}, ledger)
+    assert replay["results"][0]["state"] == "DONE_VERIFIED"
+    assert replay["results"][0]["source"] == "provider_reconciled_on_resume"
+    assert adapter.writes == 1
+
+
 def test_manifest_reuse_with_different_payload_stops_before_write(ledger):
     old, new = {"v": 1}, {"v": 2}
     ch = item("one", "plan.note.patch", 33, old, new)
