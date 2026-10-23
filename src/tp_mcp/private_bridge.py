@@ -56,9 +56,12 @@ def _load_config(path: Path | None = None) -> dict[str, Any] | None:
         raise BridgeConfigError("INVALID_MAX_WINDOW_DAYS")
     try:
         allowed_swim_templates = validate_allowlist(raw.get("allowed_swim_templates", []))
-        allowed_unified_reads = validate_policy(raw.get("allowed_unified_reads", []))
     except ValueError as exc:
         raise BridgeConfigError("INVALID_SWIM_TEMPLATE_ALLOWLIST") from exc
+    try:
+        allowed_unified_reads = validate_policy(raw.get("allowed_unified_reads", []))
+    except ValueError as exc:
+        raise BridgeConfigError("INVALID_UNIFIED_READ_ALLOWLIST") from exc
     return {
         "allowed_swim_templates": allowed_swim_templates,
         "allowed_unified_reads": allowed_unified_reads,
