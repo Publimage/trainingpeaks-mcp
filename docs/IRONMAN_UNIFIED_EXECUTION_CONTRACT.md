@@ -18,22 +18,48 @@ One coach request -> one durable Prefect flow -> typed, plan-scoped operations -
 
 ## Single request contract (future public control plane)
 
+The ONE existing schema is `IRONMAN_CHANGESET_V1`. Do not invent a
+different manifest for a specific plan. Example *shape only*, intentionally
+non-executable (hashes and IDs below must come from a real reviewed readback):
+
 ```json
 {
   "schema": "IRONMAN_CHANGESET_V1",
-  "request_id": "unique-idempotency-key",
+  "request_id": "example-revision-001",
   "owner_id": 2116886,
-  "targets": [{"kind": "training_plan", "id": 684602}],
+  "reviewed_revision": "<reviewed 40-character Git SHA>",
+  "approval_scope": "approved:exact-operation-scope",
   "changes": [
-    {"kind": "plan_workout_description", "resource_id": 3996872965, "before_sha256": "...", "after_sha256": "..."},
-    {"kind": "plan_note_attachment_retire", "resource_id": 2653899, "attachment_id": 95193, "before_sha256": "..."}
-  ],
-  "approval": {"status": "approved", "scope": "explicitly-reviewed-scope"},
-  "baseline": {"plan_visibility": "public", "workouts": 259, "notes": 35}
+    {
+      "id": "retire-one-pdf",
+      "kind": "plan.note.attachment.retire",
+      "target": {
+        "provider": "trainingpeaks",
+        "owner_id": 2116886,
+        "container_kind": "training_plan",
+        "container_id": 777001,
+        "resource_id": 777002
+      },
+      "before_sha256": "<digest of complete original provider Note>",
+      "after_sha256": "<digest of complete Note after one PDF removal>",
+      "depends_on": [],
+      "payload": {
+        "desired": {"id": 777002, "planId": 777001, "attachments": []},
+        "attachment_id": 777003,
+        "expected_file_name": "obsolete.pdf",
+        "expected_content_length": 12345
+      }
+    }
+  ]
 }
 ```
 
-This is a schema illustration, not a request to perform the displayed changes. Content or file bytes reside in a separately reviewed manifest, never raw commands.
+The shown `desired` object is deliberately incomplete; a real approved
+manifest must contain the entire original provider Note unchanged except for
+exactly one attachment. No source code or plan-specific job changes when the
+IDs change. Two removals on one Note must declare a direct dependency and two
+exact successive before/after images. The integrated preview validates both
+steps using a virtual intermediate state, without altering TrainingPeaks.
 
 Typed adapters (not one-off scripts) handle: classic plan workout patches; native Calendar Notes; note PDF add/retire; plan-native StructuredStrength relocation; Workout Library edits. Athlete calendar is a separate explicit scope. Every adapter must be reusable for multiple independent IDs and plans.
 
@@ -106,3 +132,33 @@ The same typed operation `plan.note.attachment.retire` is now represented by `sc
 Crucial distinction: this adapter is **not registered as a live writer** in the Prefect preview flow; `delete_one=None` by default is a hard stop. Code review, current CI and a disposable-plan writer canary remain separate gates; neither PR #18 nor the previous Intermediate-specific cleanup publisher becomes permission to bypass a denied provider operation. The old per-plan scripts are historical compatibility paths and must not be cloned for each subsequent plan. Source of policy and Proven Path remains Google Drive 00C.
 
 Offline adapter smoke executed 2026-10-23: two distinct synthetic plans use the same adapter, exact PDF removed and unrelated PDF preserved; unapproved note rewrite rejected; default writer disabled. `tests/test_ironman_unified_note_pdf_adapter.py` adds integrated engine tests for cross-plan parity, two sequential deletions, drift and partial/uncertain results; independent CI for the current commit is **not yet verified**.
+
+
+## 2026-10-23 — Cross-plan regression and capability status
+
+Code path: PR #18 `fix/ironman-unified-operator-errors-20261022`. The
+existing read-only registry now injects validation adapters for
+`plan.workout.patch` and `plan.note.attachment.retire`; the other four
+ChangeSet kinds continue to use the shared read-only adapter. This is one
+typed router, not one job per plan. The proven classic field validator
+`plan_patch_batch_core.validate_manifest` is reused for plan workouts;
+the proven attachment DELETE route remains one guarded callback per reviewed
+operation, disabled by default.
+
+Actual independent local verification (GitHub blob hashes compared before
+execution): **39 pytest tests passed in 0.56 seconds** on the engine, PDF
+adapter, classic plan adapter and TrainingPeaks read gateway. All provider
+objects were synthetic; TPClient imports were isolated by local stubs.
+Covered: two distinct plan IDs using the same adapter, two sequential PDF
+removals with clean preview, 100% unrelated-field preservation, rejected
+unauthorized fields, deliberate denial, no-writer default, crash RUNNING
+receipt readback, timeout, lost readback, idempotent full-chain restart.
+No provider write, calendar or production-plan change occurred.
+
+**Separate gates:** the latest GitHub Actions run matching the new PR head has
+NOT been observed; old green CI results are not proof for these commits.
+Full Prefect/private bridge integration suite NOT run in the local environment.
+PR remains DRAFT / NOT MERGED / NOT DEPLOYED, and the unified flow remains
+preview-only. Callback injection in unit tests is NOT provider-write approval.
+Actual live writer paths still route via the scoped previously verified Proven
+Paths, not a generic unrestricted ChatGPT write tool.
