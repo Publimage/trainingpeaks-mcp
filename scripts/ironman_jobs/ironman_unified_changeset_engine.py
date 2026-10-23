@@ -395,19 +395,25 @@ def run_changeset(
             ledger.claim(manifest["request_id"], item)
             ledger.set_state(manifest["request_id"], name, "RUNNING",
                              provider_sha=before)
+            def safe_readback_sha() -> str | None:
+                try:
+                    return digest(adapter.read(item))
+                except Exception:
+                    return None
             try:
                 adapter.apply(item)
             except SecurityDenied:
-                after = digest(adapter.read(item))
+                after = safe_readback_sha()
                 ledger.set_state(manifest["request_id"], name,
                                  "BLOCKED_SECURITY", provider_sha=after,
                                  reason="PROVIDER_DENIAL_NO_RETRY")
-                ledger.release(manifest["request_id"], item)
+                if after is not None:
+                    ledger.release(manifest["request_id"], item)
                 outcomes.append({"id": name, "state": "BLOCKED_SECURITY"})
                 continue
             except Exception:
                 # Even if the transport timed out, mutation might have succeeded.
-                after = digest(adapter.read(item))
+                after = safe_readback_sha()
                 if after == item["after_sha256"]:
                     ledger.set_state(manifest["request_id"], name,
                                      "DONE_VERIFIED", provider_sha=after)
@@ -420,7 +426,7 @@ def run_changeset(
                                      reason="WRITE_OUTCOME_UNCERTAIN_NO_RETRY")
                     outcomes.append({"id": name, "state": "UNKNOWN_NEEDS_READBACK"})
                 continue
-            after = digest(adapter.read(item))
+            after = safe_readback_sha()
             if after != item["after_sha256"]:
                 ledger.set_state(manifest["request_id"], name,
                                  "UNKNOWN_NEEDS_READBACK", provider_sha=after,
