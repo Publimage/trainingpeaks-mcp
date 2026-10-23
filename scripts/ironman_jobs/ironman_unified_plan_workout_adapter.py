@@ -14,7 +14,7 @@ from scripts.ironman_jobs.ironman_unified_changeset_engine import (
     OWNER, ChangeStop, SecurityDenied, digest, need,
 )
 from scripts.ironman_jobs.plan_patch_batch_core import (
-    ALLOWED, validate_manifest,
+    ALLOWED, PlanPatchStop, validate_manifest,
 )
 from scripts.ironman_jobs.ironman_unified_trainingpeaks_reads import (
     TrainingPeaksReadOnlyAdapter,
@@ -52,14 +52,17 @@ def validate_classic_patch(change: dict[str, Any], current: dict[str, Any]) -> t
     # Reuse the existing reviewed publisher's tested field/Builder validator.
     # The synthetic plan summary here is ONLY for field-shape validation; it
     # never acts as live plan metadata or as authorization to publish.
-    validate_manifest({
-        "schema": "IRONMAN_PLAN_PATCH_V1", "owner_id": OWNER,
-        "plan_id": plan_id, "expected_title": "FIELD_VALIDATION_ONLY",
-        "expected_is_public": False, "expected_workout_count": 1,
-        "scope": f"trainingpeaks:plan:{plan_id}:field-validator-only",
-        "items": [{"workout_id": workout_id,
-                   "before": before_fields, "after": after_fields}],
-    })
+    try:
+        validate_manifest({
+            "schema": "IRONMAN_PLAN_PATCH_V1", "owner_id": OWNER,
+            "plan_id": plan_id, "expected_title": "FIELD_VALIDATION_ONLY",
+            "expected_is_public": False, "expected_workout_count": 1,
+            "scope": f"trainingpeaks:plan:{plan_id}:field-validator-only",
+            "items": [{"workout_id": workout_id,
+                       "before": before_fields, "after": after_fields}],
+        })
+    except PlanPatchStop as exc:
+        raise ChangeStop("CLASSIC_FIELDS_INVALID:" + str(exc)) from exc
     need(change.get("before_sha256") == digest(current)
          and change.get("after_sha256") == digest(desired),
          "CLASSIC_REVIEW_HASH_DRIFT")
