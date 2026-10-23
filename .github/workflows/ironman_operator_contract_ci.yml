@@ -18,7 +18,7 @@ on:
       - 'docs/IRONMAN_UNIFIED_PRIVATE_BRIDGE_RUNBOOK.md'
       - '.github/workflows/ironman_operator_contract_ci.yml'
   pull_request:
-    types: [opened, reopened, synchronize, edited]
+    types: [opened, reopened, synchronize, edited, ready_for_review]
     branches:
       - feat/mcp-test-training-plan-lab
     paths:
