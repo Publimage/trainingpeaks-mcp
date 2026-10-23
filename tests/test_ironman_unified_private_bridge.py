@@ -28,10 +28,14 @@ def spec(kind="plan.workout.patch", container=684602, item=3996858792):
     }}
 
 
-def policy(kinds=None, container=684602, container_kind="training_plan"):
+def policy(kinds=None, container=684602, container_kind="training_plan",
+           resource_ids=None):
+    if resource_ids is None:
+        resource_ids = [3996858792, 1, 2]
     return [{"provider": "trainingpeaks", "owner_id": OWNER,
              "container_kind": container_kind, "container_id": container,
-             "kinds": kinds or ["plan.workout.patch"]}]
+             "kinds": kinds or ["plan.workout.patch"],
+             "resource_ids": resource_ids}]
 
 
 def test_default_absent_config_is_deny_by_default(tmp_path):
@@ -59,6 +63,7 @@ def test_invalid_unified_allowlist_reports_specific_config_error(tmp_path):
             "provider": "trainingpeaks", "owner_id": OWNER,
             "container_kind": "training_plan", "container_id": 684602,
             "kinds": ["library.workout.patch"],
+            "resource_ids": [3996858792],
         }],
     }))
     with pytest.raises(BridgeConfigError, match="INVALID_UNIFIED_READ_ALLOWLIST"):
@@ -72,6 +77,8 @@ def test_explicit_plan_allowlist_works_without_per_week_job():
     ]))
     assert authorize(spec("plan.workout.patch", item=1), allowed)
     assert authorize(spec("plan.note.attachment.retire", item=2), allowed)
+    with pytest.raises(PermissionError, match="UNIFIED_RESOURCE_NOT_ALLOWED"):
+        authorize(spec("plan.workout.patch", item=3), allowed)
     with pytest.raises(PermissionError, match="UNIFIED_RESOURCE_NOT_ALLOWED"):
         authorize(spec("library.workout.patch", container=3891872, item=5), allowed)
     with pytest.raises(PermissionError, match="UNIFIED_RESOURCE_NOT_ALLOWED"):
@@ -91,6 +98,32 @@ def test_bad_spec_or_policy_rejected_before_provider_read():
     bad[0]["kinds"]=["plan.workout.patch", "plan.workout.patch"]
     with pytest.raises(ValueError, match="UNIFIED_POLICY_KINDS"):
         validate_policy(bad)
+
+
+@pytest.mark.parametrize("resource_ids", [[], [0], [1, 1], ["1"], [True]])
+def test_policy_rejects_missing_invalid_or_duplicate_resource_ids(resource_ids):
+    with pytest.raises(ValueError, match="UNIFIED_POLICY_RESOURCE_IDS"):
+        validate_policy(policy(resource_ids=resource_ids))
+
+
+def test_policy_must_include_exact_resource_ids():
+    bad = policy()
+    del bad[0]["resource_ids"]
+    with pytest.raises(ValueError, match="UNIFIED_POLICY_FIELDS"):
+        validate_policy(bad)
+
+
+def test_kind_projection_drops_unapproved_top_level_fields():
+    from tp_mcp.unified_read_bridge import project_read_record
+    native = {"workoutId": 1, "title": "Synthetic",
+              "distancePlanned": 2500, "internalOnly": "do-not-forward",
+              "structure": {"structure": [{"name": "300 warmup", "length": 300}]},
+              "downloadUrl": "https://forbidden.invalid/private"}
+    out = project_read_record(native, kind="plan.workout.patch")
+    assert out["workoutId"] == 1
+    assert out["distancePlanned"] == 2500
+    assert out["structure"]["structure"][0]["length"] == 300
+    assert "internalOnly" not in out and "downloadUrl" not in out
 
 
 def test_provider_is_never_called_for_unapproved_plan():
