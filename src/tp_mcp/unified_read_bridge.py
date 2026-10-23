@@ -30,7 +30,7 @@ KINDS = {
     "library.workout.patch",
 }
 TARGET_FIELDS = {"provider", "owner_id", "container_kind", "container_id", "resource_id"}
-POLICY_FIELDS = {"provider", "owner_id", "container_kind", "container_id", "kinds"}
+POLICY_FIELDS = {"provider", "owner_id", "container_kind", "container_id", "kinds", "resource_ids"}
 
 
 def need(cond: bool, code: str) -> None:
@@ -70,6 +70,12 @@ def validate_policy(raw: Any) -> list[dict]:
              "UNIFIED_POLICY_CONTAINER")
         need(type(row["container_id"]) is int and 0 < row["container_id"] <= 2**63 - 1,
              "UNIFIED_POLICY_ID")
+        resource_ids = row["resource_ids"]
+        need(type(resource_ids) is list and 1 <= len(resource_ids) <= 128
+             and all(type(rid) is int and 0 < rid <= 2**63 - 1
+                     for rid in resource_ids)
+             and len(set(resource_ids)) == len(resource_ids),
+             "UNIFIED_POLICY_RESOURCE_IDS")
         kinds = row["kinds"]
         need(type(kinds) is list and 1 <= len(kinds) <= len(KINDS) and
              all(type(k) is str and k in KINDS for k in kinds) and
@@ -80,7 +86,7 @@ def validate_policy(raw: Any) -> list[dict]:
         key = (row["owner_id"], row["container_kind"], row["container_id"])
         need(key not in seen, "UNIFIED_POLICY_DUPLICATE")
         seen.add(key)
-        result.append({**row, "kinds": list(kinds)})
+        result.append({**row, "kinds": list(kinds), "resource_ids": list(resource_ids)})
     return result
 
 
@@ -93,21 +99,60 @@ def authorize(spec: Any, policy: Any) -> dict:
         if (row["owner_id"] == target["owner_id"] and
             row["container_kind"] == target["container_kind"] and
             row["container_id"] == target["container_id"] and
+            target["resource_id"] in row["resource_ids"] and
             parsed["kind"] in row["kinds"]):
             return parsed
     raise PermissionError("UNIFIED_RESOURCE_NOT_ALLOWED")
 
+
+# Bounded provider-field projection per native resource type. Unknown top-level
+# provider data stays on the authenticated TP host. Nested Builder/strength
+# structures are scrubbed for secrets/URLs without dropping training segments.
+PROJECTION_FIELDS = {
+    "plan.workout.patch": frozenset({
+        "workoutId", "id", "planId", "title", "description",
+        "workoutTypeValueId", "workoutType", "sportId", "date", "workoutDate",
+        "startTime", "endTime", "calendarId", "workoutDay", "completed",
+        "totalTimePlanned", "distancePlanned", "tssPlanned",
+        "structure", "lastModifiedDate", "notes", "details", "goal",
+        "isStructured", "isHidden", "duration", "distance",
+    }),
+    "plan.note.patch": frozenset({
+        "id", "planId", "calendarId", "title", "description",
+        "attachments", "date", "noteDate", "startDate", "endDate",
+        "createdAt", "modifiedAt", "weekNumber",
+    }),
+    "plan.strength.relocate": frozenset({
+        "id", "calendarId", "workoutType", "title", "description",
+        "date", "startDate", "duration", "plannedDuration",
+        "exercises", "sets", "workout", "structure", "status", "metadata",
+    }),
+    "library.workout.patch": frozenset({
+        "exerciseLibraryItemId", "id", "exerciseLibraryId",
+        "title", "description", "sportId", "distancePlanned",
+        "totalTimePlanned", "structure", "workoutTypeValueId",
+        "tags", "notes", "duration", "distance",
+    }),
+}
+for _kind in ("plan.note.attachment.add", "plan.note.attachment.retire"):
+    PROJECTION_FIELDS[_kind] = PROJECTION_FIELDS["plan.note.patch"]
+
+ATTACHMENT_SAFE_FIELDS = frozenset({
+    "id", "fileName", "contentLength", "contentType",
+})
 
 SENSITIVE_PROVIDER_KEYS = {
     "authorization", "accesstoken", "refreshtoken", "idtoken", "password",
     "secret", "cookie", "signedurl", "downloadurl", "contenturl",
     "presignedurl", "accessurl", "authheader", "apikey", "accesskey",
     "signeduri", "downloaduri", "uploadurl", "fileurl", "resourceurl",
-    "href", "uri", "url", "link", "sessionid",
+    "href", "uri", "url", "link", "sessionid", "token", "bearertoken",
+    "jwttoken", "clientsecret", "privatekey", "credential", "signature",
 }
 
 
-def project_read_record(raw: Any, depth: int = 0) -> Any:
+def project_read_record(raw: Any, depth: int = 0,
+                        *, kind: str | None = None) -> Any:
     """Keep comparable provider fields; never move credentials or signed links.
 
     The projection is deterministic across identical provider reads, so the
@@ -116,11 +161,18 @@ def project_read_record(raw: Any, depth: int = 0) -> Any:
     need(depth <= 32, "UNIFIED_RECORD_NESTING")
     if type(raw) is dict:
         need(len(raw) <= 500, "UNIFIED_RECORD_OBJECT_TOO_LARGE")
+        allowed = PROJECTION_FIELDS.get(kind) if depth == 0 and kind else None
+        if depth == 0 and kind:
+            need(allowed is not None, "UNIFIED_UNSUPPORTED_PROJECTION_KIND")
+        if depth > 0 and type(raw.get("fileName")) is str and "contentLength" in raw:
+            allowed = ATTACHMENT_SAFE_FIELDS
         return {key: project_read_record(value, depth + 1)
                 for key, value in raw.items()
-                if type(key) is str and
-                re.sub(r"[^a-z0-9]", "", key.lower()) not in SENSITIVE_PROVIDER_KEYS
-                and not key.lower().endswith(("signedurl", "downloadurl"))}
+                if type(key) is str
+                and (allowed is None or key in allowed)
+                and re.sub(r"[^a-z0-9]", "", key.lower()) not in SENSITIVE_PROVIDER_KEYS
+                and not key.lower().endswith(("signedurl", "downloadurl",
+                                               "attachmenturl", "accessurl"))}
     if type(raw) is list:
         need(len(raw) <= 10000, "UNIFIED_RECORD_ARRAY_TOO_LARGE")
         return [project_read_record(item, depth + 1) for item in raw]
@@ -141,7 +193,7 @@ async def build_private_read(payload: Any, policy: Any, read_item=None) -> dict:
         "schema": SCHEMA,
         "kind": spec["kind"],
         "target": spec["target"],
-        "record": project_read_record(item),
+        "record": project_read_record(item, kind=spec["kind"]),
         "trainingpeaks_writes": 0,
     }
     encoded = json.dumps(result, ensure_ascii=False, allow_nan=False,
