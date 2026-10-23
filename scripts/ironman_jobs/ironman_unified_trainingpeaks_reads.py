@@ -142,4 +142,15 @@ def create_read_registry(transport: str = "local") -> dict[str, Any]:
         adapter = PrivateBridgeReadAdapter()
     else:
         raise ChangeStop("UNIFIED_UNSUPPORTED_READ_TRANSPORT")
-    return {kind: adapter for kind in VALID_KINDS}
+    registry = {kind: adapter for kind in VALID_KINDS}
+    # Reuse the SAME read transport for two reviewed field/attachment
+    # validators; no provider writers are installed by this registry.
+    from scripts.ironman_jobs.ironman_unified_note_pdf_adapter import (
+        ReviewedNotePdfRetireAdapter,
+    )
+    from scripts.ironman_jobs.ironman_unified_plan_workout_adapter import (
+        ReviewedClassicPlanPatchAdapter,
+    )
+    registry["plan.note.attachment.retire"] = ReviewedNotePdfRetireAdapter(reader=adapter)
+    registry["plan.workout.patch"] = ReviewedClassicPlanPatchAdapter(reader=adapter)
+    return registry
