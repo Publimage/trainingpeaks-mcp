@@ -127,6 +127,9 @@ def test_two_pdfs_in_same_note_serialize_via_dependencies(tmp_path):
     m = manifest(entry("old-weekly", 684602, 2653899, old, 95193),
                  entry("old-guide", 684602, 2653899, intermediate, 95228,
                        depends=["old-weekly"]))
+    preview = run(m, provider, tmp_path, execute=False)
+    assert [x["state"] for x in preview["results"]] == ["PREFLIGHT_PASS"] * 2
+    assert provider.writes == []
     result = run(m, provider, tmp_path, execute=True)
     assert all(x["state"] == "DONE_VERIFIED" for x in result["results"])
     assert provider.writes == [(684602, 2653899, 95193), (684602, 2653899, 95228)]
@@ -199,3 +202,43 @@ def test_proven_endpoint_is_one_delete_without_automatic_retry(monkeypatch):
     asyncio.run(proven_path_delete_one_pdf(777001, 777002, 777003))
     assert seen == [("DELETE", "/plans/v1/plans/777001/calendarNote/777002/attachments/777003",
                      {"_retry_on_401": False})]
+
+def test_shared_note_without_dependency_rejected_before_provider_access(tmp_path):
+    from scripts.ironman_jobs.ironman_unified_changeset_engine import ChangeStop, validate_manifest
+    old = note(700101, 710101, 720101)
+    after_first = deepcopy(old)
+    after_first["attachments"] = [x for x in old["attachments"] if x["id"] != 720101]
+    no_dependency = manifest(
+        entry("first", 700101, 710101, old, 720101),
+        entry("second", 700101, 710101, after_first, 777),
+    )
+    with pytest.raises(ChangeStop, match="SHARED_RESOURCE_REQUIRES_DIRECT_DEPENDENCY"):
+        validate_manifest(no_dependency)
+
+
+def test_unknown_write_reconciled_only_by_readback_on_later_run(tmp_path):
+    original = note(700101, 710101, 720101)
+    provider = FakeProvider({(700101, 710101): original})
+    provider.fail = "timeout_before"
+    m = manifest(entry("first", 700101, 710101, original, 720101))
+    first = run(m, provider, tmp_path, execute=True)
+    assert first["results"][0]["state"] == "UNKNOWN_NEEDS_READBACK"
+    # An out-of-band readback can establish that the lost request did commit.
+    provider.fail = None
+    provider.notes[(700101, 710101)]["attachments"] = [
+        x for x in original["attachments"] if x["id"] != 720101
+    ]
+    resumed = run(m, provider, tmp_path, execute=True)
+    assert resumed["results"][0]["state"] == "DONE_VERIFIED"
+    assert resumed["results"][0]["source"] == "provider_reconciled_on_resume"
+    assert provider.writes == [(700101, 710101, 720101)]
+
+
+def test_pdf_validation_also_runs_in_preview(tmp_path):
+    original = note(700101, 710101, 720101)
+    provider = FakeProvider({(700101, 710101): original})
+    item = entry("bad", 700101, 710101, original, 720101)
+    item["payload"]["expected_file_name"] = "wrong.pdf"
+    result = run(manifest(item), provider, tmp_path, execute=False)
+    assert result["results"][0]["state"] == "FAILED_REVIEW"
+    assert provider.writes == []
