@@ -147,3 +147,38 @@ def test_http_endpoint_requires_existing_vpc_source_and_explicit_plan(monkeypatc
 
 async def _fake_async(spec):
     return {"title":"synthetic","id":spec["target"]["resource_id"]}
+
+
+
+def test_never_forward_credentials_or_signed_attachment_links():
+    from tp_mcp.unified_read_bridge import project_read_record
+    native={
+        "id":77,"description":"normal session", "accessToken":"do-not-forward",
+        "inner":{"refresh_token":"do-not-forward","plannedSeconds":1800},
+        "attachments":[{"id":22,"fileName":"guide.pdf",
+                        "downloadUrl":"https://file.example/private?token=secret",
+                        "contentLength":1024}],
+    }
+    safe=project_read_record(native)
+    serialized=json.dumps(safe)
+    assert "do-not-forward" not in serialized
+    assert "https://file.example" not in serialized
+    assert safe["attachments"]==[{"id":22,"fileName":"guide.pdf","contentLength":1024}]
+    assert safe["inner"]["plannedSeconds"]==1800
+
+
+def test_prefect_private_client_rejects_wrong_scope_returned_by_bridge(monkeypatch):
+    from tp_mcp import unified_read_bridge as transport
+    original=spec()
+    bad={"schema":transport.SCHEMA,"kind":"plan.note.patch",
+         "target":original["target"],"record":{"id":42},"trainingpeaks_writes":0}
+    class Response:
+        status=200
+        def __enter__(self): return self
+        def __exit__(self,*args): return None
+        def read(self,size): return json.dumps(bad).encode()
+    class Opener:
+        def open(self,request,timeout): return Response()
+    monkeypatch.setattr(transport, "build_opener",lambda *args:Opener())
+    with pytest.raises(ValueError,match="UNIFIED_BRIDGE_RESPONSE_MISMATCH"):
+        transport._remote_read(original)
