@@ -97,3 +97,12 @@ CI now runs the existing operator suite, the generic change-set/idempotency suit
 CI uses prefect==3.8.8 and fastapi<0.155 to avoid a backward-incompatible FastAPI Body(min_items) removal. This is dependency pinning, not a TP failure.
 
 Still OPEN: controlled private-bridge read access, dedicated staging work-pool smoke test, shared multi-host write lock, review of reusable write adapters per type, crash/dedup canary on approved disposable plan, production release gate.
+
+
+## 2026-10-23 — Reusable note-PDF retirement typed adapter
+
+The same typed operation `plan.note.attachment.retire` is now represented by `scripts/ironman_jobs/ironman_unified_note_pdf_adapter.py`. The code accepts a reviewed plan ID, note ID and PDF attachment ID as manifest data; it does not contain an Intermediate/CHASING-specific target. `validate_pdf_retirement` checks the full before/after native Calendar Note, filename and byte count, rejects attempts to change other note fields or attached files, and uses the already-proven 2026-10-19 provider DELETE route with `_retry_on_401=False`. A single change-set can contain sequential PDF removals on one note or independent operations on different plans. The existing ChangeSet ledger provides serialization, duplicate detection, readback and ambiguous-outcome handling.
+
+Crucial distinction: this adapter is **not registered as a live writer** in the Prefect preview flow; `delete_one=None` by default is a hard stop. Code review, current CI and a disposable-plan writer canary remain separate gates; neither PR #18 nor the previous Intermediate-specific cleanup publisher becomes permission to bypass a denied provider operation. The old per-plan scripts are historical compatibility paths and must not be cloned for each subsequent plan. Source of policy and Proven Path remains Google Drive 00C.
+
+Offline adapter smoke executed 2026-10-23: two distinct synthetic plans use the same adapter, exact PDF removed and unrelated PDF preserved; unapproved note rewrite rejected; default writer disabled. `tests/test_ironman_unified_note_pdf_adapter.py` adds integrated engine tests for cross-plan parity, two sequential deletions, drift and partial/uncertain results; independent CI for the current commit is **not yet verified**.
