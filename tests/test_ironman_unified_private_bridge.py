@@ -182,3 +182,37 @@ def test_prefect_private_client_rejects_wrong_scope_returned_by_bridge(monkeypat
     monkeypatch.setattr(transport, "build_opener",lambda *args:Opener())
     with pytest.raises(ValueError,match="UNIFIED_BRIDGE_RESPONSE_MISMATCH"):
         transport._remote_read(original)
+
+
+
+def test_existing_bridge_ip_boundary_rejects_vpc_unauthorized_source(monkeypatch):
+    import tp_mcp.private_bridge as bridge
+    calls=[]
+    async def forbidden(*args):
+        calls.append(args)
+        raise AssertionError("PROVIDER_MUST_NOT_BE_REACHED")
+    monkeypatch.setattr(bridge, "_build_unified_resource_input", forbidden)
+    cfg={
+        "allowed_sources":{"10.114.0.3"},
+        "allowed_unified_reads":policy(),
+        "allowed_athletes":set(),
+        "result_writer_sources":set(),
+        "max_window_days":21,
+    }
+    server=ThreadingHTTPServer(("127.0.0.1",0),_handler_factory(cfg))
+    thread=threading.Thread(target=server.serve_forever,daemon=True)
+    thread.start()
+    try:
+        conn=HTTPConnection("127.0.0.1",server.server_address[1],timeout=5)
+        conn.request("POST",READ_PATH,json.dumps({"spec":spec()}),
+                     {"Content-Type":"application/json"})
+        response=conn.getresponse()
+        out=json.loads(response.read())
+        assert response.status==403
+        assert out["error"]=="SOURCE_NOT_ALLOWED"
+        assert calls==[]
+        conn.close()
+    finally:
+        server.shutdown()
+        server.server_close()
+        thread.join(timeout=3)
