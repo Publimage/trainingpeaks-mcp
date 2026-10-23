@@ -98,6 +98,35 @@ def authorize(spec: Any, policy: Any) -> dict:
     raise PermissionError("UNIFIED_RESOURCE_NOT_ALLOWED")
 
 
+SENSITIVE_PROVIDER_KEYS = {
+    "authorization", "accesstoken", "refreshtoken", "idtoken", "password",
+    "secret", "cookie", "signedurl", "downloadurl", "contenturl",
+    "presignedurl", "accessurl", "authheader",
+}
+
+
+def project_read_record(raw: Any, depth: int = 0) -> Any:
+    """Keep comparable provider fields; never move credentials or signed links.
+
+    The projection is deterministic across identical provider reads, so the
+    Prefect ledger can fingerprint and compare it. Reads are not a download API.
+    """
+    need(depth <= 32, "UNIFIED_RECORD_NESTING")
+    if type(raw) is dict:
+        need(len(raw) <= 500, "UNIFIED_RECORD_OBJECT_TOO_LARGE")
+        return {key: project_read_record(value, depth + 1)
+                for key, value in raw.items()
+                if type(key) is str and
+                re.sub(r"[^a-z0-9]", "", key.lower()) not in SENSITIVE_PROVIDER_KEYS
+                and not key.lower().endswith(("signedurl", "downloadurl"))}
+    if type(raw) is list:
+        need(len(raw) <= 10000, "UNIFIED_RECORD_ARRAY_TOO_LARGE")
+        return [project_read_record(item, depth + 1) for item in raw]
+    need(raw is None or type(raw) in (str, int, float, bool),
+         "UNIFIED_RECORD_UNSERIALIZABLE")
+    return raw
+
+
 async def build_private_read(payload: Any, policy: Any, read_item=None) -> dict:
     need(type(payload) is dict and set(payload) == {"spec"}, "UNIFIED_REQUEST_FIELDS")
     spec = authorize(payload["spec"], policy)
@@ -110,7 +139,7 @@ async def build_private_read(payload: Any, policy: Any, read_item=None) -> dict:
         "schema": SCHEMA,
         "kind": spec["kind"],
         "target": spec["target"],
-        "record": item,
+        "record": project_read_record(item),
         "trainingpeaks_writes": 0,
     }
     encoded = json.dumps(result, ensure_ascii=False, allow_nan=False,
