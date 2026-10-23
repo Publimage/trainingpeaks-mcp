@@ -126,6 +126,62 @@ def test_kind_projection_drops_unapproved_top_level_fields():
     assert "internalOnly" not in out and "downloadUrl" not in out
 
 
+def test_native_library_projection_preserves_provider_identity_builder_and_planned_fields():
+    from tp_mcp.unified_read_bridge import project_read_record
+    native = {
+        "exerciseLibraryId": 3891872,
+        "exerciseLibraryItemId": 14963420,
+        "exerciseLibraryItemType": "WorkoutTemplate",
+        "itemName": "Test | CSS 400+200 - 2200 m",
+        "workoutTypeId": 1,
+        "workoutSubTypeId": None,
+        "distancePlanned": 2200.0,
+        "totalTimePlanned": 0.9166666666667,
+        "caloriesPlanned": None,
+        "tssPlanned": None,
+        "ifPlanned": None,
+        "velocityPlanned": None,
+        "energyPlanned": None,
+        "elevationGainPlanned": None,
+        "description": "Synthetic library record",
+        "coachComments": None,
+        "fileAttachments": "https://signed.invalid/private",
+        "fromLegacy": False,
+        "structure": {
+            "structure": [{"name": "400 warm up", "length": {"value": 400, "unit": "meter"}}],
+            "polyline": [{"x": 0, "y": 1}],
+        },
+        "accessToken": "must-not-cross-vpc",
+    }
+    out = project_read_record(native, kind="library.workout.patch")
+    assert out["itemName"] == native["itemName"]
+    assert out["exerciseLibraryItemType"] == "WorkoutTemplate"
+    assert out["workoutTypeId"] == 1
+    assert out["distancePlanned"] == 2200
+    assert out["fromLegacy"] is False
+    assert out["structure"] == native["structure"]
+    assert "fileAttachments" not in out
+    assert "accessToken" not in out
+
+
+def test_native_strength_projection_preserves_blocks_and_strips_secret_links():
+    from tp_mcp.unified_read_bridge import project_read_record
+    native = {
+        "id": 33973536, "calendarId": 6678583,
+        "workoutType": "StructuredStrength",
+        "blocks": [{
+            "type": "WarmUp",
+            "exercises": [{"name": "Squat", "sets": [{"reps": 6, "rpe": 6}],
+                           "signedUrl": "https://signed.invalid/secret"}],
+        }],
+        "clientSecret": "must-not-cross-vpc",
+    }
+    out = project_read_record(native, kind="plan.strength.relocate")
+    assert out["blocks"][0]["exercises"][0]["sets"][0]["reps"] == 6
+    assert "signedUrl" not in out["blocks"][0]["exercises"][0]
+    assert "clientSecret" not in out
+
+
 def test_provider_is_never_called_for_unapproved_plan():
     touched=[]
     async def reader(x):
