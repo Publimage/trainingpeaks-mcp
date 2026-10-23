@@ -134,6 +134,11 @@ def test_two_pdfs_in_same_note_serialize_via_dependencies(tmp_path):
     assert all(x["state"] == "DONE_VERIFIED" for x in result["results"])
     assert provider.writes == [(684602, 2653899, 95193), (684602, 2653899, 95228)]
     assert [x["id"] for x in provider.notes[(684602, 2653899)]["attachments"]] == [777]
+    # Restart from a brand-new chat/process: both receipts must stay valid
+    # against the FINAL post-chain note, not demand that the first PDF reappear.
+    replay = run(m, provider, tmp_path, execute=True)
+    assert [x["state"] for x in replay["results"]] == ["DONE_VERIFIED", "DONE_VERIFIED"]
+    assert len(provider.writes) == 2
 
 
 def test_no_writer_enabled_fails_closed(tmp_path):
