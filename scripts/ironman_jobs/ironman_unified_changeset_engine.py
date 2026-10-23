@@ -140,6 +140,17 @@ def validate_manifest(value: dict[str, Any]) -> str:
 
     for change_id in graph:
         walk(change_id)
+    # Multiple edits to one provider resource require explicit ordering.
+    last_by_resource: dict[tuple[Any, ...], str] = {}
+    for item in changes:
+        target = item["target"]
+        key = tuple(target[k] for k in (
+            "provider", "owner_id", "container_kind", "container_id", "resource_id"
+        ))
+        previous = last_by_resource.get(key)
+        need(previous is None or previous in item["depends_on"],
+             "SHARED_RESOURCE_REQUIRES_DIRECT_DEPENDENCY")
+        last_by_resource[key] = item["id"]
     return digest(value)
 
 
@@ -271,8 +282,14 @@ def run_changeset(
             ordered.append(x)
             pending.remove(x["id"])
     outcomes = []
+    preview_passed: set[str] = set()
+    preview_images: dict[tuple[Any, ...], dict[str, Any]] = {}
     for item in ordered:
         name, kind = item["id"], item["kind"]
+        target = item["target"]
+        resource_key = tuple(target[k] for k in (
+            "provider", "owner_id", "container_kind", "container_id", "resource_id"
+        ))
         state = ledger.status(manifest["request_id"], name)
         if state == "DONE_VERIFIED":
             # The ledger is not the provider source of truth. A resumed flow
@@ -283,7 +300,8 @@ def run_changeset(
                                  "code": "ADAPTER_NOT_INSTALLED"})
                 continue
             try:
-                live_sha = digest(adapter.read(item))
+                observed = adapter.read(item)
+                live_sha = digest(observed)
             except Exception:
                 outcomes.append({"id": name, "state": "UNKNOWN_NEEDS_READBACK",
                                  "code": "VERIFIED_ITEM_READBACK_FAILED"})
@@ -298,11 +316,35 @@ def run_changeset(
                 continue
             outcomes.append({"id": name, "state": "DONE_VERIFIED",
                              "source": "provider_rechecked"})
+            if not execute:
+                preview_passed.add(name)
+                preview_images[resource_key] = observed
+            continue
+        if state == "UNKNOWN_NEEDS_READBACK":
+            # Reconcile a timed-out provider mutation by READ only, never replay.
+            adapter = adapters.get(kind)
+            try:
+                observed_sha = digest(adapter.read(item)) if adapter else None
+            except Exception:
+                observed_sha = None
+            if observed_sha == item["after_sha256"]:
+                if execute:
+                    ledger.set_state(manifest["request_id"], name,
+                                     "DONE_VERIFIED", provider_sha=observed_sha)
+                    ledger.release(manifest["request_id"], item)
+                outcomes.append({"id": name, "state": "DONE_VERIFIED",
+                                 "source": "provider_reconciled_on_resume"})
+                if not execute:
+                    preview_passed.add(name)
+            else:
+                outcomes.append({"id": name, "state": "UNKNOWN_NEEDS_READBACK",
+                                 "code": "RECONCILIATION_REQUIRED"})
             continue
         if state not in ("PENDING",):
             outcomes.append({"id": name, "state": state, "code": "RECONCILIATION_REQUIRED"})
             continue
-        if any(ledger.status(manifest["request_id"], d) != "DONE_VERIFIED"
+        if any((ledger.status(manifest["request_id"], d) != "DONE_VERIFIED")
+               if execute else (d not in preview_passed)
                for d in item["depends_on"]):
             if execute:
                 ledger.set_state(manifest["request_id"], name, "SKIPPED_DEPENDENCY")
@@ -317,9 +359,14 @@ def run_changeset(
                              "code": "ADAPTER_NOT_INSTALLED"})
             continue
         try:
-            current = adapter.read(item)
+            current = (preview_images[resource_key]
+                       if not execute and resource_key in preview_images
+                       else adapter.read(item))
             before = digest(current)
             if before == item["after_sha256"]:
+                if not execute:
+                    preview_passed.add(name)
+                    preview_images[resource_key] = current
                 if execute:
                     ledger.set_state(manifest["request_id"], name,
                                      "DONE_VERIFIED", provider_sha=before)
@@ -333,7 +380,16 @@ def run_changeset(
                 outcomes.append({"id": name, "state": "BLOCKED_CONFLICT",
                                  "code": "PREIMAGE_DRIFT"})
                 continue
+            validator = getattr(adapter, "validate", None)
+            if callable(validator):
+                validator(item, current)
             if not execute:
+                desired = item["payload"].get("desired")
+                if isinstance(desired, dict) and digest(desired) == item["after_sha256"]:
+                    preview_images[resource_key] = desired
+                else:
+                    preview_images.pop(resource_key, None)
+                preview_passed.add(name)
                 outcomes.append({"id": name, "state": "PREFLIGHT_PASS"})
                 continue
             ledger.claim(manifest["request_id"], item)
