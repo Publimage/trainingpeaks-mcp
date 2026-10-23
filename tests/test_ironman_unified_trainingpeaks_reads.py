@@ -146,8 +146,10 @@ def test_strength_native_reader_scoped_to_plan_and_same_owner(monkeypatch):
 def test_registry_is_generic_and_provider_writes_are_unavailable():
     registry = create_read_registry()
     assert set(registry) == VALID_KINDS
-    with pytest.raises(SecurityDenied, match="PROVIDER_WRITER_NOT_APPROVED"):
+    with pytest.raises(SecurityDenied, match="PDF_RETIRE_WRITER_NOT_ACTIVATED"):
         registry["plan.note.attachment.retire"].apply(spec("plan.note.attachment.retire", NOTE))
+    with pytest.raises(SecurityDenied, match="CLASSIC_PLAN_WRITER_NOT_ACTIVATED"):
+        registry["plan.workout.patch"].apply(spec("plan.workout.patch", WORKOUT))
 
 
 def test_rejects_wrong_owner_before_provider_read(monkeypatch):
@@ -161,8 +163,10 @@ def test_same_generic_registry_selects_vpc_read_transport():
     from tp_mcp.unified_read_bridge import PrivateBridgeReadAdapter
     registry = create_read_registry("private_bridge")
     assert set(registry) == VALID_KINDS
-    assert all(isinstance(a, PrivateBridgeReadAdapter) for a in registry.values())
-    with pytest.raises(SecurityDenied, match="UNIFIED_PRIVATE_BRIDGE_WRITES_NOT_AUTHORIZED"):
+    assert isinstance(registry["plan.note.patch"], PrivateBridgeReadAdapter)
+    assert isinstance(registry["plan.note.attachment.retire"].reader, PrivateBridgeReadAdapter)
+    assert isinstance(registry["plan.workout.patch"].reader, PrivateBridgeReadAdapter)
+    with pytest.raises(SecurityDenied, match="PDF_RETIRE_WRITER_NOT_ACTIVATED"):
         registry["plan.note.attachment.retire"].apply(spec("plan.note.attachment.retire", NOTE))
     with pytest.raises(Exception, match="UNIFIED_UNSUPPORTED_READ_TRANSPORT"):
         create_read_registry("arbitrary_url")
