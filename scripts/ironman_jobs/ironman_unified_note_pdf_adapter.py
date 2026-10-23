@@ -83,6 +83,10 @@ class ReviewedNotePdfRetireAdapter:
     def read(self, change: dict[str, Any]) -> dict[str, Any]:
         return self.reader.read(change)
 
+    def validate(self, change: dict[str, Any], current: dict[str, Any]) -> None:
+        # Shared engine invokes this in preview as well as before a write.
+        validate_pdf_retirement(change, current)
+
     def apply(self, change: dict[str, Any]) -> None:
         if self.delete_one is None:
             raise SecurityDenied("PDF_RETIRE_WRITER_NOT_ACTIVATED")
