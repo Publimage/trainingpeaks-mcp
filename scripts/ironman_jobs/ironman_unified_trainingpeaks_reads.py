@@ -133,7 +133,13 @@ class TrainingPeaksReadOnlyAdapter:
         raise SecurityDenied("PROVIDER_WRITER_NOT_APPROVED")
 
 
-def create_read_registry() -> dict[str, TrainingPeaksReadOnlyAdapter]:
-    """Stable registry independent of training plan, file or workout ID."""
-    adapter = TrainingPeaksReadOnlyAdapter()
+def create_read_registry(transport: str = "local") -> dict[str, Any]:
+    """One typed read registry, local on TP host or private VPC on Prefect host."""
+    if transport == "local":
+        adapter = TrainingPeaksReadOnlyAdapter()
+    elif transport == "private_bridge":
+        from tp_mcp.unified_read_bridge import PrivateBridgeReadAdapter
+        adapter = PrivateBridgeReadAdapter()
+    else:
+        raise ChangeStop("UNIFIED_UNSUPPORTED_READ_TRANSPORT")
     return {kind: adapter for kind in VALID_KINDS}
