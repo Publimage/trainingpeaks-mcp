@@ -1,0 +1,183 @@
+{
+  "schema": "IRONMAN_INFRA_RUNTIME_STATE_V1",
+  "purpose": "Small non-canonical execution/resume checkpoint for infrastructure work. Canonical decisions and workstream state remain in Google Drive IRONMAN — KNOWLEDGE BASE.",
+  "workstream": "TrainingPeaks MCP / Prefect / Coaching Radar",
+  "updated_at_utc": "2026-10-17T17:05:00Z",
+  "canonical_titles": [
+    "00_IRONMAN_CORE_INDEX",
+    "01_MASTER_COACHING_CONTEXT",
+    "02_DECISION_LOG",
+    "03_OPEN_QUESTIONS_ROADMAP",
+    "10_CHAT_ARCHITECTURE_AND_ROLLOVER",
+    "11_AGENT_ORCHESTRATION_ROADMAP",
+    "21_TRAININGPEAKS_MCP_INTEGRATION_STATE",
+    "00C_IRONMAN_PROVEN_PATHS_REGISTRY"
+  ],
+  "current_objective": "Build the model-agnostic AI interpretation layer for Coaching Radar in shadow read-only mode, without changing the verified Radar V2 live deployment and without calling any paid AI provider.",
+  "last_verified_checkpoint": {
+    "radar_v2_multiathlete_gate": "PASS",
+    "verified_date": "2026-10-17",
+    "prefect_flow": "ironman-coaching-radar-group-v2",
+    "deployment": "alberto-group-readonly-daily",
+    "flow_run_id": "7caf9c9c-fd51-448c-bafc-dd44e2d02123",
+    "flow_state": "COMPLETED",
+    "group_schedule_active": true,
+    "pilot_schedule_active": false,
+    "cron": "30 5 * * *",
+    "timezone": "Europe/Rome",
+    "athlete_count": 10,
+    "status_counts": {
+      "YELLOW": 9,
+      "GREEN": 1
+    },
+    "trainingpeaks_writes": 0,
+    "independent_provider_readback": "10/10 PASS"
+  },
+  "git": {
+    "branch": "lab/ironman-prefect-20261015",
+    "last_ci_green_revision_for_kb_context_gate": "69e2e032f9d3211de18636586052537ae1844688",
+    "failed_revision": "b86dc2f0860371b2dbdcfec3ce113d8884e07c39",
+    "failure": "CI test_bundle_requires_all_canonical_roles_and_specialist_and_passes_gate failed with KB_ATHLETE_CARD_PROVIDER_ID_MISMATCH because the Athlete Card binding regex double-escaped whitespace and word-boundary tokens.",
+    "working_revision": "69e2e032f9d3211de18636586052537ae1844688",
+    "working_change": "Correct Athlete Card TrainingPeaks ID regex to use real regex whitespace and word-boundary tokens.",
+    "ci_run_id": 39031060648,
+    "ci_status": "COMPLETED_SUCCESS",
+    "recovered_branch_head_with_resume_state": "b825cf04b672d42462a6441f3b33a4488498f06d",
+    "code_revision_verified": "7f3dc46da8475e17196d909698e1886af91a5ac4",
+    "preflight_added": true,
+    "preflight_script": "scripts/ironman_jobs/radar_drive_runtime_preflight_20261017.py",
+    "credential_validator_revision": "7d635b885940571ff86538e6078b7cd7fbe82ffe",
+    "credential_validator_ci_run": 39036522724,
+    "credential_validator_ci_status": "COMPLETED_SUCCESS"
+  },
+  "kb_context_layer": {
+    "source_gate": "SOURCE_READY",
+    "live_drive_access": "PASS",
+    "ai_context": "NOT_CONNECTED",
+    "implemented": [
+      "fail-closed canonical-role manifest",
+      "Drive read-only adapter",
+      "Drive file version provenance",
+      "SHA256 content fingerprints",
+      "private source-routing validator",
+      "Athlete Card to TrainingPeaks athlete-ID binding",
+      "full-roster metadata-only Drive context canary"
+    ],
+    "source_map_drive_checkpoint": "PRIVATE RUNTIME SOURCE MAP — RADAR KB CONTEXT V1 stored in 21_TRAININGPEAKS_MCP_INTEGRATION_STATE; 10/10 Athlete Card provider-ID bindings verified.",
+    "specialist_source": "13_ATHLETE_COACHING_PROTOCOL",
+    "live_drive_roster_canary": "PASS_10_OF_10",
+    "drive_writes": 0,
+    "trainingpeaks_writes": 0,
+    "ai_calls": 0
+  },
+  "recovery_rules": [
+    "On a new chat/session, read this small runtime state first, then only the targeted canonical Drive sections needed for the current objective.",
+    "Verify current Git branch HEAD and CI state before repeating or replacing any operation.",
+    "Do not rerun a live write or deploy merely because chat delivery failed; verify provider/server state first.",
+    "This file never overrides Google Drive canonical documents."
+  ],
+  "next_safe_action": "Wait for CI run 39055140067. If green, record Gate AI-1 PASS in canonical Drive state and build Gate AI-2: a deterministic selective context compiler/evaluation harness for historical cases. Do not connect any paid model/provider before an explicit cost/privacy/model decision and coach confirmation.",
+  "safety_constraints": {
+    "google_drive_scope": "drive.readonly",
+    "drive_writes": 0,
+    "trainingpeaks_writes": 0,
+    "ai_calls": 0,
+    "no_public_drive_document_ids_or_credentials_in_repo": true,
+    "no_service_restart_for_drive_reader_prepare": true
+  },
+  "prefect_drive_preflight": {
+    "checked_at_local": "2026-10-17T15:08:00+02:00",
+    "checkout_revision": "bcbdcac314addb079ee0ae988e655807911d7d93",
+    "credentials": "READY",
+    "google_auth_dependency": "READY",
+    "private_sources": "READY",
+    "source_roster_count": 10,
+    "specialist_document_count": 1,
+    "ready_for_live_canary": true,
+    "drive_writes": 0,
+    "trainingpeaks_writes": 0,
+    "ai_calls": 0
+  },
+  "google_drive_root": {
+    "title": "IRONMAN — KNOWLEDGE BASE",
+    "folder_id": "1cC7aPJEXfGIQg54b2jd9XlqtgjOzZ3x2",
+    "service_account_access": "VIEWER",
+    "link_sharing": "NOT_ENABLED",
+    "public": false
+  },
+  "google_cloud": {
+    "project_name": "Publimage varie",
+    "project_id": "publimage-varie",
+    "project_number": "570133601651",
+    "drive_api": "ENABLED",
+    "service_account_email": "ironman-radar-drive-reader@publimage-varie.iam.gserviceaccount.com",
+    "service_account_project_roles": "NONE",
+    "service_account_key_status": "UPLOADED_VERIFIED",
+    "iam_api": "ENABLED",
+    "service_account_key_id": "2ea8bc1db51f72a5fa47ca382e318c0a5139704c",
+    "public_certificate_verified_against_google_metadata": true,
+    "public_certificate_not_before": "2026-10-17T15:50:18Z",
+    "public_certificate_not_after": "2027-10-17T15:50:18Z"
+  },
+  "google_cloud_admin_path": {
+    "browser_upload_initial_attempt": "FAILED_BEFORE_IAM_API",
+    "iam_api_prerequisite": "ENABLED_VERIFIED",
+    "cloud_shell_attempt": "INTERRUPTED_AFTER_UPLOAD_SIDE_EFFECT",
+    "post_interrupt_readback": "USER_MANAGED_KEY_PRESENT",
+    "final_key_id": "2ea8bc1db51f72a5fa47ca382e318c0a5139704c",
+    "google_public_x509_endpoint_match": "PASS"
+  },
+  "last_incident": {
+    "type": "DIGITALOCEAN_WEB_CONSOLE_DISCONNECTED_DURING_TEMP_GCLOUD_AUTH_FLOW",
+    "observed_local": "2026-10-17T18:37:00+02:00",
+    "droplet_status_verified": "ACTIVE",
+    "risk": "The foreground shell may have exited and triggered cleanup, or the backend process may have continued. Do not rerun auth/upload until server state is checked.",
+    "no_repeat_until_readback": [
+      "gcloud auth login",
+      "gcloud services enable",
+      "gcloud iam service-accounts keys upload",
+      "live Drive canary"
+    ]
+  },
+  "last_incident_recovery": {
+    "conclusion": "The tmux-protected admin flow completed successfully before the later diagnostic started a redundant second tmux run. The later `invalid_grant Malformed auth code` belongs only to that redundant second login attempt and does not invalidate the completed Drive live gate.",
+    "redundant_second_login": "FAILED_INVALID_GRANT_NO_SIDE_EFFECT",
+    "no_rerun_required": true
+  },
+  "live_drive_gate": {
+    "completed_at_local": "2026-10-17T18:50:00+02:00",
+    "final_marker": "RADAR_DRIVE_LIVE_GATE_SEQUENCE_PASS",
+    "credential_validation": "PASS",
+    "runtime_preflight": "PASS",
+    "roster_canary": "PASS",
+    "athlete_count": 10,
+    "drive_writes": 0,
+    "trainingpeaks_writes": 0,
+    "ai_calls": 0,
+    "temp_human_auth_cleanup": "PASS"
+  },
+  "ai_context_layer": {
+    "status": "GATE_AI_1_IMPLEMENTED_CI_PENDING",
+    "module": "scripts/ironman_jobs/coaching_radar_ai_context_contract_v0.py",
+    "tests": "tests/test_coaching_radar_ai_context_contract_v0.py",
+    "input_schema": "IRONMAN_COACHING_RADAR_AI_INPUT_V1",
+    "output_schema": "IRONMAN_COACHING_RADAR_AI_REVIEW_V1",
+    "mode": "SHADOW_READ_ONLY",
+    "guardrails": [
+      "coach is final decision maker",
+      "TrainingPeaks writes forbidden",
+      "Drive writes forbidden",
+      "workout mutations forbidden",
+      "publishing forbidden",
+      "evidence refs required",
+      "uncertainty required",
+      "absence of data is not positive evidence"
+    ],
+    "ai_calls": 0,
+    "paid_services_activated": 0,
+    "live_deployment_changed": false,
+    "workflow_revision": "2844e2e5e8d7f810da7c7a6b7d97a80c8fde4a41",
+    "ci_run_id": 39055140067,
+    "ci_status": "IN_PROGRESS"
+  }
+}

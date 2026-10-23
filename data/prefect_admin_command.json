@@ -1,0 +1,6 @@
+{
+  "schema": "IRONMAN_PREFECT_ADMIN_COMMAND_V1",
+  "job_id": "bootstrap-status-20261016-001",
+  "operation": "status",
+  "params": {}
+}

@@ -1,0 +1,107 @@
+{
+  "schema": "IRONMAN_RADAR_AI_PROVIDER_CANDIDATES_V1",
+  "checked_at": "2026-10-17",
+  "activation_status": "NOT_AUTHORIZED",
+  "selection_policy": {
+    "benchmark_first": true,
+    "identical_private_inputs": true,
+    "external_payload_privacy_minimized": true,
+    "paid_service_activation_requires_coach_confirmation": true,
+    "quality_before_cost": true,
+    "no_free_tier_for_athlete_data": true
+  },
+  "primary_candidates": [
+    {
+      "provider": "OpenAI",
+      "model": "gpt-6.1-sol",
+      "role": "PRIMARY_BALANCED",
+      "input_usd_per_million": 2,
+      "output_usd_per_million": 10,
+      "structured_outputs": true,
+      "commercial_api_training_default": false,
+      "standard_retention_summary": "API content not used for training by default; standard abuse-monitoring retention up to 30 days; ZDR available for eligible customers.",
+      "residency_summary": "EU data residency/regional processing supported for GPT-6.1 Sol subject to OpenAI eligibility/configuration; regional processing pricing uplift applies.",
+      "source_urls": [
+        "https://developers.openai.com/api/docs/models",
+        "https://developers.openai.com/api/docs/pricing",
+        "https://developers.openai.com/api/docs/guides/your-data",
+        "https://developers.openai.com/api/docs/guides/structured-outputs"
+      ]
+    },
+    {
+      "provider": "Anthropic",
+      "model": "claude-sonnet-5-5",
+      "role": "PRIMARY_BALANCED",
+      "input_usd_per_million": 2,
+      "output_usd_per_million": 10,
+      "structured_outputs": true,
+      "commercial_api_training_default": false,
+      "standard_retention_summary": "Commercial API inputs/outputs are not used for training by default and are normally deleted from backend systems within 30 days; ZDR arrangements require approval/agreement.",
+      "residency_summary": "Direct Anthropic API may process in multiple regions; Anthropic states data storage remains US-only by default unless otherwise agreed.",
+      "source_urls": [
+        "https://www.anthropic.com/claude/sonnet",
+        "https://privacy.anthropic.com/en/articles/7996868-is-my-data-used-for-model-training",
+        "https://privacy.anthropic.com/en/articles/7996866-how-long-do-you-store-my-organization-s-data",
+        "https://privacy.anthropic.com/en/articles/7996890-where-are-your-servers-located-do-you-host-your-models-on-eu-servers"
+      ]
+    },
+    {
+      "provider": "Google",
+      "model": "gemini-4-argon",
+      "role": "PRIMARY_BALANCED",
+      "input_usd_per_million": 2,
+      "output_usd_per_million": 10,
+      "pricing_note": "Current standard paid price through 2026-11-30; listed price rises to $4 input / $20 output starting 2026-12-01.",
+      "structured_outputs": true,
+      "commercial_api_training_default": false,
+      "standard_retention_summary": "Paid Gemini API content is not used to improve products. ZDR can be approved per project; ZDR requires avoiding or configuring stateful/storage features as documented.",
+      "residency_summary": "Gemini Developer API ZDR controls are documented; regional data-residency requirements must be verified separately before production use.",
+      "source_urls": [
+        "https://ai.google.dev/gemini-api/docs/pricing",
+        "https://ai.google.dev/gemini-api/docs/zdr",
+        "https://ai.google.dev/gemini-api/docs/structured-output",
+        "https://ai.google.dev/gemini-api/docs/models"
+      ]
+    }
+  ],
+  "ceiling_candidates": [
+    {
+      "provider": "OpenAI",
+      "model": "gpt-6-astra",
+      "input_usd_per_million": 10,
+      "output_usd_per_million": 50,
+      "role": "QUALITY_CEILING"
+    },
+    {
+      "provider": "Anthropic",
+      "model": "claude-opus-5-5",
+      "input_usd_per_million": 4,
+      "output_usd_per_million": 20,
+      "role": "QUALITY_CEILING"
+    }
+  ],
+  "economy_candidates": [
+    {
+      "provider": "OpenAI",
+      "model": "gpt-6-luna",
+      "input_usd_per_million": 0.1,
+      "output_usd_per_million": 0.5,
+      "role": "ECONOMY_BASELINE"
+    },
+    {
+      "provider": "Anthropic",
+      "model": "claude-haiku-5-5",
+      "input_usd_per_million": 0.1,
+      "output_usd_per_million": 0.5,
+      "pricing_note": "Price applies to prompts up to 100k tokens.",
+      "role": "ECONOMY_BASELINE"
+    },
+    {
+      "provider": "Google",
+      "model": "gemini-3.1-flash-lite",
+      "input_usd_per_million": 0.25,
+      "output_usd_per_million": 1.5,
+      "role": "ECONOMY_BASELINE"
+    }
+  ]
+}
