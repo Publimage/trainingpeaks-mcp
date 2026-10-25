@@ -260,9 +260,9 @@ async def main():
       log(stage="STOP_UNCERTAIN_LIBRARY_SAVE",id=id_,retry=False,done=done);return 4
      after=await library()
      got=after[id_]
-     if saved.status_code!=200 or not expected_shape(got["workout"],item) or
-        got["title"]!=new_title(item["title"]) or
-        dose_blocks(got["workout"])!=dose_blocks(oldw):
+     if (saved.status_code!=200 or not expected_shape(got["workout"],item) or
+         got["title"]!=new_title(item["title"]) or
+         dose_blocks(got["workout"])!=dose_blocks(oldw)):
       log(stage="STOP_LIBRARY_QA",id=id_,http=saved.status_code,done=done);return 4
     original_plan=await planwork(pid)
     updated_plan=apply(original_plan,item)
