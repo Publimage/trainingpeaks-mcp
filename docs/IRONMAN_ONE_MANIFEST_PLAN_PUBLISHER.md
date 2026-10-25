@@ -8,6 +8,19 @@ Un solo motore di pubblicazione di modifiche selettive su **copie classic Swim/B
 
 Le chiamate a ChatGPT non devono più richiedere ogni volta un nuovo script Python e un nuovo `GUARDED_WRITE` nel registro. Per ogni nuovo lavoro indipendentemente autorizzato si revisiona **soltanto il manifest dei dati**, si fa una commit GitHub e si usa la stessa coppia di job revision-pinned.
 
+
+## Regola permanente — target esplicito, nessun piano implicito (2026-10-25)
+
+Marker canonico Google Drive: IRONMAN_TARGET_BINDING_HARD_GATE_V1_20261025 (02_DECISION_LOG / 00C Proven Paths / 00 Core).
+
+L'engine e i due job sono UNICI e riutilizzabili per tutti i Training Plan classic. Non creare script/job specifici per ogni piano e non usare il vecchio manifest come indicatore di quale piano stia lavorando il coach. La destinazione deriva dalla richiesta attuale e viene confermata LIVE su TrainingPeaks: coach owner 2116886, plan_id, titolo, visibilità, settimane, conteggi e workout IDs. Un piano non cambia solo perché un file JSON contiene un altro plan_id.
+
+Il formato del manifest resta stabile e unico: i before/after sono dati specifici del lotto e devono necessariamente rappresentare il contenuto da modificare. La loro generazione è automatizzata nell'operazione, non un nuovo motore, e la verifica pre-write deve confrontare l'ID esplicito del target con il manifest e con il provider. Nessun ultimo-file/ultimo-job viene selezionato implicitamente.
+
+PROTEZIONE CODICE nel ramo feat/mcp-test-training-plan-lab: per reviewed_plan_patch_preview/publish con operation=execute il tool tp_ironman_operator richiede target_plan_id esplicito; la pipeline confronta IRONMAN_REQUEST_TARGET_PLAN_ID con manifest.plan_id PRIMA di qualsiasi chiamata provider. Se manca, REQUEST_TARGET_PLAN_ID_REQUIRED; se diverso, STOP_TARGET_MISMATCH. Esempio reale di test negativo: target corrente WINTER FOUNDATION 689369 mentre il vecchio manifest punta a Intermediate 684602 => STOP_TARGET_MISMATCH e zero write. Protezione source-level; NON dichiarare rollout server o provider-live finché test, rilascio e rilettura non sono verificati.
+
+L'ack_scope del job tutela l'autorizzazione, non seleziona il piano. Per pubblicare modifiche serve confermare separatamente l'identità del target e applicare solo il manifest che corrisponde a quella identità. In caso di differenze, interrompere con diagnosi; non toccare piani concorrenti, Library o calendari atleta. Un diniego di sicurezza esplicito sull'operazione specifica non si supera cambiando strumento.
+
 ## Elementi stabili
 
 - `scripts/ironman_jobs/reviewed_plan_patch_pipeline.py`: validazione, adapter della API già verificata, backup, controlli e QA.
