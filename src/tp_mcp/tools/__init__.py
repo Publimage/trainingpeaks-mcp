@@ -50,6 +50,7 @@ from tp_mcp.tools.library import (
     tp_schedule_library_workout,
     tp_update_library_item,
 )
+from tp_mcp.tools.ironman_dynamic_targets import tp_ironman_resolve_target
 from tp_mcp.tools.ironman_operator import tp_ironman_operator
 from tp_mcp.tools.ironman_publisher_status import tp_get_ironman_publisher_status
 from tp_mcp.tools.organization import (
@@ -177,6 +178,7 @@ __all__ = [
     "tp_get_libraries",
     "tp_get_library_item",
     "tp_get_library_items",
+    "tp_ironman_resolve_target",
     "tp_ironman_operator",
     "tp_get_ironman_publisher_status",
     "tp_list_plan_folders",
