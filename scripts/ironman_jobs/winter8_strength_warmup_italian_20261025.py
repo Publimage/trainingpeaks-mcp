@@ -265,7 +265,17 @@ async def main():
      if (saved.status_code!=200 or not expected_shape(got["workout"],item) or
          got["title"]!=new_title(item["title"]) or
          dose_blocks(got["workout"])!=dose_blocks(oldw)):
-      log(stage="STOP_LIBRARY_QA",id=id_,http=saved.status_code,done=done);return 4
+      # Read-only diagnostic of provider rejection. No response contents are used
+      # to authorize another write; this invocation stops immediately.
+      try:
+       j=saved.json()
+       diagnostic=j.get("error") or j.get("errors") or j.get("message") or j.get("detail")
+       if diagnostic is None:diagnostic=list(j.keys())[:8]
+      except (ValueError,AttributeError):
+       diagnostic="non-json provider response"
+      log(stage="STOP_LIBRARY_QA",id=id_,http=saved.status_code,done=done,
+          provider_reason=str(diagnostic)[:550],verified_after=expected_shape(got["workout"],item))
+      return 4
     original_plan=await planwork(pid)
     updated_plan=apply(original_plan,item)
     if not expected_shape(original_plan,item):
