@@ -562,7 +562,7 @@
       "weekday": 3,
       "sport": "RU",
       "minutes": 45,
-      "title": "Tecnica | Corsa 45 min PAM 10 min",
+      "title": "Tecnica | Corsa 45 min PAM 10 min e ankling",
       "blocks": [
         [
           "warm",
@@ -592,7 +592,7 @@
       "sport": "SW",
       "minutes": 50,
       "metres": 2300,
-      "title": "Aerobico | 2300 m 6x50 + 4x300",
+      "title": "Aerobico | 2300 m 6x50 + 4x300 + 6x50",
       "groups": [
         {
           "distance": 300,
@@ -1066,7 +1066,7 @@
       "weekday": 3,
       "sport": "RU",
       "minutes": 45,
-      "title": "Tecnica | Corsa 45 min PAM 10 min",
+      "title": "Tecnica | Corsa 45 min PAM 10 min e appoggio",
       "blocks": [
         [
           "warm",
@@ -1096,7 +1096,7 @@
       "sport": "SW",
       "minutes": 50,
       "metres": 2300,
-      "title": "Aerobico | 2300 m 6x50 + 4x300",
+      "title": "Aerobico | 2300 m 6x50 + 4x300 + 4x50",
       "groups": [
         {
           "distance": 400,
@@ -1184,7 +1184,7 @@
       "weekday": 5,
       "sport": "RU",
       "minutes": 35,
-      "title": "Aerobico | Corsa facile 35 min con richiamo tecnico",
+      "title": "Aerobico | Corsa facile 35 min con strides opzionali",
       "blocks": [
         [
           "warm",
@@ -1348,7 +1348,7 @@
       "weekday": 3,
       "sport": "RU",
       "minutes": 50,
-      "title": "Tecnica | Corsa 50 min PAM 12 min",
+      "title": "Tecnica | Corsa 50 min PAM 12 min ankling",
       "blocks": [
         [
           "warm",
@@ -1620,7 +1620,7 @@
       "weekday": 3,
       "sport": "RU",
       "minutes": 50,
-      "title": "Tecnica | Corsa 50 min PAM 12 min",
+      "title": "Tecnica | Corsa 50 min PAM 12 min coordinazione",
       "blocks": [
         [
           "warm",
@@ -1830,7 +1830,7 @@
           "distance": 50,
           "count": 6,
           "rest": 15,
-          "label": "Tecnica semplice",
+          "label": "Tecnica presa e assetto",
           "rpe": [
             2,
             3
@@ -1840,7 +1840,7 @@
           "distance": 200,
           "count": 5,
           "rest": 20,
-          "label": "Benchmark 5x200 submassimale",
+          "label": "Endurance controllata, benchmark",
           "rpe": [
             2,
             3
@@ -1850,7 +1850,7 @@
           "distance": 50,
           "count": 4,
           "rest": 15,
-          "label": "Progressivi controllati",
+          "label": "Progressivi rilassati",
           "rpe": [
             3,
             5
@@ -2089,5 +2089,7 @@
       "cues": "Corsa facile conversazionale, nessun ritmo gara e nessun drill obbligatorio; monitorare risposta piede/polpaccio/Achille e costo della forza.",
       "fueling": "Normale disponibilita energetica, snack se necessario, acqua secondo sete. Non ricercare volutamente corsa low-carb."
     }
-  ]
+  ],
+  "deduplicated_shared_templates": 51,
+  "title_identity_policy": "Same title only for genuinely same dose, blocks, objective and teaching; corrected PAM technique alternatives and distinct swim dose."
 }
