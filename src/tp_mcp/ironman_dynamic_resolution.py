@@ -10,7 +10,7 @@ from typing import Any, Awaitable, Callable
 
 from tp_mcp.ironman_dynamic_identity import (
     TargetStop, _positive_id, require_new_name_absent,
-    resolve_plan_workout, select_live_item,
+    resolve_plan_note, resolve_plan_workout, select_live_item,
 )
 
 OWNER = 2116886
@@ -41,7 +41,7 @@ async def resolve_live_request(
     kind: str, query: str | int, *, coach_id: int,
     read_plans: Reader, read_athletes: Reader,
     read_libraries: Reader, read_plan_workouts: Reader,
-    read_athlete_workouts: Reader,
+    read_plan_notes: Reader, read_athlete_workouts: Reader,
     plan: str | int | None = None,
     athlete: str | int | None = None,
     week: int | None = None, weekday: int | None = None,
@@ -52,15 +52,15 @@ async def resolve_live_request(
         raise TargetStop("ACCOUNT_MISMATCH")
     if kind not in {"training_plan", "new_training_plan", "athlete",
                     "workout_library", "new_workout_library", "plan_workout",
-                    "athlete_workout"}:
+                    "plan_note", "athlete_workout"}:
         raise TargetStop("TARGET_KIND_UNSUPPORTED")
-    if kind in {"training_plan", "new_training_plan", "plan_workout"}:
+    if kind in {"training_plan", "new_training_plan", "plan_workout", "plan_note"}:
         plans = _rows(await read_plans(), "plans")
         if kind == "new_training_plan":
             identity = require_new_name_absent(plans, query, id_field="plan_id",
                                                title_field="title", scope="training_plan")
             return {**identity, "owner_id": OWNER, "publication_authorized": False}
-        target_query = plan if kind == "plan_workout" else query
+        target_query = plan if kind in {"plan_workout", "plan_note"} else query
         plan_binding = select_live_item(plans, target_query, id_field="plan_id",
                                         title_field="title", scope="training_plan")
         plan_id = plan_binding["record"]["plan_id"]
@@ -70,15 +70,17 @@ async def resolve_live_request(
                     "container_id": plan_id}, "plan_title": plan_binding["record"]["title"],
                     "match": plan_binding["match"], "read_only": True,
                     "publication_authorized": False}
-        result = await read_plan_workouts(plan_id)
+        is_note = kind == "plan_note"
+        result = await (read_plan_notes(plan_id) if is_note else read_plan_workouts(plan_id))
         if type(result) is not dict or result.get("plan_id") != plan_id:
             raise TargetStop("PLAN_READBACK_SCOPE_MISMATCH")
-        rows = _rows(result, "workouts")
-        workout = resolve_plan_workout(rows, query, plan_id=plan_id,
-                                       week=week, weekday=weekday)
-        return {"kind": kind, "target": {**workout["target"], "owner_id": OWNER},
+        rows = _rows(result, "notes" if is_note else "workouts")
+        resource = (resolve_plan_note if is_note else resolve_plan_workout)(
+            rows, query, plan_id=plan_id, week=week, weekday=weekday)
+        return {"kind": kind, "target": {**resource["target"], "owner_id": OWNER},
                 "plan_title": plan_binding["record"]["title"],
-                "workout": workout["record"], "match": workout["match"],
+                ("note" if is_note else "workout"): resource["record"],
+                "match": resource["match"],
                 "read_only": True, "publication_authorized": False}
     if kind in {"workout_library", "new_workout_library"}:
         libraries = _rows(await read_libraries(), "libraries")
