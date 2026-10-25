@@ -394,3 +394,53 @@ def test_preview_and_denied_write_never_claim_request_complete(ledger):
     assert denied["results"][0]["state"] == "BLOCKED_SECURITY"
     assert denied["request_state"] == "ACTION_INCOMPLETE"
     assert denied["provider_readback_verified"] is False
+
+
+def test_legacy_persisted_skipped_dependency_is_migrated_safely(ledger):
+    before, after = {"v": 1}, {"v": 2}
+    predecessor = item("predecessor", "plan.note.patch", 1001, before, after)
+    dependent = item("dependent", "plan.workout.patch", 1002,
+                     before, after, depends=["predecessor"])
+    manifest = make_manifest(predecessor, dependent)
+    preceding_provider = FakeAdapter(after)
+    dependent_provider = FakeAdapter(before)
+    providers = {predecessor["kind"]: preceding_provider,
+                 dependent["kind"]: dependent_provider}
+    run(manifest, providers, ledger, execute=False)  # initialize ledger
+    ledger.set_state(manifest["request_id"], "predecessor", "DONE_VERIFIED")
+    ledger.set_state(manifest["request_id"], "dependent", "SKIPPED_DEPENDENCY")
+    recovered = run(manifest, providers, ledger)
+    assert recovered["request_state"] == "WORK_COMPLETE"
+    assert ledger.status(manifest["request_id"], "dependent") == "DONE_VERIFIED"
+    assert preceding_provider.writes == 0 and dependent_provider.writes == 1
+
+
+def test_typed_transient_provider_read_is_deferred_not_a_permanent_review_failure(ledger):
+    before, after = {"v": 1}, {"v": 2}
+    a = item("unavailable", "plan.note.patch", 1101, before, after)
+    b = item("independent", "plan.workout.patch", 1102, before, after)
+    manifest = make_manifest(a, b)
+
+    class TypedReadFailure(FakeAdapter):
+        unavailable = True
+
+        def read(self, spec):
+            if self.unavailable:
+                raise ChangeStop("PLAN_NOTES_READ_FAILED")
+            return super().read(spec)
+
+    unavailable_provider = TypedReadFailure(before)
+    independent_provider = FakeAdapter(before)
+    providers = {a["kind"]: unavailable_provider,
+                 b["kind"]: independent_provider}
+    first = run(manifest, providers, ledger)
+    assert first["results"][0]["state"] == "PENDING"
+    assert first["results"][0]["code"] == "PROVIDER_PREFLIGHT_READ_UNAVAILABLE"
+    assert first["results"][0]["read_code"] == "PLAN_NOTES_READ_FAILED"
+    assert first["results"][1]["state"] == "DONE_VERIFIED"
+    assert ledger.status(manifest["request_id"], "unavailable") == "PENDING"
+    unavailable_provider.unavailable = False
+    recovered = run(manifest, providers, ledger)
+    assert recovered["request_state"] == "WORK_COMPLETE"
+    assert unavailable_provider.writes == 1
+    assert independent_provider.writes == 1
