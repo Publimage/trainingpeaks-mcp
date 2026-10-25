@@ -1,0 +1,2093 @@
+{
+  "schema": "IRONMAN_WINTER_8W_ENDURANCE_NATIVE_V1",
+  "provider_plan_id": 689369,
+  "provider_plan_person_id": 6709024,
+  "owner_id": 2116886,
+  "plan_title": "ALBERTO FAZI ENDURANCE | WINTER FOUNDATION | 8 settimane | Italiano",
+  "anchor": "2027-01-04",
+  "source_doc": "13xSMyKzfgRGQMBmQRlVs_hYDgCFO_BkLN5-dTWb0fHY",
+  "source_revision": "v0.2 for RUN-PAM and total, v0.1 for SW+BI+RU-B+RU-L",
+  "sw_distance_m": 34600,
+  "planned_endurance_min": 3250,
+  "already_published_strength": 16,
+  "total_w_workout": 74,
+  "libraries": {
+    "SW": 3891872,
+    "BI": 3892601,
+    "RU": 3892602
+  },
+  "policy": {
+    "BI": "percentOfFtp + RPE coaching",
+    "RU": "percentOfThresholdPace + RPE coaching; threshold-dependent",
+    "SW": "distance+RPE, recover n-1, native planned distance and duration",
+    "naming": "FAMIGLIA | title no plan week athlete"
+  },
+  "workouts": [
+    {
+      "uid": "IMWIN8-W01-TUE-SW-01",
+      "week": 1,
+      "weekday": 2,
+      "sport": "SW",
+      "minutes": 40,
+      "metres": 1800,
+      "title": "Tecnica | 1800 m 6x50 + 4x200",
+      "groups": [
+        {
+          "distance": 300,
+          "count": 1,
+          "rest": 0,
+          "label": "Avvio facile",
+          "rpe": [
+            2,
+            3
+          ]
+        },
+        {
+          "distance": 50,
+          "count": 6,
+          "rest": 15,
+          "label": "Tecnica 25 m + completo 25 m",
+          "rpe": [
+            2,
+            3
+          ]
+        },
+        {
+          "distance": 200,
+          "count": 4,
+          "rest": 20,
+          "label": "Endurance regolare",
+          "rpe": [
+            2,
+            3
+          ]
+        },
+        {
+          "distance": 50,
+          "count": 4,
+          "rest": 15,
+          "label": "Progressivi controllati",
+          "rpe": [
+            3,
+            5
+          ]
+        },
+        {
+          "distance": 200,
+          "count": 1,
+          "rest": 0,
+          "label": "Defaticamento",
+          "rpe": [
+            1,
+            2
+          ]
+        }
+      ],
+      "aim": "Economia del gesto e endurance senza fatica inutile",
+      "cues": "No CSS dedotta. Nuoto a RPE 2-3, occasionali progressivi non massimali. Recuperi solo fra ripetizioni, mai dopo l'ultima. Benchmark 5x200 W02 e W08 comparabile.",
+      "fueling": "Alimentazione abituale, acqua secondo sete; piccolo snack se lontani dal pasto, non ricercare digiuno."
+    },
+    {
+      "uid": "IMWIN8-W01-TUE-BI-01",
+      "week": 1,
+      "weekday": 2,
+      "sport": "BI",
+      "minutes": 45,
+      "title": "Aerobico | 45 min continuita e cadenza",
+      "blocks": [
+        [
+          "warm",
+          10
+        ],
+        [
+          "endurance",
+          30
+        ],
+        [
+          "cool",
+          5
+        ]
+      ],
+      "aim": "Controllo aerobico, tecnica e cadenza; steady breve solo quando previsto",
+      "cues": "FTP percentuale principale nel Builder, RPE 2-3 nei tratti endurance, RPE4 nei 3x steady se prescritti. Sotto LT1 secondo risposta individuale: non e una percentuale FTP universale. Nessun blocco IM race pace, soglia, sprint o brick. ",
+      "fueling": "Pasti e carboidrati abituali, idratazione secondo sete e condizioni, senza digiuno programmato."
+    },
+    {
+      "uid": "IMWIN8-W01-WED-RU-01",
+      "week": 1,
+      "weekday": 3,
+      "sport": "RU",
+      "minutes": 40,
+      "title": "Tecnica | Corsa 40 min PAM 8 min",
+      "blocks": [
+        [
+          "warm",
+          10
+        ],
+        [
+          "drills",
+          8
+        ],
+        [
+          "easy",
+          17
+        ],
+        [
+          "cool",
+          5
+        ]
+      ],
+      "aim": "Controllo tecnico PAM e continuita della corsa",
+      "cues": "A-March e appoggio sotto il corpo",
+      "fueling": "Normale disponibilita energetica, snack se necessario, acqua secondo sete. Non ricercare volutamente corsa low-carb."
+    },
+    {
+      "uid": "IMWIN8-W01-THU-SW-01",
+      "week": 1,
+      "weekday": 4,
+      "sport": "SW",
+      "minutes": 40,
+      "metres": 1700,
+      "title": "Aerobico | 1700 m 8x50 + 4x200",
+      "groups": [
+        {
+          "distance": 300,
+          "count": 1,
+          "rest": 0,
+          "label": "Avvio facile",
+          "rpe": [
+            2,
+            3
+          ]
+        },
+        {
+          "distance": 50,
+          "count": 8,
+          "rest": 15,
+          "label": "Respirazione e assetto 25/25",
+          "rpe": [
+            2,
+            3
+          ]
+        },
+        {
+          "distance": 200,
+          "count": 4,
+          "rest": 20,
+          "label": "Nuoto facile regolare",
+          "rpe": [
+            2,
+            3
+          ]
+        },
+        {
+          "distance": 50,
+          "count": 4,
+          "rest": 15,
+          "label": "Nuoto sciolto",
+          "rpe": [
+            1,
+            2
+          ]
+        }
+      ],
+      "aim": "Respirazione, allineamento e continuita aerobica",
+      "cues": "No CSS dedotta. Nuoto a RPE 2-3, occasionali progressivi non massimali. Recuperi solo fra ripetizioni, mai dopo l'ultima. Benchmark 5x200 W02 e W08 comparabile.",
+      "fueling": "Alimentazione abituale, acqua secondo sete; piccolo snack se lontani dal pasto, non ricercare digiuno."
+    },
+    {
+      "uid": "IMWIN8-W01-SAT-BI-01",
+      "week": 1,
+      "weekday": 6,
+      "sport": "BI",
+      "minutes": 75,
+      "title": "Lungo | 75 min lungo aerobico",
+      "blocks": [
+        [
+          "warm",
+          15
+        ],
+        [
+          "endurance",
+          55
+        ],
+        [
+          "cool",
+          5
+        ]
+      ],
+      "aim": "Endurance aerobica recuperabile e continuita della pedalata",
+      "cues": "FTP percentuale principale nel Builder, RPE 2-3 nei tratti endurance, RPE4 nei 3x steady se prescritti. Sotto LT1 secondo risposta individuale: non e una percentuale FTP universale. Nessun blocco IM race pace, soglia, sprint o brick. ",
+      "fueling": "Pasti e carboidrati abituali, idratazione secondo sete e condizioni, senza digiuno programmato."
+    },
+    {
+      "uid": "IMWIN8-W01-SUN-RU-01",
+      "week": 1,
+      "weekday": 7,
+      "sport": "RU",
+      "minutes": 40,
+      "title": "Lungo | Corsa facile 40 min",
+      "blocks": [
+        [
+          "warm",
+          10
+        ],
+        [
+          "easy",
+          25
+        ],
+        [
+          "cool",
+          5
+        ]
+      ],
+      "aim": "Endurance meccanicamente prudente",
+      "cues": "Corsa facile conversazionale, nessun ritmo gara e nessun drill obbligatorio; monitorare risposta piede/polpaccio/Achille e costo della forza.",
+      "fueling": "Normale disponibilita energetica, snack se necessario, acqua secondo sete. Non ricercare volutamente corsa low-carb."
+    },
+    {
+      "uid": "IMWIN8-W02-TUE-SW-01",
+      "week": 2,
+      "weekday": 2,
+      "sport": "SW",
+      "minutes": 45,
+      "metres": 2000,
+      "title": "Tecnica | 2000 m 6x50 + 5x200",
+      "groups": [
+        {
+          "distance": 300,
+          "count": 1,
+          "rest": 0,
+          "label": "Avvio facile",
+          "rpe": [
+            2,
+            3
+          ]
+        },
+        {
+          "distance": 50,
+          "count": 6,
+          "rest": 15,
+          "label": "Tecnica presa e assetto",
+          "rpe": [
+            2,
+            3
+          ]
+        },
+        {
+          "distance": 200,
+          "count": 5,
+          "rest": 20,
+          "label": "Endurance controllata, benchmark",
+          "rpe": [
+            2,
+            3
+          ]
+        },
+        {
+          "distance": 50,
+          "count": 4,
+          "rest": 15,
+          "label": "Progressivi rilassati",
+          "rpe": [
+            3,
+            5
+          ]
+        },
+        {
+          "distance": 200,
+          "count": 1,
+          "rest": 0,
+          "label": "Defaticamento",
+          "rpe": [
+            1,
+            2
+          ]
+        }
+      ],
+      "aim": "Economia del gesto e endurance senza fatica inutile",
+      "cues": "No CSS dedotta. Nuoto a RPE 2-3, occasionali progressivi non massimali. Recuperi solo fra ripetizioni, mai dopo l'ultima. Benchmark 5x200 W02 e W08 comparabile.",
+      "fueling": "Alimentazione abituale, acqua secondo sete; piccolo snack se lontani dal pasto, non ricercare digiuno."
+    },
+    {
+      "uid": "IMWIN8-W02-TUE-BI-01",
+      "week": 2,
+      "weekday": 2,
+      "sport": "BI",
+      "minutes": 50,
+      "title": "Aerobico | 50 min continuita e cadenza",
+      "blocks": [
+        [
+          "warm",
+          10
+        ],
+        [
+          "endurance",
+          35
+        ],
+        [
+          "cool",
+          5
+        ]
+      ],
+      "aim": "Controllo aerobico, tecnica e cadenza; steady breve solo quando previsto",
+      "cues": "FTP percentuale principale nel Builder, RPE 2-3 nei tratti endurance, RPE4 nei 3x steady se prescritti. Sotto LT1 secondo risposta individuale: non e una percentuale FTP universale. Nessun blocco IM race pace, soglia, sprint o brick. ",
+      "fueling": "Pasti e carboidrati abituali, idratazione secondo sete e condizioni, senza digiuno programmato."
+    },
+    {
+      "uid": "IMWIN8-W02-WED-RU-01",
+      "week": 2,
+      "weekday": 3,
+      "sport": "RU",
+      "minutes": 40,
+      "title": "Tecnica | Corsa 40 min PAM 10 min",
+      "blocks": [
+        [
+          "warm",
+          10
+        ],
+        [
+          "drills",
+          10
+        ],
+        [
+          "easy",
+          15
+        ],
+        [
+          "cool",
+          5
+        ]
+      ],
+      "aim": "Controllo tecnico PAM e continuita della corsa",
+      "cues": "A-March e A-Skip non forzati",
+      "fueling": "Normale disponibilita energetica, snack se necessario, acqua secondo sete. Non ricercare volutamente corsa low-carb."
+    },
+    {
+      "uid": "IMWIN8-W02-THU-SW-01",
+      "week": 2,
+      "weekday": 4,
+      "sport": "SW",
+      "minutes": 45,
+      "metres": 2000,
+      "title": "Aerobico | 2000 m 8x50 + 6x150",
+      "groups": [
+        {
+          "distance": 400,
+          "count": 1,
+          "rest": 0,
+          "label": "Avvio facile",
+          "rpe": [
+            2,
+            3
+          ]
+        },
+        {
+          "distance": 50,
+          "count": 8,
+          "rest": 15,
+          "label": "Tecnica respirazione e assetto",
+          "rpe": [
+            2,
+            3
+          ]
+        },
+        {
+          "distance": 150,
+          "count": 6,
+          "rest": 20,
+          "label": "Nuoto continuo, traiettoria",
+          "rpe": [
+            2,
+            3
+          ]
+        },
+        {
+          "distance": 300,
+          "count": 1,
+          "rest": 0,
+          "label": "Defaticamento",
+          "rpe": [
+            1,
+            2
+          ]
+        }
+      ],
+      "aim": "Respirazione, allineamento e continuita aerobica",
+      "cues": "No CSS dedotta. Nuoto a RPE 2-3, occasionali progressivi non massimali. Recuperi solo fra ripetizioni, mai dopo l'ultima. Benchmark 5x200 W02 e W08 comparabile.",
+      "fueling": "Alimentazione abituale, acqua secondo sete; piccolo snack se lontani dal pasto, non ricercare digiuno."
+    },
+    {
+      "uid": "IMWIN8-W02-SAT-BI-01",
+      "week": 2,
+      "weekday": 6,
+      "sport": "BI",
+      "minutes": 90,
+      "title": "Lungo | 90 min lungo aerobico",
+      "blocks": [
+        [
+          "warm",
+          15
+        ],
+        [
+          "endurance",
+          70
+        ],
+        [
+          "cool",
+          5
+        ]
+      ],
+      "aim": "Endurance aerobica recuperabile e continuita della pedalata",
+      "cues": "FTP percentuale principale nel Builder, RPE 2-3 nei tratti endurance, RPE4 nei 3x steady se prescritti. Sotto LT1 secondo risposta individuale: non e una percentuale FTP universale. Nessun blocco IM race pace, soglia, sprint o brick. ",
+      "fueling": "Arrivare alimentati; durante 90-140 minuti, circa 30-60 g carboidrati/ora quando utili e tollerati, da personalizzare. Acqua/sodio secondo clima e sudorazione."
+    },
+    {
+      "uid": "IMWIN8-W02-SUN-RU-01",
+      "week": 2,
+      "weekday": 7,
+      "sport": "RU",
+      "minutes": 45,
+      "title": "Lungo | Corsa facile 45 min",
+      "blocks": [
+        [
+          "warm",
+          10
+        ],
+        [
+          "easy",
+          30
+        ],
+        [
+          "cool",
+          5
+        ]
+      ],
+      "aim": "Endurance meccanicamente prudente",
+      "cues": "Corsa facile conversazionale, nessun ritmo gara e nessun drill obbligatorio; monitorare risposta piede/polpaccio/Achille e costo della forza.",
+      "fueling": "Normale disponibilita energetica, snack se necessario, acqua secondo sete. Non ricercare volutamente corsa low-carb."
+    },
+    {
+      "uid": "IMWIN8-W03-TUE-SW-01",
+      "week": 3,
+      "weekday": 2,
+      "sport": "SW",
+      "minutes": 50,
+      "metres": 2200,
+      "title": "Tecnica | 2200 m 8x50 + 6x200",
+      "groups": [
+        {
+          "distance": 300,
+          "count": 1,
+          "rest": 0,
+          "label": "Avvio facile",
+          "rpe": [
+            2,
+            3
+          ]
+        },
+        {
+          "distance": 50,
+          "count": 8,
+          "rest": 15,
+          "label": "Tecnica e nuoto completo",
+          "rpe": [
+            2,
+            3
+          ]
+        },
+        {
+          "distance": 200,
+          "count": 6,
+          "rest": 20,
+          "label": "Endurance regolare",
+          "rpe": [
+            2,
+            3
+          ]
+        },
+        {
+          "distance": 50,
+          "count": 4,
+          "rest": 15,
+          "label": "Ritmo rapido composto",
+          "rpe": [
+            3,
+            5
+          ]
+        },
+        {
+          "distance": 100,
+          "count": 1,
+          "rest": 0,
+          "label": "Defaticamento",
+          "rpe": [
+            1,
+            2
+          ]
+        }
+      ],
+      "aim": "Economia del gesto e endurance senza fatica inutile",
+      "cues": "No CSS dedotta. Nuoto a RPE 2-3, occasionali progressivi non massimali. Recuperi solo fra ripetizioni, mai dopo l'ultima. Benchmark 5x200 W02 e W08 comparabile.",
+      "fueling": "Alimentazione abituale, acqua secondo sete; piccolo snack se lontani dal pasto, non ricercare digiuno."
+    },
+    {
+      "uid": "IMWIN8-W03-TUE-BI-01",
+      "week": 3,
+      "weekday": 2,
+      "sport": "BI",
+      "minutes": 60,
+      "title": "Aerobico | 60 min continuita e cadenza",
+      "blocks": [
+        [
+          "warm",
+          15
+        ],
+        [
+          "endurance",
+          40
+        ],
+        [
+          "cool",
+          5
+        ]
+      ],
+      "aim": "Controllo aerobico, tecnica e cadenza; steady breve solo quando previsto",
+      "cues": "FTP percentuale principale nel Builder, RPE 2-3 nei tratti endurance, RPE4 nei 3x steady se prescritti. Sotto LT1 secondo risposta individuale: non e una percentuale FTP universale. Nessun blocco IM race pace, soglia, sprint o brick. ",
+      "fueling": "Pasti e carboidrati abituali, idratazione secondo sete e condizioni, senza digiuno programmato."
+    },
+    {
+      "uid": "IMWIN8-W03-WED-RU-01",
+      "week": 3,
+      "weekday": 3,
+      "sport": "RU",
+      "minutes": 45,
+      "title": "Tecnica | Corsa 45 min PAM 10 min",
+      "blocks": [
+        [
+          "warm",
+          10
+        ],
+        [
+          "drills",
+          10
+        ],
+        [
+          "easy",
+          20
+        ],
+        [
+          "cool",
+          5
+        ]
+      ],
+      "aim": "Controllo tecnico PAM e continuita della corsa",
+      "cues": "A-Skip, ankling e oscillazione braccia",
+      "fueling": "Normale disponibilita energetica, snack se necessario, acqua secondo sete. Non ricercare volutamente corsa low-carb."
+    },
+    {
+      "uid": "IMWIN8-W03-THU-SW-01",
+      "week": 3,
+      "weekday": 4,
+      "sport": "SW",
+      "minutes": 50,
+      "metres": 2300,
+      "title": "Aerobico | 2300 m 6x50 + 4x300",
+      "groups": [
+        {
+          "distance": 300,
+          "count": 1,
+          "rest": 0,
+          "label": "Avvio facile",
+          "rpe": [
+            2,
+            3
+          ]
+        },
+        {
+          "distance": 50,
+          "count": 6,
+          "rest": 15,
+          "label": "Tecnica assetto e presa",
+          "rpe": [
+            2,
+            3
+          ]
+        },
+        {
+          "distance": 300,
+          "count": 4,
+          "rest": 25,
+          "label": "Endurance conversazionale",
+          "rpe": [
+            2,
+            3
+          ]
+        },
+        {
+          "distance": 50,
+          "count": 6,
+          "rest": 15,
+          "label": "Facile e progressivo alternati",
+          "rpe": [
+            3,
+            5
+          ]
+        },
+        {
+          "distance": 200,
+          "count": 1,
+          "rest": 0,
+          "label": "Defaticamento",
+          "rpe": [
+            1,
+            2
+          ]
+        }
+      ],
+      "aim": "Respirazione, allineamento e continuita aerobica",
+      "cues": "No CSS dedotta. Nuoto a RPE 2-3, occasionali progressivi non massimali. Recuperi solo fra ripetizioni, mai dopo l'ultima. Benchmark 5x200 W02 e W08 comparabile.",
+      "fueling": "Alimentazione abituale, acqua secondo sete; piccolo snack se lontani dal pasto, non ricercare digiuno."
+    },
+    {
+      "uid": "IMWIN8-W03-FRI-RU-01",
+      "week": 3,
+      "weekday": 5,
+      "sport": "RU",
+      "minutes": 35,
+      "title": "Aerobico | Corsa facile 35 min con richiamo tecnico",
+      "blocks": [
+        [
+          "warm",
+          10
+        ],
+        [
+          "easy",
+          20
+        ],
+        [
+          "cool",
+          5
+        ]
+      ],
+      "aim": "Richiamo di continuita senza ulteriore costo metabolico",
+      "cues": "Corsa facile senza aggiungere qualita, tecnica spontanea e respirazione naturale.",
+      "fueling": "Normale disponibilita energetica, snack se necessario, acqua secondo sete. Non ricercare volutamente corsa low-carb."
+    },
+    {
+      "uid": "IMWIN8-W03-SAT-BI-01",
+      "week": 3,
+      "weekday": 6,
+      "sport": "BI",
+      "minutes": 105,
+      "title": "Lungo | 105 min lungo aerobico",
+      "blocks": [
+        [
+          "warm",
+          15
+        ],
+        [
+          "endurance",
+          85
+        ],
+        [
+          "cool",
+          5
+        ]
+      ],
+      "aim": "Endurance aerobica recuperabile e continuita della pedalata",
+      "cues": "FTP percentuale principale nel Builder, RPE 2-3 nei tratti endurance, RPE4 nei 3x steady se prescritti. Sotto LT1 secondo risposta individuale: non e una percentuale FTP universale. Nessun blocco IM race pace, soglia, sprint o brick. ",
+      "fueling": "Arrivare alimentati; durante 90-140 minuti, circa 30-60 g carboidrati/ora quando utili e tollerati, da personalizzare. Acqua/sodio secondo clima e sudorazione."
+    },
+    {
+      "uid": "IMWIN8-W03-SUN-RU-01",
+      "week": 3,
+      "weekday": 7,
+      "sport": "RU",
+      "minutes": 55,
+      "title": "Lungo | Corsa facile 55 min",
+      "blocks": [
+        [
+          "warm",
+          10
+        ],
+        [
+          "easy",
+          40
+        ],
+        [
+          "cool",
+          5
+        ]
+      ],
+      "aim": "Endurance meccanicamente prudente",
+      "cues": "Corsa facile conversazionale, nessun ritmo gara e nessun drill obbligatorio; monitorare risposta piede/polpaccio/Achille e costo della forza.",
+      "fueling": "Normale disponibilita energetica, snack se necessario, acqua secondo sete. Non ricercare volutamente corsa low-carb."
+    },
+    {
+      "uid": "IMWIN8-W04-TUE-SW-01",
+      "week": 4,
+      "weekday": 2,
+      "sport": "SW",
+      "minutes": 40,
+      "metres": 1800,
+      "title": "Tecnica | 1800 m 6x50 + 5x200",
+      "groups": [
+        {
+          "distance": 300,
+          "count": 1,
+          "rest": 0,
+          "label": "Avvio molto facile",
+          "rpe": [
+            2,
+            3
+          ]
+        },
+        {
+          "distance": 50,
+          "count": 6,
+          "rest": 15,
+          "label": "Tecnica semplice",
+          "rpe": [
+            2,
+            3
+          ]
+        },
+        {
+          "distance": 200,
+          "count": 5,
+          "rest": 20,
+          "label": "Endurance regolare RPE2-3",
+          "rpe": [
+            2,
+            3
+          ]
+        },
+        {
+          "distance": 50,
+          "count": 4,
+          "rest": 15,
+          "label": "Nuoto sciolto",
+          "rpe": [
+            1,
+            2
+          ]
+        }
+      ],
+      "aim": "Economia del gesto e endurance senza fatica inutile",
+      "cues": "No CSS dedotta. Nuoto a RPE 2-3, occasionali progressivi non massimali. Recuperi solo fra ripetizioni, mai dopo l'ultima. Benchmark 5x200 W02 e W08 comparabile.",
+      "fueling": "Alimentazione abituale, acqua secondo sete; piccolo snack se lontani dal pasto, non ricercare digiuno."
+    },
+    {
+      "uid": "IMWIN8-W04-TUE-BI-01",
+      "week": 4,
+      "weekday": 2,
+      "sport": "BI",
+      "minutes": 50,
+      "title": "Aerobico | 50 min continuita e cadenza",
+      "blocks": [
+        [
+          "warm",
+          10
+        ],
+        [
+          "endurance",
+          35
+        ],
+        [
+          "cool",
+          5
+        ]
+      ],
+      "aim": "Controllo aerobico, tecnica e cadenza; steady breve solo quando previsto",
+      "cues": "FTP percentuale principale nel Builder, RPE 2-3 nei tratti endurance, RPE4 nei 3x steady se prescritti. Sotto LT1 secondo risposta individuale: non e una percentuale FTP universale. Nessun blocco IM race pace, soglia, sprint o brick. ",
+      "fueling": "Pasti e carboidrati abituali, idratazione secondo sete e condizioni, senza digiuno programmato."
+    },
+    {
+      "uid": "IMWIN8-W04-WED-RU-01",
+      "week": 4,
+      "weekday": 3,
+      "sport": "RU",
+      "minutes": 40,
+      "title": "Tecnica | Corsa 40 min PAM 7 min",
+      "blocks": [
+        [
+          "warm",
+          10
+        ],
+        [
+          "drills",
+          7
+        ],
+        [
+          "easy",
+          18
+        ],
+        [
+          "cool",
+          5
+        ]
+      ],
+      "aim": "Controllo tecnico PAM e continuita della corsa",
+      "cues": "A-March leggero, niente reattivita",
+      "fueling": "Normale disponibilita energetica, snack se necessario, acqua secondo sete. Non ricercare volutamente corsa low-carb."
+    },
+    {
+      "uid": "IMWIN8-W04-THU-SW-01",
+      "week": 4,
+      "weekday": 4,
+      "sport": "SW",
+      "minutes": 40,
+      "metres": 1800,
+      "title": "Aerobico | 1800 m 6x50 + 4x250",
+      "groups": [
+        {
+          "distance": 300,
+          "count": 1,
+          "rest": 0,
+          "label": "Avvio facile",
+          "rpe": [
+            2,
+            3
+          ]
+        },
+        {
+          "distance": 50,
+          "count": 6,
+          "rest": 15,
+          "label": "Tecnica respirazione e presa",
+          "rpe": [
+            2,
+            3
+          ]
+        },
+        {
+          "distance": 250,
+          "count": 4,
+          "rest": 20,
+          "label": "Nuoto regolare",
+          "rpe": [
+            2,
+            3
+          ]
+        },
+        {
+          "distance": 200,
+          "count": 1,
+          "rest": 0,
+          "label": "Defaticamento",
+          "rpe": [
+            1,
+            2
+          ]
+        }
+      ],
+      "aim": "Respirazione, allineamento e continuita aerobica",
+      "cues": "No CSS dedotta. Nuoto a RPE 2-3, occasionali progressivi non massimali. Recuperi solo fra ripetizioni, mai dopo l'ultima. Benchmark 5x200 W02 e W08 comparabile.",
+      "fueling": "Alimentazione abituale, acqua secondo sete; piccolo snack se lontani dal pasto, non ricercare digiuno."
+    },
+    {
+      "uid": "IMWIN8-W04-FRI-RU-01",
+      "week": 4,
+      "weekday": 5,
+      "sport": "RU",
+      "minutes": 30,
+      "title": "Aerobico | Corsa facile 30 min con richiamo tecnico",
+      "blocks": [
+        [
+          "warm",
+          10
+        ],
+        [
+          "easy",
+          15
+        ],
+        [
+          "cool",
+          5
+        ]
+      ],
+      "aim": "Richiamo di continuita senza ulteriore costo metabolico",
+      "cues": "Corsa facile senza aggiungere qualita, tecnica spontanea e respirazione naturale.",
+      "fueling": "Normale disponibilita energetica, snack se necessario, acqua secondo sete. Non ricercare volutamente corsa low-carb."
+    },
+    {
+      "uid": "IMWIN8-W04-SAT-BI-01",
+      "week": 4,
+      "weekday": 6,
+      "sport": "BI",
+      "minutes": 80,
+      "title": "Lungo | 80 min lungo aerobico",
+      "blocks": [
+        [
+          "warm",
+          15
+        ],
+        [
+          "endurance",
+          60
+        ],
+        [
+          "cool",
+          5
+        ]
+      ],
+      "aim": "Endurance aerobica recuperabile e continuita della pedalata",
+      "cues": "FTP percentuale principale nel Builder, RPE 2-3 nei tratti endurance, RPE4 nei 3x steady se prescritti. Sotto LT1 secondo risposta individuale: non e una percentuale FTP universale. Nessun blocco IM race pace, soglia, sprint o brick. ",
+      "fueling": "Pasti e carboidrati abituali, idratazione secondo sete e condizioni, senza digiuno programmato."
+    },
+    {
+      "uid": "IMWIN8-W04-SUN-RU-01",
+      "week": 4,
+      "weekday": 7,
+      "sport": "RU",
+      "minutes": 40,
+      "title": "Lungo | Corsa facile 40 min",
+      "blocks": [
+        [
+          "warm",
+          10
+        ],
+        [
+          "easy",
+          25
+        ],
+        [
+          "cool",
+          5
+        ]
+      ],
+      "aim": "Endurance meccanicamente prudente",
+      "cues": "Corsa facile conversazionale, nessun ritmo gara e nessun drill obbligatorio; monitorare risposta piede/polpaccio/Achille e costo della forza.",
+      "fueling": "Normale disponibilita energetica, snack se necessario, acqua secondo sete. Non ricercare volutamente corsa low-carb."
+    },
+    {
+      "uid": "IMWIN8-W05-TUE-SW-01",
+      "week": 5,
+      "weekday": 2,
+      "sport": "SW",
+      "minutes": 50,
+      "metres": 2300,
+      "title": "Tecnica | 2300 m 8x50 + 6x200",
+      "groups": [
+        {
+          "distance": 300,
+          "count": 1,
+          "rest": 0,
+          "label": "Avvio facile",
+          "rpe": [
+            2,
+            3
+          ]
+        },
+        {
+          "distance": 50,
+          "count": 8,
+          "rest": 15,
+          "label": "Tecnica assetto e allineamento",
+          "rpe": [
+            2,
+            3
+          ]
+        },
+        {
+          "distance": 200,
+          "count": 6,
+          "rest": 20,
+          "label": "Endurance tempi omogenei",
+          "rpe": [
+            2,
+            3
+          ]
+        },
+        {
+          "distance": 50,
+          "count": 4,
+          "rest": 15,
+          "label": "Progressivi controllati",
+          "rpe": [
+            3,
+            5
+          ]
+        },
+        {
+          "distance": 200,
+          "count": 1,
+          "rest": 0,
+          "label": "Defaticamento",
+          "rpe": [
+            1,
+            2
+          ]
+        }
+      ],
+      "aim": "Economia del gesto e endurance senza fatica inutile",
+      "cues": "No CSS dedotta. Nuoto a RPE 2-3, occasionali progressivi non massimali. Recuperi solo fra ripetizioni, mai dopo l'ultima. Benchmark 5x200 W02 e W08 comparabile.",
+      "fueling": "Alimentazione abituale, acqua secondo sete; piccolo snack se lontani dal pasto, non ricercare digiuno."
+    },
+    {
+      "uid": "IMWIN8-W05-TUE-BI-01",
+      "week": 5,
+      "weekday": 2,
+      "sport": "BI",
+      "minutes": 65,
+      "title": "Aerobico | 65 min agilita 6x1 min",
+      "blocks": [
+        [
+          "warm",
+          15
+        ],
+        [
+          "cadence",
+          1,
+          6
+        ],
+        [
+          "easy",
+          4,
+          6
+        ],
+        [
+          "endurance",
+          15
+        ],
+        [
+          "cool",
+          5
+        ]
+      ],
+      "aim": "Controllo aerobico, tecnica e cadenza; steady breve solo quando previsto",
+      "cues": "FTP percentuale principale nel Builder, RPE 2-3 nei tratti endurance, RPE4 nei 3x steady se prescritti. Sotto LT1 secondo risposta individuale: non e una percentuale FTP universale. Nessun blocco IM race pace, soglia, sprint o brick. Cadenza leggermente piu alta di quella naturale senza rimbalzare, sempre RPE2-3.",
+      "fueling": "Pasti e carboidrati abituali, idratazione secondo sete e condizioni, senza digiuno programmato."
+    },
+    {
+      "uid": "IMWIN8-W05-WED-RU-01",
+      "week": 5,
+      "weekday": 3,
+      "sport": "RU",
+      "minutes": 45,
+      "title": "Tecnica | Corsa 45 min PAM 10 min",
+      "blocks": [
+        [
+          "warm",
+          10
+        ],
+        [
+          "drills",
+          10
+        ],
+        [
+          "easy",
+          20
+        ],
+        [
+          "cool",
+          5
+        ]
+      ],
+      "aim": "Controllo tecnico PAM e continuita della corsa",
+      "cues": "A-March, pogos opzionali solo dopo tolleranza",
+      "fueling": "Normale disponibilita energetica, snack se necessario, acqua secondo sete. Non ricercare volutamente corsa low-carb."
+    },
+    {
+      "uid": "IMWIN8-W05-THU-SW-01",
+      "week": 5,
+      "weekday": 4,
+      "sport": "SW",
+      "minutes": 50,
+      "metres": 2300,
+      "title": "Aerobico | 2300 m 6x50 + 4x300",
+      "groups": [
+        {
+          "distance": 400,
+          "count": 1,
+          "rest": 0,
+          "label": "Avvio facile",
+          "rpe": [
+            2,
+            3
+          ]
+        },
+        {
+          "distance": 50,
+          "count": 6,
+          "rest": 15,
+          "label": "Tecnica e nuoto completo",
+          "rpe": [
+            2,
+            3
+          ]
+        },
+        {
+          "distance": 300,
+          "count": 4,
+          "rest": 25,
+          "label": "Endurance regolare",
+          "rpe": [
+            2,
+            3
+          ]
+        },
+        {
+          "distance": 50,
+          "count": 4,
+          "rest": 15,
+          "label": "Tecnica rapida non massimale",
+          "rpe": [
+            2,
+            3
+          ]
+        },
+        {
+          "distance": 200,
+          "count": 1,
+          "rest": 0,
+          "label": "Defaticamento",
+          "rpe": [
+            1,
+            2
+          ]
+        }
+      ],
+      "aim": "Respirazione, allineamento e continuita aerobica",
+      "cues": "No CSS dedotta. Nuoto a RPE 2-3, occasionali progressivi non massimali. Recuperi solo fra ripetizioni, mai dopo l'ultima. Benchmark 5x200 W02 e W08 comparabile.",
+      "fueling": "Alimentazione abituale, acqua secondo sete; piccolo snack se lontani dal pasto, non ricercare digiuno."
+    },
+    {
+      "uid": "IMWIN8-W05-THU-BI-01",
+      "week": 5,
+      "weekday": 4,
+      "sport": "BI",
+      "minutes": 40,
+      "title": "Recupero | 40 min continuita facile",
+      "blocks": [
+        [
+          "warm",
+          10
+        ],
+        [
+          "endurance",
+          25
+        ],
+        [
+          "cool",
+          5
+        ]
+      ],
+      "aim": "Facile, sola continuita senza qualita",
+      "cues": "FTP percentuale principale nel Builder, RPE 2-3 nei tratti endurance, RPE4 nei 3x steady se prescritti. Sotto LT1 secondo risposta individuale: non e una percentuale FTP universale. Nessun blocco IM race pace, soglia, sprint o brick. ",
+      "fueling": "Pasti e carboidrati abituali, idratazione secondo sete e condizioni, senza digiuno programmato."
+    },
+    {
+      "uid": "IMWIN8-W05-FRI-RU-01",
+      "week": 5,
+      "weekday": 5,
+      "sport": "RU",
+      "minutes": 35,
+      "title": "Aerobico | Corsa facile 35 min con richiamo tecnico",
+      "blocks": [
+        [
+          "warm",
+          10
+        ],
+        [
+          "easy",
+          20
+        ],
+        [
+          "cool",
+          5
+        ]
+      ],
+      "aim": "Richiamo di continuita senza ulteriore costo metabolico",
+      "cues": "Strides o corda/pogos solo se tollerati, UNA opzione e dentro il tempo programmato; non cercare DOMS.",
+      "fueling": "Normale disponibilita energetica, snack se necessario, acqua secondo sete. Non ricercare volutamente corsa low-carb."
+    },
+    {
+      "uid": "IMWIN8-W05-SAT-BI-01",
+      "week": 5,
+      "weekday": 6,
+      "sport": "BI",
+      "minutes": 115,
+      "title": "Lungo | 115 min lungo aerobico",
+      "blocks": [
+        [
+          "warm",
+          15
+        ],
+        [
+          "endurance",
+          95
+        ],
+        [
+          "cool",
+          5
+        ]
+      ],
+      "aim": "Endurance aerobica recuperabile e continuita della pedalata",
+      "cues": "FTP percentuale principale nel Builder, RPE 2-3 nei tratti endurance, RPE4 nei 3x steady se prescritti. Sotto LT1 secondo risposta individuale: non e una percentuale FTP universale. Nessun blocco IM race pace, soglia, sprint o brick. ",
+      "fueling": "Arrivare alimentati; durante 90-140 minuti, circa 30-60 g carboidrati/ora quando utili e tollerati, da personalizzare. Acqua/sodio secondo clima e sudorazione."
+    },
+    {
+      "uid": "IMWIN8-W05-SUN-RU-01",
+      "week": 5,
+      "weekday": 7,
+      "sport": "RU",
+      "minutes": 55,
+      "title": "Lungo | Corsa facile 55 min",
+      "blocks": [
+        [
+          "warm",
+          10
+        ],
+        [
+          "easy",
+          40
+        ],
+        [
+          "cool",
+          5
+        ]
+      ],
+      "aim": "Endurance meccanicamente prudente",
+      "cues": "Corsa facile conversazionale, nessun ritmo gara e nessun drill obbligatorio; monitorare risposta piede/polpaccio/Achille e costo della forza.",
+      "fueling": "Normale disponibilita energetica, snack se necessario, acqua secondo sete. Non ricercare volutamente corsa low-carb."
+    },
+    {
+      "uid": "IMWIN8-W06-TUE-SW-01",
+      "week": 6,
+      "weekday": 2,
+      "sport": "SW",
+      "minutes": 55,
+      "metres": 2500,
+      "title": "Tecnica | 2500 m 8x50 + 6x250",
+      "groups": [
+        {
+          "distance": 400,
+          "count": 1,
+          "rest": 0,
+          "label": "Avvio facile",
+          "rpe": [
+            2,
+            3
+          ]
+        },
+        {
+          "distance": 50,
+          "count": 8,
+          "rest": 15,
+          "label": "Drill essenziali e completo",
+          "rpe": [
+            2,
+            3
+          ]
+        },
+        {
+          "distance": 250,
+          "count": 6,
+          "rest": 25,
+          "label": "Endurance costante senza deriva",
+          "rpe": [
+            2,
+            3
+          ]
+        },
+        {
+          "distance": 50,
+          "count": 4,
+          "rest": 15,
+          "label": "Progressivi rilassati",
+          "rpe": [
+            3,
+            5
+          ]
+        }
+      ],
+      "aim": "Economia del gesto e endurance senza fatica inutile",
+      "cues": "No CSS dedotta. Nuoto a RPE 2-3, occasionali progressivi non massimali. Recuperi solo fra ripetizioni, mai dopo l'ultima. Benchmark 5x200 W02 e W08 comparabile.",
+      "fueling": "Alimentazione abituale, acqua secondo sete; piccolo snack se lontani dal pasto, non ricercare digiuno."
+    },
+    {
+      "uid": "IMWIN8-W06-TUE-BI-01",
+      "week": 6,
+      "weekday": 2,
+      "sport": "BI",
+      "minutes": 70,
+      "title": "Steady | 70 min steady 3x5 min",
+      "blocks": [
+        [
+          "warm",
+          15
+        ],
+        [
+          "steady",
+          5,
+          3
+        ],
+        [
+          "rest",
+          5,
+          2
+        ],
+        [
+          "endurance",
+          25
+        ],
+        [
+          "cool",
+          5
+        ]
+      ],
+      "aim": "Controllo aerobico, tecnica e cadenza; steady breve solo quando previsto",
+      "cues": "FTP percentuale principale nel Builder, RPE 2-3 nei tratti endurance, RPE4 nei 3x steady se prescritti. Sotto LT1 secondo risposta individuale: non e una percentuale FTP universale. Nessun blocco IM race pace, soglia, sprint o brick. ",
+      "fueling": "Pasti e carboidrati abituali, idratazione secondo sete e condizioni, senza digiuno programmato."
+    },
+    {
+      "uid": "IMWIN8-W06-WED-RU-01",
+      "week": 6,
+      "weekday": 3,
+      "sport": "RU",
+      "minutes": 50,
+      "title": "Tecnica | Corsa 50 min PAM 12 min",
+      "blocks": [
+        [
+          "warm",
+          10
+        ],
+        [
+          "drills",
+          12
+        ],
+        [
+          "easy",
+          23
+        ],
+        [
+          "cool",
+          5
+        ]
+      ],
+      "aim": "Controllo tecnico PAM e continuita della corsa",
+      "cues": "Ankling; corda O pogos nella seconda corsa se tollerato",
+      "fueling": "Normale disponibilita energetica, snack se necessario, acqua secondo sete. Non ricercare volutamente corsa low-carb."
+    },
+    {
+      "uid": "IMWIN8-W06-THU-SW-01",
+      "week": 6,
+      "weekday": 4,
+      "sport": "SW",
+      "minutes": 55,
+      "metres": 2500,
+      "title": "Aerobico | 2500 m 6x50 + 4x400",
+      "groups": [
+        {
+          "distance": 300,
+          "count": 1,
+          "rest": 0,
+          "label": "Avvio facile",
+          "rpe": [
+            2,
+            3
+          ]
+        },
+        {
+          "distance": 50,
+          "count": 6,
+          "rest": 15,
+          "label": "Tecnica presa e assetto",
+          "rpe": [
+            2,
+            3
+          ]
+        },
+        {
+          "distance": 400,
+          "count": 4,
+          "rest": 30,
+          "label": "Endurance controllata",
+          "rpe": [
+            2,
+            3
+          ]
+        },
+        {
+          "distance": 50,
+          "count": 6,
+          "rest": 15,
+          "label": "Facile e progressivo moderato",
+          "rpe": [
+            3,
+            5
+          ]
+        }
+      ],
+      "aim": "Respirazione, allineamento e continuita aerobica",
+      "cues": "No CSS dedotta. Nuoto a RPE 2-3, occasionali progressivi non massimali. Recuperi solo fra ripetizioni, mai dopo l'ultima. Benchmark 5x200 W02 e W08 comparabile.",
+      "fueling": "Alimentazione abituale, acqua secondo sete; piccolo snack se lontani dal pasto, non ricercare digiuno."
+    },
+    {
+      "uid": "IMWIN8-W06-THU-BI-01",
+      "week": 6,
+      "weekday": 4,
+      "sport": "BI",
+      "minutes": 50,
+      "title": "Recupero | 50 min continuita facile",
+      "blocks": [
+        [
+          "warm",
+          10
+        ],
+        [
+          "endurance",
+          35
+        ],
+        [
+          "cool",
+          5
+        ]
+      ],
+      "aim": "Facile, sola continuita senza qualita",
+      "cues": "FTP percentuale principale nel Builder, RPE 2-3 nei tratti endurance, RPE4 nei 3x steady se prescritti. Sotto LT1 secondo risposta individuale: non e una percentuale FTP universale. Nessun blocco IM race pace, soglia, sprint o brick. ",
+      "fueling": "Pasti e carboidrati abituali, idratazione secondo sete e condizioni, senza digiuno programmato."
+    },
+    {
+      "uid": "IMWIN8-W06-FRI-RU-01",
+      "week": 6,
+      "weekday": 5,
+      "sport": "RU",
+      "minutes": 40,
+      "title": "Aerobico | Corsa facile 40 min con richiamo tecnico",
+      "blocks": [
+        [
+          "warm",
+          10
+        ],
+        [
+          "easy",
+          25
+        ],
+        [
+          "cool",
+          5
+        ]
+      ],
+      "aim": "Richiamo di continuita senza ulteriore costo metabolico",
+      "cues": "Strides o corda/pogos solo se tollerati, UNA opzione e dentro il tempo programmato; non cercare DOMS.",
+      "fueling": "Normale disponibilita energetica, snack se necessario, acqua secondo sete. Non ricercare volutamente corsa low-carb."
+    },
+    {
+      "uid": "IMWIN8-W06-SAT-BI-01",
+      "week": 6,
+      "weekday": 6,
+      "sport": "BI",
+      "minutes": 125,
+      "title": "Lungo | 125 min lungo aerobico",
+      "blocks": [
+        [
+          "warm",
+          15
+        ],
+        [
+          "endurance",
+          105
+        ],
+        [
+          "cool",
+          5
+        ]
+      ],
+      "aim": "Endurance aerobica recuperabile e continuita della pedalata",
+      "cues": "FTP percentuale principale nel Builder, RPE 2-3 nei tratti endurance, RPE4 nei 3x steady se prescritti. Sotto LT1 secondo risposta individuale: non e una percentuale FTP universale. Nessun blocco IM race pace, soglia, sprint o brick. ",
+      "fueling": "Arrivare alimentati; durante 90-140 minuti, circa 30-60 g carboidrati/ora quando utili e tollerati, da personalizzare. Acqua/sodio secondo clima e sudorazione."
+    },
+    {
+      "uid": "IMWIN8-W06-SUN-RU-01",
+      "week": 6,
+      "weekday": 7,
+      "sport": "RU",
+      "minutes": 60,
+      "title": "Lungo | Corsa facile 60 min",
+      "blocks": [
+        [
+          "warm",
+          10
+        ],
+        [
+          "easy",
+          45
+        ],
+        [
+          "cool",
+          5
+        ]
+      ],
+      "aim": "Endurance meccanicamente prudente",
+      "cues": "Corsa facile conversazionale, nessun ritmo gara e nessun drill obbligatorio; monitorare risposta piede/polpaccio/Achille e costo della forza.",
+      "fueling": "Normale disponibilita energetica, snack se necessario, acqua secondo sete. Non ricercare volutamente corsa low-carb."
+    },
+    {
+      "uid": "IMWIN8-W07-TUE-SW-01",
+      "week": 7,
+      "weekday": 2,
+      "sport": "SW",
+      "minutes": 55,
+      "metres": 2600,
+      "title": "Tecnica | 2600 m 8x50 + 8x200",
+      "groups": [
+        {
+          "distance": 400,
+          "count": 1,
+          "rest": 0,
+          "label": "Avvio facile",
+          "rpe": [
+            2,
+            3
+          ]
+        },
+        {
+          "distance": 50,
+          "count": 8,
+          "rest": 15,
+          "label": "Tecnica e completo",
+          "rpe": [
+            2,
+            3
+          ]
+        },
+        {
+          "distance": 200,
+          "count": 8,
+          "rest": 20,
+          "label": "Endurance regolare senza deriva",
+          "rpe": [
+            2,
+            3
+          ]
+        },
+        {
+          "distance": 50,
+          "count": 4,
+          "rest": 15,
+          "label": "Progressivi moderati",
+          "rpe": [
+            3,
+            5
+          ]
+        }
+      ],
+      "aim": "Economia del gesto e endurance senza fatica inutile",
+      "cues": "No CSS dedotta. Nuoto a RPE 2-3, occasionali progressivi non massimali. Recuperi solo fra ripetizioni, mai dopo l'ultima. Benchmark 5x200 W02 e W08 comparabile.",
+      "fueling": "Alimentazione abituale, acqua secondo sete; piccolo snack se lontani dal pasto, non ricercare digiuno."
+    },
+    {
+      "uid": "IMWIN8-W07-TUE-BI-01",
+      "week": 7,
+      "weekday": 2,
+      "sport": "BI",
+      "minutes": 75,
+      "title": "Steady | 75 min steady 3x6 min",
+      "blocks": [
+        [
+          "warm",
+          15
+        ],
+        [
+          "steady",
+          6,
+          3
+        ],
+        [
+          "rest",
+          6,
+          2
+        ],
+        [
+          "endurance",
+          25
+        ],
+        [
+          "cool",
+          5
+        ]
+      ],
+      "aim": "Controllo aerobico, tecnica e cadenza; steady breve solo quando previsto",
+      "cues": "FTP percentuale principale nel Builder, RPE 2-3 nei tratti endurance, RPE4 nei 3x steady se prescritti. Sotto LT1 secondo risposta individuale: non e una percentuale FTP universale. Nessun blocco IM race pace, soglia, sprint o brick. ",
+      "fueling": "Pasti e carboidrati abituali, idratazione secondo sete e condizioni, senza digiuno programmato."
+    },
+    {
+      "uid": "IMWIN8-W07-WED-RU-01",
+      "week": 7,
+      "weekday": 3,
+      "sport": "RU",
+      "minutes": 50,
+      "title": "Tecnica | Corsa 50 min PAM 12 min",
+      "blocks": [
+        [
+          "warm",
+          10
+        ],
+        [
+          "drills",
+          12
+        ],
+        [
+          "easy",
+          23
+        ],
+        [
+          "cool",
+          5
+        ]
+      ],
+      "aim": "Controllo tecnico PAM e continuita della corsa",
+      "cues": "PAM e controllo bacino, microdose singola opzionale",
+      "fueling": "Normale disponibilita energetica, snack se necessario, acqua secondo sete. Non ricercare volutamente corsa low-carb."
+    },
+    {
+      "uid": "IMWIN8-W07-THU-SW-01",
+      "week": 7,
+      "weekday": 4,
+      "sport": "SW",
+      "minutes": 55,
+      "metres": 2600,
+      "title": "Aerobico | 2600 m 6x50 + 4x400",
+      "groups": [
+        {
+          "distance": 300,
+          "count": 1,
+          "rest": 0,
+          "label": "Avvio facile",
+          "rpe": [
+            2,
+            3
+          ]
+        },
+        {
+          "distance": 50,
+          "count": 6,
+          "rest": 15,
+          "label": "Respirazione e assetto",
+          "rpe": [
+            2,
+            3
+          ]
+        },
+        {
+          "distance": 400,
+          "count": 4,
+          "rest": 30,
+          "label": "Endurance costante",
+          "rpe": [
+            2,
+            3
+          ]
+        },
+        {
+          "distance": 50,
+          "count": 4,
+          "rest": 15,
+          "label": "Progressivi moderati",
+          "rpe": [
+            3,
+            5
+          ]
+        },
+        {
+          "distance": 200,
+          "count": 1,
+          "rest": 0,
+          "label": "Defaticamento",
+          "rpe": [
+            1,
+            2
+          ]
+        }
+      ],
+      "aim": "Respirazione, allineamento e continuita aerobica",
+      "cues": "No CSS dedotta. Nuoto a RPE 2-3, occasionali progressivi non massimali. Recuperi solo fra ripetizioni, mai dopo l'ultima. Benchmark 5x200 W02 e W08 comparabile.",
+      "fueling": "Alimentazione abituale, acqua secondo sete; piccolo snack se lontani dal pasto, non ricercare digiuno."
+    },
+    {
+      "uid": "IMWIN8-W07-THU-BI-01",
+      "week": 7,
+      "weekday": 4,
+      "sport": "BI",
+      "minutes": 55,
+      "title": "Recupero | 55 min continuita facile",
+      "blocks": [
+        [
+          "warm",
+          10
+        ],
+        [
+          "endurance",
+          40
+        ],
+        [
+          "cool",
+          5
+        ]
+      ],
+      "aim": "Facile, sola continuita senza qualita",
+      "cues": "FTP percentuale principale nel Builder, RPE 2-3 nei tratti endurance, RPE4 nei 3x steady se prescritti. Sotto LT1 secondo risposta individuale: non e una percentuale FTP universale. Nessun blocco IM race pace, soglia, sprint o brick. ",
+      "fueling": "Pasti e carboidrati abituali, idratazione secondo sete e condizioni, senza digiuno programmato."
+    },
+    {
+      "uid": "IMWIN8-W07-FRI-RU-01",
+      "week": 7,
+      "weekday": 5,
+      "sport": "RU",
+      "minutes": 45,
+      "title": "Aerobico | Corsa facile 45 min con richiamo tecnico",
+      "blocks": [
+        [
+          "warm",
+          10
+        ],
+        [
+          "easy",
+          30
+        ],
+        [
+          "cool",
+          5
+        ]
+      ],
+      "aim": "Richiamo di continuita senza ulteriore costo metabolico",
+      "cues": "Strides o corda/pogos solo se tollerati, UNA opzione e dentro il tempo programmato; non cercare DOMS.",
+      "fueling": "Normale disponibilita energetica, snack se necessario, acqua secondo sete. Non ricercare volutamente corsa low-carb."
+    },
+    {
+      "uid": "IMWIN8-W07-SAT-BI-01",
+      "week": 7,
+      "weekday": 6,
+      "sport": "BI",
+      "minutes": 140,
+      "title": "Lungo | 140 min lungo aerobico",
+      "blocks": [
+        [
+          "warm",
+          15
+        ],
+        [
+          "endurance",
+          120
+        ],
+        [
+          "cool",
+          5
+        ]
+      ],
+      "aim": "Endurance aerobica recuperabile e continuita della pedalata",
+      "cues": "FTP percentuale principale nel Builder, RPE 2-3 nei tratti endurance, RPE4 nei 3x steady se prescritti. Sotto LT1 secondo risposta individuale: non e una percentuale FTP universale. Nessun blocco IM race pace, soglia, sprint o brick. ",
+      "fueling": "Arrivare alimentati; durante 90-140 minuti, circa 30-60 g carboidrati/ora quando utili e tollerati, da personalizzare. Acqua/sodio secondo clima e sudorazione."
+    },
+    {
+      "uid": "IMWIN8-W07-SUN-RU-01",
+      "week": 7,
+      "weekday": 7,
+      "sport": "RU",
+      "minutes": 65,
+      "title": "Lungo | Corsa facile 65 min",
+      "blocks": [
+        [
+          "warm",
+          10
+        ],
+        [
+          "easy",
+          50
+        ],
+        [
+          "cool",
+          5
+        ]
+      ],
+      "aim": "Endurance meccanicamente prudente",
+      "cues": "Corsa facile conversazionale, nessun ritmo gara e nessun drill obbligatorio; monitorare risposta piede/polpaccio/Achille e costo della forza.",
+      "fueling": "Normale disponibilita energetica, snack se necessario, acqua secondo sete. Non ricercare volutamente corsa low-carb."
+    },
+    {
+      "uid": "IMWIN8-W08-TUE-SW-01",
+      "week": 8,
+      "weekday": 2,
+      "sport": "SW",
+      "minutes": 45,
+      "metres": 2000,
+      "title": "Tecnica | 2000 m 6x50 + 5x200",
+      "groups": [
+        {
+          "distance": 300,
+          "count": 1,
+          "rest": 0,
+          "label": "Avvio facile",
+          "rpe": [
+            2,
+            3
+          ]
+        },
+        {
+          "distance": 50,
+          "count": 6,
+          "rest": 15,
+          "label": "Tecnica semplice",
+          "rpe": [
+            2,
+            3
+          ]
+        },
+        {
+          "distance": 200,
+          "count": 5,
+          "rest": 20,
+          "label": "Benchmark 5x200 submassimale",
+          "rpe": [
+            2,
+            3
+          ]
+        },
+        {
+          "distance": 50,
+          "count": 4,
+          "rest": 15,
+          "label": "Progressivi controllati",
+          "rpe": [
+            3,
+            5
+          ]
+        },
+        {
+          "distance": 200,
+          "count": 1,
+          "rest": 0,
+          "label": "Defaticamento",
+          "rpe": [
+            1,
+            2
+          ]
+        }
+      ],
+      "aim": "Economia del gesto e endurance senza fatica inutile",
+      "cues": "No CSS dedotta. Nuoto a RPE 2-3, occasionali progressivi non massimali. Recuperi solo fra ripetizioni, mai dopo l'ultima. Benchmark 5x200 W02 e W08 comparabile.",
+      "fueling": "Alimentazione abituale, acqua secondo sete; piccolo snack se lontani dal pasto, non ricercare digiuno."
+    },
+    {
+      "uid": "IMWIN8-W08-TUE-BI-01",
+      "week": 8,
+      "weekday": 2,
+      "sport": "BI",
+      "minutes": 60,
+      "title": "Aerobico | 60 min continuita e cadenza",
+      "blocks": [
+        [
+          "warm",
+          15
+        ],
+        [
+          "endurance",
+          40
+        ],
+        [
+          "cool",
+          5
+        ]
+      ],
+      "aim": "Controllo aerobico, tecnica e cadenza; steady breve solo quando previsto",
+      "cues": "FTP percentuale principale nel Builder, RPE 2-3 nei tratti endurance, RPE4 nei 3x steady se prescritti. Sotto LT1 secondo risposta individuale: non e una percentuale FTP universale. Nessun blocco IM race pace, soglia, sprint o brick. ",
+      "fueling": "Pasti e carboidrati abituali, idratazione secondo sete e condizioni, senza digiuno programmato."
+    },
+    {
+      "uid": "IMWIN8-W08-WED-RU-01",
+      "week": 8,
+      "weekday": 3,
+      "sport": "RU",
+      "minutes": 45,
+      "title": "Tecnica | Corsa 45 min PAM 8 min",
+      "blocks": [
+        [
+          "warm",
+          10
+        ],
+        [
+          "drills",
+          8
+        ],
+        [
+          "easy",
+          22
+        ],
+        [
+          "cool",
+          5
+        ]
+      ],
+      "aim": "Controllo tecnico PAM e continuita della corsa",
+      "cues": "A-March e mobilita caviglia, niente reattivita",
+      "fueling": "Normale disponibilita energetica, snack se necessario, acqua secondo sete. Non ricercare volutamente corsa low-carb."
+    },
+    {
+      "uid": "IMWIN8-W08-THU-SW-01",
+      "week": 8,
+      "weekday": 4,
+      "sport": "SW",
+      "minutes": 50,
+      "metres": 2200,
+      "title": "Aerobico | 2200 m 4x50 + 4x300",
+      "groups": [
+        {
+          "distance": 400,
+          "count": 1,
+          "rest": 0,
+          "label": "Avvio facile",
+          "rpe": [
+            2,
+            3
+          ]
+        },
+        {
+          "distance": 50,
+          "count": 4,
+          "rest": 15,
+          "label": "Allineamento semplice",
+          "rpe": [
+            2,
+            3
+          ]
+        },
+        {
+          "distance": 300,
+          "count": 4,
+          "rest": 25,
+          "label": "Endurance regolare",
+          "rpe": [
+            2,
+            3
+          ]
+        },
+        {
+          "distance": 50,
+          "count": 4,
+          "rest": 15,
+          "label": "Facile sciolto",
+          "rpe": [
+            1,
+            2
+          ]
+        },
+        {
+          "distance": 200,
+          "count": 1,
+          "rest": 0,
+          "label": "Defaticamento",
+          "rpe": [
+            1,
+            2
+          ]
+        }
+      ],
+      "aim": "Respirazione, allineamento e continuita aerobica",
+      "cues": "No CSS dedotta. Nuoto a RPE 2-3, occasionali progressivi non massimali. Recuperi solo fra ripetizioni, mai dopo l'ultima. Benchmark 5x200 W02 e W08 comparabile.",
+      "fueling": "Alimentazione abituale, acqua secondo sete; piccolo snack se lontani dal pasto, non ricercare digiuno."
+    },
+    {
+      "uid": "IMWIN8-W08-THU-BI-01",
+      "week": 8,
+      "weekday": 4,
+      "sport": "BI",
+      "minutes": 45,
+      "title": "Recupero | 45 min continuita facile",
+      "blocks": [
+        [
+          "warm",
+          10
+        ],
+        [
+          "endurance",
+          30
+        ],
+        [
+          "cool",
+          5
+        ]
+      ],
+      "aim": "Facile, sola continuita senza qualita",
+      "cues": "FTP percentuale principale nel Builder, RPE 2-3 nei tratti endurance, RPE4 nei 3x steady se prescritti. Sotto LT1 secondo risposta individuale: non e una percentuale FTP universale. Nessun blocco IM race pace, soglia, sprint o brick. ",
+      "fueling": "Pasti e carboidrati abituali, idratazione secondo sete e condizioni, senza digiuno programmato."
+    },
+    {
+      "uid": "IMWIN8-W08-FRI-RU-01",
+      "week": 8,
+      "weekday": 5,
+      "sport": "RU",
+      "minutes": 35,
+      "title": "Aerobico | Corsa facile 35 min con richiamo tecnico",
+      "blocks": [
+        [
+          "warm",
+          10
+        ],
+        [
+          "easy",
+          20
+        ],
+        [
+          "cool",
+          5
+        ]
+      ],
+      "aim": "Richiamo di continuita senza ulteriore costo metabolico",
+      "cues": "Corsa facile senza aggiungere qualita, tecnica spontanea e respirazione naturale.",
+      "fueling": "Normale disponibilita energetica, snack se necessario, acqua secondo sete. Non ricercare volutamente corsa low-carb."
+    },
+    {
+      "uid": "IMWIN8-W08-SAT-BI-01",
+      "week": 8,
+      "weekday": 6,
+      "sport": "BI",
+      "minutes": 105,
+      "title": "Lungo | 105 min lungo aerobico",
+      "blocks": [
+        [
+          "warm",
+          15
+        ],
+        [
+          "endurance",
+          85
+        ],
+        [
+          "cool",
+          5
+        ]
+      ],
+      "aim": "Endurance aerobica recuperabile e continuita della pedalata",
+      "cues": "FTP percentuale principale nel Builder, RPE 2-3 nei tratti endurance, RPE4 nei 3x steady se prescritti. Sotto LT1 secondo risposta individuale: non e una percentuale FTP universale. Nessun blocco IM race pace, soglia, sprint o brick. ",
+      "fueling": "Arrivare alimentati; durante 90-140 minuti, circa 30-60 g carboidrati/ora quando utili e tollerati, da personalizzare. Acqua/sodio secondo clima e sudorazione."
+    },
+    {
+      "uid": "IMWIN8-W08-SUN-RU-01",
+      "week": 8,
+      "weekday": 7,
+      "sport": "RU",
+      "minutes": 50,
+      "title": "Lungo | Corsa facile 50 min",
+      "blocks": [
+        [
+          "warm",
+          10
+        ],
+        [
+          "easy",
+          35
+        ],
+        [
+          "cool",
+          5
+        ]
+      ],
+      "aim": "Endurance meccanicamente prudente",
+      "cues": "Corsa facile conversazionale, nessun ritmo gara e nessun drill obbligatorio; monitorare risposta piede/polpaccio/Achille e costo della forza.",
+      "fueling": "Normale disponibilita energetica, snack se necessario, acqua secondo sete. Non ricercare volutamente corsa low-carb."
+    }
+  ]
+}
