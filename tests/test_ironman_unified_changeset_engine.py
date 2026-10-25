@@ -251,3 +251,146 @@ def test_completed_item_provider_drift_on_resume_is_detected(ledger):
     assert second["results"][0]["state"] == "BLOCKED_CONFLICT"
     assert second["results"][0]["code"] == "POST_VERIFIED_PROVIDER_DRIFT"
     assert adapter.writes == 1
+
+
+def test_deferred_dependency_resumes_after_uncertain_provider_reconciliation(ledger):
+    """A dependent item must remain PENDING, not permanently SKIPPED."""
+    before, after = {"value": "old"}, {"value": "new"}
+    upstream = item("upstream", "plan.note.patch", 501, before, after)
+    downstream = item("downstream", "plan.workout.patch", 502,
+                      before, after, depends=["upstream"])
+    manifest = make_manifest(upstream, downstream)
+    upstream_provider = FakeAdapter(before, behavior="uncertain")
+    downstream_provider = FakeAdapter(before)
+    providers = {upstream["kind"]: upstream_provider,
+                 downstream["kind"]: downstream_provider}
+
+    first = run(manifest, providers, ledger)
+    assert [x["state"] for x in first["results"]] == [
+        "UNKNOWN_NEEDS_READBACK", "SKIPPED_DEPENDENCY"]
+    assert first["request_state"] == "ACTION_INCOMPLETE"
+    assert ledger.status(manifest["request_id"], "downstream") == "PENDING"
+    assert downstream_provider.writes == 0
+
+    # Synthetic late provider commit after a lost response: reconcile by READ,
+    # never replay upstream, then complete the original dependent request.
+    upstream_provider.value = after.copy()
+    second = run(manifest, providers, ledger)
+    assert [x["state"] for x in second["results"]] == [
+        "DONE_VERIFIED", "DONE_VERIFIED"]
+    assert second["request_state"] == "WORK_COMPLETE"
+    assert second["provider_readback_verified"] is True
+    assert upstream_provider.writes == 1
+    assert downstream_provider.writes == 1
+
+
+def test_unconfirmed_verified_dependency_blocks_new_writes_until_readback(ledger):
+    before, after = {"value": 1}, {"value": 2}
+    prior = item("prior", "plan.note.patch", 601, before, after)
+    later = item("later", "plan.workout.patch", 602,
+                 before, after, depends=["prior"])
+    manifest = make_manifest(prior, later)
+
+    class FlakyVerifiedRead(FakeAdapter):
+        unavailable = True
+
+        def read(self, spec):
+            if self.unavailable:
+                raise OSError("provider temporarily unreadable")
+            return super().read(spec)
+
+    prior_provider = FlakyVerifiedRead(after)
+    later_provider = FakeAdapter(before)
+    providers = {prior["kind"]: prior_provider, later["kind"]: later_provider}
+    run(manifest, providers, ledger, execute=False)  # initialize PENDING ledger
+    ledger.set_state(manifest["request_id"], "prior", "DONE_VERIFIED")
+    failed = run(manifest, providers, ledger)
+    assert failed["results"][0]["state"] == "UNKNOWN_NEEDS_READBACK"
+    assert failed["results"][1]["state"] == "SKIPPED_DEPENDENCY"
+    assert ledger.status(manifest["request_id"], "prior") == "UNKNOWN_NEEDS_READBACK"
+    assert ledger.status(manifest["request_id"], "later") == "PENDING"
+    assert later_provider.writes == 0
+    prior_provider.unavailable = False
+    recovered = run(manifest, providers, ledger)
+    assert recovered["request_state"] == "WORK_COMPLETE"
+    assert later_provider.writes == 1
+    assert prior_provider.writes == 0
+
+
+def test_temporary_preflight_read_error_does_not_abort_independent_work(ledger):
+    before, after = {"v": 1}, {"v": 2}
+    a = item("read_error", "plan.note.patch", 701, before, after)
+    b = item("independent", "plan.workout.patch", 702, before, after)
+    manifest = make_manifest(a, b)
+
+    class FlakyRead(FakeAdapter):
+        unavailable = True
+
+        def read(self, spec):
+            if self.unavailable:
+                raise OSError("synthetic transient read failure")
+            return super().read(spec)
+
+    flaky = FlakyRead(before)
+    independent = FakeAdapter(before)
+    providers = {a["kind"]: flaky, b["kind"]: independent}
+    first = run(manifest, providers, ledger)
+    assert first["results"][0]["code"] == "PROVIDER_PREFLIGHT_READ_FAILED"
+    assert first["results"][1]["state"] == "DONE_VERIFIED"
+    assert first["request_state"] == "ACTION_INCOMPLETE"
+    assert ledger.status(manifest["request_id"], "read_error") == "PENDING"
+    assert flaky.writes == 0 and independent.writes == 1
+
+    flaky.unavailable = False
+    resumed = run(manifest, providers, ledger)
+    assert resumed["request_state"] == "WORK_COMPLETE"
+    assert flaky.writes == 1 and independent.writes == 1
+
+
+def test_intermediate_verified_same_resource_state_recovers_against_final_image(ledger):
+    """Readback failure must not strand an earlier edit later superseded."""
+    before, middle, after = {"v": 1}, {"v": 2}, {"v": 3}
+    first = item("first", "plan.note.patch", 801, before, middle)
+    second = item("second", "plan.note.attachment.add", 801,
+                  middle, after, depends=["first"])
+    manifest = make_manifest(first, second)
+    shared = FakeAdapter(before)
+
+    class SharedAdapter:
+        fail_first_read = False
+
+        def read(self, spec):
+            if self.fail_first_read and spec["id"] == "first":
+                raise OSError("synthetic intermittent read")
+            return shared.read(spec)
+
+        def apply(self, spec):
+            shared.apply(spec)
+
+    adapter = SharedAdapter()
+    providers = {first["kind"]: adapter, second["kind"]: adapter}
+    assert run(manifest, providers, ledger)["request_state"] == "WORK_COMPLETE"
+    adapter.fail_first_read = True
+    lost = run(manifest, providers, ledger)
+    assert lost["results"][0]["state"] == "UNKNOWN_NEEDS_READBACK"
+    assert lost["request_state"] == "ACTION_INCOMPLETE"
+    adapter.fail_first_read = False
+    reconciled = run(manifest, providers, ledger)
+    assert reconciled["request_state"] == "WORK_COMPLETE"
+    assert all(x["state"] == "DONE_VERIFIED" for x in reconciled["results"])
+    assert shared.writes == 2
+
+
+def test_preview_and_denied_write_never_claim_request_complete(ledger):
+    before, after = {"v": 1}, {"v": 2}
+    change = item("one", "plan.note.patch", 901, before, after)
+    manifest = make_manifest(change)
+    provider = FakeAdapter(before, behavior="deny")
+    preview = run(manifest, {change["kind"]: provider}, ledger, execute=False)
+    assert preview["request_state"] == "PREVIEW_ONLY"
+    assert preview["provider_readback_verified"] is False
+    assert provider.writes == 0
+    denied = run(manifest, {change["kind"]: provider}, ledger)
+    assert denied["results"][0]["state"] == "BLOCKED_SECURITY"
+    assert denied["request_state"] == "ACTION_INCOMPLETE"
+    assert denied["provider_readback_verified"] is False
