@@ -55,7 +55,7 @@ def select_live_item(rows: list[dict[str, Any]], query: str | int,
     if type(rows) is not list or len(rows) > 10000:
         raise TargetStop("PROVIDER_INVENTORY_INVALID")
     if scope not in {"training_plan", "athlete", "workout_library",
-                     "plan_workout", "athlete_workout"}:
+                     "plan_workout", "plan_note", "athlete_workout"}:
         raise TargetStop("TARGET_KIND_UNSUPPORTED")
     wanted_id, wanted_name = _query(query)
     valid: list[dict[str, Any]] = []
@@ -106,6 +106,26 @@ def resolve_plan_workout(rows: list[dict[str, Any]], query: str | int,
                             title_field="title", scope="plan_workout")
     item["target"] = {"provider": "trainingpeaks", "container_kind": "training_plan",
                       "container_id": plan_id, "resource_id": item["record"]["workout_id"]}
+    return item
+
+
+def resolve_plan_note(rows: list[dict[str, Any]], query: str | int,
+                      *, plan_id: int, week: int | None = None,
+                      weekday: int | None = None) -> dict[str, Any]:
+    """A native Plan Note is not an athlete note or a classic workout."""
+    if not _positive_id(plan_id):
+        raise TargetStop("PLAN_TARGET_REQUIRED")
+    if (week is None) != (weekday is None):
+        raise TargetStop("RELATIVE_SLOT_INCOMPLETE")
+    if week is not None:
+        if type(week) is not int or type(weekday) is not int or not 1 <= week <= 104 or not 1 <= weekday <= 7:
+            raise TargetStop("RELATIVE_SLOT_INVALID")
+        day = (week - 1) * 7 + weekday
+        rows = [r for r in rows if type(r) is dict and r.get("day") == day]
+    item = select_live_item(rows, query, id_field="note_id",
+                            title_field="title", scope="plan_note")
+    item["target"] = {"provider": "trainingpeaks", "container_kind": "training_plan",
+                      "container_id": plan_id, "resource_id": item["record"]["note_id"]}
     return item
 
 
