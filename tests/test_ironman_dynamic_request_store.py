@@ -202,7 +202,6 @@ def test_one_request_creates_plan_then_workouts_and_native_note_with_pdf():
     assert draft["items"][-1]["target"]["resource_ref"] == "note01"
     assert draft["items"][-1]["adapter_readiness"] == "PROVEN_SCOPED"
     assert draft["provider_writes"] == 0
-    return draft
 
 
 def test_plan_copy_can_be_parent_for_new_session():
@@ -294,3 +293,44 @@ def test_symbolic_repeat_patches_need_direct_dependency():
         prepare_draft([create, a, b])
     b["depends_on"] = ["create01", "patch01"]
     assert len(prepare_draft([create, a, b])["items"]) == 3
+
+
+def test_forged_preview_draft_cannot_change_a_target_without_resubmission():
+    from scripts.ironman_jobs.ironman_dynamic_request_store import compile_preview_changeset
+    draft = prepare_draft([item("plan.workout.patch", container_id=501)])
+    draft["items"][0]["target"]["container_id"] = 902
+    with pytest.raises(DraftStop, match="DRAFT_TAMPERED"):
+        compile_preview_changeset(draft, {"a01": {"title": "some change"}},
+                                  pinned_revision="a"*40)
+
+
+def test_persisted_db_draft_rejects_tampering_on_get(tmp_path):
+    from scripts.ironman_jobs.ironman_dynamic_request_store import canonical
+    draft = prepare_draft([item("plan.workout.patch", container_id=501)])
+    db = DraftStore(tmp_path/"drafts.sqlite3")
+    try:
+        db.store(draft)
+        altered = json.loads(canonical(draft))
+        altered["items"][0]["target"]["container_id"] = 902
+        db.db.execute("UPDATE drafts SET payload=? WHERE request_id=?",
+                      (canonical(altered), draft["request_id"]))
+        db.db.commit()
+        with pytest.raises(DraftStop, match="DRAFT_TAMPERED"):
+            db.get(draft["request_id"])
+    finally:
+        db.close()
+
+
+def test_unmodified_draft_reads_and_compiles_with_integrity_check(tmp_path):
+    from scripts.ironman_jobs.ironman_dynamic_request_store import compile_preview_changeset
+    draft = prepare_draft([item("plan.note.patch", container_id=501, resource_id=19)])
+    db = DraftStore(tmp_path/"drafts.sqlite3")
+    try:
+        db.store(draft)
+        retrieved = db.get(draft["request_id"])
+    finally:
+        db.close()
+    bundle = compile_preview_changeset(retrieved, {"a01": {"title": "changed"}},
+                                       pinned_revision="a"*40)
+    assert bundle["state"] == "PREVIEW_ONLY"
+    assert bundle["provider_writes"] == 0
