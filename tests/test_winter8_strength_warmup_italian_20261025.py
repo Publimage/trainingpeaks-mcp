@@ -74,7 +74,7 @@ def test_italian_titles_and_unaltered_native_embedded_exercise_names():
     it=s.apply(fake_workout(items[1]),items[1])
     assert it["title"]=="FORZA | Unilaterale e parte superiore 45 min"
     assert all("Coach Notes" not in it["instructions"] for _ in [0])
-    assert "note dell'allenatore" in it["instructions"]
+    assert "note di ogni esercizio" in it["instructions"]
     assert [x["exercise"]["title"] for x in it["blocks"][0]["prescriptions"]]
     assert any("Ponte per i glutei" in b["title"] for b in it["blocks"][1:-1])
     assert s.IT["Glute bridge"]=="Ponte per i glutei"
