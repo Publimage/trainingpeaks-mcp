@@ -249,6 +249,48 @@ async def main():
                         return 4
                     verified+=1
                     continue
+                previous=item.get("previous_native_title")
+                if previous:
+                    older=[x for x in existing if x.get("title")==previous]
+                    if (len(older)!=1 or str(older[0].get("id"))!=str(item.get("previous_native_id"))
+                        or older[0].get("workoutLibraryItemType")!="ActivityWorkoutTemplate"
+                        or (older[0].get("workout") or {}).get("workoutType")!="StructuredStrength"):
+                        output(stage="STOP_RENAME_PREFLIGHT",title=title,previous=previous,
+                               provider_writes=attempted)
+                        return 4
+                    entry=older[0]
+                    doc=dict(entry.get("workout") or {})
+                    doc["title"]=title
+                    payload={"id":int(entry["id"]),"libraryId":DEST,"title":title,
+                             "workout":doc,"workoutLibraryItemType":"ActivityWorkoutTemplate"}
+                    try:
+                        renamed=await http.post(STRENGTH_API_BASE+BASE+"/save",
+                                                headers=_headers(token),json=payload)
+                    except httpx.RequestError:
+                        output(stage="STOP_RENAME_UNCERTAIN",title=title,
+                               item_id=entry["id"],retry=False,provider_writes=attempted)
+                        return 6
+                    attempted+=1
+                    try:
+                        current=await read()
+                    except (ValueError,httpx.RequestError):
+                        output(stage="STOP_RENAME_READBACK_UNAVAILABLE",title=title,
+                               retry=False,provider_writes=attempted)
+                        return 6
+                    result=[x for x in current if x.get("title")==title]
+                    if (renamed.status_code!=200 or len(result)!=1 or
+                        len(current)!=len(existing) or str(result[0].get("id"))!=str(entry["id"])
+                        or any(x.get("title")==previous for x in current)
+                        or not semantically_correct(result[0],item)):
+                        output(stage="STOP_RENAME_QA",title=title,item_id=entry["id"],
+                               http=renamed.status_code,retry=False,provider_writes=attempted)
+                        return 7
+                    existing=current
+                    verified+=1
+                    output(stage="RENAMED_NATIVE_IN_PLACE",position=idx,
+                           provider_item_id=entry["id"],new_title=title,
+                           provider_writes=attempted)
+                    continue
                 # Copy a native source template using the previously proven official
                 # provider library copy route. Same destination library; copy title is
                 # already the permanent reuse-safe final title.
