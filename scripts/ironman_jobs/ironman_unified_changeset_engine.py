@@ -296,6 +296,10 @@ def run_changeset(
             # must recheck the actual object before it claims verification.
             adapter = adapters.get(kind)
             if adapter is None:
+                if execute:
+                    ledger.set_state(manifest["request_id"], name,
+                                     "UNKNOWN_NEEDS_READBACK",
+                                     reason="VERIFIED_ITEM_ADAPTER_NOT_INSTALLED")
                 outcomes.append({"id": name, "state": "UNKNOWN_NEEDS_READBACK",
                                  "code": "ADAPTER_NOT_INSTALLED"})
                 continue
@@ -303,6 +307,12 @@ def run_changeset(
                 observed = adapter.read(item)
                 live_sha = digest(observed)
             except Exception:
+                # Never let dependent writes rely on a receipt that we cannot
+                # re-confirm on the provider during this execution.
+                if execute:
+                    ledger.set_state(manifest["request_id"], name,
+                                     "UNKNOWN_NEEDS_READBACK",
+                                     reason="VERIFIED_ITEM_READBACK_FAILED")
                 outcomes.append({"id": name, "state": "UNKNOWN_NEEDS_READBACK",
                                  "code": "VERIFIED_ITEM_READBACK_FAILED"})
                 continue
@@ -348,7 +358,27 @@ def run_changeset(
                 observed_sha = digest(adapter.read(item)) if adapter else None
             except Exception:
                 observed_sha = None
-            if observed_sha == item["after_sha256"]:
+            # A previous verified edit can have been superseded by a later
+            # verified edit to the SAME resource. Reconcile against its final
+            # verified image too; never replay either write.
+            accepted_shas = {item["after_sha256"]}
+            passed_self = False
+            for next_item in ordered:
+                if next_item["id"] == name:
+                    passed_self = True
+                    continue
+                if not passed_self:
+                    continue
+                next_t = next_item["target"]
+                next_key = tuple(next_t[k] for k in (
+                    "provider", "owner_id", "container_kind",
+                    "container_id", "resource_id"
+                ))
+                if (next_key == resource_key
+                        and ledger.status(manifest["request_id"], next_item["id"])
+                        == "DONE_VERIFIED"):
+                    accepted_shas.add(next_item["after_sha256"])
+            if observed_sha is not None and observed_sha in accepted_shas:
                 if execute:
                     ledger.set_state(manifest["request_id"], name,
                                      "DONE_VERIFIED", provider_sha=observed_sha)
@@ -372,9 +402,10 @@ def run_changeset(
         if any((ledger.status(manifest["request_id"], d) != "DONE_VERIFIED")
                if execute else (d not in preview_passed)
                for d in item["depends_on"]):
-            if execute:
-                ledger.set_state(manifest["request_id"], name, "SKIPPED_DEPENDENCY")
-            outcomes.append({"id": name, "state": "SKIPPED_DEPENDENCY"})
+            # Dependency deferral is NOT a terminal state: keep PENDING in
+            # the durable ledger so this item runs after safe reconciliation.
+            outcomes.append({"id": name, "state": "SKIPPED_DEPENDENCY",
+                             "code": "WAITING_FOR_DEPENDENCY"})
             continue
         adapter = adapters.get(kind)
         if adapter is None:
@@ -385,9 +416,19 @@ def run_changeset(
                              "code": "ADAPTER_NOT_INSTALLED"})
             continue
         try:
-            current = (preview_images[resource_key]
-                       if not execute and resource_key in preview_images
-                       else adapter.read(item))
+            try:
+                current = (preview_images[resource_key]
+                           if not execute and resource_key in preview_images
+                           else adapter.read(item))
+            except ChangeStop:
+                # Keep explicit denial / review failures in their typed path.
+                raise
+            except Exception:
+                # A temporary READ failure has not attempted a provider write.
+                # Do not abort unrelated resources or mark this item complete.
+                outcomes.append({"id": name, "state": "PENDING",
+                                 "code": "PROVIDER_PREFLIGHT_READ_FAILED"})
+                continue
             before = digest(current)
             if before == item["after_sha256"]:
                 if not execute:
@@ -473,9 +514,16 @@ def run_changeset(
                 ledger.set_state(manifest["request_id"], name, "FAILED_REVIEW",
                                  reason=error.code)
             outcomes.append({"id": name, "state": "FAILED_REVIEW", "code": error.code})
+    # A green technical preflight is never the original request's completion.
+    # Only a write run whose every item is provider-verified may finish.
+    complete = bool(execute and len(outcomes) == len(ordered)
+                    and all(row["state"] == "DONE_VERIFIED" for row in outcomes))
     return {
         "schema": "IRONMAN_CHANGESET_RESULT_V1", "request_id": manifest["request_id"],
         "manifest_sha256": manifest_sha, "mode": "execute" if execute else "preview",
+        "request_state": ("WORK_COMPLETE" if complete else
+                          "PREVIEW_ONLY" if not execute else "ACTION_INCOMPLETE"),
+        "provider_readback_verified": complete,
         "results": outcomes,
         "provider_writes_claimed": sum(
             x["state"] == "DONE_VERIFIED" and x.get("source") == "provider_postflight"
