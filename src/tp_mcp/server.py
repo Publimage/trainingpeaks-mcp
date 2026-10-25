@@ -79,6 +79,7 @@ from tp_mcp.tools import (
     tp_get_library_item,
     tp_get_library_items,
     tp_ironman_operator,
+    tp_ironman_resolve_target,
     tp_get_ironman_publisher_status,
     tp_list_plan_folders,
     tp_copy_training_plan,
@@ -1452,6 +1453,41 @@ TOOLS = [
         ),
         input_schema={"type": "object", "properties": {}, "required": []},
     ),
+    # --- Shared IRONMAN target discovery (read-only; NO static plan-ID registry) ---
+    Tool(
+        name="tp_ironman_resolve_target",
+        description=(
+            "Read-only identity binding from the CURRENT request and live TrainingPeaks "
+            "coach account. Finds any visible Training Plan, athlete, Workout Library "
+            "or plan/athlete workout, including previously unseen IDs. Supports new-plan "
+            "and new-library NAME-ABSENCE preflight, NOT creation. A nonunique name "
+            "produces TARGET_AMBIGUOUS, never chooses the last plan/athlete. "
+            "Does not approve, publish, delete, stage code or bypass provider permissions."
+        ),
+        input_schema={
+            "type": "object",
+            "properties": {
+                "kind": {"type": "string", "enum": [
+                    "training_plan", "new_training_plan", "athlete",
+                    "workout_library", "new_workout_library",
+                    "plan_workout", "athlete_workout"
+                ]},
+                "query": {"type": "string", "minLength": 1,
+                          "description": "Current intended resource ID or unique name fragment; for a new plan/library, its proposed exact new name."},
+                "plan_selector": {"type": "string",
+                                  "description": "For plan_workout only: independently specified Training Plan name or ID."},
+                "athlete_selector": {"type": "string",
+                                     "description": "For athlete_workout only: independently specified coached athlete name or ID."},
+                "week": {"type": "integer", "minimum": 1,
+                         "description": "Optional relative plan week, paired with weekday."},
+                "weekday": {"type": "integer", "minimum": 1, "maximum": 7,
+                            "description": "Optional relative weekday 1=Mon..7=Sun, paired with week."},
+                "start_date": {"type": "string", "description": "Athlete workout date window start YYYY-MM-DD."},
+                "end_date": {"type": "string", "description": "Athlete workout date window end YYYY-MM-DD, <=90 days."},
+            },
+            "required": ["kind", "query"],
+        },
+    ),
     # --- IRONMAN Cloud Operator ---
     Tool(
         name="tp_ironman_operator",
@@ -2780,6 +2816,17 @@ async def _h_get_lib_items(args): return await tp_get_library_items(library_id=a
 @_handler("tp_get_ironman_publisher_status")
 async def _h_ironman_publisher_status(args):
     return await tp_get_ironman_publisher_status()
+
+
+@_handler("tp_ironman_resolve_target")
+async def _h_ironman_resolve_target(args):
+    return await tp_ironman_resolve_target(
+        kind=args["kind"], query=args["query"],
+        plan_selector=args.get("plan_selector"),
+        athlete_selector=args.get("athlete_selector"),
+        week=args.get("week"), weekday=args.get("weekday"),
+        start_date=args.get("start_date"), end_date=args.get("end_date"),
+    )
 
 
 @_handler("tp_ironman_operator")
