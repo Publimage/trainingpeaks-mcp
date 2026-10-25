@@ -1,6 +1,6 @@
 # IRONMAN — Publisher plan-scoped a manifest unico (v1)
 
-Stato tecnico: **implementato in ramo review; CI da completare, scrittura live NON verificata**.
+Stato tecnico: **PROVIDER WRITE VERIFIED dal 19 ottobre 2026** per patch in-place alle copie classic Swim/Bike/Run nei Training Plan. Proven Path canonico: `TP-REVIEWED-PATCH-WRITE-028` nel registro Google Drive `00C_IRONMAN_PROVEN_PATHS_REGISTRY`. Il publisher non è legato a un singolo Training Plan: i due job permanenti sono registrati per il coach 2116886 e riutilizzabili; ogni singola pubblicazione richiede un manifest dati aggiornato che identifichi precisamente il piano e i workout target (precondizione di sicurezza, non un nuovo job).
 
 ## Obiettivo e perimetro
 
