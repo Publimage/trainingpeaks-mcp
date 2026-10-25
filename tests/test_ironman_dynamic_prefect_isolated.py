@@ -140,3 +140,62 @@ def test_unapproved_target_preflight_never_opens_ledger(tmp_path, monkeypatch, f
         module.unified_changeset_flow.fn(changeset, str(tmp_path/'no-ledger.db'), mode='preview')
     assert calls == ['CHANGESET_VALIDATION']
     assert not (tmp_path/'no-ledger.db').exists()
+
+
+def test_prepared_existing_item_can_be_previewed_from_store_without_new_manifest(tmp_path, monkeypatch, flowhost):
+    module, calls, _ = flowhost
+    path = tmp_path / 'drafts.sqlite3'
+    monkeypatch.setenv('IRONMAN_OPERATION_DRAFT_STORE', str(path))
+    request = {'schema': 'IRONMAN_OPERATION_INPUT_V1', 'request_key': 'patch-in-one-chat',
+               'items': [item('plan.workout.patch', 'patch01', container_id=501,
+                              resource_id=31)]}
+    stored = module.unified_changeset_flow.fn(request, 'unused', mode='prepare')
+    preview_input = {'schema':'IRONMAN_DRAFT_PREVIEW_INPUT_V1',
+                     'request_id':stored['request_id'],
+                     'after_images':{'patch01':{'title':'updated run'}},
+                     'pinned_revision':'f'*40}
+    requested_targets = [{'kind':'plan.workout.patch', 'target':{
+        'provider':'trainingpeaks','owner_id':2116886,
+        'container_kind':'training_plan','container_id':501,'resource_id':31}}]
+    result = module.unified_changeset_flow.fn(preview_input, str(tmp_path/'ledger.sqlite3'),
+                                               mode='preview_draft', requested_targets=requested_targets)
+    assert result['request_id'] == stored['request_id']
+    assert result['provider_writes'] == 0
+    assert result['publication_enabled'] is False
+    assert result['approval_scope'].startswith('PREVIEW_ONLY:')
+    assert calls == ['CHANGESET_VALIDATION', 'LEDGER_OPEN', 'REMOTE_READER',
+                     'PREVIEW_PROVIDER', 'LEDGER_CLOSE']
+
+
+def test_prepared_draft_cannot_preview_on_a_different_plan(tmp_path, monkeypatch, flowhost):
+    module, calls, ChangeStop = flowhost
+    monkeypatch.setenv('IRONMAN_OPERATION_DRAFT_STORE', str(tmp_path/'drafts.sqlite3'))
+    one = module.unified_changeset_flow.fn(
+        {'schema':'IRONMAN_OPERATION_INPUT_V1','items':[
+            item('plan.workout.patch', 'patch01', container_id=501, resource_id=31)]},
+        'unused', mode='prepare')
+    preview = {'schema':'IRONMAN_DRAFT_PREVIEW_INPUT_V1',
+               'request_id':one['request_id'],
+               'after_images':{'patch01':{'title':'updated'}},'pinned_revision':'a'*40}
+    wrong = [{'kind':'plan.workout.patch', 'target':{
+        'provider':'trainingpeaks','owner_id':2116886,
+        'container_kind':'training_plan','container_id':902,'resource_id':31}}]
+    with pytest.raises(ChangeStop, match='STOP_TARGET_MISMATCH'):
+        module.unified_changeset_flow.fn(preview, str(tmp_path/'ledger.sqlite3'),
+                                         mode='preview_draft', requested_targets=wrong)
+    assert calls == ['CHANGESET_VALIDATION']
+    assert not (tmp_path/'ledger.sqlite3').exists()
+
+
+def test_unverified_new_plan_stays_prepare_only_even_if_after_image_is_forged(tmp_path, monkeypatch, flowhost):
+    module, calls, _ = flowhost
+    monkeypatch.setenv('IRONMAN_OPERATION_DRAFT_STORE', str(tmp_path/'drafts.sqlite3'))
+    request_id = module.unified_changeset_flow.fn(request(), 'unused', mode='prepare')['request_id']
+    with pytest.raises(Exception, match='PREVIEW_ADAPTER_NOT_RELEASED'):
+        module.unified_changeset_flow.fn(
+            {'schema':'IRONMAN_DRAFT_PREVIEW_INPUT_V1', 'request_id':request_id,
+             'after_images': {'newplan':{},'newrun':{},'newnote':{},'attachpdf':{}},
+             'pinned_revision':'a'*40}, str(tmp_path/'ledger.sqlite3'),
+            mode='preview_draft', requested_targets=[])
+    assert not calls
+    assert not (tmp_path/'ledger.sqlite3').exists()
