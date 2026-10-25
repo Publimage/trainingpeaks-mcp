@@ -2298,6 +2298,14 @@
       "scope": "trainingpeaks:coach:2116886:library:3891875:publish-16-reusable-native-strength-manifest-only",
       "script": "scripts/ironman_jobs/ironman_strength_library_publish.py",
       "test": "tests/test_ironman_strength_library_publish.py"
+    },
+    {
+      "name": "ironman_native_strength_plan_assembly",
+      "script": "scripts/ironman_jobs/ironman_native_strength_plan_assembly.py",
+      "test": "tests/test_ironman_native_strength_plan_assembly.py",
+      "mode": "GUARDED_WRITE",
+      "scope": "trainingpeaks:coach:2116886:private-plan:winter-foundation-8w:create-and-attach-16-native-strength",
+      "owner_id": 2116886
     }
   ]
 }
