@@ -1,0 +1,34 @@
+"""READ ONLY: enumerate every current deleteTrainingPlan/copyTrainingPlan occurrence in public TP JS."""
+from __future__ import annotations
+import asyncio,json,re
+from urllib.parse import urljoin,urlparse
+import httpx
+BASE = "https://app.trainingpeaks.com/"
+TERMS=("deleteTrainingPlan","copyTrainingPlan")
+async def main():
+  async with httpx.AsyncClient(timeout=22,follow_redirects=False,headers={"User-Agent":"Mozilla/5.0"}) as h:
+    page=await h.get(BASE)
+    if page.status_code!=200:return 2
+    urls=re.findall(r"""<script[^>]+src=['"]([^'"]+)""",page.text,re.I)
+    urls=list(dict.fromkeys(urljoin(BASE,u) for u in urls if ".js" in u and "release-" in u))[:180]
+    sem=asyncio.Semaphore(8)
+    async def one(url):
+      async with sem:
+        try:r=await h.get(url)
+        except Exception:return []
+        if r.status_code!=200 or len(r.content)>14000000:return []
+        src=r.text;rows=[]
+        for term in TERMS:
+          for m in re.finditer(re.escape(term),src,re.I):
+            a,b=max(0,m.start()-1800),min(len(src),m.end()+3200)
+            rows.append({"asset":urlparse(url).path,"term":term,"offset":m.start(),
+                         "context":src[a:b].replace("\n"," ").replace("\r"," ")[:5000]})
+        return rows
+    chunks=await asyncio.gather(*(one(u) for u in urls))
+    rows=[x for ch in chunks for x in ch]
+    print(json.dumps({"stage":"SUMMARY","hits":len(rows),"writes":0}),flush=True)
+    for row in rows[:40]:
+      print(json.dumps({"stage":"OCCURRENCE",**row,"writes":0},ensure_ascii=False),flush=True)
+    print(json.dumps({"stage":"COMPLETE","provider_writes":0}),flush=True)
+    return 0
+if __name__=="__main__":raise SystemExit(asyncio.run(main()))

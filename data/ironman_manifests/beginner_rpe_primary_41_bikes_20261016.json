@@ -1,0 +1,1310 @@
+{
+  "schema": "BEGINNER_NATIVE_RPE_PRIMARY_AUDIT_MANIFEST_V1",
+  "plan_id": 679801,
+  "owner_id": 2116886,
+  "source": "15_FIRST_IRONMAN_24W_PRODUCT_SPEC",
+  "state": "PROPOSAL_NOT_APPLIED_TO_TRAININGPEAKS",
+  "policy": {
+    "bike_builder_primary": "rpe",
+    "ftp_reference": "OPTIONAL_ONLY_IN_DESCRIPTION",
+    "run_builder_primary": "rpe",
+    "swim_css": "PRESERVE",
+    "preserve_cadence": true,
+    "preserve_total_duration": true,
+    "preserve_usable_ftp_references": true,
+    "never_apply_linear_ftp_to_rpe_formula": true,
+    "no_athlete_or_library_writes": true
+  },
+  "rpe_bike_conversion_candidates": [
+    {
+      "id": 3978611868,
+      "week": 1,
+      "title": "Agilità | 6x3'",
+      "current_metric": "percentOfFtp",
+      "original_active_targets": [
+        {
+          "name": "Cadenza agile",
+          "targets": [
+            {
+              "minValue": 60,
+              "maxValue": 70
+            },
+            {
+              "minValue": 90,
+              "maxValue": 100,
+              "unit": "roundOrStridePerMinute"
+            }
+          ]
+        },
+        {
+          "name": "Endurance facile",
+          "targets": [
+            {
+              "minValue": 58,
+              "maxValue": 68
+            }
+          ]
+        }
+      ],
+      "source_rpe_clauses": [
+        "6x3' a 90–100 rpm, RPE 2–3, rec. 2' facile."
+      ],
+      "new_metric": "rpe",
+      "proposed_status": "TARGET_MAPPING_REQUIRES_NATIVE_GOLDEN"
+    },
+    {
+      "id": 3978611875,
+      "week": 1,
+      "title": "Aerobico | 35' molto facile",
+      "current_metric": "percentOfFtp",
+      "original_active_targets": [
+        {
+          "name": "Aerobico facile",
+          "targets": [
+            {
+              "minValue": 50,
+              "maxValue": 64
+            }
+          ]
+        }
+      ],
+      "source_rpe_clauses": [
+        "50–64% FTP / RPE 1–2."
+      ],
+      "new_metric": "rpe",
+      "proposed_status": "TARGET_MAPPING_REQUIRES_NATIVE_GOLDEN"
+    },
+    {
+      "id": 3978611869,
+      "week": 1,
+      "title": "◆ Lungo | 2h15 endurance + aero",
+      "current_metric": "percentOfFtp",
+      "original_active_targets": [
+        {
+          "name": "Endurance",
+          "targets": [
+            {
+              "minValue": 60,
+              "maxValue": 70
+            }
+          ]
+        },
+        {
+          "name": "Aero endurance",
+          "targets": [
+            {
+              "minValue": 60,
+              "maxValue": 70
+            }
+          ]
+        },
+        {
+          "name": "Endurance facile",
+          "targets": [
+            {
+              "minValue": 58,
+              "maxValue": 68
+            }
+          ]
+        }
+      ],
+      "source_rpe_clauses": [
+        "60–70% FTP / RPE 2–3."
+      ],
+      "new_metric": "rpe",
+      "proposed_status": "TARGET_MAPPING_REQUIRES_NATIVE_GOLDEN"
+    },
+    {
+      "id": 3978611905,
+      "week": 2,
+      "title": "Steady | 3x6' controllato",
+      "current_metric": "percentOfFtp",
+      "original_active_targets": [
+        {
+          "name": "Steady",
+          "targets": [
+            {
+              "minValue": 70,
+              "maxValue": 78
+            }
+          ]
+        },
+        {
+          "name": "Endurance facile",
+          "targets": [
+            {
+              "minValue": 58,
+              "maxValue": 68
+            }
+          ]
+        }
+      ],
+      "source_rpe_clauses": [
+        "3x6' circa 70–78% FTP / RPE 4, rec. 4' facile."
+      ],
+      "new_metric": "rpe",
+      "proposed_status": "TARGET_MAPPING_REQUIRES_NATIVE_GOLDEN"
+    },
+    {
+      "id": 3978611871,
+      "week": 2,
+      "title": "Aerobico | 40' molto facile",
+      "current_metric": "percentOfFtp",
+      "original_active_targets": [
+        {
+          "name": "Aerobico facile",
+          "targets": [
+            {
+              "minValue": 50,
+              "maxValue": 64
+            }
+          ]
+        }
+      ],
+      "source_rpe_clauses": [
+        "50–64% FTP / RPE 1–2."
+      ],
+      "new_metric": "rpe",
+      "proposed_status": "TARGET_MAPPING_REQUIRES_NATIVE_GOLDEN"
+    },
+    {
+      "id": 3978611910,
+      "week": 2,
+      "title": "Lungo | 2h30 endurance + aero",
+      "current_metric": "percentOfFtp",
+      "original_active_targets": [
+        {
+          "name": "Endurance",
+          "targets": [
+            {
+              "minValue": 60,
+              "maxValue": 70
+            }
+          ]
+        },
+        {
+          "name": "Aero endurance",
+          "targets": [
+            {
+              "minValue": 60,
+              "maxValue": 70
+            }
+          ]
+        },
+        {
+          "name": "Endurance facile",
+          "targets": [
+            {
+              "minValue": 58,
+              "maxValue": 68
+            }
+          ]
+        }
+      ],
+      "source_rpe_clauses": [
+        "60–70% FTP / RPE 2–3."
+      ],
+      "new_metric": "rpe",
+      "proposed_status": "TARGET_MAPPING_REQUIRES_NATIVE_GOLDEN"
+    },
+    {
+      "id": 3978611890,
+      "week": 3,
+      "title": "Steady | 3x8' controllato",
+      "current_metric": "percentOfFtp",
+      "original_active_targets": [
+        {
+          "name": "Steady",
+          "targets": [
+            {
+              "minValue": 70,
+              "maxValue": 78
+            }
+          ]
+        },
+        {
+          "name": "Endurance facile",
+          "targets": [
+            {
+              "minValue": 58,
+              "maxValue": 68
+            }
+          ]
+        }
+      ],
+      "source_rpe_clauses": [
+        "3x8' circa 70–78% FTP / RPE 4, rec. 4' facile."
+      ],
+      "new_metric": "rpe",
+      "proposed_status": "TARGET_MAPPING_REQUIRES_NATIVE_GOLDEN"
+    },
+    {
+      "id": 3978611893,
+      "week": 3,
+      "title": "Aerobico | 35' molto facile",
+      "current_metric": "percentOfFtp",
+      "original_active_targets": [
+        {
+          "name": "Aerobico facile",
+          "targets": [
+            {
+              "minValue": 50,
+              "maxValue": 64
+            }
+          ]
+        }
+      ],
+      "source_rpe_clauses": [
+        "50–64% FTP / RPE 1–2."
+      ],
+      "new_metric": "rpe",
+      "proposed_status": "TARGET_MAPPING_REQUIRES_NATIVE_GOLDEN"
+    },
+    {
+      "id": 3978611887,
+      "week": 3,
+      "title": "Lungo | 2h45 endurance + aero",
+      "current_metric": "percentOfFtp",
+      "original_active_targets": [
+        {
+          "name": "Endurance",
+          "targets": [
+            {
+              "minValue": 60,
+              "maxValue": 70
+            }
+          ]
+        },
+        {
+          "name": "Aero endurance",
+          "targets": [
+            {
+              "minValue": 60,
+              "maxValue": 70
+            }
+          ]
+        },
+        {
+          "name": "Endurance facile",
+          "targets": [
+            {
+              "minValue": 58,
+              "maxValue": 68
+            }
+          ]
+        }
+      ],
+      "source_rpe_clauses": [
+        "60–70% FTP / RPE 2–3."
+      ],
+      "new_metric": "rpe",
+      "proposed_status": "TARGET_MAPPING_REQUIRES_NATIVE_GOLDEN"
+    },
+    {
+      "id": 3978611909,
+      "week": 4,
+      "title": "◎ Benchmark | 25' steady standardizzato",
+      "current_metric": "percentOfFtp",
+      "original_active_targets": [
+        {
+          "name": "Benchmark steady standardizzato",
+          "targets": [
+            {
+              "minValue": 70,
+              "maxValue": 78
+            }
+          ]
+        },
+        {
+          "name": "Endurance facile",
+          "targets": [
+            {
+              "minValue": 55,
+              "maxValue": 65
+            }
+          ]
+        }
+      ],
+      "source_rpe_clauses": [
+        "Ripetere un benchmark submassimale standardizzato per osservare potenza, FC e RPE senza trasformarlo in test massimale.",
+        "25' steady controllato, circa 70–78% FTP / RPE 4."
+      ],
+      "new_metric": "rpe",
+      "proposed_status": "TARGET_MAPPING_REQUIRES_NATIVE_GOLDEN"
+    },
+    {
+      "id": 3978611898,
+      "week": 4,
+      "title": "Aerobico | 30' molto facile",
+      "current_metric": "percentOfFtp",
+      "original_active_targets": [
+        {
+          "name": "Aerobico facile",
+          "targets": [
+            {
+              "minValue": 50,
+              "maxValue": 64
+            }
+          ]
+        }
+      ],
+      "source_rpe_clauses": [
+        "50–64% FTP / RPE 1–2."
+      ],
+      "new_metric": "rpe",
+      "proposed_status": "TARGET_MAPPING_REQUIRES_NATIVE_GOLDEN"
+    },
+    {
+      "id": 3978611879,
+      "week": 4,
+      "title": "Lungo | 2h00 endurance + aero",
+      "current_metric": "percentOfFtp",
+      "original_active_targets": [
+        {
+          "name": "Endurance",
+          "targets": [
+            {
+              "minValue": 60,
+              "maxValue": 70
+            }
+          ]
+        },
+        {
+          "name": "Aero endurance",
+          "targets": [
+            {
+              "minValue": 60,
+              "maxValue": 70
+            }
+          ]
+        },
+        {
+          "name": "Endurance facile",
+          "targets": [
+            {
+              "minValue": 58,
+              "maxValue": 68
+            }
+          ]
+        }
+      ],
+      "source_rpe_clauses": [
+        "60–70% FTP / RPE 2–3."
+      ],
+      "new_metric": "rpe",
+      "proposed_status": "TARGET_MAPPING_REQUIRES_NATIVE_GOLDEN"
+    },
+    {
+      "id": 3978611943,
+      "week": 5,
+      "title": "SFR/PFR | 5x3' controllato",
+      "current_metric": "percentOfFtp",
+      "original_active_targets": [
+        {
+          "name": "Bassa cadenza da seduti",
+          "targets": [
+            {
+              "minValue": 72,
+              "maxValue": 80
+            },
+            {
+              "minValue": 55,
+              "maxValue": 65,
+              "unit": "roundOrStridePerMinute"
+            }
+          ]
+        },
+        {
+          "name": "Endurance facile",
+          "targets": [
+            {
+              "minValue": 58,
+              "maxValue": 68
+            }
+          ]
+        }
+      ],
+      "source_rpe_clauses": [
+        "5x3' a 55–65 rpm, circa 72–80% FTP / RPE 5, rec. 3' agile."
+      ],
+      "new_metric": "rpe",
+      "proposed_status": "TARGET_MAPPING_REQUIRES_NATIVE_GOLDEN"
+    },
+    {
+      "id": 3978611965,
+      "week": 5,
+      "title": "Aerobico | 30' molto facile",
+      "current_metric": "percentOfFtp",
+      "original_active_targets": [
+        {
+          "name": "Aerobico facile",
+          "targets": [
+            {
+              "minValue": 50,
+              "maxValue": 64
+            }
+          ]
+        }
+      ],
+      "source_rpe_clauses": [
+        "50–64% FTP / RPE 1–2."
+      ],
+      "new_metric": "rpe",
+      "proposed_status": "TARGET_MAPPING_REQUIRES_NATIVE_GOLDEN"
+    },
+    {
+      "id": 3978611942,
+      "week": 5,
+      "title": "Lungo | 3h00 endurance + aero",
+      "current_metric": "percentOfFtp",
+      "original_active_targets": [
+        {
+          "name": "Endurance",
+          "targets": [
+            {
+              "minValue": 60,
+              "maxValue": 70
+            }
+          ]
+        },
+        {
+          "name": "Aero endurance",
+          "targets": [
+            {
+              "minValue": 60,
+              "maxValue": 70
+            }
+          ]
+        },
+        {
+          "name": "Endurance facile",
+          "targets": [
+            {
+              "minValue": 58,
+              "maxValue": 68
+            }
+          ]
+        }
+      ],
+      "source_rpe_clauses": [
+        "60–70% FTP / RPE 2–3."
+      ],
+      "new_metric": "rpe",
+      "proposed_status": "TARGET_MAPPING_REQUIRES_NATIVE_GOLDEN"
+    },
+    {
+      "id": 3978611886,
+      "week": 6,
+      "title": "SFR/PFR | 5x4' controllato",
+      "current_metric": "percentOfFtp",
+      "original_active_targets": [
+        {
+          "name": "Bassa cadenza da seduti",
+          "targets": [
+            {
+              "minValue": 72,
+              "maxValue": 80
+            },
+            {
+              "minValue": 55,
+              "maxValue": 65,
+              "unit": "roundOrStridePerMinute"
+            }
+          ]
+        },
+        {
+          "name": "Endurance facile",
+          "targets": [
+            {
+              "minValue": 58,
+              "maxValue": 68
+            }
+          ]
+        }
+      ],
+      "source_rpe_clauses": [
+        "5x4' a 55–65 rpm, circa 72–80% FTP / RPE 5, rec. 3' agile."
+      ],
+      "new_metric": "rpe",
+      "proposed_status": "TARGET_MAPPING_REQUIRES_NATIVE_GOLDEN"
+    },
+    {
+      "id": 3978611997,
+      "week": 6,
+      "title": "Aerobico | 30' molto facile",
+      "current_metric": "percentOfFtp",
+      "original_active_targets": [
+        {
+          "name": "Aerobico facile",
+          "targets": [
+            {
+              "minValue": 50,
+              "maxValue": 64
+            }
+          ]
+        }
+      ],
+      "source_rpe_clauses": [
+        "50–64% FTP / RPE 1–2."
+      ],
+      "new_metric": "rpe",
+      "proposed_status": "TARGET_MAPPING_REQUIRES_NATIVE_GOLDEN"
+    },
+    {
+      "id": 3978612094,
+      "week": 6,
+      "title": "◆ Lungo | 3h15 endurance + aero",
+      "current_metric": "percentOfFtp",
+      "original_active_targets": [
+        {
+          "name": "Endurance",
+          "targets": [
+            {
+              "minValue": 60,
+              "maxValue": 70
+            }
+          ]
+        },
+        {
+          "name": "Aero endurance",
+          "targets": [
+            {
+              "minValue": 60,
+              "maxValue": 70
+            }
+          ]
+        },
+        {
+          "name": "Endurance facile",
+          "targets": [
+            {
+              "minValue": 58,
+              "maxValue": 68
+            }
+          ]
+        }
+      ],
+      "source_rpe_clauses": [
+        "60–70% FTP / RPE 2–3."
+      ],
+      "new_metric": "rpe",
+      "proposed_status": "TARGET_MAPPING_REQUIRES_NATIVE_GOLDEN"
+    },
+    {
+      "id": 3978611966,
+      "week": 7,
+      "title": "SFR/PFR | 4x3' controllato",
+      "current_metric": "percentOfFtp",
+      "original_active_targets": [
+        {
+          "name": "Bassa cadenza da seduti",
+          "targets": [
+            {
+              "minValue": 72,
+              "maxValue": 80
+            },
+            {
+              "minValue": 55,
+              "maxValue": 65,
+              "unit": "roundOrStridePerMinute"
+            }
+          ]
+        },
+        {
+          "name": "Endurance facile",
+          "targets": [
+            {
+              "minValue": 58,
+              "maxValue": 68
+            }
+          ]
+        }
+      ],
+      "source_rpe_clauses": [
+        "4x3' a 55–65 rpm, circa 72–80% FTP / RPE 5, rec. 3' agile."
+      ],
+      "new_metric": "rpe",
+      "proposed_status": "TARGET_MAPPING_REQUIRES_NATIVE_GOLDEN"
+    },
+    {
+      "id": 3978612001,
+      "week": 7,
+      "title": "Aerobico | 30' molto facile",
+      "current_metric": "percentOfFtp",
+      "original_active_targets": [
+        {
+          "name": "Aerobico facile",
+          "targets": [
+            {
+              "minValue": 50,
+              "maxValue": 64
+            }
+          ]
+        }
+      ],
+      "source_rpe_clauses": [
+        "50–64% FTP / RPE 1–2."
+      ],
+      "new_metric": "rpe",
+      "proposed_status": "TARGET_MAPPING_REQUIRES_NATIVE_GOLDEN"
+    },
+    {
+      "id": 3978612087,
+      "week": 7,
+      "title": "Lungo | 3h05 endurance + aero",
+      "current_metric": "percentOfFtp",
+      "original_active_targets": [
+        {
+          "name": "Endurance",
+          "targets": [
+            {
+              "minValue": 60,
+              "maxValue": 70
+            }
+          ]
+        },
+        {
+          "name": "Aero endurance",
+          "targets": [
+            {
+              "minValue": 60,
+              "maxValue": 70
+            }
+          ]
+        },
+        {
+          "name": "Endurance facile",
+          "targets": [
+            {
+              "minValue": 58,
+              "maxValue": 68
+            }
+          ]
+        }
+      ],
+      "source_rpe_clauses": [
+        "60–70% FTP / RPE 2–3."
+      ],
+      "new_metric": "rpe",
+      "proposed_status": "TARGET_MAPPING_REQUIRES_NATIVE_GOLDEN"
+    },
+    {
+      "id": 3978611984,
+      "week": 8,
+      "title": "◎ Benchmark | 25' steady standardizzato",
+      "current_metric": "percentOfFtp",
+      "original_active_targets": [
+        {
+          "name": "Benchmark steady standardizzato",
+          "targets": [
+            {
+              "minValue": 70,
+              "maxValue": 78
+            }
+          ]
+        },
+        {
+          "name": "Endurance facile",
+          "targets": [
+            {
+              "minValue": 55,
+              "maxValue": 65
+            }
+          ]
+        }
+      ],
+      "source_rpe_clauses": [
+        "Ripetere un benchmark submassimale standardizzato per osservare potenza, FC e RPE senza trasformarlo in test massimale.",
+        "25' steady controllato, circa 70–78% FTP / RPE 4."
+      ],
+      "new_metric": "rpe",
+      "proposed_status": "TARGET_MAPPING_REQUIRES_NATIVE_GOLDEN"
+    },
+    {
+      "id": 3978612000,
+      "week": 8,
+      "title": "Aerobico | 30' molto facile",
+      "current_metric": "percentOfFtp",
+      "original_active_targets": [
+        {
+          "name": "Aerobico facile",
+          "targets": [
+            {
+              "minValue": 50,
+              "maxValue": 64
+            }
+          ]
+        }
+      ],
+      "source_rpe_clauses": [
+        "50–64% FTP / RPE 1–2."
+      ],
+      "new_metric": "rpe",
+      "proposed_status": "TARGET_MAPPING_REQUIRES_NATIVE_GOLDEN"
+    },
+    {
+      "id": 3978612007,
+      "week": 8,
+      "title": "Lungo | 2h30 endurance + aero",
+      "current_metric": "percentOfFtp",
+      "original_active_targets": [
+        {
+          "name": "Endurance",
+          "targets": [
+            {
+              "minValue": 60,
+              "maxValue": 70
+            }
+          ]
+        },
+        {
+          "name": "Aero endurance",
+          "targets": [
+            {
+              "minValue": 60,
+              "maxValue": 70
+            }
+          ]
+        },
+        {
+          "name": "Endurance facile",
+          "targets": [
+            {
+              "minValue": 58,
+              "maxValue": 68
+            }
+          ]
+        }
+      ],
+      "source_rpe_clauses": [
+        "60–70% FTP / RPE 2–3."
+      ],
+      "new_metric": "rpe",
+      "proposed_status": "TARGET_MAPPING_REQUIRES_NATIVE_GOLDEN"
+    },
+    {
+      "id": 3978612091,
+      "week": 9,
+      "title": "VO2max | 5x3' sviluppo",
+      "current_metric": "percentOfFtp",
+      "original_active_targets": [
+        {
+          "name": "VO2",
+          "targets": [
+            {
+              "minValue": 108,
+              "maxValue": 115
+            }
+          ]
+        },
+        {
+          "name": "Endurance facile",
+          "targets": [
+            {
+              "minValue": 60,
+              "maxValue": 70
+            }
+          ]
+        }
+      ],
+      "source_rpe_clauses": [
+        "5x3' a circa 108–115% FTP / RPE 8, rec. 3' facili.",
+        "INDOOR PREFERRED. Se non hai un riferimento FTP affidabile, usa RPE 8 e non inventare watt."
+      ],
+      "new_metric": "rpe",
+      "proposed_status": "TARGET_MAPPING_REQUIRES_NATIVE_GOLDEN"
+    },
+    {
+      "id": 3978612127,
+      "week": 9,
+      "title": "Aerobico | 40' facile",
+      "current_metric": "percentOfFtp",
+      "original_active_targets": [
+        {
+          "name": "Endurance bassa",
+          "targets": [
+            {
+              "minValue": 55,
+              "maxValue": 65
+            }
+          ]
+        }
+      ],
+      "source_rpe_clauses": [
+        "RPE 1–2."
+      ],
+      "new_metric": "rpe",
+      "proposed_status": "TARGET_MAPPING_REQUIRES_NATIVE_GOLDEN"
+    },
+    {
+      "id": 3978612128,
+      "week": 9,
+      "title": "◆ Lungo | 3h endurance + aero",
+      "current_metric": "percentOfFtp",
+      "original_active_targets": [
+        {
+          "name": "Endurance",
+          "targets": [
+            {
+              "minValue": 60,
+              "maxValue": 70
+            }
+          ]
+        },
+        {
+          "name": "Aero endurance",
+          "targets": [
+            {
+              "minValue": 62,
+              "maxValue": 72
+            }
+          ]
+        },
+        {
+          "name": "Endurance finale",
+          "targets": [
+            {
+              "minValue": 60,
+              "maxValue": 70
+            }
+          ]
+        }
+      ],
+      "source_rpe_clauses": [
+        "Endurance circa 60-70% FTP / RPE 2-3. I blocchi aero restano alla stessa intensità: cambia soprattutto la posizione."
+      ],
+      "new_metric": "rpe",
+      "proposed_status": "TARGET_MAPPING_REQUIRES_NATIVE_GOLDEN"
+    },
+    {
+      "id": 3978612063,
+      "week": 10,
+      "title": "Forza resistente | 4x6' SFR/PFR",
+      "current_metric": "percentOfFtp",
+      "original_active_targets": [
+        {
+          "name": "SFR/PFR",
+          "targets": [
+            {
+              "minValue": 78,
+              "maxValue": 86
+            },
+            {
+              "minValue": 60,
+              "maxValue": 70,
+              "unit": "roundOrStridePerMinute"
+            }
+          ]
+        },
+        {
+          "name": "Endurance",
+          "targets": [
+            {
+              "minValue": 60,
+              "maxValue": 70
+            }
+          ]
+        }
+      ],
+      "source_rpe_clauses": [
+        "4x6' seduto a 60–70 rpm, circa 78–86% FTP / RPE 6–7, rec. 4' facile."
+      ],
+      "new_metric": "rpe",
+      "proposed_status": "TARGET_MAPPING_REQUIRES_NATIVE_GOLDEN"
+    },
+    {
+      "id": 3978612010,
+      "week": 10,
+      "title": "Aerobico | 40' facile",
+      "current_metric": "percentOfFtp",
+      "original_active_targets": [
+        {
+          "name": "Endurance bassa",
+          "targets": [
+            {
+              "minValue": 55,
+              "maxValue": 65
+            }
+          ]
+        }
+      ],
+      "source_rpe_clauses": [
+        "RPE 1–2."
+      ],
+      "new_metric": "rpe",
+      "proposed_status": "TARGET_MAPPING_REQUIRES_NATIVE_GOLDEN"
+    },
+    {
+      "id": 3978611988,
+      "week": 10,
+      "title": "◆ Lungo | 3h15 endurance + aero",
+      "current_metric": "percentOfFtp",
+      "original_active_targets": [
+        {
+          "name": "Endurance",
+          "targets": [
+            {
+              "minValue": 60,
+              "maxValue": 70
+            }
+          ]
+        },
+        {
+          "name": "Aero endurance",
+          "targets": [
+            {
+              "minValue": 62,
+              "maxValue": 72
+            }
+          ]
+        },
+        {
+          "name": "Endurance finale",
+          "targets": [
+            {
+              "minValue": 60,
+              "maxValue": 70
+            }
+          ]
+        }
+      ],
+      "source_rpe_clauses": [
+        "Endurance circa 60-70% FTP / RPE 2-3. I blocchi aero restano controllati."
+      ],
+      "new_metric": "rpe",
+      "proposed_status": "TARGET_MAPPING_REQUIRES_NATIVE_GOLDEN"
+    },
+    {
+      "id": 3978611936,
+      "week": 11,
+      "title": "Soglia | 3x8' controllato",
+      "current_metric": "percentOfFtp",
+      "original_active_targets": [
+        {
+          "name": "Soglia controllata",
+          "targets": [
+            {
+              "minValue": 95,
+              "maxValue": 100
+            }
+          ]
+        },
+        {
+          "name": "Endurance",
+          "targets": [
+            {
+              "minValue": 60,
+              "maxValue": 70
+            }
+          ]
+        }
+      ],
+      "source_rpe_clauses": [
+        "3x8' circa 95–100% FTP / RPE 7, rec. 4' facili.",
+        "INDOOR PREFERRED. Se FTP non è affidabile, usa soprattutto RPE 7."
+      ],
+      "new_metric": "rpe",
+      "proposed_status": "TARGET_MAPPING_REQUIRES_NATIVE_GOLDEN"
+    },
+    {
+      "id": 3978611994,
+      "week": 11,
+      "title": "Aerobico | 35' facile",
+      "current_metric": "percentOfFtp",
+      "original_active_targets": [
+        {
+          "name": "Endurance bassa",
+          "targets": [
+            {
+              "minValue": 55,
+              "maxValue": 65
+            }
+          ]
+        }
+      ],
+      "source_rpe_clauses": [
+        "RPE 1–2."
+      ],
+      "new_metric": "rpe",
+      "proposed_status": "TARGET_MAPPING_REQUIRES_NATIVE_GOLDEN"
+    },
+    {
+      "id": 3978611969,
+      "week": 11,
+      "title": "◆ Lungo | 3h30 endurance + aero",
+      "current_metric": "percentOfFtp",
+      "original_active_targets": [
+        {
+          "name": "Endurance",
+          "targets": [
+            {
+              "minValue": 60,
+              "maxValue": 70
+            }
+          ]
+        },
+        {
+          "name": "Aero endurance",
+          "targets": [
+            {
+              "minValue": 62,
+              "maxValue": 72
+            }
+          ]
+        },
+        {
+          "name": "Endurance finale",
+          "targets": [
+            {
+              "minValue": 60,
+              "maxValue": 70
+            }
+          ]
+        }
+      ],
+      "source_rpe_clauses": [
+        "Endurance circa 60-70% FTP / RPE 2-3. Nessun blocco a soglia nel lungo."
+      ],
+      "new_metric": "rpe",
+      "proposed_status": "TARGET_MAPPING_REQUIRES_NATIVE_GOLDEN"
+    },
+    {
+      "id": 3978612016,
+      "week": 12,
+      "title": "Agilità | 60' con 4x3'",
+      "current_metric": "percentOfFtp",
+      "original_active_targets": [
+        {
+          "name": "Agilità",
+          "targets": [
+            {
+              "minValue": 60,
+              "maxValue": 70
+            },
+            {
+              "minValue": 95,
+              "maxValue": 105,
+              "unit": "roundOrStridePerMinute"
+            }
+          ]
+        },
+        {
+          "name": "Endurance facile",
+          "targets": [
+            {
+              "minValue": 55,
+              "maxValue": 65
+            }
+          ]
+        }
+      ],
+      "source_rpe_clauses": [
+        "RPE 2–3. L'aumento di cadenza non deve diventare aumento di potenza."
+      ],
+      "new_metric": "rpe",
+      "proposed_status": "TARGET_MAPPING_REQUIRES_NATIVE_GOLDEN"
+    },
+    {
+      "id": 3978611952,
+      "week": 12,
+      "title": "Aerobico | 40' molto facile",
+      "current_metric": "percentOfFtp",
+      "original_active_targets": [
+        {
+          "name": "Molto facile",
+          "targets": [
+            {
+              "minValue": 50,
+              "maxValue": 62
+            }
+          ]
+        }
+      ],
+      "source_rpe_clauses": [
+        "RPE 1–2."
+      ],
+      "new_metric": "rpe",
+      "proposed_status": "TARGET_MAPPING_REQUIRES_NATIVE_GOLDEN"
+    },
+    {
+      "id": 3978611932,
+      "week": 12,
+      "title": "Lungo | 2h30 endurance scarico",
+      "current_metric": "percentOfFtp",
+      "original_active_targets": [
+        {
+          "name": "Endurance facile",
+          "targets": [
+            {
+              "minValue": 55,
+              "maxValue": 68
+            }
+          ]
+        }
+      ],
+      "source_rpe_clauses": [
+        "Circa 55–68% FTP / RPE 2–3. Nessun blocco qualitativo obbligatorio."
+      ],
+      "new_metric": "rpe",
+      "proposed_status": "TARGET_MAPPING_REQUIRES_NATIVE_GOLDEN"
+    },
+    {
+      "id": 3978611934,
+      "week": 13,
+      "title": "VO2max | 4x3' richiamo",
+      "current_metric": "percentOfFtp",
+      "original_active_targets": [
+        {
+          "name": "VO2",
+          "targets": [
+            {
+              "minValue": 108,
+              "maxValue": 115
+            }
+          ]
+        },
+        {
+          "name": "Endurance",
+          "targets": [
+            {
+              "minValue": 60,
+              "maxValue": 70
+            }
+          ]
+        }
+      ],
+      "source_rpe_clauses": [
+        "4x3' a circa 108–115% FTP / RPE 8, rec. 3' facili.",
+        "INDOOR PREFERRED. Se FTP non è affidabile, usa RPE 8 e non inventare watt."
+      ],
+      "new_metric": "rpe",
+      "proposed_status": "TARGET_MAPPING_REQUIRES_NATIVE_GOLDEN"
+    },
+    {
+      "id": 3978612055,
+      "week": 13,
+      "title": "Aerobico | 35' facile",
+      "current_metric": "percentOfFtp",
+      "original_active_targets": [
+        {
+          "name": "Endurance bassa",
+          "targets": [
+            {
+              "minValue": 55,
+              "maxValue": 65
+            }
+          ]
+        }
+      ],
+      "source_rpe_clauses": [
+        "RPE 1–2."
+      ],
+      "new_metric": "rpe",
+      "proposed_status": "TARGET_MAPPING_REQUIRES_NATIVE_GOLDEN"
+    },
+    {
+      "id": 3978612119,
+      "week": 13,
+      "title": "◆ Lungo | 3h30 endurance + aero",
+      "current_metric": "percentOfFtp",
+      "original_active_targets": [
+        {
+          "name": "Endurance",
+          "targets": [
+            {
+              "minValue": 60,
+              "maxValue": 70
+            }
+          ]
+        },
+        {
+          "name": "Aero endurance",
+          "targets": [
+            {
+              "minValue": 62,
+              "maxValue": 72
+            }
+          ]
+        },
+        {
+          "name": "Endurance finale",
+          "targets": [
+            {
+              "minValue": 60,
+              "maxValue": 70
+            }
+          ]
+        }
+      ],
+      "source_rpe_clauses": [
+        "Circa 60–70% FTP / RPE 2–3. Nei blocchi aero cambia soprattutto la posizione."
+      ],
+      "new_metric": "rpe",
+      "proposed_status": "TARGET_MAPPING_REQUIRES_NATIVE_GOLDEN"
+    },
+    {
+      "id": 3978612057,
+      "week": 14,
+      "title": "Aerobico | 40' facile",
+      "current_metric": "percentOfFtp",
+      "original_active_targets": [
+        {
+          "name": "Endurance",
+          "targets": [
+            {
+              "minValue": 55,
+              "maxValue": 65
+            }
+          ]
+        }
+      ],
+      "source_rpe_clauses": [
+        "RPE 1–2."
+      ],
+      "new_metric": "rpe",
+      "proposed_status": "TARGET_MAPPING_REQUIRES_NATIVE_GOLDEN"
+    },
+    {
+      "id": 3978612017,
+      "week": 15,
+      "title": "Over-Under | 3x9' soglia controllata",
+      "current_metric": "percentOfFtp",
+      "original_active_targets": [
+        {
+          "name": "2' sotto soglia",
+          "targets": [
+            {
+              "minValue": 92,
+              "maxValue": 95
+            }
+          ]
+        },
+        {
+          "name": "1' sopra soglia",
+          "targets": [
+            {
+              "minValue": 102,
+              "maxValue": 105
+            }
+          ]
+        },
+        {
+          "name": "2' sotto soglia",
+          "targets": [
+            {
+              "minValue": 92,
+              "maxValue": 95
+            }
+          ]
+        }
+      ],
+      "source_rpe_clauses": [
+        "- 2' a 92–95% FTP / RPE circa 6",
+        "- 1' a 102–105% FTP / RPE 7–8",
+        "Se non hai una FTP affidabile, usa RPE e non inventare watt."
+      ],
+      "new_metric": "rpe",
+      "proposed_status": "TARGET_MAPPING_REQUIRES_NATIVE_GOLDEN"
+    }
+  ]
+}
