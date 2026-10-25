@@ -1477,7 +1477,13 @@ TOOLS = [
                 "ack_scope": {"type": "string",
                               "description": "Required only for explicitly approved guarded-write jobs."},
                 "target_plan_id": {"type": "integer", "minimum": 1,
-                                   "description": "For reviewed_plan_patch_preview/publish execution: independently confirmed live Training Plan ID, required and matched to the reviewed payload before provider access."},
+                                   "description": "For reviewed plan patch jobs: independent current-request Training Plan ID."},
+                "request_scope": {"type": "string", "minLength": 12,
+                                  "description": "For reviewed plan patch jobs: independently established CURRENT request scope, not copied from the previous manifest."},
+                "requested_workout_ids": {"type": "array", "minItems": 1, "maxItems": 150,
+                                          "uniqueItems": True,
+                                          "items": {"type": "integer", "minimum": 1},
+                                          "description": "For reviewed plan patch jobs: exact unique workout IDs resolved from current request and live provider, never inferred from stale manifest."},
             },
             "required": ["job", "revision"],
         },
@@ -2784,6 +2790,8 @@ async def _h_ironman_operator(args):
         operation=args.get("operation", "preview"),
         ack_scope=args.get("ack_scope"),
         target_plan_id=args.get("target_plan_id"),
+        request_scope=args.get("request_scope"),
+        requested_workout_ids=args.get("requested_workout_ids"),
     )
 
 @_handler("tp_sync_intermediate_native_notes")
