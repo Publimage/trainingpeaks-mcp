@@ -24,6 +24,46 @@ from scripts.ironman_jobs.ironman_unified_trainingpeaks_reads import (
 
 MAX_MANIFEST_BYTES = 2_000_000
 
+def require_requested_targets(manifest: dict[str, Any],
+                              requested_targets: list[dict[str, Any]] | None) -> None:
+    """Bind the independent user-confirmed targets before any provider/ledger IO.
+
+    Never use the previous manifest as the request selector: the caller must
+    supply the resource identities resolved from the current request.
+    This is one generic guard for every plan, workout, note, PDF and Library.
+    """
+    if type(requested_targets) is not list or not requested_targets:
+        raise ChangeStop("REQUEST_TARGET_BINDING_REQUIRED")
+    if len(requested_targets) > 1000:
+        raise ChangeStop("REQUEST_TARGET_BINDING_LIMIT")
+    expected = set()
+    for entry in requested_targets:
+        if type(entry) is not dict or set(entry) != {"kind", "target"}:
+            raise ChangeStop("REQUEST_TARGET_BINDING_SHAPE")
+        kind, target = entry["kind"], entry["target"]
+        if type(kind) is not str or type(target) is not dict or set(target) != {
+            "provider", "owner_id", "container_kind", "container_id", "resource_id"
+        }:
+            raise ChangeStop("REQUEST_TARGET_BINDING_SHAPE")
+        if (target["provider"] != "trainingpeaks"
+                or type(target["owner_id"]) is not int
+                or target["owner_id"] != manifest["owner_id"]
+                or target["container_kind"] not in ("training_plan", "workout_library")
+                or any(type(target[k]) is not int or target[k] <= 0
+                       for k in ("container_id", "resource_id"))):
+            raise ChangeStop("REQUEST_TARGET_BINDING_INVALID")
+        key = (kind, target["provider"], target["owner_id"],
+               target["container_kind"], target["container_id"],
+               target["resource_id"])
+        if key in expected:
+            raise ChangeStop("REQUEST_TARGET_BINDING_DUPLICATE")
+        expected.add(key)
+    actual = {(i["kind"], i["target"]["provider"], i["target"]["owner_id"],
+               i["target"]["container_kind"], i["target"]["container_id"],
+               i["target"]["resource_id"]) for i in manifest["changes"]}
+    if expected != actual:
+        raise ChangeStop("STOP_TARGET_MISMATCH")
+
 
 @task(name="validate-one-ironman-changeset", retries=0, persist_result=False,
       log_prints=False)
@@ -64,6 +104,7 @@ def unified_changeset_flow(
     *,
     mode: str = "preview",
     read_transport: str = "local",
+    requested_targets: list[dict[str, Any]] | None = None,
 ) -> dict[str, Any]:
     """One generic flow: any plan/library resource type and any target ID.
 
@@ -75,6 +116,7 @@ def unified_changeset_flow(
     if read_transport not in {"local", "private_bridge"}:
         raise ChangeStop("UNIFIED_UNSUPPORTED_READ_TRANSPORT")
     validate_change_request(manifest)
+    require_requested_targets(manifest, requested_targets)
     return preview_change_request(manifest, ledger_path, read_transport)
 
 
