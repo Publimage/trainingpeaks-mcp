@@ -98,14 +98,16 @@ def warmup_block(item,previous):
 def translate(text):
  t=text or ""
  for old,new in [
+  ("Strength Builder","programma di forza strutturato"),
   ("FOOT CORE","ESERCIZI PER IL PIEDE"),
   ("Foot core","Esercizi per il piede"),
+  ("foot core","esercizi per il piede"),
+  ("Short-foot","attivazione dell'arco plantare (short foot)"),
   ("Short Foot","attivazione dell'arco plantare (short foot)"),
   ("Toe Yoga","mobilita delle dita (toe yoga)"),
   ("Toe Tap","tocchi controllati delle dita (Toe Tap)"),
   ("Step Up","salita su rialzo"),
   ("WarmUp","riscaldamento"),
-  ("Builder","programma strutturato"),
   ("native Strength","nativi di forza"),
   ("Coach Notes","note dell'allenatore"),
   ("reps","ripetizioni"),
