@@ -1476,6 +1476,8 @@ TOOLS = [
                               "default": "preview"},
                 "ack_scope": {"type": "string",
                               "description": "Required only for explicitly approved guarded-write jobs."},
+                "target_plan_id": {"type": "integer", "minimum": 1,
+                                   "description": "For reviewed_plan_patch_preview/publish execution: independently confirmed live Training Plan ID, required and matched to the reviewed payload before provider access."},
             },
             "required": ["job", "revision"],
         },
@@ -2781,6 +2783,7 @@ async def _h_ironman_operator(args):
         revision=args["revision"],
         operation=args.get("operation", "preview"),
         ack_scope=args.get("ack_scope"),
+        target_plan_id=args.get("target_plan_id"),
     )
 
 @_handler("tp_sync_intermediate_native_notes")
