@@ -135,3 +135,42 @@ def test_semantic_fingerprint_is_independent_of_previously_used_plan():
 def test_nonfinite_numbers_are_not_stored():
     with pytest.raises(DraftStop, match="DRAFT_JSON_INVALID"):
         prepare_draft([item("plan.workout.patch", payload={"number": float("nan")})])
+
+
+def test_compiles_multi_plan_changeset_preview_without_git_manifest():
+    from scripts.ironman_jobs.ironman_dynamic_request_store import compile_preview_changeset
+    first = item("plan.workout.patch", id="w01", container_id=501, resource_id=31)
+    second = item("plan.workout.patch", id="w02", container_id=902, resource_id=51)
+    draft = prepare_draft([first, second])
+    bundle = compile_preview_changeset(draft, {"w01": {"title": "Revised A"},
+                                                 "w02": {"title": "Revised B"}},
+                                        pinned_revision="a" * 40)
+    manifest = bundle["manifest"]
+    assert manifest["schema"] == "IRONMAN_CHANGESET_V1"
+    assert manifest["request_id"] == draft["request_id"]
+    assert manifest["approval_scope"].startswith("PREVIEW_ONLY:")
+    assert {x["target"]["container_id"] for x in manifest["changes"]} == {501, 902}
+    assert bundle["publication_authorized"] is False
+    assert bundle["provider_writes"] == 0
+
+
+def test_unverified_create_and_delete_never_compile_into_writer_preview():
+    from scripts.ironman_jobs.ironman_dynamic_request_store import compile_preview_changeset
+    for kind, container_id, resource_id in (("plan.create", None, None),
+                                            ("plan.workout.delete", 501, 31),
+                                            ("athlete.workout.delete", 25, 31)):
+        container = "athlete_calendar" if kind.startswith("athlete.") else "training_plan"
+        draft = prepare_draft([item(kind, container_kind=container,
+                                    container_id=container_id, resource_id=resource_id)])
+        with pytest.raises(DraftStop, match="PREVIEW_ADAPTER_NOT_RELEASED"):
+            compile_preview_changeset(draft, {"a01": {"before": "not passed"}},
+                                      pinned_revision="a" * 40)
+
+
+def test_compiler_rejects_missing_after_images_and_bad_revision():
+    from scripts.ironman_jobs.ironman_dynamic_request_store import compile_preview_changeset
+    draft = prepare_draft([item("plan.workout.patch")])
+    with pytest.raises(DraftStop, match="PREVIEW_AFTER_IMAGES_INCOMPLETE"):
+        compile_preview_changeset(draft, {}, pinned_revision="a"*40)
+    with pytest.raises(DraftStop, match="PINNED_REVISION_REQUIRED"):
+        compile_preview_changeset(draft, {"a01": {"title": "x"}}, pinned_revision="current")
