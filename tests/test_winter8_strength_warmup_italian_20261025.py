@@ -57,6 +57,9 @@ def test_new_warmup_has_four_no_glute_duplicate_and_changes_no_training_dose():
         assert s.expected_shape(current,item)
         assert s.dose_blocks(current)==before
         assert current["prescribedDurationInSeconds"]==src["prescribedDurationInSeconds"]
+        assert len(current["instructions"]) <= 1000
+        assert "W05" not in current["instructions"]
+        assert "W09" not in current["instructions"]
         assert current["calendarId"]==src["calendarId"]
         assert len(current["blocks"][0]["prescriptions"])==4
         assert not any(str(q["exercise"]["id"])=="579"
