@@ -2290,6 +2290,14 @@
       "scope": "trainingpeaks:plan:684602:native-note:2653899:delete-only-obsolete-pdf-attachments-95193-95228-keep-95194-98909-98910",
       "script": "scripts/ironman_jobs/reviewed_note_attachment_cleanup_publish.py",
       "test": "tests/test_reviewed_note_attachment_cleanup.py"
+    },
+    {
+      "name": "ironman_strength_library_publish",
+      "mode": "GUARDED_WRITE",
+      "owner_id": 2116886,
+      "scope": "trainingpeaks:coach:2116886:library:3891875:publish-16-reusable-native-strength-manifest-only",
+      "script": "scripts/ironman_jobs/ironman_strength_library_publish.py",
+      "test": "tests/test_ironman_strength_library_publish.py"
     }
   ]
 }
