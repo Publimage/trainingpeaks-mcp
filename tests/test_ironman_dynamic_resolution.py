@@ -29,6 +29,12 @@ async def read_plan_workouts(plan_id):
     return {"plan_id": plan_id, "workouts": [{"workout_id": 51, "title": "Threshold", "day": 2}]}
 
 
+async def read_plan_notes(plan_id):
+    COUNTS.append("plan_notes:" + str(plan_id))
+    return {"plan_id": plan_id, "notes": [{"note_id": 81, "title": "Coach instructions", "day": 1,
+                                         "attachments": [{"id": 9, "file_name": "week.pdf"}]}]}
+
+
 async def read_athlete_workouts(athlete_id, start, end):
     COUNTS.append("athlete_workouts:" + str(athlete_id))
     return {"workouts": [{"id": "77", "date": start, "title": "Easy bike", "type": "planned"}]}
@@ -40,6 +46,7 @@ def go(kind, query, **kwargs):
         read_plans=kwargs.pop("read_plans", read_plans),
         read_athletes=read_athletes, read_libraries=read_libraries,
         read_plan_workouts=kwargs.pop("read_plan_workouts", read_plan_workouts),
+        read_plan_notes=kwargs.pop("read_plan_notes", read_plan_notes),
         read_athlete_workouts=read_athlete_workouts, **kwargs))
 
 
@@ -114,3 +121,19 @@ def test_wrong_account_cannot_read_anything():
     with pytest.raises(TargetStop, match="ACCOUNT_MISMATCH"):
         go("training_plan", 501, coach_id=1234)
     assert COUNTS == []
+
+
+def test_new_plan_note_and_pdf_destination_are_not_attributed_to_an_athlete():
+    found = go("plan_note", "Coach instructions", plan="Foundation", week=1, weekday=1)
+    assert found["kind"] == "plan_note"
+    assert found["target"]["container_id"] == 501
+    assert found["target"]["resource_id"] == 81
+    assert found["note"]["attachments"][0]["file_name"] == "week.pdf"
+    assert COUNTS == ["plans", "plan_notes:501"]
+
+
+def test_plan_note_denies_wrong_provider_plan_readback():
+    async def wrong(plan_id):
+        return {"plan_id": 902, "notes": []}
+    with pytest.raises(TargetStop, match="PLAN_READBACK_SCOPE_MISMATCH"):
+        go("plan_note", "Coach instructions", plan="Foundation", read_plan_notes=wrong)
