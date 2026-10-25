@@ -19,7 +19,9 @@
       "title": "FORZA | Tecnica squat e fondamentali 50 min",
       "planned_duration_seconds": 3000,
       "week": 1,
-      "weekday": 3
+      "weekday": 3,
+      "plan_native_workout_id": "36271815",
+      "plan_status": "PUBLISHED_NATIVE_BUILDER_VERIFIED"
     },
     {
       "source_uid": "IMWIN8-W01-FRI-STRENGTH-01",
@@ -28,7 +30,9 @@
       "title": "FORZA | Unilaterale e upper body 45 min",
       "planned_duration_seconds": 2700,
       "week": 1,
-      "weekday": 5
+      "weekday": 5,
+      "plan_native_workout_id": "36271819",
+      "plan_status": "PUBLISHED_NATIVE_BUILDER_VERIFIED"
     },
     {
       "source_uid": "IMWIN8-W02-WED-STRENGTH-01",
@@ -37,7 +41,9 @@
       "title": "FORZA | Adattamento fondamentali 55 min",
       "planned_duration_seconds": 3300,
       "week": 2,
-      "weekday": 3
+      "weekday": 3,
+      "plan_native_workout_id": "36271820",
+      "plan_status": "PUBLISHED_NATIVE_BUILDER_VERIFIED"
     },
     {
       "source_uid": "IMWIN8-W02-FRI-STRENGTH-01",
@@ -46,7 +52,9 @@
       "title": "FORZA | Unilaterale controllato 50 min",
       "planned_duration_seconds": 3000,
       "week": 2,
-      "weekday": 5
+      "weekday": 5,
+      "plan_native_workout_id": "36271822",
+      "plan_status": "PUBLISHED_NATIVE_BUILDER_VERIFIED"
     },
     {
       "source_uid": "IMWIN8-W03-WED-STRENGTH-01",
@@ -55,7 +63,9 @@
       "title": "FORZA | Sviluppo tecnico 60 min",
       "planned_duration_seconds": 3600,
       "week": 3,
-      "weekday": 3
+      "weekday": 3,
+      "plan_native_workout_id": "36271826",
+      "plan_status": "PUBLISHED_NATIVE_BUILDER_VERIFIED"
     },
     {
       "source_uid": "IMWIN8-W03-FRI-STRENGTH-01",
@@ -64,7 +74,9 @@
       "title": "FORZA | Glutei e controllo 50 min",
       "planned_duration_seconds": 3000,
       "week": 3,
-      "weekday": 5
+      "weekday": 5,
+      "plan_native_workout_id": "36271828",
+      "plan_status": "PUBLISHED_NATIVE_BUILDER_VERIFIED"
     },
     {
       "source_uid": "IMWIN8-W04-WED-STRENGTH-01",
@@ -73,7 +85,9 @@
       "title": "FORZA | Scarico tecnico squat 45 min",
       "planned_duration_seconds": 2700,
       "week": 4,
-      "weekday": 3
+      "weekday": 3,
+      "plan_native_workout_id": "36271829",
+      "plan_status": "PUBLISHED_NATIVE_BUILDER_VERIFIED"
     },
     {
       "source_uid": "IMWIN8-W04-FRI-STRENGTH-01",
@@ -82,7 +96,9 @@
       "title": "FORZA | Scarico controllo 40 min",
       "planned_duration_seconds": 2400,
       "week": 4,
-      "weekday": 5
+      "weekday": 5,
+      "plan_native_workout_id": "36271834",
+      "plan_status": "PUBLISHED_NATIVE_BUILDER_VERIFIED"
     },
     {
       "source_uid": "IMWIN8-W05-WED-STRENGTH-01",
@@ -91,7 +107,9 @@
       "title": "FORZA | Squat sviluppato e spinta 60 min",
       "planned_duration_seconds": 3600,
       "week": 5,
-      "weekday": 3
+      "weekday": 3,
+      "plan_native_workout_id": "36271837",
+      "plan_status": "PUBLISHED_NATIVE_BUILDER_VERIFIED"
     },
     {
       "source_uid": "IMWIN8-W05-FRI-STRENGTH-01",
@@ -100,7 +118,9 @@
       "title": "FORZA | Step-up mono e upper body 55 min",
       "planned_duration_seconds": 3300,
       "week": 5,
-      "weekday": 5
+      "weekday": 5,
+      "plan_native_workout_id": "36271840",
+      "plan_status": "PUBLISHED_NATIVE_BUILDER_VERIFIED"
     },
     {
       "source_uid": "IMWIN8-W06-WED-STRENGTH-01",
@@ -109,7 +129,9 @@
       "title": "FORZA | Stacco guidato e fondamentali 65 min",
       "planned_duration_seconds": 3900,
       "week": 6,
-      "weekday": 3
+      "weekday": 3,
+      "plan_native_workout_id": "36271841",
+      "plan_status": "PUBLISHED_NATIVE_BUILDER_VERIFIED"
     },
     {
       "source_uid": "IMWIN8-W06-FRI-STRENGTH-01",
@@ -118,7 +140,9 @@
       "title": "FORZA | Hip thrust e richiamo 55 min",
       "planned_duration_seconds": 3300,
       "week": 6,
-      "weekday": 5
+      "weekday": 5,
+      "plan_native_workout_id": "36271843",
+      "plan_status": "PUBLISHED_NATIVE_BUILDER_VERIFIED"
     },
     {
       "source_uid": "IMWIN8-W07-WED-STRENGTH-01",
@@ -127,7 +151,9 @@
       "title": "FORZA | Intensità squat e panca 65 min",
       "planned_duration_seconds": 3900,
       "week": 7,
-      "weekday": 3
+      "weekday": 3,
+      "plan_native_workout_id": "36271844",
+      "plan_status": "PUBLISHED_NATIVE_BUILDER_VERIFIED"
     },
     {
       "source_uid": "IMWIN8-W07-FRI-STRENGTH-01",
@@ -136,7 +162,9 @@
       "title": "FORZA | Step-up mono di richiamo 55 min",
       "planned_duration_seconds": 3300,
       "week": 7,
-      "weekday": 5
+      "weekday": 5,
+      "plan_native_workout_id": "36271846",
+      "plan_status": "PUBLISHED_NATIVE_BUILDER_VERIFIED"
     },
     {
       "source_uid": "IMWIN8-W08-WED-STRENGTH-01",
@@ -145,7 +173,9 @@
       "title": "FORZA | Consolidamento squat 50 min",
       "planned_duration_seconds": 3000,
       "week": 8,
-      "weekday": 3
+      "weekday": 3,
+      "plan_native_workout_id": "36271848",
+      "plan_status": "PUBLISHED_NATIVE_BUILDER_VERIFIED"
     },
     {
       "source_uid": "IMWIN8-W08-FRI-STRENGTH-01",
@@ -154,7 +184,17 @@
       "title": "FORZA | Recupero e controllo 45 min",
       "planned_duration_seconds": 2700,
       "week": 8,
-      "weekday": 5
+      "weekday": 5,
+      "plan_native_workout_id": "36271850",
+      "plan_status": "PUBLISHED_NATIVE_BUILDER_VERIFIED"
     }
-  ]
+  ],
+  "provider_plan_id": 689369,
+  "provider_plan_person_id": 6709024,
+  "provider_state": "PUBLISHED_PRIVATE_PLAN_NATIVE_STRENGTH_16_VERIFIED",
+  "provider_reported_weeks": 8,
+  "provider_reported_workout_count": 16,
+  "provider_price": null,
+  "provider_public": false,
+  "verified_date": "2026-10-25"
 }
