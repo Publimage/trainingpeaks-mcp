@@ -268,6 +268,9 @@ def run_changeset(
     """
     manifest_sha = validate_manifest(manifest)
     if execute:
+        # A machine-generated preview marker is never an independent approval.
+        need(not manifest["approval_scope"].startswith("PREVIEW_ONLY:"),
+             "PREVIEW_DRAFT_NOT_APPROVED")
         need(reviewed_revision == manifest["reviewed_revision"], "REVISION_NOT_APPROVED")
         need(approval_scope == manifest["approval_scope"], "SCOPE_NOT_APPROVED")
     ledger.setup(manifest, manifest_sha)
