@@ -46,7 +46,9 @@ class BridgeStop(Exception):
         self.code = code
 
 
-def _run(*argv: str, timeout: int = 30, request_plan_id: int | None = None) -> subprocess.CompletedProcess[str]:
+def _run(*argv: str, timeout: int = 30, request_plan_id: int | None = None,
+         request_scope: str | None = None,
+         request_workout_ids: list[int] | None = None) -> subprocess.CompletedProcess[str]:
     env = {
         key: value for key, value in os.environ.items()
         if key in {"HOME", "PATH", "LANG", "LC_ALL", "LC_CTYPE", "XDG_CONFIG_HOME"}
@@ -55,6 +57,11 @@ def _run(*argv: str, timeout: int = 30, request_plan_id: int | None = None) -> s
     env["PYTHONPATH"] = str(REPO / "src")
     if request_plan_id is not None:
         env["IRONMAN_REQUEST_TARGET_PLAN_ID"] = str(request_plan_id)
+    if request_scope is not None:
+        env["IRONMAN_REQUEST_TARGET_SCOPE"] = request_scope
+    if request_workout_ids is not None:
+        env["IRONMAN_REQUEST_WORKOUT_IDS_JSON"] = json.dumps(
+            sorted(request_workout_ids), separators=(",", ":"))
     try:
         return subprocess.run(
             list(argv), cwd=REPO, env=env, text=True, capture_output=True,
@@ -160,8 +167,49 @@ def _check_reviewed_manifest_target(job: str, target_plan_id: int | None) -> Non
         raise BridgeStop("STOP_TARGET_MISMATCH")
 
 
+
+def _check_reviewed_manifest_request(job: str, requested_scope: str | None,
+                                     requested_workout_ids: list[int] | None) -> None:
+    """Require the current operation scope AND exact workout IDs independently.
+
+    A completed batch from the SAME Training Plan must never be reinterpreted
+    as a new request merely because target_plan_id still matches.
+    """
+    if job not in REVIEWED_PLAN_JOBS:
+        return
+    if not isinstance(requested_scope, str) or not requested_scope.startswith("trainingpeaks:plan:"):
+        raise BridgeStop("REQUEST_SCOPE_REQUIRED_FOR_REVIEWED_PUBLISHER")
+    ids = requested_workout_ids
+    if (type(ids) is not list or not 1 <= len(ids) <= 150
+            or any(type(x) is not int or x <= 0 for x in ids)
+            or len(set(ids)) != len(ids)):
+        raise BridgeStop("REQUEST_WORKOUT_IDS_REQUIRED_FOR_REVIEWED_PUBLISHER")
+    try:
+        cfg = json.loads((REPO / "data/ironman_reviewed_plan_patch.json").read_text(encoding="utf-8"))
+    except (OSError, ValueError) as exc:
+        raise BridgeStop("REVIEWED_MANIFEST_UNREADABLE") from exc
+    if cfg.get("configured") is not True:
+        # The separate target gate still blocks publish on an inactive batch.
+        return
+    manifest = cfg.get("manifest")
+    if not isinstance(manifest, dict):
+        raise BridgeStop("REVIEWED_MANIFEST_INVALID")
+    if manifest.get("scope") != requested_scope:
+        raise BridgeStop("STOP_REQUEST_SCOPE_MISMATCH")
+    items = manifest.get("items")
+    if not isinstance(items, list):
+        raise BridgeStop("REVIEWED_MANIFEST_ITEMS_INVALID")
+    actual_ids = [x.get("workout_id") for x in items if isinstance(x, dict)]
+    if len(actual_ids) != len(items) or any(type(x) is not int or x <= 0 for x in actual_ids):
+        raise BridgeStop("REVIEWED_MANIFEST_ITEMS_INVALID")
+    if sorted(ids) != sorted(actual_ids):
+        raise BridgeStop("STOP_REQUEST_RESOURCE_MISMATCH")
+
+
 def _execute_blocking(job: str, revision: str, operation: str, ack_scope: str | None,
-                      target_plan_id: int | None = None) -> dict[str, Any]:
+                      target_plan_id: int | None = None,
+                      request_scope: str | None = None,
+                      requested_workout_ids: list[int] | None = None) -> dict[str, Any]:
     if not HEX40.fullmatch(revision):
         raise BridgeStop("A complete pinned 40-character commit SHA is required.")
     # Job registration is generic. Bind each reviewed plan execution to the
@@ -205,6 +253,7 @@ def _execute_blocking(job: str, revision: str, operation: str, ack_scope: str | 
         spec = _check_job(job, operation, ack_scope)
         # Check against the request before creating a write receipt or invoking a job.
         _check_reviewed_manifest_target(job, target_plan_id)
+        _check_reviewed_manifest_request(job, request_scope, requested_workout_ids)
         kind = spec["mode"]
         command = [str(VENV_PYTHON), "-m", "pytest", "-q", spec["test"]]
         _require_ok(_run(*command, timeout=125), "Approved job tests")
@@ -237,7 +286,8 @@ def _execute_blocking(job: str, revision: str, operation: str, ack_scope: str | 
         # Only a trusted checked-out script path. Never shell=True / caller argv.
         if job in REVIEWED_PLAN_JOBS:
             proc = _run(str(VENV_PYTHON), str(script), timeout=175,
-                        request_plan_id=target_plan_id)
+                        request_plan_id=target_plan_id, request_scope=request_scope,
+                        request_workout_ids=requested_workout_ids)
         else:
             proc = _run(str(VENV_PYTHON), str(script), timeout=175)
         if receipt_path is not None:
@@ -274,6 +324,8 @@ async def tp_ironman_operator(
     job: str, revision: str, operation: str = "preview",
     ack_scope: str | None = None,
     target_plan_id: int | None = None,
+    request_scope: str | None = None,
+    requested_workout_ids: list[int] | None = None,
 ) -> dict[str, Any]:
     """Execute a version-pinned, repo-registered job, not caller supplied shell."""
     if operation not in {"preview", "execute"}:
@@ -286,7 +338,8 @@ async def tp_ironman_operator(
             return {"isError": True, "error_code": "ACCOUNT_MISMATCH"}
     try:
         outcome = await asyncio.to_thread(_execute_blocking, job, revision, operation,
-                                          ack_scope, target_plan_id)
+                                          ack_scope, target_plan_id,
+                                          request_scope, requested_workout_ids)
         if not outcome.get("success"):
             outcome["isError"] = True
         return outcome
