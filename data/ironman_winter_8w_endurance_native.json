@@ -2112,6 +2112,16 @@
       "last": "IMWIN8-W03-TUE-BI-01",
       "remaining_manifest": 44,
       "verified": true
+    },
+    {
+      "pass": 3,
+      "result": "BATCH_LIMIT_REACHED",
+      "provider_writes": 14,
+      "templates_created": 7,
+      "plan_workouts_created": 7,
+      "last": "IMWIN8-W04-TUE-BI-01",
+      "remaining_manifest": 37,
+      "verified": true
     }
   ]
 }
