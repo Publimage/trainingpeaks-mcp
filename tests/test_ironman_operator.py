@@ -187,6 +187,7 @@ def test_reviewed_manifest_inactive_must_not_publish(monkeypatch, tmp_path):
     manifest = tmp_path / "data/ironman_reviewed_plan_patch.json"
     manifest.write_text('{"configured":false}')
     op._check_reviewed_manifest_target("reviewed_plan_patch_preview", 689369)
+    op._check_reviewed_manifest_request("reviewed_plan_patch_preview", None, None)
     with pytest.raises(op.BridgeStop, match="REVIEWED_MANIFEST_NOT_ACTIVE"):
         op._check_reviewed_manifest_target("reviewed_plan_patch_publish", 689369)
 
