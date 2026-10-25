@@ -307,10 +307,8 @@ def _execute_blocking(job: str, revision: str, operation: str, ack_scope: str | 
                 os.fsync(out.fileno())
             tmp.replace(receipt_path)
         # Strip any accidental bearer/cookie/password strings from returned logs.
-        output = re.sub(
-            r"(?i)(authorization|bearer|cookie|password|secret|token)\s*[:=]\s*\S+",
-            "[redacted]", proc.stdout[-MAX_STDOUT:],
-        )
+        from tp_mcp.private_bridge import _redact_admin_text
+        output = _redact_admin_text(proc.stdout[-MAX_STDOUT:])
         # Fail CLOSED: unknown write outcomes MUST be read back, not retried.
         stage = "DONE" if proc.returncode == 0 else "STOP_REVIEW"
         return {
