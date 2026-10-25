@@ -324,3 +324,19 @@ def test_operator_stdout_never_returns_provider_credentials(monkeypatch, tmp_pat
                   "DEMO_OPERATOR_TOKEN"):
         assert token not in result["output"]
     assert "SAFE_STATUS: PASS" in result["output"]
+
+
+
+def test_shared_dynamic_target_resolver_is_registered_read_only():
+    from tp_mcp.server import TOOLS, _TOOL_HANDLERS
+
+    found = [t for t in TOOLS if t.name == "tp_ironman_resolve_target"]
+    assert len(found) == 1
+    tool = found[0]
+    assert tool.annotations.read_only_hint is True
+    assert tool.annotations.destructive_hint is False
+    assert tool.annotations.idempotent_hint is True
+    assert "tp_ironman_resolve_target" in _TOOL_HANDLERS
+    assert tool.input_schema["required"] == ["kind", "query"]
+    assert "new_training_plan" in tool.input_schema["properties"]["kind"]["enum"]
+    assert "athlete_workout" in tool.input_schema["properties"]["kind"]["enum"]
