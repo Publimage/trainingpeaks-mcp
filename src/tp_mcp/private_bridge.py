@@ -174,13 +174,23 @@ def _persist_radar_result(payload: dict[str, Any], config: dict[str, Any]) -> di
 
 
 def _redact_admin_text(value: str) -> str:
+    """Redact credentials in Prefect admin logs before storing the receipt."""
     import re
-    return re.sub(
-        r"(?i)(authorization|bearer|cookie|password|secret|token)\\s*[:=]\\s*\\S+",
-        "[redacted]",
-        value[:12000],
-    )
 
+    clean = value[:12000]
+    # Header values may contain spaces (Authorization: Bearer <token>) and
+    # multiple cookies; redact the entire credential-bearing line.
+    clean = re.sub(
+        r"(?im)\\b(?:authorization|proxy-authorization|cookie|set-cookie)\\s*[:=][^\\r\\n]*",
+        "[redacted]",
+        clean,
+    )
+    # Also catch key=value and bare Bearer forms within ordinary log lines.
+    return re.sub(
+        r"(?i)\\b(?:bearer\\s+\\S+|(?:password|secret|token|access[_-]?token|refresh[_-]?token|api[_-]?key)\\s*[:=]\\s*\\S+)",
+        "[redacted]",
+        clean,
+    )
 
 def _persist_admin_result(payload: dict[str, Any], config: dict[str, Any]) -> dict[str, Any]:
     import re
