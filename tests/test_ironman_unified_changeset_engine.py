@@ -444,3 +444,18 @@ def test_typed_transient_provider_read_is_deferred_not_a_permanent_review_failur
     assert recovered["request_state"] == "WORK_COMPLETE"
     assert unavailable_provider.writes == 1
     assert independent_provider.writes == 1
+
+
+def test_generated_preview_scope_can_never_authorize_a_provider_write(ledger):
+    before, after = {"v": 1}, {"v": 2}
+    change = item("one", "plan.workout.patch", 2001, before, after)
+    manifest = make_manifest(change)
+    manifest["approval_scope"] = "PREVIEW_ONLY:" + manifest["request_id"]
+    fake = FakeAdapter(before)
+    assert run_changeset(manifest, {change["kind"]: fake}, ledger,
+                         execute=False)["request_state"] == "PREVIEW_ONLY"
+    with pytest.raises(ChangeStop, match="PREVIEW_DRAFT_NOT_APPROVED"):
+        run_changeset(manifest, {change["kind"]: fake}, ledger, execute=True,
+                      reviewed_revision=manifest["reviewed_revision"],
+                      approval_scope=manifest["approval_scope"])
+    assert fake.writes == 0
