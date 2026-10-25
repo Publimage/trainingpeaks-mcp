@@ -12,6 +12,7 @@ from __future__ import annotations
 import asyncio
 import copy
 import json
+import os
 from datetime import date
 from pathlib import Path
 from typing import Any
@@ -225,6 +226,14 @@ async def _run(cfg: dict[str, Any], client: Any, *, execute: bool,
     }
 
 
+def require_explicit_target(cfg: dict[str, Any], requested_plan_id: str | None) -> None:
+    """Fail closed before any provider read/write when the caller intent is stale."""
+    require(isinstance(requested_plan_id, str) and requested_plan_id.isdecimal(),
+            "REQUEST_TARGET_PLAN_ID_REQUIRED")
+    require(int(requested_plan_id) == cfg["manifest"]["plan_id"],
+            "STOP_TARGET_MISMATCH")
+
+
 def run_main(*, execute: bool) -> None:
     try:
         # The permanent read-only job can be health-checked even before a new
@@ -239,6 +248,10 @@ def run_main(*, execute: bool) -> None:
                     "ready_for_future_reviewed_manifest": True,
                 }), flush=True)
                 return
+        # A leftover reviewed manifest must never select the destination.
+        # The operator supplies a separate, explicit live-verified plan ID.
+        cfg = load_config()
+        require_explicit_target(cfg, os.environ.get("IRONMAN_REQUEST_TARGET_PLAN_ID"))
         print(json.dumps(asyncio.run(publish(execute=execute)),
                          ensure_ascii=False, sort_keys=True), flush=True)
     except Exception as exc:
