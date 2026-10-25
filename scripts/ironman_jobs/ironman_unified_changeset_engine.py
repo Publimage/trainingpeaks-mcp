@@ -291,6 +291,13 @@ def run_changeset(
             "provider", "owner_id", "container_kind", "container_id", "resource_id"
         ))
         state = ledger.status(manifest["request_id"], name)
+        if state == "SKIPPED_DEPENDENCY" and execute:
+            # Migrate an item skipped by an older ledger implementation.
+            # Revalidation below still requires every dependency, preimage
+            # and explicit scope before any provider mutation.
+            ledger.set_state(manifest["request_id"], name, "PENDING",
+                             reason="LEGACY_DEPENDENCY_DEFERRAL_RECOVERED")
+            state = "PENDING"
         if state == "DONE_VERIFIED":
             # The ledger is not the provider source of truth. A resumed flow
             # must recheck the actual object before it claims verification.
@@ -420,9 +427,23 @@ def run_changeset(
                 current = (preview_images[resource_key]
                            if not execute and resource_key in preview_images
                            else adapter.read(item))
-            except ChangeStop:
-                # Keep explicit denial / review failures in their typed path.
+            except SecurityDenied:
+                # An explicit denial remains an authorization stop.
                 raise
+            except ChangeStop as error:
+                # The live TP reader reports transient/non-specific provider
+                # read errors as ChangeStop. Treat ONLY these read errors as
+                # deferred, never as approved retries or provider writes.
+                if error.code not in {
+                    "WORKOUT_WINDOW_FAILED", "LIBRARY_READ_FAILED",
+                    "TRAINING_PLAN_READ_FAILED", "PLAN_NOTES_READ_FAILED",
+                    "STRENGTH_READ_FAILED",
+                }:
+                    raise
+                outcomes.append({"id": name, "state": "PENDING",
+                                 "code": "PROVIDER_PREFLIGHT_READ_UNAVAILABLE",
+                                 "read_code": error.code})
+                continue
             except Exception:
                 # A temporary READ failure has not attempted a provider write.
                 # Do not abort unrelated resources or mark this item complete.
