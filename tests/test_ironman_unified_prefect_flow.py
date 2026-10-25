@@ -173,3 +173,49 @@ def test_independent_requested_targets_work_for_any_plan_without_new_job(tmp_pat
         assert result["results"][0]["state"] == "PREFLIGHT_PASS"
         assert result["provider_writes"] == 0
     assert calls == [684602, 689369]
+
+
+def test_prepare_mode_stores_one_draft_for_new_chat_without_provider_calls(tmp_path, monkeypatch):
+    from scripts.ironman_jobs.ironman_dynamic_request_store import DraftStore
+    def no_provider(*args, **kwargs):
+        raise AssertionError("PREPARE_MODE_MUST_NOT_READ_TP_OR_PREFECT_BRIDGE")
+    monkeypatch.setattr(pipeline, "create_read_registry", no_provider)
+    dest = tmp_path / "dynamic-requests.sqlite3"
+    monkeypatch.setenv("IRONMAN_OPERATION_DRAFT_STORE", str(dest))
+    user_input = {
+        "schema": "IRONMAN_OPERATION_INPUT_V1",
+        "request_key": "new-chat-on-a-new-plan-001",
+        "items": [{
+            "id": "new001", "kind": "plan.create",
+            "target": {"provider": "trainingpeaks", "owner_id": 2116886,
+                       "container_kind": "training_plan",
+                       "container_id": None, "resource_id": None},
+            "before_sha256": digest({"coach_owned_plans": "provider_inventory_sha"}),
+            "depends_on": [], "payload": {"title": "Brand new plan"},
+        }],
+    }
+    ledger = tmp_path / "unused-ledger.sqlite3"
+    first = pipeline.unified_changeset_flow.fn(user_input, str(ledger), mode="prepare")
+    assert first["state"] == "DRAFT_ONLY"
+    assert first["reused"] is False
+    assert first["provider_writes"] == 0
+    assert first["publication_enabled"] is False
+    assert first["adapter_readiness"]["new001"] == "UNVERIFIED_WRITER"
+    second = pipeline.unified_changeset_flow.fn(user_input, str(ledger), mode="prepare")
+    assert second["request_id"] == first["request_id"]
+    assert second["reused"] is True
+    assert not ledger.exists()
+    store = DraftStore(dest)
+    try:
+        assert store.get(first["request_id"])["items"][0]["target"]["resource_id"] is None
+    finally:
+        store.close()
+
+
+def test_prepare_mode_without_admin_store_config_never_touches_provider(tmp_path, monkeypatch):
+    monkeypatch.delenv("IRONMAN_OPERATION_DRAFT_STORE", raising=False)
+    with pytest.raises(ChangeStop, match="DRAFT_STORE_NOT_CONFIGURED"):
+        pipeline.unified_changeset_flow.fn(
+            {"schema": "IRONMAN_OPERATION_INPUT_V1", "items": []},
+            str(tmp_path / "not-created.sqlite3"), mode="prepare")
+    assert not (tmp_path / "not-created.sqlite3").exists()
