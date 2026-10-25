@@ -7,7 +7,7 @@
   "unique_prescriptions": 16,
   "planned_duration_sec_total": 50700,
   "video_default": "TrainingPeaks native exercise video",
-  "native_status": "NOT_PUBLISHED",
+  "native_status": "PUBLISHED_NATIVE_LIBRARY_PROVIDER_VERIFIED",
   "created_utc_date": "2026-10-25",
   "items": [
     {
@@ -92,7 +92,10 @@
           "rest_before_next_exercise_seconds": 0,
           "coach_notes": ""
         }
-      ]
+      ],
+      "provider_item_id": "338400",
+      "provider_native_format": "ActivityWorkoutTemplate/StructuredStrength",
+      "prescribed_duration_verified_seconds": 3000
     },
     {
       "canonical_uid": "IMWIN8-W01-FRI-STRENGTH-01",
@@ -164,7 +167,10 @@
           "rest_before_next_exercise_seconds": 0,
           "coach_notes": ""
         }
-      ]
+      ],
+      "provider_item_id": "338401",
+      "provider_native_format": "ActivityWorkoutTemplate/StructuredStrength",
+      "prescribed_duration_verified_seconds": 2700
     },
     {
       "canonical_uid": "IMWIN8-W02-WED-STRENGTH-01",
@@ -248,7 +254,10 @@
           "rest_before_next_exercise_seconds": 0,
           "coach_notes": ""
         }
-      ]
+      ],
+      "provider_item_id": "338402",
+      "provider_native_format": "ActivityWorkoutTemplate/StructuredStrength",
+      "prescribed_duration_verified_seconds": 3300
     },
     {
       "canonical_uid": "IMWIN8-W02-FRI-STRENGTH-01",
@@ -320,7 +329,10 @@
           "rest_before_next_exercise_seconds": 0,
           "coach_notes": ""
         }
-      ]
+      ],
+      "provider_item_id": "338403",
+      "provider_native_format": "ActivityWorkoutTemplate/StructuredStrength",
+      "prescribed_duration_verified_seconds": 3000
     },
     {
       "canonical_uid": "IMWIN8-W03-WED-STRENGTH-01",
@@ -404,7 +416,10 @@
           "rest_before_next_exercise_seconds": 0,
           "coach_notes": ""
         }
-      ]
+      ],
+      "provider_item_id": "338405",
+      "provider_native_format": "ActivityWorkoutTemplate/StructuredStrength",
+      "prescribed_duration_verified_seconds": 3600
     },
     {
       "canonical_uid": "IMWIN8-W03-FRI-STRENGTH-01",
@@ -476,7 +491,10 @@
           "rest_before_next_exercise_seconds": 0,
           "coach_notes": ""
         }
-      ]
+      ],
+      "provider_item_id": "338406",
+      "provider_native_format": "ActivityWorkoutTemplate/StructuredStrength",
+      "prescribed_duration_verified_seconds": 3000
     },
     {
       "canonical_uid": "IMWIN8-W04-WED-STRENGTH-01",
@@ -548,7 +566,10 @@
           "rest_before_next_exercise_seconds": 0,
           "coach_notes": ""
         }
-      ]
+      ],
+      "provider_item_id": "338407",
+      "provider_native_format": "ActivityWorkoutTemplate/StructuredStrength",
+      "prescribed_duration_verified_seconds": 2700
     },
     {
       "canonical_uid": "IMWIN8-W04-FRI-STRENGTH-01",
@@ -620,7 +641,10 @@
           "rest_before_next_exercise_seconds": 0,
           "coach_notes": ""
         }
-      ]
+      ],
+      "provider_item_id": "338408",
+      "provider_native_format": "ActivityWorkoutTemplate/StructuredStrength",
+      "prescribed_duration_verified_seconds": 2400
     },
     {
       "canonical_uid": "IMWIN8-W05-WED-STRENGTH-01",
@@ -692,7 +716,10 @@
           "rest_before_next_exercise_seconds": 0,
           "coach_notes": ""
         }
-      ]
+      ],
+      "provider_item_id": "338409",
+      "provider_native_format": "ActivityWorkoutTemplate/StructuredStrength",
+      "prescribed_duration_verified_seconds": 3600
     },
     {
       "canonical_uid": "IMWIN8-W05-FRI-STRENGTH-01",
@@ -766,7 +793,10 @@
         }
       ],
       "previous_native_title": "FORZA | Pressa mono e upper body 55 min",
-      "previous_native_id": "338410"
+      "previous_native_id": "338410",
+      "provider_item_id": "338410",
+      "provider_native_format": "ActivityWorkoutTemplate/StructuredStrength",
+      "prescribed_duration_verified_seconds": 3300
     },
     {
       "canonical_uid": "IMWIN8-W06-WED-STRENGTH-01",
@@ -838,7 +868,10 @@
           "rest_before_next_exercise_seconds": 0,
           "coach_notes": ""
         }
-      ]
+      ],
+      "provider_item_id": "338411",
+      "provider_native_format": "ActivityWorkoutTemplate/StructuredStrength",
+      "prescribed_duration_verified_seconds": 3900
     },
     {
       "canonical_uid": "IMWIN8-W06-FRI-STRENGTH-01",
@@ -910,7 +943,10 @@
           "rest_before_next_exercise_seconds": 0,
           "coach_notes": ""
         }
-      ]
+      ],
+      "provider_item_id": "338412",
+      "provider_native_format": "ActivityWorkoutTemplate/StructuredStrength",
+      "prescribed_duration_verified_seconds": 3300
     },
     {
       "canonical_uid": "IMWIN8-W07-WED-STRENGTH-01",
@@ -982,7 +1018,10 @@
           "rest_before_next_exercise_seconds": 0,
           "coach_notes": ""
         }
-      ]
+      ],
+      "provider_item_id": "338413",
+      "provider_native_format": "ActivityWorkoutTemplate/StructuredStrength",
+      "prescribed_duration_verified_seconds": 3900
     },
     {
       "canonical_uid": "IMWIN8-W07-FRI-STRENGTH-01",
@@ -1068,7 +1107,10 @@
         }
       ],
       "previous_native_title": "FORZA | Pressa mono di richiamo 55 min",
-      "previous_native_id": "338414"
+      "previous_native_id": "338414",
+      "provider_item_id": "338414",
+      "provider_native_format": "ActivityWorkoutTemplate/StructuredStrength",
+      "prescribed_duration_verified_seconds": 3300
     },
     {
       "canonical_uid": "IMWIN8-W08-WED-STRENGTH-01",
@@ -1152,7 +1194,10 @@
           "rest_before_next_exercise_seconds": 0,
           "coach_notes": ""
         }
-      ]
+      ],
+      "provider_item_id": "338415",
+      "provider_native_format": "ActivityWorkoutTemplate/StructuredStrength",
+      "prescribed_duration_verified_seconds": 3000
     },
     {
       "canonical_uid": "IMWIN8-W08-FRI-STRENGTH-01",
@@ -1224,7 +1269,14 @@
           "rest_before_next_exercise_seconds": 0,
           "coach_notes": ""
         }
-      ]
+      ],
+      "provider_item_id": "338416",
+      "provider_native_format": "ActivityWorkoutTemplate/StructuredStrength",
+      "prescribed_duration_verified_seconds": 2700
     }
-  ]
+  ],
+  "provider_readback_date": "2026-10-25",
+  "verified_total_native_library": 35,
+  "provider_plan_writes": 0,
+  "provider_athlete_writes": 0
 }
