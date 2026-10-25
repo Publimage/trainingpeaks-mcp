@@ -2152,7 +2152,7 @@ for _tool in TOOLS:
 # ---------------------------------------------------------------------------
 
 _READ_ONLY_PREFIXES = ("tp_get_", "tp_list_", "tp_download_", "tp_search_", "tp_validate_", "tp_analyze_")
-_READ_ONLY_EXTRA = {"tp_auth_status"}
+_READ_ONLY_EXTRA = {"tp_auth_status", "tp_ironman_resolve_target"}
 
 # DestructiveHint covers deletion AND modification that overwrites existing
 # user data; the former may be irreversible, and the latter may lose an old
