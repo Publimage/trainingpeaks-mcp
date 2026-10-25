@@ -35,6 +35,7 @@ ORIGIN = re.compile(r"^(?:https://github\.com/|git@github\.com:)Publimage/traini
 MAX_STDOUT = 14000
 READ_ONLY = "READ_ONLY"
 GUARDED_WRITE = "GUARDED_WRITE"
+REVIEWED_PLAN_JOBS = frozenset({"reviewed_plan_patch_preview", "reviewed_plan_patch_publish"})
 
 
 class BridgeStop(Exception):
@@ -45,13 +46,15 @@ class BridgeStop(Exception):
         self.code = code
 
 
-def _run(*argv: str, timeout: int = 30) -> subprocess.CompletedProcess[str]:
+def _run(*argv: str, timeout: int = 30, request_plan_id: int | None = None) -> subprocess.CompletedProcess[str]:
     env = {
         key: value for key, value in os.environ.items()
         if key in {"HOME", "PATH", "LANG", "LC_ALL", "LC_CTYPE", "XDG_CONFIG_HOME"}
     }
     env["HOME"] = str(REPO.parent)
     env["PYTHONPATH"] = str(REPO / "src")
+    if request_plan_id is not None:
+        env["IRONMAN_REQUEST_TARGET_PLAN_ID"] = str(request_plan_id)
     try:
         return subprocess.run(
             list(argv), cwd=REPO, env=env, text=True, capture_output=True,
@@ -135,9 +138,37 @@ def _check_job(job: str, operation: str, ack_scope: str | None) -> dict[str, Any
     return spec
 
 
-def _execute_blocking(job: str, revision: str, operation: str, ack_scope: str | None) -> dict[str, Any]:
+def _check_reviewed_manifest_target(job: str, target_plan_id: int | None) -> None:
+    """Independent request-to-manifest gate. Never infer the target from JSON."""
+    if job not in REVIEWED_PLAN_JOBS:
+        return
+    if type(target_plan_id) is not int or target_plan_id <= 0:
+        raise BridgeStop("TARGET_PLAN_ID_REQUIRED_FOR_REVIEWED_PUBLISHER")
+    path = REPO / "data/ironman_reviewed_plan_patch.json"
+    try:
+        cfg = json.loads(path.read_text(encoding="utf-8"))
+    except (OSError, ValueError) as exc:
+        raise BridgeStop("REVIEWED_MANIFEST_UNREADABLE") from exc
+    if cfg.get("configured") is False:
+        if job == "reviewed_plan_patch_publish":
+            raise BridgeStop("REVIEWED_MANIFEST_NOT_ACTIVE")
+        return
+    if cfg.get("configured") is not True:
+        raise BridgeStop("REVIEWED_MANIFEST_INVALID")
+    actual = (cfg.get("manifest") or {}).get("plan_id")
+    if actual != target_plan_id:
+        raise BridgeStop("STOP_TARGET_MISMATCH")
+
+
+def _execute_blocking(job: str, revision: str, operation: str, ack_scope: str | None,
+                      target_plan_id: int | None = None) -> dict[str, Any]:
     if not HEX40.fullmatch(revision):
         raise BridgeStop("A complete pinned 40-character commit SHA is required.")
+    # Job registration is generic. Bind each reviewed plan execution to the
+    # caller-confirmed plan ID independently of any persisted JSON manifest.
+    if operation == "execute" and job in REVIEWED_PLAN_JOBS:
+        if type(target_plan_id) is not int or target_plan_id <= 0:
+            raise BridgeStop("TARGET_PLAN_ID_REQUIRED_FOR_REVIEWED_PUBLISHER")
     if not REPO.is_dir() or not VENV_PYTHON.is_file():
         raise BridgeStop("Verified cloud installation unavailable.")
     STATE_DIR.mkdir(mode=0o700, parents=True, exist_ok=True)
@@ -172,6 +203,8 @@ def _execute_blocking(job: str, revision: str, operation: str, ack_scope: str | 
                 "message": "Commit verified; execute will check out, test and run the approved job.",
             }
         spec = _check_job(job, operation, ack_scope)
+        # Check against the request before creating a write receipt or invoking a job.
+        _check_reviewed_manifest_target(job, target_plan_id)
         kind = spec["mode"]
         command = [str(VENV_PYTHON), "-m", "pytest", "-q", spec["test"]]
         _require_ok(_run(*command, timeout=125), "Approved job tests")
@@ -202,7 +235,11 @@ def _execute_blocking(job: str, revision: str, operation: str, ack_scope: str | 
             tmp.replace(receipt_path)
 
         # Only a trusted checked-out script path. Never shell=True / caller argv.
-        proc = _run(str(VENV_PYTHON), str(script), timeout=175)
+        if job in REVIEWED_PLAN_JOBS:
+            proc = _run(str(VENV_PYTHON), str(script), timeout=175,
+                        request_plan_id=target_plan_id)
+        else:
+            proc = _run(str(VENV_PYTHON), str(script), timeout=175)
         if receipt_path is not None:
             audit = {
                 "job": job, "revision": revision, "scope": spec["scope"],
@@ -236,6 +273,7 @@ def _execute_blocking(job: str, revision: str, operation: str, ack_scope: str | 
 async def tp_ironman_operator(
     job: str, revision: str, operation: str = "preview",
     ack_scope: str | None = None,
+    target_plan_id: int | None = None,
 ) -> dict[str, Any]:
     """Execute a version-pinned, repo-registered job, not caller supplied shell."""
     if operation not in {"preview", "execute"}:
@@ -247,7 +285,8 @@ async def tp_ironman_operator(
         if not isinstance(me, dict) or me.get("personId") != OWNER:
             return {"isError": True, "error_code": "ACCOUNT_MISMATCH"}
     try:
-        outcome = await asyncio.to_thread(_execute_blocking, job, revision, operation, ack_scope)
+        outcome = await asyncio.to_thread(_execute_blocking, job, revision, operation,
+                                          ack_scope, target_plan_id)
         if not outcome.get("success"):
             outcome["isError"] = True
         return outcome
