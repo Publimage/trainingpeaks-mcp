@@ -382,10 +382,22 @@ def compile_preview_changeset(draft: dict[str, Any],
                 "PREVIEW_REQUIRES_EXISTING_ITEM")
         image = after_images[item["id"]]
         require(type(image) is dict, "PREVIEW_AFTER_IMAGE_INVALID")
+        # A caller must not supply an approved-looking after-image whose SHA
+        # differs from the actual desired object the typed adapter would use.
+        desired = item["payload"].get("desired")
+        if desired is not None:
+            require(type(desired) is dict and desired == image,
+                    "PREVIEW_PAYLOAD_AFTER_IMAGE_MISMATCH")
         after_sha = hashlib.sha256(canonical(image).encode()).hexdigest()
         require(after_sha != item["before_sha256"], "PREVIEW_NO_CHANGE")
+        # Optional symbolic-reference slots may be present as explicit None in
+        # a draft, but the original V1 ChangeSet target has EXACTLY five keys.
+        # Only actual positive IDs are permitted past the preview boundary.
+        concrete_target = {k: target[k] for k in (
+            "provider", "owner_id", "container_kind", "container_id", "resource_id"
+        )}
         converted.append({
-            "id": item["id"], "kind": kind, "target": dict(target),
+            "id": item["id"], "kind": kind, "target": concrete_target,
             "before_sha256": item["before_sha256"], "after_sha256": after_sha,
             "depends_on": list(item["depends_on"]),
             "payload": item["payload"],
