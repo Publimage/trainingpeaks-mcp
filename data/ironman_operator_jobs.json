@@ -2306,6 +2306,14 @@
       "mode": "GUARDED_WRITE",
       "scope": "trainingpeaks:coach:2116886:private-plan:winter-foundation-8w:create-and-attach-16-native-strength",
       "owner_id": 2116886
+    },
+    {
+      "name": "ironman_winter_endurance_native_publish",
+      "mode": "GUARDED_WRITE",
+      "owner_id": 2116886,
+      "scope": "trainingpeaks:coach:2116886:private-plan:689369:publish-58-endurance-native-and-51-reusable-library-templates",
+      "script": "scripts/ironman_jobs/ironman_winter_endurance_native_publish.py",
+      "test": "tests/test_ironman_winter_endurance_native_publish.py"
     }
   ]
 }
