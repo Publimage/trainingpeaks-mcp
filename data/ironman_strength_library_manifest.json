@@ -99,7 +99,7 @@
     },
     {
       "canonical_uid": "IMWIN8-W01-FRI-STRENGTH-01",
-      "title": "FORZA | Unilaterale e upper body 45 min",
+      "title": "FORZA | Unilaterale e parte superiore 45 min",
       "objective": "Richiamo controllato con basso costo degli arti inferiori prima del lungo bici.",
       "planned_duration_seconds": 2700,
       "warmup_minutes": 7,
@@ -170,7 +170,8 @@
       ],
       "provider_item_id": "338401",
       "provider_native_format": "ActivityWorkoutTemplate/StructuredStrength",
-      "prescribed_duration_verified_seconds": 2700
+      "prescribed_duration_verified_seconds": 2700,
+      "previous_native_title_20261025": "FORZA | Unilaterale e upper body 45 min"
     },
     {
       "canonical_uid": "IMWIN8-W02-WED-STRENGTH-01",
@@ -723,7 +724,7 @@
     },
     {
       "canonical_uid": "IMWIN8-W05-FRI-STRENGTH-01",
-      "title": "FORZA | Step-up mono e upper body 55 min",
+      "title": "FORZA | Salita su rialzo e parte superiore 55 min",
       "objective": "Richiamo unilaterale moderato, senza compromissione di bici lunga e corsa.",
       "planned_duration_seconds": 3300,
       "warmup_minutes": 8,
@@ -796,7 +797,8 @@
       "previous_native_id": "338410",
       "provider_item_id": "338410",
       "provider_native_format": "ActivityWorkoutTemplate/StructuredStrength",
-      "prescribed_duration_verified_seconds": 3300
+      "prescribed_duration_verified_seconds": 3300,
+      "previous_native_title_20261025": "FORZA | Step-up mono e upper body 55 min"
     },
     {
       "canonical_uid": "IMWIN8-W06-WED-STRENGTH-01",
@@ -875,7 +877,7 @@
     },
     {
       "canonical_uid": "IMWIN8-W06-FRI-STRENGTH-01",
-      "title": "FORZA | Hip thrust e richiamo 55 min",
+      "title": "FORZA | Spinta d'anca e richiamo 55 min",
       "objective": "Richiamo glutei/upper con priorità alla freschezza del weekend.",
       "planned_duration_seconds": 3300,
       "warmup_minutes": 8,
@@ -946,7 +948,8 @@
       ],
       "provider_item_id": "338412",
       "provider_native_format": "ActivityWorkoutTemplate/StructuredStrength",
-      "prescribed_duration_verified_seconds": 3300
+      "prescribed_duration_verified_seconds": 3300,
+      "previous_native_title_20261025": "FORZA | Hip thrust e richiamo 55 min"
     },
     {
       "canonical_uid": "IMWIN8-W07-WED-STRENGTH-01",
@@ -1025,7 +1028,7 @@
     },
     {
       "canonical_uid": "IMWIN8-W07-FRI-STRENGTH-01",
-      "title": "FORZA | Step-up mono di richiamo 55 min",
+      "title": "FORZA | Salita su rialzo di richiamo 55 min",
       "objective": "Seconda palestra standard, limitare costo muscolare e proteggere sabato/domenica.",
       "planned_duration_seconds": 3300,
       "warmup_minutes": 8,
@@ -1110,7 +1113,8 @@
       "previous_native_id": "338414",
       "provider_item_id": "338414",
       "provider_native_format": "ActivityWorkoutTemplate/StructuredStrength",
-      "prescribed_duration_verified_seconds": 3300
+      "prescribed_duration_verified_seconds": 3300,
+      "previous_native_title_20261025": "FORZA | Step-up mono di richiamo 55 min"
     },
     {
       "canonical_uid": "IMWIN8-W08-WED-STRENGTH-01",
@@ -1278,5 +1282,28 @@
   "provider_readback_date": "2026-10-25",
   "verified_total_native_library": 35,
   "provider_plan_writes": 0,
-  "provider_athlete_writes": 0
+  "provider_athlete_writes": 0,
+  "warmup_italian_patch": {
+    "patch_id": "WINTER8_ST_WARMUP4_ITALIAN_20261025",
+    "patch_state": "PROVIDER_VERIFIED_LIBRARY_AND_PRIVATE_PLAN",
+    "plan_id": 689369,
+    "library_id": 3891875,
+    "reviewed_warmup_ids": [
+      "5184",
+      "5305",
+      "475",
+      "7"
+    ],
+    "warmup_names": [
+      "Mobilita delle caviglie",
+      "Mobilita delle anche",
+      "Mobilita della colonna in quadrupedia",
+      "Aperture delle braccia con elastico"
+    ],
+    "removed_warmup_exercise_id": "579",
+    "preserved_main_exercise_ids": true,
+    "preserved_recovery": true,
+    "preserved_planned_duration": true,
+    "provider_verified_2026_10_25": true
+  }
 }
