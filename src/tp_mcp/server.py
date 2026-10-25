@@ -1459,7 +1459,7 @@ TOOLS = [
         description=(
             "Read-only identity binding from the CURRENT request and live TrainingPeaks "
             "coach account. Finds any visible Training Plan, athlete, Workout Library "
-            "or plan/athlete workout, including previously unseen IDs. Supports new-plan "
+            "or plan/athlete workout or native Plan Note for PDF attachment, including unseen IDs. Supports new-plan "
             "and new-library NAME-ABSENCE preflight, NOT creation. A nonunique name "
             "produces TARGET_AMBIGUOUS, never chooses the last plan/athlete. "
             "Does not approve, publish, delete, stage code or bypass provider permissions."
@@ -1470,7 +1470,7 @@ TOOLS = [
                 "kind": {"type": "string", "enum": [
                     "training_plan", "new_training_plan", "athlete",
                     "workout_library", "new_workout_library",
-                    "plan_workout", "athlete_workout"
+                    "plan_workout", "plan_note", "athlete_workout"
                 ]},
                 "query": {"type": "string", "minLength": 1,
                           "description": "Current intended resource ID or unique name fragment; for a new plan/library, its proposed exact new name."},
