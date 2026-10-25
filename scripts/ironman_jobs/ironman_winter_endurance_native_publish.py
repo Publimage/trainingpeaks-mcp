@@ -225,7 +225,10 @@ def plan_equal(actual,expected,target):
     )
 
 def is_golden_preflight(items):
-    first={x["sport"]:x for x in items if x["week"]==1 and x["sport"] in ("SW","BI","RU")}
+    first={}
+    for x in items:
+        if x["week"]==1 and x["sport"] in ("SW","BI","RU"):
+            first.setdefault(x["sport"],x)
     must(len(first)==3,"MISSING_GOLDEN")
     for sport in first:
         v=compiled(first[sport])
