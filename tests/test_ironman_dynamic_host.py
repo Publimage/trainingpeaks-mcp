@@ -43,6 +43,11 @@ def host(monkeypatch):
         return {"plan_id": plan_id,
                 "workouts": [{"workout_id": 700, "title": "Swim technique", "day": 1}]}
 
+    async def plan_notes(plan_id):
+        events.append(("plan_notes", athlete_override.get()))
+        return {"plan_id": plan_id,
+                "notes": [{"note_id": 301, "title": "PDF instructions", "day": 1}]}
+
     async def athlete_workouts(start, end, workout_filter):
         events.append(("athlete_workouts", athlete_override.get()))
         assert workout_filter == "all"
@@ -53,6 +58,7 @@ def host(monkeypatch):
         "tp_mcp.client.context": {"athlete_override": athlete_override},
         "tp_mcp.tools.library": {"tp_get_libraries": libraries},
         "tp_mcp.tools.plans": {"tp_get_training_plan_workouts": plan_workouts,
+                               "tp_get_training_plan_notes": plan_notes,
                                "tp_list_training_plans": plans},
         "tp_mcp.tools.profile": {"tp_list_athletes": athletes},
         "tp_mcp.tools.workouts": {"tp_get_workouts": athlete_workouts},
@@ -108,3 +114,13 @@ def test_host_does_not_inherit_session_selected_athlete(host):
         assert context.get() == "777777"  # restoration, no leak to next handler
     finally:
         context.reset(token)
+
+
+def test_host_resolves_new_pdf_note_destination_without_calendar_mixup(host):
+    tool, events, state, context = host
+    result = asyncio.run(tool.tp_ironman_resolve_target(
+        "plan_note", "PDF instructions", plan_selector="new plan", week=1, weekday=1))
+    assert result["target"]["container_id"] == 456
+    assert result["target"]["resource_id"] == 301
+    assert ("plan_notes", None) in events
+    assert not any(k == "roster" for k, v in events)
