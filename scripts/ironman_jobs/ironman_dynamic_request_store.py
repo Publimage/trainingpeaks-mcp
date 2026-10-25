@@ -249,6 +249,32 @@ def prepare_draft(items: list[dict[str, Any]], *, owner_id: int = OWNER,
     return draft
 
 
+def verify_draft_integrity(draft: dict[str, Any]) -> None:
+    """Recompute immutable request identity before any later read/preview.
+
+    A database row, in-memory dictionary or caller-supplied JSON containing
+    DRAFT_ONLY is not independently trustworthy. A modified target or payload
+    must not inherit the previously checked request identity.
+    """
+    require(type(draft) is dict and draft.get("schema") == SCHEMA and
+            draft.get("state") == "DRAFT_ONLY" and
+            draft.get("provider_writes") == 0 and
+            draft.get("publication_authorized") is False,
+            "DRAFT_NOT_READ_ONLY")
+    require(set(draft) == {"schema", "owner_id", "items", "request_id",
+                           "request_key", "semantic_sha256", "state",
+                           "provider_writes", "publication_authorized"},
+            "DRAFT_TAMPERED")
+    try:
+        reconstructed = prepare_draft([{
+            k: v for k, v in item.items() if k != "adapter_readiness"
+        } for item in draft["items"]], owner_id=draft["owner_id"],
+            request_key=draft["request_key"])
+    except (KeyError, TypeError, DraftStop) as exc:
+        raise DraftStop("DRAFT_TAMPERED") from exc
+    require(draft == reconstructed, "DRAFT_TAMPERED")
+
+
 class DraftStore:
     """Atomic, 0600 SQLite request persistence on existing Prefect host.
 
@@ -275,19 +301,7 @@ class DraftStore:
         self.db.close()
 
     def store(self, draft: dict[str, Any]) -> dict[str, Any]:
-        require(type(draft) is dict and draft.get("schema") == SCHEMA and
-                draft.get("state") == "DRAFT_ONLY" and
-                draft.get("provider_writes") == 0 and
-                draft.get("publication_authorized") is False,
-                "DRAFT_NOT_READ_ONLY")
-        try:
-            reconstructed = prepare_draft([{
-                k: v for k, v in item.items() if k != "adapter_readiness"
-            } for item in draft["items"]],
-                owner_id=draft["owner_id"], request_key=draft["request_key"])
-        except (KeyError, TypeError, DraftStop) as exc:
-            raise DraftStop("DRAFT_TAMPERED") from exc
-        require(draft == reconstructed, "DRAFT_TAMPERED")
+        verify_draft_integrity(draft)
         body = canonical(draft)
         require(len(body.encode()) <= MAX_BYTES, "DRAFT_TOO_LARGE")
         try:
@@ -312,9 +326,17 @@ class DraftStore:
     def get(self, request_id: str) -> dict[str, Any] | None:
         require(type(request_id) is str and TOKEN.fullmatch(request_id) is not None,
                 "REQUEST_ID_INVALID")
-        row = self.db.execute("SELECT payload FROM drafts WHERE request_id=?",
+        row = self.db.execute("SELECT semantic_sha, payload FROM drafts WHERE request_id=?",
                               (request_id,)).fetchone()
-        return json.loads(row[0]) if row else None
+        if not row:
+            return None
+        try:
+            loaded = json.loads(row[1])
+        except (TypeError, ValueError) as exc:
+            raise DraftStop("PERSISTED_DRAFT_CORRUPT") from exc
+        verify_draft_integrity(loaded)
+        require(row[0] == loaded["semantic_sha256"], "PERSISTED_DRAFT_CORRUPT")
+        return loaded
 
 # This is the subset of the EXISTING universal engine that has read-only
 # adapters. A prepared request for create/delete is deliberately NOT promoted
@@ -338,6 +360,7 @@ def compile_preview_changeset(draft: dict[str, Any],
     require(type(draft) is dict and draft.get("state") == "DRAFT_ONLY" and
             draft.get("publication_authorized") is False,
             "PREVIEW_DRAFT_REQUIRED")
+    verify_draft_integrity(draft)
     require(type(pinned_revision) is str and
             re.fullmatch(r"[a-f0-9]{40}", pinned_revision) is not None,
             "PINNED_REVISION_REQUIRED")
