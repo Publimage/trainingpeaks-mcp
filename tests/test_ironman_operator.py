@@ -132,6 +132,62 @@ def test_execute_without_any_shell_injection(monkeypatch, tmp_path):
     assert any(call[:3] == ("git", "checkout", "--detach") for call in calls)
 
 
+def test_reviewed_plan_jobs_require_independent_plan_id_before_checkout(monkeypatch, tmp_path):
+    _setup(monkeypatch, tmp_path)
+    revision = "a" * 40
+    with pytest.raises(op.BridgeStop, match="TARGET_PLAN_ID_REQUIRED"):
+        op._execute_blocking("reviewed_plan_patch_publish", revision, "execute", None)
+    with pytest.raises(op.BridgeStop, match="TARGET_PLAN_ID_REQUIRED"):
+        op._execute_blocking("reviewed_plan_patch_preview", revision, "execute", None)
+    with pytest.raises(op.BridgeStop, match="TARGET_PLAN_ID_REQUIRED"):
+        op._execute_blocking("reviewed_plan_patch_publish", revision, "execute", None, True)
+    with pytest.raises(op.BridgeStop, match="TARGET_PLAN_ID_REQUIRED"):
+        op._execute_blocking("reviewed_plan_patch_publish", revision, "execute", None, -1)
+
+
+def test_plan_id_is_the_only_extra_environment_variable(monkeypatch, tmp_path):
+    _setup(monkeypatch, tmp_path)
+    monkeypatch.setenv("UNTRUSTED_TARGET", "684602")
+    captured = {}
+    def fake_run(args, **kwargs):
+        captured["env"] = kwargs["env"]
+        return subprocess.CompletedProcess(args, 0, "", "")
+    monkeypatch.setattr(op.subprocess, "run", fake_run)
+    op._run("python", "a.py", request_plan_id=689369)
+    assert captured["env"]["IRONMAN_REQUEST_TARGET_PLAN_ID"] == "689369"
+    assert "UNTRUSTED_TARGET" not in captured["env"]
+
+
+def test_operator_schema_declares_live_verified_target_plan_id():
+    from tp_mcp.server import TOOLS
+    tool = next(t for t in TOOLS if t.name == "tp_ironman_operator")
+    assert tool.input_schema["properties"]["target_plan_id"]["type"] == "integer"
+    assert tool.input_schema["properties"]["target_plan_id"]["minimum"] == 1
+
+
+def test_reviewed_manifest_mismatch_stops_before_any_provider_job(monkeypatch, tmp_path):
+    _setup(monkeypatch, tmp_path)
+    (tmp_path / "data").mkdir()
+    manifest = tmp_path / "data/ironman_reviewed_plan_patch.json"
+    manifest.write_text('{"configured":true,"manifest":{"plan_id":684602}}')
+    with pytest.raises(op.BridgeStop, match="STOP_TARGET_MISMATCH"):
+        op._check_reviewed_manifest_target("reviewed_plan_patch_publish", 689369)
+    with pytest.raises(op.BridgeStop, match="STOP_TARGET_MISMATCH"):
+        op._check_reviewed_manifest_target("reviewed_plan_patch_preview", 689369)
+    op._check_reviewed_manifest_target("reviewed_plan_patch_preview", 684602)
+    op._check_reviewed_manifest_target("reviewed_plan_patch_publish", 684602)
+
+
+def test_reviewed_manifest_inactive_must_not_publish(monkeypatch, tmp_path):
+    _setup(monkeypatch, tmp_path)
+    (tmp_path / "data").mkdir()
+    manifest = tmp_path / "data/ironman_reviewed_plan_patch.json"
+    manifest.write_text('{"configured":false}')
+    op._check_reviewed_manifest_target("reviewed_plan_patch_preview", 689369)
+    with pytest.raises(op.BridgeStop, match="REVIEWED_MANIFEST_NOT_ACTIVE"):
+        op._check_reviewed_manifest_target("reviewed_plan_patch_publish", 689369)
+
+
 def test_busy_operator_has_actionable_error_code(monkeypatch, tmp_path):
     job = _setup(monkeypatch, tmp_path)
     def busy(*args, **kwargs):
