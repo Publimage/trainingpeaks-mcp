@@ -127,6 +127,7 @@ PROJECTION_FIELDS = {
         "date", "startDate", "duration", "plannedDuration",
         "exercises", "sets", "workout", "structure", "status", "metadata",
         "blocks", "coachNotes", "workoutId", "plannedDurationSeconds",
+        "prescribedDurationInSeconds",
     }),
     "library.workout.patch": frozenset({
         "exerciseLibraryItemId", "id", "exerciseLibraryId",
