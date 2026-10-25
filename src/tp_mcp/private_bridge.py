@@ -181,13 +181,13 @@ def _redact_admin_text(value: str) -> str:
     # Header values may contain spaces (Authorization: Bearer <token>) and
     # multiple cookies; redact the entire credential-bearing line.
     clean = re.sub(
-        r"(?im)\\b(?:authorization|proxy-authorization|cookie|set-cookie)\\s*[:=][^\\r\\n]*",
+        r"(?im)\b(?:authorization|proxy-authorization|cookie|set-cookie)\s*[:=][^\r\n]*",
         "[redacted]",
         clean,
     )
     # Also catch key=value and bare Bearer forms within ordinary log lines.
     return re.sub(
-        r"(?i)\\b(?:bearer\\s+\\S+|(?:password|secret|token|access[_-]?token|refresh[_-]?token|api[_-]?key)\\s*[:=]\\s*\\S+)",
+        r"(?i)\b(?:bearer\s+\S+|(?:password|secret|token|access[_-]?token|refresh[_-]?token|api[_-]?key)\s*[:=]\s*\S+)",
         "[redacted]",
         clean,
     )
