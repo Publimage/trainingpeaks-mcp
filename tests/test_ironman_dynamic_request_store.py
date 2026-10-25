@@ -334,3 +334,30 @@ def test_unmodified_draft_reads_and_compiles_with_integrity_check(tmp_path):
                                        pinned_revision="a"*40)
     assert bundle["state"] == "PREVIEW_ONLY"
     assert bundle["provider_writes"] == 0
+
+
+def test_optional_null_symbolic_keys_never_escape_into_changeset_v1():
+    from scripts.ironman_jobs.ironman_dynamic_request_store import compile_preview_changeset
+    current = item("plan.workout.patch", container_id=501, resource_id=31)
+    current["target"]["container_ref"] = None
+    current["target"]["resource_ref"] = None
+    draft = prepare_draft([current])
+    x = compile_preview_changeset(draft, {"a01": {"title": "Changed"}},
+                                  pinned_revision="a" * 40)
+    target = x["manifest"]["changes"][0]["target"]
+    assert set(target) == {"provider", "owner_id", "container_kind",
+                           "container_id", "resource_id"}
+    assert target["container_id"] == 501 and target["resource_id"] == 31
+
+
+def test_preview_must_match_actual_desired_payload_when_provided():
+    from scripts.ironman_jobs.ironman_dynamic_request_store import compile_preview_changeset
+    current = item("plan.workout.patch", container_id=501, resource_id=31,
+                   payload={"desired": {"title": "Correct"}, "fields": ["title"]})
+    draft = prepare_draft([current])
+    with pytest.raises(DraftStop, match="PREVIEW_PAYLOAD_AFTER_IMAGE_MISMATCH"):
+        compile_preview_changeset(draft, {"a01": {"title": "Different"}},
+                                  pinned_revision="a" * 40)
+    safe = compile_preview_changeset(draft, {"a01": {"title": "Correct"}},
+                                    pinned_revision="a" * 40)
+    assert safe["manifest"]["changes"][0]["payload"]["desired"] == {"title": "Correct"}
