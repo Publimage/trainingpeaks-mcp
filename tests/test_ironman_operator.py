@@ -340,3 +340,4 @@ def test_shared_dynamic_target_resolver_is_registered_read_only():
     assert tool.input_schema["required"] == ["kind", "query"]
     assert "new_training_plan" in tool.input_schema["properties"]["kind"]["enum"]
     assert "athlete_workout" in tool.input_schema["properties"]["kind"]["enum"]
+    assert "plan_note" in tool.input_schema["properties"]["kind"]["enum"]
