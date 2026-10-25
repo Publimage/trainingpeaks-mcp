@@ -169,6 +169,7 @@ def test_native_strength_projection_preserves_blocks_and_strips_secret_links():
     native = {
         "id": 33973536, "calendarId": 6678583,
         "workoutType": "StructuredStrength",
+        "prescribedDurationInSeconds": 2700,
         "blocks": [{
             "type": "WarmUp",
             "exercises": [{"name": "Squat", "sets": [{"reps": 6, "rpe": 6}],
@@ -178,6 +179,7 @@ def test_native_strength_projection_preserves_blocks_and_strips_secret_links():
     }
     out = project_read_record(native, kind="plan.strength.relocate")
     assert out["blocks"][0]["exercises"][0]["sets"][0]["reps"] == 6
+    assert out["prescribedDurationInSeconds"] == 2700
     assert "signedUrl" not in out["blocks"][0]["exercises"][0]
     assert "clientSecret" not in out
 
