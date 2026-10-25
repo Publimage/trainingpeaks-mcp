@@ -162,3 +162,18 @@ PR remains DRAFT / NOT MERGED / NOT DEPLOYED, and the unified flow remains
 preview-only. Callback injection in unit tests is NOT provider-write approval.
 Actual live writer paths still route via the scoped previously verified Proven
 Paths, not a generic unrestricted ChatGPT write tool.
+
+
+## Audit di sicurezza e continuita' — 25/10/2026 (PR18, non deploy)
+
+INCIDENTE RISOLTO: WINTER FOUNDATION plan 689369 ha gia' 58 descrizioni/45 titoli pubblicati e readback indipendente 58/58. E' una operazione WORK_COMPLETE, NON un canary da ripetere. Il branch trusted contiene il suo manifest reviewed ormai storico.
+
+Il publisher classic ha un percorso live verificato. La PR18 non lo sostituisce e non deve essere distribuita finche' i gate di CI, VPC, lock e adapter non sono superati. Sono ora distinti: (i) target_plan_id della richiesta corrente; (ii) request_scope corrente; (iii) requested_workout_ids correnti. Per il publisher classic candidate PR18, tutti e tre devono essere supplied da caller independently e combaciare con il payload reviewed. Questa difesa blocca non soltanto Intermediate684602 vs WINTER689369 ma anche un nuovo task su WINTER689369 che incontrasse il manifest dei 58 gia' completati.
+
+Nel motore universale: un SKIPPED_DEPENDENCY storico diventa recuperabile PENDING; un DONE_VERIFIED non riconfermato sul provider non puo' sbloccare i dipendenti; letture temporaneamente non disponibili non annullano operazioni indipendenti; risultati PREVIEW_ONLY/ACTION_INCOMPLETE/WORK_COMPLETE separati. L'engine universale accetta requested_targets con provider/owner/container/resource IDs indipendenti e disabilita ogni publish.
+
+Correzioni di sicurezza nella stessa PR: il bridge privato redige token, header Authorization e Cookie nei receipt amministrativi; l'output dell'operatore riusa lo stesso redactor; i readback StructuredStrength conservano anche prescribedDurationInSeconds, indispensabile per la verifica della dose. Test di regressione aggiunti nei file esistenti, inclusi test_reviewed_plan_patch_pipeline.py e test_private_bridge.py.
+
+VERIFICA DISPONIBILE: 47 test offline isolati su QUATTRO funzioni pure identiche alla sorgente GitHub (controllo CRC32 sorgente) eseguiti in container, 47 PASS; includono casi positivi/negativi di request scope, workout ID, target resource e redazione di sei valori fittizi. Queste prove NON corrispondono alla suite pytest di tutto il repository, al workflow GitHub Actions, a un collaudo reale Prefect/VPC o a una scrittura TrainingPeaks. Il repository privato non e' materializzato nel container, il runtime locale non ha Prefect e la CI GitHub sul nuovo HEAD non presenta run. Un mergeable Git clean non sostituisce CI e staging. Non effettuare merge, deploy, enable writer o update di TrainingPeaks in questo stato.
+
+NEXT GATE documentati nella Knowledge Base corrente: 21_TRAININGPEAKS_MCP_INTEGRATION_STATE e 03_OPEN_QUESTIONS_ROADMAP. Le autorizzazioni della richiesta originale non sono una autorizzazione a pubblicare altri workout o a cambiare configurazioni dei servizi attivi.
