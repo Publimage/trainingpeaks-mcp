@@ -31,6 +31,7 @@ KINDS: dict[str, tuple[str, str, str]] = {
     "plan.workout.patch": ("training_plan", "existing_item", "PROVEN_SCOPED"),
     "plan.workout.delete": ("training_plan", "existing_item", "UNVERIFIED_WRITER"),
     "plan.note.create": ("training_plan", "new_item", "PROVEN_SCOPED"),
+    "plan.note.patch": ("training_plan", "existing_item", "CONDITIONAL"),
     "plan.note.attachment.add": ("training_plan", "existing_item", "PROVEN_SCOPED"),
     "plan.note.attachment.retire": ("training_plan", "existing_item", "PROVEN_SCOPED"),
     "plan.strength.relocate": ("training_plan", "existing_item", "CONDITIONAL"),
@@ -117,24 +118,46 @@ def prepare_draft(items: list[dict[str, Any]], *, owner_id: int = OWNER,
         seen_ids.add(change_id)
         require(type(kind) is str and kind in KINDS, "KIND_UNSUPPORTED")
         container_kind, presence, _ = KINDS[kind]
-        require(type(target) is dict and set(target) == {
+        base_target_fields = {
             "provider", "owner_id", "container_kind", "container_id", "resource_id",
-        }, "TARGET_FIELDS")
+        }
+        require(type(target) is dict and
+                base_target_fields.issubset(target) and
+                set(target).issubset(base_target_fields | {"container_ref", "resource_ref"}),
+                "TARGET_FIELDS")
         require(target["provider"] == "trainingpeaks" and
                 type(target["owner_id"]) is int and target["owner_id"] == OWNER and
                 target["container_kind"] == container_kind, "TARGET_MISMATCH")
         container_id, resource_id = target["container_id"], target["resource_id"]
+        container_ref = target.get("container_ref")
+        resource_ref = target.get("resource_ref")
+        require(container_ref is None or
+                (type(container_ref) is str and TOKEN.fullmatch(container_ref) is not None),
+                "CONTAINER_REF_INVALID")
+        require(resource_ref is None or
+                (type(resource_ref) is str and TOKEN.fullmatch(resource_ref) is not None),
+                "RESOURCE_REF_INVALID")
+        # A reference is a dependency, not an invented provider ID. Any actual
+        # create/copy result must later be bound to a real ID by a separately
+        # approved adapter with independent provider readback.
         if presence == "new_container":
-            require(container_id is None and resource_id is None,
+            require(container_id is None and resource_id is None and
+                    container_ref is None and resource_ref is None,
                     "CREATE_REQUIRES_ABSENT_CONTAINER")
         elif presence == "existing_container":
-            require(_positive(container_id) and resource_id is None,
+            require(_positive(container_id) and resource_id is None and
+                    container_ref is None and resource_ref is None,
                     "COPY_REQUIRES_EXISTING_PLAN")
         elif presence == "new_item":
-            require(_positive(container_id) and resource_id is None,
-                    "CREATE_REQUIRES_EXISTING_CONTAINER")
+            require(resource_id is None and resource_ref is None and
+                    ((_positive(container_id) and container_ref is None) or
+                     (container_id is None and container_ref is not None)),
+                    "CREATE_REQUIRES_EXISTING_CONTAINER_OR_PARENT_REF")
         else:
-            require(_positive(container_id) and _positive(resource_id),
+            require(((_positive(container_id) and container_ref is None) or
+                     (container_id is None and container_ref is not None)) and
+                    ((_positive(resource_id) and resource_ref is None) or
+                     (resource_id is None and resource_ref is not None)),
                     "EXISTING_RESOURCE_ID_REQUIRED")
         before_sha = item["before_sha256"]
         # For a newly created resource the parent inventory snapshot is bound
@@ -150,8 +173,9 @@ def prepare_draft(items: list[dict[str, Any]], *, owner_id: int = OWNER,
         require(len(item["depends_on"]) == len(set(item["depends_on"])) and
                 change_id not in item["depends_on"], "DEPENDENCY_INVALID")
         # An independent operation must not silently affect the same object.
-        if resource_id is not None:
-            identity = (container_kind, container_id, resource_id)
+        if resource_id is not None or resource_ref is not None:
+            identity = (container_kind, container_id, container_ref,
+                        resource_id, resource_ref)
             prev = seen_resource.get(identity)
             require(prev is None or prev in item["depends_on"],
                     "SHARED_RESOURCE_REQUIRES_DEPENDENCY")
@@ -162,6 +186,40 @@ def prepare_draft(items: list[dict[str, Any]], *, owner_id: int = OWNER,
             "depends_on": list(item["depends_on"]),
             "adapter_readiness": KINDS[kind][2],
         })
+    # Resolve every symbolic dependency against its producer KIND and its
+    # parent scope, not only against a matching string identifier. A child of
+    # plan.create/plan.copy never silently lands on the source/last-used plan.
+    by_id = {item["id"]: item for item in normalized}
+    for child in normalized:
+        target = child["target"]
+        producer_id = target.get("container_ref")
+        if producer_id is not None:
+            parent = by_id.get(producer_id)
+            require(parent is not None and
+                    parent["kind"] in {"plan.create", "plan.copy"} and
+                    target["container_kind"] == "training_plan" and
+                    producer_id in child["depends_on"],
+                    "CONTAINER_REF_MUST_DEPEND_ON_PLAN_CREATE_OR_COPY")
+        resource_producer_id = target.get("resource_ref")
+        if resource_producer_id is not None:
+            producer = by_id.get(resource_producer_id)
+            expected_creator = {
+                "plan.workout.patch": "plan.workout.create",
+                "plan.workout.delete": "plan.workout.create",
+                "plan.note.patch": "plan.note.create",
+                "plan.note.attachment.add": "plan.note.create",
+                "plan.note.attachment.retire": "plan.note.create",
+                "library.workout.patch": "library.workout.create",
+                "athlete.workout.patch": "athlete.workout.create",
+                "athlete.workout.delete": "athlete.workout.create",
+            }.get(child["kind"])
+            require(producer is not None and expected_creator is not None and
+                    producer["kind"] == expected_creator and
+                    producer["target"]["container_kind"] == target["container_kind"] and
+                    producer["target"]["container_id"] == target["container_id"] and
+                    producer["target"].get("container_ref") == producer_id and
+                    resource_producer_id in child["depends_on"],
+                    "RESOURCE_REF_MUST_MATCH_PARENT_CREATOR")
     graph = {item["id"]: item["depends_on"] for item in normalized}
     require(all(ref in graph for refs in graph.values() for ref in refs),
             "DEPENDENCY_MISSING")
@@ -295,7 +353,10 @@ def compile_preview_changeset(draft: dict[str, Any],
         target = item["target"]
         require(target["container_kind"] in ("training_plan", "workout_library") and
                 _positive(target["container_id"]) and
-                _positive(target["resource_id"]), "PREVIEW_REQUIRES_EXISTING_ITEM")
+                _positive(target["resource_id"]) and
+                target.get("container_ref") is None and
+                target.get("resource_ref") is None,
+                "PREVIEW_REQUIRES_EXISTING_ITEM")
         image = after_images[item["id"]]
         require(type(image) is dict, "PREVIEW_AFTER_IMAGE_INVALID")
         after_sha = hashlib.sha256(canonical(image).encode()).hexdigest()
