@@ -2314,14 +2314,6 @@
       "scope": "trainingpeaks:coach:2116886:private-plan:689369:publish-58-endurance-native-and-51-reusable-library-templates",
       "script": "scripts/ironman_jobs/ironman_winter_endurance_native_publish.py",
       "test": "tests/test_ironman_winter_endurance_native_publish.py"
-    },
-    {
-      "name": "ironman_winter_endurance_local_qa_diagnostic",
-      "mode": "READ_ONLY",
-      "owner_id": 2116886,
-      "scope": "local:repo:ironman-winter-8w-endurance:test-diagnostic-only:no-provider",
-      "script": "scripts/ironman_jobs/ironman_winter_endurance_local_qa_diagnostic.py",
-      "test": "tests/test_chasing_plan_create.py"
     }
   ]
 }
