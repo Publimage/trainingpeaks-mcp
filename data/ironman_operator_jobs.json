@@ -2314,6 +2314,14 @@
       "scope": "trainingpeaks:coach:2116886:private-plan:689369:publish-58-endurance-native-and-51-reusable-library-templates",
       "script": "scripts/ironman_jobs/ironman_winter_endurance_native_publish.py",
       "test": "tests/test_ironman_winter_endurance_native_publish.py"
+    },
+    {
+      "name": "winter8_strength_warmup_italian_20261025",
+      "mode": "GUARDED_WRITE",
+      "owner_id": 2116886,
+      "scope": "trainingpeaks:coach:2116886:library:3891875-and-private-plan:689369:warmup4-italian16-inplace-only",
+      "script": "scripts/ironman_jobs/winter8_strength_warmup_italian_20261025.py",
+      "test": "tests/test_winter8_strength_warmup_italian_20261025.py"
     }
   ]
 }
