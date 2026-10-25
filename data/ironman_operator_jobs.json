@@ -2274,6 +2274,54 @@
       "scope": "trainingpeaks:public-plan:684602:readme2653899:description-only-current-guides-notice-retain-five-pdfs-20261022",
       "script": "scripts/ironman_jobs/intermediate_readme_current_guides_20261022.py",
       "test": "tests/test_intermediate_readme_current_guides_20261022.py"
+    },
+    {
+      "name": "reviewed_note_attachment_cleanup_preview",
+      "mode": "READ_ONLY",
+      "owner_id": 2116886,
+      "scope": "trainingpeaks:plan:684602:native-note:2653899:reviewed-attachment-cleanup-preview",
+      "script": "scripts/ironman_jobs/reviewed_note_attachment_cleanup_preview.py",
+      "test": "tests/test_reviewed_note_attachment_cleanup.py"
+    },
+    {
+      "name": "reviewed_note_attachment_cleanup_publish",
+      "mode": "GUARDED_WRITE",
+      "owner_id": 2116886,
+      "scope": "trainingpeaks:plan:684602:native-note:2653899:delete-only-obsolete-pdf-attachments-95193-95228-keep-95194-98909-98910",
+      "script": "scripts/ironman_jobs/reviewed_note_attachment_cleanup_publish.py",
+      "test": "tests/test_reviewed_note_attachment_cleanup.py"
+    },
+    {
+      "name": "ironman_strength_library_publish",
+      "mode": "GUARDED_WRITE",
+      "owner_id": 2116886,
+      "scope": "trainingpeaks:coach:2116886:library:3891875:publish-16-reusable-native-strength-manifest-only",
+      "script": "scripts/ironman_jobs/ironman_strength_library_publish.py",
+      "test": "tests/test_ironman_strength_library_publish.py"
+    },
+    {
+      "name": "ironman_native_strength_plan_assembly",
+      "script": "scripts/ironman_jobs/ironman_native_strength_plan_assembly.py",
+      "test": "tests/test_ironman_native_strength_plan_assembly.py",
+      "mode": "GUARDED_WRITE",
+      "scope": "trainingpeaks:coach:2116886:private-plan:winter-foundation-8w:create-and-attach-16-native-strength",
+      "owner_id": 2116886
+    },
+    {
+      "name": "ironman_winter_endurance_native_publish",
+      "mode": "GUARDED_WRITE",
+      "owner_id": 2116886,
+      "scope": "trainingpeaks:coach:2116886:private-plan:689369:publish-58-endurance-native-and-51-reusable-library-templates",
+      "script": "scripts/ironman_jobs/ironman_winter_endurance_native_publish.py",
+      "test": "tests/test_ironman_winter_endurance_native_publish.py"
+    },
+    {
+      "name": "winter8_strength_warmup_italian_20261025",
+      "mode": "GUARDED_WRITE",
+      "owner_id": 2116886,
+      "scope": "trainingpeaks:coach:2116886:library:3891875-and-private-plan:689369:warmup4-italian16-inplace-only",
+      "script": "scripts/ironman_jobs/winter8_strength_warmup_italian_20261025.py",
+      "test": "tests/test_winter8_strength_warmup_italian_20261025.py"
     }
   ]
 }

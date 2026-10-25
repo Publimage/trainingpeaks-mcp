@@ -217,3 +217,26 @@ def test_more_than_six_provider_windows_refused(tmp_path):
                       for month in range(1, 8)]
     with pytest.raises(PlanPatchStop, match="WINDOWS_INVALID"):
         load_config(write_conf(tmp_path, cfg))
+
+
+def test_independent_requested_plan_binding_rejects_leftover_manifest():
+    """Current WINTER target cannot run an old Intermediate manifest."""
+    from scripts.ironman_jobs.reviewed_plan_patch_pipeline import require_explicit_target
+
+    cfg = {"manifest": {"plan_id": 684602}}
+    with pytest.raises(PlanPatchStop, match="STOP_TARGET_MISMATCH"):
+        require_explicit_target(cfg, "689369")
+    with pytest.raises(PlanPatchStop, match="REQUEST_TARGET_PLAN_ID_REQUIRED"):
+        require_explicit_target(cfg, None)
+    require_explicit_target(cfg, "684602")
+
+
+def test_target_binding_requires_clean_numeric_plan_id():
+    from scripts.ironman_jobs.reviewed_plan_patch_pipeline import require_explicit_target
+
+    cfg = {"manifest": {"plan_id": 689369}}
+    with pytest.raises(PlanPatchStop, match="REQUEST_TARGET_PLAN_ID_REQUIRED"):
+        require_explicit_target(cfg, "689369 OTHER")
+    with pytest.raises(PlanPatchStop, match="STOP_TARGET_MISMATCH"):
+        require_explicit_target(cfg, "684602")
+    require_explicit_target(cfg, "689369")
