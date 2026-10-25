@@ -163,3 +163,26 @@ def test_operator_schema_declares_live_verified_target_plan_id():
     tool = next(t for t in TOOLS if t.name == "tp_ironman_operator")
     assert tool.input_schema["properties"]["target_plan_id"]["type"] == "integer"
     assert tool.input_schema["properties"]["target_plan_id"]["minimum"] == 1
+
+
+def test_reviewed_manifest_mismatch_stops_before_any_provider_job(monkeypatch, tmp_path):
+    _setup(monkeypatch, tmp_path)
+    (tmp_path / "data").mkdir()
+    manifest = tmp_path / "data/ironman_reviewed_plan_patch.json"
+    manifest.write_text('{"configured":true,"manifest":{"plan_id":684602}}')
+    with pytest.raises(op.BridgeStop, match="STOP_TARGET_MISMATCH"):
+        op._check_reviewed_manifest_target("reviewed_plan_patch_publish", 689369)
+    with pytest.raises(op.BridgeStop, match="STOP_TARGET_MISMATCH"):
+        op._check_reviewed_manifest_target("reviewed_plan_patch_preview", 689369)
+    op._check_reviewed_manifest_target("reviewed_plan_patch_preview", 684602)
+    op._check_reviewed_manifest_target("reviewed_plan_patch_publish", 684602)
+
+
+def test_reviewed_manifest_inactive_must_not_publish(monkeypatch, tmp_path):
+    _setup(monkeypatch, tmp_path)
+    (tmp_path / "data").mkdir()
+    manifest = tmp_path / "data/ironman_reviewed_plan_patch.json"
+    manifest.write_text('{"configured":false}')
+    op._check_reviewed_manifest_target("reviewed_plan_patch_preview", 689369)
+    with pytest.raises(op.BridgeStop, match="REVIEWED_MANIFEST_NOT_ACTIVE"):
+        op._check_reviewed_manifest_target("reviewed_plan_patch_publish", 689369)
