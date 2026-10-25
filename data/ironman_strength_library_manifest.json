@@ -696,7 +696,7 @@
     },
     {
       "canonical_uid": "IMWIN8-W05-FRI-STRENGTH-01",
-      "title": "FORZA | Pressa mono e upper body 55 min",
+      "title": "FORZA | Step-up mono e upper body 55 min",
       "objective": "Richiamo unilaterale moderato, senza compromissione di bici lunga e corsa.",
       "planned_duration_seconds": 3300,
       "warmup_minutes": 8,
@@ -764,7 +764,9 @@
           "rest_before_next_exercise_seconds": 0,
           "coach_notes": ""
         }
-      ]
+      ],
+      "previous_native_title": "FORZA | Pressa mono e upper body 55 min",
+      "previous_native_id": "338410"
     },
     {
       "canonical_uid": "IMWIN8-W06-WED-STRENGTH-01",
@@ -984,7 +986,7 @@
     },
     {
       "canonical_uid": "IMWIN8-W07-FRI-STRENGTH-01",
-      "title": "FORZA | Pressa mono di richiamo 55 min",
+      "title": "FORZA | Step-up mono di richiamo 55 min",
       "objective": "Seconda palestra standard, limitare costo muscolare e proteggere sabato/domenica.",
       "planned_duration_seconds": 3300,
       "warmup_minutes": 8,
@@ -1064,7 +1066,9 @@
           "rest_before_next_exercise_seconds": 0,
           "coach_notes": ""
         }
-      ]
+      ],
+      "previous_native_title": "FORZA | Pressa mono di richiamo 55 min",
+      "previous_native_id": "338414"
     },
     {
       "canonical_uid": "IMWIN8-W08-WED-STRENGTH-01",
