@@ -197,7 +197,7 @@ async def main():
   must(not p.is_error and isinstance(p.data,dict) and
        p.data.get("planId")==PLAN and p.data.get("planPersonId")==PERSON and
        p.data.get("ownerPersonId")==OWNER and p.data.get("title")==PLAN_NAME and
-       p.data.get("workoutCount")==16 and p.data.get("weekCount")==8 and
+       p.data.get("workoutCount")==74 and p.data.get("weekCount")==8 and
        p.data.get("isPublic") is False and p.data.get("price") in (0,None),
        "WRONG_PRIVATE_PLAN")
   _,token,err=await _access(c)
@@ -292,7 +292,7 @@ async def main():
          pwork.get("prescribedDurationInSeconds")==lw.get("prescribedDurationInSeconds"),
          "FINAL_DOUBLE_READBACK_DRIFT")
    last=await c.get(f"/plans/v1/plans/{PLAN}")
-   must(not last.is_error and last.data.get("workoutCount")==16 and
+   must(not last.is_error and last.data.get("workoutCount")==74 and
         last.data.get("isPublic") is False and last.data.get("weekCount")==8,
         "FINAL_PLAN_SCOPE")
    log(stage="WINTER8_WARMUP_AND_ITALIAN_16_OF_16_PROVIDER_VERIFIED",
