@@ -87,7 +87,7 @@ async def main()->int:
                     data=response.json() if response.status_code==200 else {}
                     items=data.get("data") if isinstance(data,dict) else data
                     compact=[{"id":x.get("id"),"title":x.get("title"),
-                              "time":{k:w.get(k) for k in ("totalTimePlanned","durationPlanned","plannedDurationInSeconds","durationInSeconds","timePlanned") if w.get(k) is not None}}
+                              "time":{k:w.get(k) for k in ("totalTimePlanned","durationPlanned","plannedDurationInSeconds","prescribedDurationInSeconds","durationInSeconds","timePlanned") if w.get(k) is not None}}
                              for x in (items if isinstance(items,list) else []) if isinstance(x,dict)
                              for w in [x.get("workout") or {}] if isinstance(w,dict)]
                     print(json.dumps({"stage":"NATIVE_LIBRARY_GET","library":lib,"http":response.status_code,
