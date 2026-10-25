@@ -257,3 +257,62 @@ class DraftStore:
         row = self.db.execute("SELECT payload FROM drafts WHERE request_id=?",
                               (request_id,)).fetchone()
         return json.loads(row[0]) if row else None
+
+# This is the subset of the EXISTING universal engine that has read-only
+# adapters. A prepared request for create/delete is deliberately NOT promoted
+# to an executable changeset just because its target was resolved.
+PREVIEW_KINDS = frozenset({
+    "plan.workout.patch", "plan.note.patch", "plan.note.attachment.add",
+    "plan.note.attachment.retire", "plan.strength.relocate",
+    "library.workout.patch",
+})
+
+
+def compile_preview_changeset(draft: dict[str, Any],
+                              after_images: dict[str, dict[str, Any]],
+                              *, pinned_revision: str) -> dict[str, Any]:
+    """Build one multi-plan ChangeSetV1 preview with NO per-request Git commit.
+
+    No approval token is produced. Before hashes come from a *freshly
+    discovered* provider record at draft creation and are rechecked by the
+    existing adapter during preview. Provider writers remain disabled.
+    """
+    require(type(draft) is dict and draft.get("state") == "DRAFT_ONLY" and
+            draft.get("publication_authorized") is False,
+            "PREVIEW_DRAFT_REQUIRED")
+    require(type(pinned_revision) is str and
+            re.fullmatch(r"[a-f0-9]{40}", pinned_revision) is not None,
+            "PINNED_REVISION_REQUIRED")
+    items = draft.get("items")
+    require(type(items) is list and items, "PREVIEW_ITEMS_REQUIRED")
+    require(type(after_images) is dict and
+            set(after_images) == {x["id"] for x in items},
+            "PREVIEW_AFTER_IMAGES_INCOMPLETE")
+    converted = []
+    for item in items:
+        kind = item["kind"]
+        require(kind in PREVIEW_KINDS, "PREVIEW_ADAPTER_NOT_RELEASED")
+        target = item["target"]
+        require(target["container_kind"] in ("training_plan", "workout_library") and
+                _positive(target["container_id"]) and
+                _positive(target["resource_id"]), "PREVIEW_REQUIRES_EXISTING_ITEM")
+        image = after_images[item["id"]]
+        require(type(image) is dict, "PREVIEW_AFTER_IMAGE_INVALID")
+        after_sha = hashlib.sha256(canonical(image).encode()).hexdigest()
+        require(after_sha != item["before_sha256"], "PREVIEW_NO_CHANGE")
+        converted.append({
+            "id": item["id"], "kind": kind, "target": dict(target),
+            "before_sha256": item["before_sha256"], "after_sha256": after_sha,
+            "depends_on": list(item["depends_on"]),
+            "payload": item["payload"],
+        })
+    manifest = {
+        "schema": "IRONMAN_CHANGESET_V1",
+        "request_id": draft["request_id"], "owner_id": OWNER,
+        "reviewed_revision": pinned_revision,
+        "approval_scope": "PREVIEW_ONLY:" + draft["request_id"],
+        "changes": converted,
+    }
+    require(len(canonical(manifest).encode()) <= MAX_BYTES, "PREVIEW_TOO_LARGE")
+    return {"manifest": manifest, "state": "PREVIEW_ONLY",
+            "provider_writes": 0, "publication_authorized": False}
