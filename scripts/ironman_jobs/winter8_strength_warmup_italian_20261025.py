@@ -114,6 +114,39 @@ def translate(text):
  ]:t=t.replace(old,new)
  return t
 
+def italian_instructions(item):
+ obj=item.get("objective") or ""
+ for old,new in [
+  ("Adattamento anatomico, apprendimento dei pattern","Apprendimento degli schemi di movimento"),
+  ("pattern","schemi di movimento"),
+  ("DOMS","indolenzimento muscolare"),
+  ("upper body","parte superiore del corpo"),
+  ("upper","parte superiore"),
+  ("lift guida","esercizio principale"),
+  ("weekend","fine settimana"),
+  ("W05 ingresso terza bici:","in presenza di altri allenamenti,"),
+  ("ingresso W09","nuova fase di lavoro"),
+  ("mentre entra la terza corsa","anche quando cresce il volume di resistenza"),
+  ("prima del lungo bici","prima di una seduta di resistenza lunga"),
+  ("proteggere sabato/domenica","limitare la fatica residua"),
+ ]:obj=obj.replace(old,new)
+ minutes=int(item["warmup_minutes"])
+ text=(
+  "OBIETTIVO\n"+obj+"\n\n"
+  "RISCALDAMENTO\n"+str(minutes)+" minuti indicativi, inclusi gli spostamenti: "
+  "caviglie, anche, colonna e scapole con elastico leggero. "
+  "Prima degli esercizi pesanti eseguire serie progressive di avvicinamento, senza fatica.\n\n"
+  "ESERCIZI DI FORZA\nSeguire serie, ripetizioni, intensita e recuperi nelle "
+  "note di ogni esercizio. I margini di ripetizioni (RIR) e la percezione "
+  "dello sforzo (RPE) guidano il carico. Evitare il cedimento.\n\n"
+  "ESERCIZI PER I PIEDI\nEsercizi per arco plantare, dita ed equilibrio "
+  "nel blocco finale; la durata e inclusa nel totale.\n\n"
+  "ALIMENTAZIONE\nCurare idratazione ed energia disponibile; "
+  "assumere proteine nell'arco della giornata."
+ )
+ must(len(text)<=1000,"PROVIDER_INSTRUCTIONS_OVER_1000")
+ return text
+
 def apply(workout,item):
  w=copy.deepcopy(workout)
  old_title=item["title"]
@@ -146,7 +179,7 @@ def apply(workout,item):
  blocks.append(last)
  w["blocks"]=blocks
  w["title"]=name
- w["instructions"]=translate(w.get("instructions"))
+ w["instructions"]=italian_instructions(item)
  w["snapshot"]={**(w.get("snapshot") or {}),**_recount(blocks)}
  return w
 
