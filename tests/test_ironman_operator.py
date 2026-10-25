@@ -293,3 +293,34 @@ def test_reviewed_job_passes_only_verified_request_identity_to_child(monkeypatch
     assert captured["env"]["IRONMAN_REQUEST_TARGET_SCOPE"] == scope
     assert captured["env"]["IRONMAN_REQUEST_WORKOUT_IDS_JSON"] == "[11,13]"
     assert not any("PASSWORD" in k or "TOKEN" in k for k in captured["env"])
+
+
+
+def test_operator_stdout_never_returns_provider_credentials(monkeypatch, tmp_path):
+    job = _setup(monkeypatch, tmp_path)
+    revision = "a" * 40
+
+    def fake(*args, timeout=30):
+        if args[:3] == ("git", "remote", "get-url"):
+            value = "https://github.com/Publimage/trainingpeaks-mcp.git\n"
+        elif args[:3] == ("git", "rev-parse", "FETCH_HEAD"):
+            value = revision + "\n"
+        elif args[0] == str(tmp_path / "python") and args[1].endswith(".py"):
+            value = (
+                "Authorization: Bearer DEMO_OPERATOR_AUTH\n"
+                "Cookie: session=DEMO_OPERATOR_COOKIE; mode=secret\n"
+                "token=DEMO_OPERATOR_TOKEN\n"
+                "SAFE_STATUS: PASS\n"
+            )
+        else:
+            value = ""
+        return subprocess.CompletedProcess(args, 0, value, "")
+
+    monkeypatch.setattr(op, "_run", fake)
+    result = op._execute_blocking(job, revision, "execute", None)
+    assert result["success"] is True
+    assert result["stage"] == "DONE"
+    for token in ("DEMO_OPERATOR_AUTH", "DEMO_OPERATOR_COOKIE",
+                  "DEMO_OPERATOR_TOKEN"):
+        assert token not in result["output"]
+    assert "SAFE_STATUS: PASS" in result["output"]
