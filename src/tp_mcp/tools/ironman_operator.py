@@ -177,6 +177,16 @@ def _check_reviewed_manifest_request(job: str, requested_scope: str | None,
     """
     if job not in REVIEWED_PLAN_JOBS:
         return
+    try:
+        cfg = json.loads((REPO / "data/ironman_reviewed_plan_patch.json").read_text(encoding="utf-8"))
+    except (OSError, ValueError) as exc:
+        raise BridgeStop("REVIEWED_MANIFEST_UNREADABLE") from exc
+    if cfg.get("configured") is False:
+        # Preserve the existing inactive, provider-free preview health check.
+        # The separate target gate still blocks inactive publish.
+        return
+    if cfg.get("configured") is not True:
+        raise BridgeStop("REVIEWED_MANIFEST_INVALID")
     if not isinstance(requested_scope, str) or not requested_scope.startswith("trainingpeaks:plan:"):
         raise BridgeStop("REQUEST_SCOPE_REQUIRED_FOR_REVIEWED_PUBLISHER")
     ids = requested_workout_ids
@@ -184,13 +194,6 @@ def _check_reviewed_manifest_request(job: str, requested_scope: str | None,
             or any(type(x) is not int or x <= 0 for x in ids)
             or len(set(ids)) != len(ids)):
         raise BridgeStop("REQUEST_WORKOUT_IDS_REQUIRED_FOR_REVIEWED_PUBLISHER")
-    try:
-        cfg = json.loads((REPO / "data/ironman_reviewed_plan_patch.json").read_text(encoding="utf-8"))
-    except (OSError, ValueError) as exc:
-        raise BridgeStop("REVIEWED_MANIFEST_UNREADABLE") from exc
-    if cfg.get("configured") is not True:
-        # The separate target gate still blocks publish on an inactive batch.
-        return
     manifest = cfg.get("manifest")
     if not isinstance(manifest, dict):
         raise BridgeStop("REVIEWED_MANIFEST_INVALID")
