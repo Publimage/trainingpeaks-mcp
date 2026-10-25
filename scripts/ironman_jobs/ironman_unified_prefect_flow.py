@@ -10,6 +10,7 @@ Do not duplicate either for an individual plan, workout or attachment.
 from __future__ import annotations
 
 import json
+import os
 from pathlib import Path
 from typing import Any
 
@@ -20,6 +21,9 @@ from scripts.ironman_jobs.ironman_unified_changeset_engine import (
 )
 from scripts.ironman_jobs.ironman_unified_trainingpeaks_reads import (
     create_read_registry,
+)
+from scripts.ironman_jobs.ironman_dynamic_request_store import (
+    DraftStore, prepare_draft,
 )
 
 MAX_MANIFEST_BYTES = 2_000_000
@@ -111,6 +115,31 @@ def unified_changeset_flow(
     NOTE: this deployment is preview-only, not a hidden alternate publishing
     route. A separate reviewed release may enable normal approved writers.
     """
+    # One shared flow now accepts an operation draft from any authorized chat.
+    # This prepares a persistent request only. It NEVER reads/writes provider
+    # data, declares approval, or selects targets from a previous manifest.
+    if mode == "prepare":
+        if type(manifest) is not dict or set(manifest) not in (
+            {"schema", "items"}, {"schema", "items", "request_key"}
+        ) or manifest.get("schema") != "IRONMAN_OPERATION_INPUT_V1":
+            raise ChangeStop("OPERATION_INPUT_SHAPE")
+        store_path = os.environ.get("IRONMAN_OPERATION_DRAFT_STORE")
+        if not store_path:
+            raise ChangeStop("DRAFT_STORE_NOT_CONFIGURED")
+        draft = prepare_draft(
+            manifest["items"], request_key=manifest.get("request_key"),
+        )
+        store = DraftStore(Path(store_path))
+        try:
+            receipt = store.store(draft)
+        finally:
+            store.close()
+        return {
+            **receipt, "adapter_readiness": {
+                item["id"]: item["adapter_readiness"] for item in draft["items"]
+            },
+            "publication_enabled": False, "source": "request_draft_local_only",
+        }
     if mode != "preview":
         raise ChangeStop("PUBLISHING_NOT_YET_ENABLED_FOR_UNIFIED_FLOW")
     if read_transport not in {"local", "private_bridge"}:
