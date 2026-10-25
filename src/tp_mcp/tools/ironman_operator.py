@@ -134,6 +134,28 @@ def _check_job(job: str, operation: str, ack_scope: str | None) -> dict[str, Any
     return spec
 
 
+def _check_reviewed_manifest_target(job: str, target_plan_id: int | None) -> None:
+    """Independent request-to-manifest gate. Never infer the target from JSON."""
+    if job not in REVIEWED_PLAN_JOBS:
+        return
+    if type(target_plan_id) is not int or target_plan_id <= 0:
+        raise BridgeStop("TARGET_PLAN_ID_REQUIRED_FOR_REVIEWED_PUBLISHER")
+    path = REPO / "data/ironman_reviewed_plan_patch.json"
+    try:
+        cfg = json.loads(path.read_text(encoding="utf-8"))
+    except (OSError, ValueError) as exc:
+        raise BridgeStop("REVIEWED_MANIFEST_UNREADABLE") from exc
+    if cfg.get("configured") is False:
+        if job == "reviewed_plan_patch_publish":
+            raise BridgeStop("REVIEWED_MANIFEST_NOT_ACTIVE")
+        return
+    if cfg.get("configured") is not True:
+        raise BridgeStop("REVIEWED_MANIFEST_INVALID")
+    actual = (cfg.get("manifest") or {}).get("plan_id")
+    if actual != target_plan_id:
+        raise BridgeStop("STOP_TARGET_MISMATCH")
+
+
 def _execute_blocking(job: str, revision: str, operation: str, ack_scope: str | None,
                       target_plan_id: int | None = None) -> dict[str, Any]:
     if not HEX40.fullmatch(revision):
@@ -173,6 +195,8 @@ def _execute_blocking(job: str, revision: str, operation: str, ack_scope: str | 
                 "message": "Commit verified; execute will check out, test and run the approved job.",
             }
         spec = _check_job(job, operation, ack_scope)
+        # Check against the request before creating a write receipt or invoking a job.
+        _check_reviewed_manifest_target(job, target_plan_id)
         kind = spec["mode"]
         command = [str(VENV_PYTHON), "-m", "pytest", "-q", spec["test"]]
         _require_ok(_run(*command, timeout=125), "Approved job tests")
