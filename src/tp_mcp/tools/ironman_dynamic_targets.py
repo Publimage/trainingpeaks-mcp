@@ -12,7 +12,9 @@ from tp_mcp.client.context import athlete_override
 from tp_mcp.ironman_dynamic_identity import TargetStop
 from tp_mcp.ironman_dynamic_resolution import resolve_live_request
 from tp_mcp.tools.library import tp_get_libraries
-from tp_mcp.tools.plans import tp_get_training_plan_workouts, tp_list_training_plans
+from tp_mcp.tools.plans import (
+    tp_get_training_plan_notes, tp_get_training_plan_workouts, tp_list_training_plans,
+)
 from tp_mcp.tools.profile import tp_list_athletes
 from tp_mcp.tools.workouts import tp_get_workouts
 
@@ -50,6 +52,7 @@ async def tp_ironman_resolve_target(
             read_athletes=tp_list_athletes,
             read_libraries=tp_get_libraries,
             read_plan_workouts=tp_get_training_plan_workouts,
+            read_plan_notes=tp_get_training_plan_notes,
             read_athlete_workouts=_athlete_calendar_workouts,
             plan=plan_selector, athlete=athlete_selector,
             week=week, weekday=weekday,
