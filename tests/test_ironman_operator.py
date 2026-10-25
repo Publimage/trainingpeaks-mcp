@@ -130,3 +130,36 @@ def test_execute_without_any_shell_injection(monkeypatch, tmp_path):
     assert "SCRITTURE_PROVIDER: 0" in result["output"]
     assert all(isinstance(a, str) for call in calls for a in call)
     assert any(call[:3] == ("git", "checkout", "--detach") for call in calls)
+
+
+def test_reviewed_plan_jobs_require_independent_plan_id_before_checkout(monkeypatch, tmp_path):
+    _setup(monkeypatch, tmp_path)
+    revision = "a" * 40
+    with pytest.raises(op.BridgeStop, match="TARGET_PLAN_ID_REQUIRED"):
+        op._execute_blocking("reviewed_plan_patch_publish", revision, "execute", None)
+    with pytest.raises(op.BridgeStop, match="TARGET_PLAN_ID_REQUIRED"):
+        op._execute_blocking("reviewed_plan_patch_preview", revision, "execute", None)
+    with pytest.raises(op.BridgeStop, match="TARGET_PLAN_ID_REQUIRED"):
+        op._execute_blocking("reviewed_plan_patch_publish", revision, "execute", None, True)
+    with pytest.raises(op.BridgeStop, match="TARGET_PLAN_ID_REQUIRED"):
+        op._execute_blocking("reviewed_plan_patch_publish", revision, "execute", None, -1)
+
+
+def test_plan_id_is_the_only_extra_environment_variable(monkeypatch, tmp_path):
+    _setup(monkeypatch, tmp_path)
+    monkeypatch.setenv("UNTRUSTED_TARGET", "684602")
+    captured = {}
+    def fake_run(args, **kwargs):
+        captured["env"] = kwargs["env"]
+        return subprocess.CompletedProcess(args, 0, "", "")
+    monkeypatch.setattr(op.subprocess, "run", fake_run)
+    op._run("python", "a.py", request_plan_id=689369)
+    assert captured["env"]["IRONMAN_REQUEST_TARGET_PLAN_ID"] == "689369"
+    assert "UNTRUSTED_TARGET" not in captured["env"]
+
+
+def test_operator_schema_declares_live_verified_target_plan_id():
+    from tp_mcp.server import TOOLS
+    tool = next(t for t in TOOLS if t.name == "tp_ironman_operator")
+    assert tool.input_schema["properties"]["target_plan_id"]["type"] == "integer"
+    assert tool.input_schema["properties"]["target_plan_id"]["minimum"] == 1
