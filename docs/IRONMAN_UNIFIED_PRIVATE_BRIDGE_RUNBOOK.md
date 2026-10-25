@@ -45,3 +45,12 @@ A separately reviewed release can wire the original Proven Path adapters ONCE fo
 ## Status
 
 **Code and CI candidate in PR 18; not merged, not reloaded, not yet smoke-tested on staging, no real TP writes.** This contract is a controlled implementation checkpoint, not a deployment authorization.
+
+
+## Scope of static resource_ids: staging only, not the future product boundary
+
+The mandatory resource_ids in allowed_unified_reads are deliberately a *fixed, opt-in read-only STAGING canary* safety boundary. They are not a permanent list of workout IDs, athletes or plans allowed for all future ChatGPT requests. The final service must discover NEW, previously unseen accessible TrainingPeaks resources dynamically in response to each authorized current request without an administrator editing private_bridge.json or pushing a GitHub manifest for each batch.
+
+To reach that state safely, design a separate reviewed **dynamic provider discovery and request-scoped authorization capability** within the existing authenticated TP MCP host/bridge, not a general API proxy. It must re-check account identity, coach–athlete association, permissions, target kind/IDs and request operation; accept only typed requests; issue bounded short-lived scopes; reject wrong plan/athlete, ambiguous targets and stale/replayed scopes; keep tokens/URLs and provider credentials on the TP host. Protect against cross-session/request substitution with durable request_id and provider readback.
+
+Do NOT skip the current allowlist or reinterpret a security 403 as a generic transport error. Until dynamic security is independently reviewed/tested and deployed, PR18 only supports canary resources expressly allowlisted. Do not describe its read bridge as able to publish to any TrainingPeaks resource. This is an OPEN RELEASE GATE, not a configuration change to perform now.
