@@ -18,11 +18,19 @@ from pathlib import Path
 
 from tp_mcp.client import TPClient
 from tp_mcp.tools.library import _ensure_structure_preview
-from scripts.ironman_jobs.chasing_swim_rebuild_20261018 import (
-    _group as swimming_group,
-    structure_for as swimming_builder,
-    audit_native_swim_rests as audit_swimming,
-)
+try:
+    from scripts.ironman_jobs.chasing_swim_rebuild_20261018 import (
+        _group as swimming_group,
+        structure_for as swimming_builder,
+        audit_native_swim_rests as audit_swimming,
+    )
+except ModuleNotFoundError:
+    # Direct execution by the revision-pinned operator adds this script folder.
+    from chasing_swim_rebuild_20261018 import (
+        _group as swimming_group,
+        structure_for as swimming_builder,
+        audit_native_swim_rests as audit_swimming,
+    )
 
 ROOT=Path(__file__).resolve().parents[2]
 DATA=ROOT/"data/ironman_winter_8w_endurance_native.json"
