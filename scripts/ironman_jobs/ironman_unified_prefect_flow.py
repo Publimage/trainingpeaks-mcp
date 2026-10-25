@@ -23,7 +23,7 @@ from scripts.ironman_jobs.ironman_unified_trainingpeaks_reads import (
     create_read_registry,
 )
 from scripts.ironman_jobs.ironman_dynamic_request_store import (
-    DraftStore, prepare_draft,
+    DraftStore, prepare_draft, compile_preview_changeset,
 )
 
 MAX_MANIFEST_BYTES = 2_000_000
@@ -140,6 +140,39 @@ def unified_changeset_flow(
             },
             "publication_enabled": False, "source": "request_draft_local_only",
         }
+    if mode == "preview_draft":
+        # A stored operation request is NOT an authorization. Re-read it from
+        # the private request store, verify its content hash and bind a second,
+        # independent current-request target list before any provider I/O.
+        if read_transport not in {"local", "private_bridge"}:
+            raise ChangeStop("UNIFIED_UNSUPPORTED_READ_TRANSPORT")
+        if type(manifest) is not dict or set(manifest) != {
+            "schema", "request_id", "after_images", "pinned_revision"
+        } or manifest.get("schema") != "IRONMAN_DRAFT_PREVIEW_INPUT_V1":
+            raise ChangeStop("DRAFT_PREVIEW_INPUT_SHAPE")
+        store_path = os.environ.get("IRONMAN_OPERATION_DRAFT_STORE")
+        if not store_path:
+            raise ChangeStop("DRAFT_STORE_NOT_CONFIGURED")
+        store = DraftStore(Path(store_path))
+        try:
+            draft = store.get(manifest["request_id"])
+        finally:
+            store.close()
+        if draft is None:
+            raise ChangeStop("DRAFT_REQUEST_NOT_FOUND")
+        compiled = compile_preview_changeset(
+            draft, manifest["after_images"],
+            pinned_revision=manifest["pinned_revision"],
+        )
+        preview_manifest = compiled["manifest"]
+        validate_change_request(preview_manifest)
+        require_requested_targets(preview_manifest, requested_targets)
+        result = preview_change_request(preview_manifest, ledger_path, read_transport)
+        result["request_id"] = draft["request_id"]
+        result["approval_scope"] = preview_manifest["approval_scope"]
+        result["publication_enabled"] = False
+        result["provider_writes"] = 0
+        return result
     if mode != "preview":
         raise ChangeStop("PUBLISHING_NOT_YET_ENABLED_FOR_UNIFIED_FLOW")
     if read_transport not in {"local", "private_bridge"}:
