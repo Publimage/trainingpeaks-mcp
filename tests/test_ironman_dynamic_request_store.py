@@ -174,3 +174,123 @@ def test_compiler_rejects_missing_after_images_and_bad_revision():
         compile_preview_changeset(draft, {}, pinned_revision="a"*40)
     with pytest.raises(DraftStop, match="PINNED_REVISION_REQUIRED"):
         compile_preview_changeset(draft, {"a01": {"title": "x"}}, pinned_revision="current")
+
+
+def test_one_request_creates_plan_then_workouts_and_native_note_with_pdf():
+    new_plan = item("plan.create", id="create-plan", container_id=None,
+                    resource_id=None, payload={"title": "New 2027 plan"})
+    workout_1 = item("plan.workout.create", id="run01", container_id=None,
+                     resource_id=None, depends_on=["create-plan"],
+                     payload={"title": "Easy run"})
+    workout_1["target"]["container_ref"] = "create-plan"
+    workout_2 = item("plan.workout.create", id="swim01", container_id=None,
+                     resource_id=None, depends_on=["create-plan"],
+                     payload={"title": "Swim technique"})
+    workout_2["target"]["container_ref"] = "create-plan"
+    new_note = item("plan.note.create", id="note01", container_id=None,
+                    resource_id=None, depends_on=["create-plan"],
+                    payload={"title": "First week instructions"})
+    new_note["target"]["container_ref"] = "create-plan"
+    pdf = item("plan.note.attachment.add", id="pdf01", container_id=None,
+               resource_id=None, depends_on=["create-plan", "note01"],
+               payload={"filename": "instructions.pdf", "sha256": h("pdf bytes")})
+    pdf["target"].update({"container_ref": "create-plan", "resource_ref": "note01"})
+    draft = prepare_draft([new_plan, workout_1, workout_2, new_note, pdf])
+    assert len(draft["items"]) == 5
+    assert all(i["target"]["container_id"] is None for i in draft["items"])
+    assert all(i["target"]["resource_id"] is None for i in draft["items"])
+    assert draft["items"][-1]["target"]["resource_ref"] == "note01"
+    assert draft["items"][-1]["adapter_readiness"] == "PROVEN_SCOPED"
+    assert draft["provider_writes"] == 0
+    return draft
+
+
+def test_plan_copy_can_be_parent_for_new_session():
+    duplicate = item("plan.copy", id="copy-plan", container_id=501,
+                     resource_id=None, payload={"title": "Independent copy"})
+    session = item("plan.workout.create", id="run001", container_id=None,
+                   resource_id=None, depends_on=["copy-plan"])
+    session["target"]["container_ref"] = "copy-plan"
+    assert prepare_draft([duplicate, session])["items"][1]["target"]["container_ref"] == "copy-plan"
+
+
+def test_child_must_explicitly_depend_on_exact_plan_creator():
+    new_plan = item("plan.create", id="new-plan", container_id=None, resource_id=None)
+    child = item("plan.workout.create", id="new-workout", container_id=None,
+                 resource_id=None)
+    child["target"]["container_ref"] = "new-plan"
+    with pytest.raises(DraftStop, match="CONTAINER_REF_MUST_DEPEND_ON_PLAN_CREATE_OR_COPY"):
+        prepare_draft([new_plan, child])
+    child["depends_on"] = ["new-plan"]
+    child["target"]["container_ref"] = "nonexistent"
+    with pytest.raises(DraftStop, match="CONTAINER_REF_MUST_DEPEND_ON_PLAN_CREATE_OR_COPY"):
+        prepare_draft([new_plan, child])
+    child["target"]["container_ref"] = "new-plan"
+    assert prepare_draft([new_plan, child])["items"][1]["target"]["container_ref"] == "new-plan"
+
+
+def test_new_pdf_note_must_match_type_parent_plan_and_dependency():
+    new_note = item("plan.note.create", id="note001", container_id=501, resource_id=None)
+    attachment = item("plan.note.attachment.add", id="pdf001", container_id=501,
+                      resource_id=None, depends_on=["note001"])
+    attachment["target"]["resource_ref"] = "note001"
+    assert prepare_draft([new_note, attachment])["items"][1]["target"]["resource_ref"] == "note001"
+    attachment["target"]["container_id"] = 902
+    with pytest.raises(DraftStop, match="RESOURCE_REF_MUST_MATCH_PARENT_CREATOR"):
+        prepare_draft([new_note, attachment])
+    attachment["target"]["container_id"] = 501
+    attachment["depends_on"] = []
+    with pytest.raises(DraftStop, match="RESOURCE_REF_MUST_MATCH_PARENT_CREATOR"):
+        prepare_draft([new_note, attachment])
+    attachment["depends_on"] = ["note001"]
+    new_note["kind"] = "plan.workout.create"
+    with pytest.raises(DraftStop, match="RESOURCE_REF_MUST_MATCH_PARENT_CREATOR"):
+        prepare_draft([new_note, attachment])
+
+
+def test_symbolic_resource_id_never_reuses_a_positive_workout_id():
+    create = item("plan.workout.create", id="create-001", container_id=501,
+                  resource_id=None)
+    patch = item("plan.workout.patch", id="patch-001", container_id=501,
+                 resource_id=None, depends_on=["create-001"])
+    patch["target"]["resource_ref"] = "create-001"
+    assert prepare_draft([create, patch])["items"][1]["target"]["resource_id"] is None
+    patch["target"]["resource_id"] = 689369
+    with pytest.raises(DraftStop, match="EXISTING_RESOURCE_ID_REQUIRED"):
+        prepare_draft([create, patch])
+
+
+def test_plan_note_patch_is_consistent_between_draft_and_preview_schema():
+    from scripts.ironman_jobs.ironman_dynamic_request_store import compile_preview_changeset
+    note = item("plan.note.patch", container_id=6123, resource_id=9811)
+    draft = prepare_draft([note])
+    preview = compile_preview_changeset(draft, {"a01": {"title": "Updated note"}},
+                                        pinned_revision="f" * 40)
+    assert preview["manifest"]["changes"][0]["kind"] == "plan.note.patch"
+    assert preview["state"] == "PREVIEW_ONLY"
+
+
+def test_created_child_cannot_be_misrepresented_as_existing_preview_item():
+    from scripts.ironman_jobs.ironman_dynamic_request_store import compile_preview_changeset
+    new_note = item("plan.note.create", id="note1", container_id=501, resource_id=None)
+    pdf = item("plan.note.attachment.add", id="pdf1", container_id=501,
+               resource_id=None, depends_on=["note1"])
+    pdf["target"]["resource_ref"] = "note1"
+    draft = prepare_draft([new_note, pdf])
+    with pytest.raises(DraftStop, match="PREVIEW_ADAPTER_NOT_RELEASED"):
+        compile_preview_changeset(draft, {"note1": {}, "pdf1": {}},
+                                  pinned_revision="a" * 40)
+
+
+def test_symbolic_repeat_patches_need_direct_dependency():
+    create = item("plan.workout.create", id="create01", container_id=501, resource_id=None)
+    a = item("plan.workout.patch", id="patch01", container_id=501,
+             resource_id=None, depends_on=["create01"])
+    b = item("plan.workout.patch", id="patch02", container_id=501,
+             resource_id=None, depends_on=["create01"])
+    a["target"]["resource_ref"] = "create01"
+    b["target"]["resource_ref"] = "create01"
+    with pytest.raises(DraftStop, match="SHARED_RESOURCE_REQUIRES_DEPENDENCY"):
+        prepare_draft([create, a, b])
+    b["depends_on"] = ["create01", "patch01"]
+    assert len(prepare_draft([create, a, b])["items"]) == 3
