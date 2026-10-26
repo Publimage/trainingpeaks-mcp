@@ -174,10 +174,17 @@ async def _fetch_plan_workouts(
         return None, _api_err(det)
     d = det.data or {}
     start = (d.get("startDate") or "")[:10]
-    days = d.get("dayCount") or (d.get("weekCount") or 0) * 7
+    days = max(int(d.get("dayCount") or 0),
+               int(d.get("weekCount") or 0) * 7)
     if not start or not days:
-        return None, _err("API_ERROR", "Plan has no startDate/dayCount.")
-    sd = date_type.fromisoformat(start)
+        return None, _err("API_ERROR", "Provider has no technical calendar anchor/range.")
+    try:
+        sd = date_type.fromisoformat(start)
+    except ValueError:
+        return None, _err("API_ERROR", "Provider technical anchor is invalid.")
+    # Training Plans have NO canonical absolute start date. The provider
+    # anchor exists solely to retrieve week/day-relative records via its API.
+    sd = sd - timedelta(days=sd.weekday())
     # Native TrainingPeaks plan metadata can shrink when the latest legacy
     # Other is removed. Preserve a stable, fixed archive-pilot read window
     # so W3/W4 native notes remain discoverable.
@@ -217,15 +224,11 @@ async def tp_get_training_plan_workouts(plan_id: int | str) -> dict[str, Any]:
         for w in ws:
             wd = (w.get("workoutDay") or "")[:10]
             try:
+                # The provider date is an internal coordinate, not a plan date.
+                # Every plan uses the same Monday-based Wnn/D1-D7 layout.
                 rel = (date_type.fromisoformat(wd) - sd).days + 1 if wd else None
             except ValueError:
                 rel = None
-            # On private assembly plans the first added workout may be a
-            # Tuesday: the provider startDate then reflects the first workout,
-            # NOT the Monday of W1. Expose correct relative week/weekday slots.
-            if v.plan_id == 684602 and wd:
-                relative_monday = sd - timedelta(days=sd.weekday())
-                rel = (date_type.fromisoformat(wd) - relative_monday).days + 1
             out.append({
                 "workout_id": _plan_workout_id(w),
                 "week": ((rel - 1) // 7 + 1) if rel else None,
