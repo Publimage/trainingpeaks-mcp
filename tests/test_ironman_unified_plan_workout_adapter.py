@@ -66,6 +66,7 @@ def run(manifest_value, provider, path, *, execute=False, with_writer=True):
             execute=execute,
             reviewed_revision=REV if execute else None,
             approval_scope=SCOPE if execute else None,
+            authorize_execution=lambda *_: True,  # Synthetic authority; no live provider.
         )
     finally:
         journal.close()

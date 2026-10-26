@@ -12,9 +12,12 @@ import hashlib
 import json
 import re
 import sqlite3
+from contextlib import contextmanager
+from copy import deepcopy
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Any, Mapping, Protocol
+from typing import Any, Callable, Mapping, Protocol
+from uuid import uuid4
 
 SCHEMA = "IRONMAN_CHANGESET_V1"
 OWNER = 2116886
@@ -177,10 +180,39 @@ class Ledger:
             CREATE TABLE IF NOT EXISTS resource_claims (
               resource_key TEXT PRIMARY KEY,
               request_id TEXT NOT NULL, change_id TEXT NOT NULL);
+            CREATE TABLE IF NOT EXISTS execution_workers (
+              slot INTEGER PRIMARY KEY CHECK(slot=1),
+              owner TEXT NOT NULL, request_id TEXT NOT NULL);
         """)
 
     def close(self) -> None:
         self.db.close()
+
+    @contextmanager
+    def execution_worker(self, request_id: str):
+        """Serialize provider execution on the existing shared ledger.
+
+        The random ownership ID belongs to this invocation, not the request.
+        A second process cannot impersonate a replay of the same request.
+        No expiry or automatic takeover: a dead process leaves a blocked slot
+        until an authorized, quiescent recovery reconciles it. Separate ledger
+        files are separate coordination domains, not a distributed lock.
+        """
+        owner = uuid4().hex
+        self.db.execute("BEGIN IMMEDIATE")
+        try:
+            need(self.db.execute("SELECT 1 FROM execution_workers").fetchone() is None,
+                 "EXECUTION_WORKER_BUSY")
+            self.db.execute("INSERT INTO execution_workers VALUES (1,?,?)", (owner, request_id))
+            self.db.commit()
+        except Exception:
+            self.db.rollback()
+            raise
+        try:
+            yield
+        finally:
+            with self.db:
+                self.db.execute("DELETE FROM execution_workers WHERE slot=1 AND owner=?", (owner,))
 
     def setup(self, manifest: dict[str, Any], manifest_sha: str) -> None:
         request = manifest["request_id"]
@@ -260,13 +292,48 @@ class Ledger:
 
 
 def run_changeset(
+    manifest: dict[str, Any], adapters: Mapping[str, Adapter], ledger: Ledger,
+    *, execute: bool = False, reviewed_revision: str | None = None,
+    approval_scope: str | None = None,
+    authorize_execution: Callable[[dict, dict | None], bool] | None = None,
+) -> dict[str, Any]:
+    """Preview or execute with independent authority and one shared worker slot.
+
+    A trusted runtime supplies authorize_execution; scope strings never grant
+    permission. The callback must recheck grants and approval revocation.
+    """
+    # Validate before reserving any persistent worker slot. Preview never takes
+    # this slot; all existing item receipts and recovery remain in one engine.
+    manifest_sha = validate_manifest(manifest)
+    if execute:
+        need(not manifest["approval_scope"].startswith("PREVIEW_ONLY:"), "PREVIEW_DRAFT_NOT_APPROVED")
+        need(reviewed_revision == manifest["reviewed_revision"], "REVISION_NOT_APPROVED")
+        need(approval_scope == manifest["approval_scope"], "SCOPE_NOT_APPROVED")
+        _require_execution_authority(authorize_execution, manifest, None)
+        with ledger.execution_worker(manifest["request_id"]):
+            return _run_changeset(manifest, adapters, ledger, manifest_sha=manifest_sha, execute=True,
+                                  authorize_execution=authorize_execution)
+    return _run_changeset(manifest, adapters, ledger, manifest_sha=manifest_sha)
+
+
+def _require_execution_authority(check, manifest, item) -> None:
+    need(callable(check), "EXECUTION_AUTHORITY_REQUIRED")
+    try:
+        allowed = check(deepcopy(manifest), deepcopy(item))
+    except Exception as exc:
+        raise SecurityDenied("EXECUTION_AUTHORIZATION_DENIED") from exc
+    if allowed is not True:
+        raise SecurityDenied("EXECUTION_AUTHORIZATION_DENIED")
+
+
+def _run_changeset(
     manifest: dict[str, Any],
     adapters: Mapping[str, Adapter],
     ledger: Ledger,
     *,
+    manifest_sha: str,
     execute: bool = False,
-    reviewed_revision: str | None = None,
-    approval_scope: str | None = None,
+    authorize_execution: Callable[[dict, dict | None], bool] | None = None,
 ) -> dict[str, Any]:
     """One common route for all resource kinds, never implicit write.
 
@@ -274,13 +341,6 @@ def run_changeset(
     reconcile its state and STOP only that resource and dependent changes.
     Independent changes continue. No retry loops and no credential fallback.
     """
-    manifest_sha = validate_manifest(manifest)
-    if execute:
-        # A machine-generated preview marker is never an independent approval.
-        need(not manifest["approval_scope"].startswith("PREVIEW_ONLY:"),
-             "PREVIEW_DRAFT_NOT_APPROVED")
-        need(reviewed_revision == manifest["reviewed_revision"], "REVISION_NOT_APPROVED")
-        need(approval_scope == manifest["approval_scope"], "SCOPE_NOT_APPROVED")
     ledger.setup(manifest, manifest_sha)
     ordered = []
     by_id = {x["id"]: x for x in manifest["changes"]}
@@ -491,6 +551,7 @@ def run_changeset(
                 preview_passed.add(name)
                 outcomes.append({"id": name, "state": "PREFLIGHT_PASS"})
                 continue
+            _require_execution_authority(authorize_execution, manifest, item)
             ledger.claim(manifest["request_id"], item)
             ledger.set_state(manifest["request_id"], name, "RUNNING",
                              provider_sha=before)
@@ -500,6 +561,9 @@ def run_changeset(
                 except Exception:
                     return None
             try:
+                # Current grants/revocation are checked immediately before
+                # every mutation, including dependent operations in a batch.
+                _require_execution_authority(authorize_execution, manifest, item)
                 adapter.apply(item)
             except SecurityDenied:
                 after = safe_readback_sha()

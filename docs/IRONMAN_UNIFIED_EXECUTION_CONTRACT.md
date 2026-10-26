@@ -263,38 +263,104 @@ with a stubbed private store/Prefect/provider. This is NOT full repository CI,
 not a test of the real DraftStore, not a deployment and not a TrainingPeaks
 writer canary. Remain DRAFT/preview-only until gates are satisfied.
 
-## Proposed internal approval and execution binding (offline, not released)
+## Draft / preview / approval / execution lifecycle — source integrated, not released
 
-Reuse the immutable request, preview snapshots and ChangeSetV1 engine above.
-`DraftStore.record_approval` stores a separate immutable decision bound to the
-request, exact preview SHA (including its observation receipt), manifest SHA,
-reviewed code revision and approval scope. The caller must independently supply
-the matching kind/target list. Targets are compared without order and with exact
-multiplicity. Repeated identical decisions reuse the same record; a new preview
-or revision never inherits an earlier decision.
+Canonical policy: Drive 02_DECISION_LOG, architectural anti-patch decision of
+2026-10-26, and 21_TRAININGPEAKS_MCP_INTEGRATION_STATE. Reuse the existing host,
+Prefect entrypoint, typed adapters, SQLite stores and Proven Paths. No new job,
+per-plan manifest, infrastructure, provider write or deployment in this segment.
 
-`DraftStore.bind_execution` requires that decision plus the independently checked
-revision, scope and targets again. It creates a ChangeSetV1 with the reviewed
-scope, leaving the original preview and draft untouched. A transaction reserves
-exactly one decision/manifest per request. Reopening or retrying returns the same
-manifest digest, avoiding execution-ledger drift; a different decision for an
-already bound request is rejected. Both registrations use SQLite BEGIN IMMEDIATE
-and rollback on failure. A crash after binding and before Ledger.setup resumes
-the same manifest. This is an execution reservation, not a completed receipt.
+### Common contracts
 
-These methods are INTERNAL persistence primitives, not a user-facing approval
-tool or authentication service. Only a trusted authorization service may supply
-their review context. The approval SHA is an identifier, not a bearer token;
-checksums detect mismatched records but cannot authenticate a malicious database
-writer. Runtime authentication, current grants/revocation, dynamic VPC scope,
-adapter readiness and independent live preflight/readback remain mandatory.
-Neither method reads/writes TrainingPeaks or invokes the engine; the existing
-flow still rejects publish. No new flow, job, deployment or plan-specific file.
+`ironman_operation_contracts.require_target_binding` is the selector contract
+for both flow and Approval: exactly one selector per kind/resource, independent
+of order. Two ordered edits of the same kind/resource use one selector, not two.
+Operation identity and ordering remain explicit in ChangeSet item IDs/dependencies.
+DraftStore ingress and resume now use shared receipt and draft-binding validators;
+validation still runs at both trust boundaries. The immutable draft, preview hashes
+and execution manifest format are preserved.
 
-Remaining integration gates: wire a reviewed authorization service into the
-existing entrypoint, enforce execution worker ownership across processes/hosts
-(the reservation is not a worker mutex), validate capability-specific writers
-and canaries, and obtain full repository/Prefect CI on the exact revision. The
-existing engine still accepts low-level scope/revision inputs, so this internal
-store boundary must not be advertised as enforcement for all engine callers.
-No earlier explicit denial, staging allowlist or provider gate is changed.
+### Control operations in the existing flow
+
+`ironman-unified-changeset-v1` supports `approve_preview`, `revoke_approval` and
+`bind_execution`, alongside prepare/preview/resume. Input is
+`schema=IRONMAN_REVIEW_INPUT_V1`, request_id, preview_sha256, reviewed_revision,
+approval_scope; revoke/bind also require approval_sha256. Independently resolved
+requested_targets remain separate. No caller-supplied principal, authorizer,
+module path or callback is accepted in this serialized input.
+
+The flow resolves and validates the stored preview and exact selectors, then
+consults the trusted host's `get_review_authorizer().authorize(command)` for EVERY
+control action. The command includes the action, preview manifest, review input
+and requested targets. Only literal True permits mutation. The production
+provider is deliberately unconfigured and denies by default; host authentication,
+current grants/expiry/revocation and actor audit must be implemented behind this
+boundary before it is enabled. Test authorities are synthetic, not live identity
+verification. There are no bearer secrets in these flow inputs.
+
+Approval records remain immutable and are bound to request, exact preview
+(including its observation), reviewed revision and scope. Retrying reuses them.
+SQLite transactions serialize approval, revocation and execution binding.
+Revocation creates a monotonic tombstone: an old decision cannot be resurrected
+by approve or bind, including after reopening or after an earlier binding.
+This cancels future authorization, not an already in-flight provider request.
+
+bind_execution reserves exactly one approval/manifest per request; it never opens
+an execution ledger or invokes an adapter. New observations or code revisions do
+not inherit approval. Publish is still rejected unconditionally by this flow.
+
+### Enforcement at the execution engine boundary
+
+`run_changeset(execute=True)` now also REQUIRES a trusted `authorize_execution`
+callable. Matching scope/revision strings alone are insufficient. The engine
+checks authority at entry and before each write, passing defensive copies;
+denial or failure is fail-closed. Existing readback, uncertainty and explicit
+provider-denial behavior remain in the same engine. Test callbacks accepting
+synthetic execution are explicit; no production permissive implementation exists.
+
+`BoundExecutionAuthorization` is the shared reusable guard for a future reviewed
+writer: match the candidate manifest to the persisted preview, ask the trusted
+authority, then re-open/revalidate the persistent binding and revocation. Its
+constructor context must come from the trusted coordinator. The guard is tested
+with a revocation between two dependent synthetic writes; the second is blocked.
+The current flow never calls execute and never installs this guard on live writers.
+
+### Worker coordination and recovery
+
+The execution ledger owns a single persistent worker slot with an invocation UUID,
+not a request ID. Acquisition is atomic; a second connection/process cannot enter
+provider execution even with the same request ID. Whole executions are serialized
+on this existing shared ledger; previews do not reserve a worker. Normal exit
+releases only the acquiring invocation's slot. A process crash leaves it blocked;
+there is no expiry, blind retry or automatic takeover. Existing item/resource
+claims and post-crash readback remain authoritative for uncertain outcomes.
+
+All workers must use the same configured service ledger. Independent local SQLite
+files are independent coordination domains, not a distributed lock. A future
+release must enforce this topology and test it on the actual runtime; these tests
+do not attest cross-host coordination or network-filesystem SQLite safety.
+Authorized recovery must first establish quiescence and independently reconcile
+provider/item state before clearing an orphaned slot. No recovery endpoint is
+exposed or enabled by this change.
+
+### Debt and release gates
+
+Owner below means the Operator component maintainer, not the coach/user.
+No feature is WORK_COMPLETE while an applicable gate remains open.
+
+| Classification | Item and reason | Target / removal condition | Verification |
+| --- | --- | --- | --- |
+| STRUCTURAL_REFACTOR — addressed | Divergent flow/Approval selectors and duplicate preview validators could drift | Shared selector and preview validators now used at both boundaries | Same-resource chain, corrupt records, existing regressions |
+| STRUCTURAL_REFACTOR — addressed in one-ledger domain | Replaying request identity was not worker ownership | Invocation-owned persistent execution slot | Concurrent connections, resumed execution, dead process |
+| MISSING — release blocker | Trusted authority is intentionally unconfigured | Wire authenticated host identity, current grants/expiry/revocation and actor audit behind the existing authority interface before enabling control operations | Runtime authentication, deny/expiry/revocation integration tests; default deny must remain |
+| MISSING — release blocker | Crash slot recovery has no approved operational endpoint | Add authorized quiescence + readback recovery in the existing service before live execution | Dead-owner recovery, active-owner refusal, no duplicate writer |
+| MISSING — release blocker | One-ledger topology is not deployment-attested | Enforce a single canonical service ledger for all workers before live execution; no arbitrary per-request ledger paths | Real-runtime multi-worker canary and readback |
+| TEMPORARY_DEBT | Classic adapter constructs FIELD_VALIDATION_ONLY manifest to reuse proven validation | Owner: Operator maintainer. Extract pure field validation shared with existing publisher before final release; remove synthetic manifest | Equivalent Builder/field rejection and adapter/publisher regressions |
+| TEMPORARY_DEBT | SKIPPED_DEPENDENCY legacy recovery branch lives in normal execution | Owner: Operator maintainer. Replace with versioned migration after archived ledger inventory, before final release; remove branch once migration verified | Migration preserves receipts, dependencies and denials |
+| TEMPORARY_DEBT — QA only | Partial exact-source snapshot used because git proxy is unavailable and Prefect is absent | Owner: Operator maintainer. Replace with complete pinned checkout and actual Prefect tests before release; discard isolated harness | Full repository/Prefect CI on exact commit; isolated PASS never substitutes |
+
+Existing staging VPC allowlists and capability guards remain in place. Their
+replacement requires request-scoped authorization review, negative scope tests
+and authorized canaries; no policy removal or widening is part of this change.
+Workflow edits and plan_mutation_gates changes previously denied remain excluded.
+The old proven publisher remains scoped and untouched; no claim of live readiness.

@@ -67,7 +67,7 @@ def run(m, adapters, ledger, execute=True):
         m, adapters, ledger, execute=execute,
         reviewed_revision=REVISION if execute else None,
         approval_scope=SCOPE if execute else None,
-    )
+     authorize_execution=lambda *_: True)
 
 
 def test_one_engine_handles_different_plan_resources_and_provider_readback(ledger):
@@ -453,11 +453,11 @@ def test_generated_preview_scope_can_never_authorize_a_provider_write(ledger):
     manifest["approval_scope"] = "PREVIEW_ONLY:" + manifest["request_id"]
     fake = FakeAdapter(before)
     assert run_changeset(manifest, {change["kind"]: fake}, ledger,
-                         execute=False)["request_state"] == "PREVIEW_ONLY"
+                         execute=False, authorize_execution=lambda *_: True)["request_state"] == "PREVIEW_ONLY"
     with pytest.raises(ChangeStop, match="PREVIEW_DRAFT_NOT_APPROVED"):
         run_changeset(manifest, {change["kind"]: fake}, ledger, execute=True,
                       reviewed_revision=manifest["reviewed_revision"],
-                      approval_scope=manifest["approval_scope"])
+                      approval_scope=manifest["approval_scope"], authorize_execution=lambda *_: True)
     assert fake.writes == 0
 
 

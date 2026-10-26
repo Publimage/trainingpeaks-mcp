@@ -275,6 +275,50 @@ def verify_draft_integrity(draft: dict[str, Any]) -> None:
     require(draft == reconstructed, "DRAFT_TAMPERED")
 
 
+def _validate_preview_receipt(manifest: dict, receipt: dict, manifest_sha: str,
+                              receipt_code: str, outcomes_code: str) -> None:
+    require(type(receipt) is dict and
+            receipt.get("request_id") == manifest["request_id"] and
+            receipt.get("manifest_sha256") == manifest_sha and
+            receipt.get("mode") == "preview" and
+            receipt.get("request_state") == "PREVIEW_ONLY" and
+            receipt.get("provider_writes") == 0 and
+            receipt.get("provider_writes_claimed") == 0 and
+            receipt.get("publication_enabled") is False,
+            receipt_code)
+    outcomes = receipt.get("results")
+    require(type(outcomes) is list and len(outcomes) == len(manifest["changes"])
+            and all(type(row) is dict and row.get("state") in (
+                "PREFLIGHT_PASS", "DONE_VERIFIED",
+            ) for row in outcomes) and
+            {row.get("id") for row in outcomes} ==
+            {item["id"] for item in manifest["changes"]},
+            outcomes_code)
+
+
+def _require_preview_draft_binding(stored_draft: dict, manifest: dict, code: str) -> None:
+    source_items = stored_draft["items"]
+    proposed_items = manifest["changes"]
+    require(len(source_items) == len(proposed_items),
+            code)
+    for draft_item, proposed in zip(source_items, proposed_items):
+        target = draft_item["target"]
+        require(
+            proposed["id"] == draft_item["id"] and
+            proposed["kind"] == draft_item["kind"] and
+            proposed["before_sha256"] == draft_item["before_sha256"] and
+            proposed["depends_on"] == draft_item["depends_on"] and
+            proposed["payload"] == draft_item["payload"] and
+            proposed["target"] == {
+                key: target[key] for key in (
+                    "provider", "owner_id", "container_kind",
+                    "container_id", "resource_id",
+                )
+            },
+            code,
+        )
+
+
 class DraftStore:
     """Atomic, 0600 SQLite request persistence on existing Prefect host.
 
@@ -309,6 +353,10 @@ class DraftStore:
         self.db.execute("""CREATE TABLE IF NOT EXISTS execution_bindings (
             request_id TEXT PRIMARY KEY, approval_sha TEXT NOT NULL,
             manifest_sha TEXT NOT NULL
+        )""")
+        self.db.execute("""CREATE TABLE IF NOT EXISTS approval_revocations (
+            request_id TEXT NOT NULL, approval_sha TEXT NOT NULL,
+            PRIMARY KEY(request_id, approval_sha)
         )""")
         self.db.commit()
 
@@ -369,23 +417,8 @@ class DraftStore:
         request_id = manifest["request_id"]
         require(manifest["approval_scope"] == "PREVIEW_ONLY:" + request_id,
                 "PREVIEW_SCOPE_REQUIRED")
-        require(type(receipt) is dict and
-                receipt.get("request_id") == request_id and
-                receipt.get("manifest_sha256") == manifest_sha and
-                receipt.get("mode") == "preview" and
-                receipt.get("request_state") == "PREVIEW_ONLY" and
-                receipt.get("provider_writes") == 0 and
-                receipt.get("provider_writes_claimed") == 0 and
-                receipt.get("publication_enabled") is False,
-                "PREVIEW_RECEIPT_NOT_READ_ONLY")
-        outcomes = receipt.get("results")
-        require(type(outcomes) is list and len(outcomes) == len(manifest["changes"])
-                and all(type(row) is dict and row.get("state") in (
-                    "PREFLIGHT_PASS", "DONE_VERIFIED",
-                ) for row in outcomes) and
-                {row.get("id") for row in outcomes} ==
-                {item["id"] for item in manifest["changes"]},
-                "PREVIEW_NOT_PASSED")
+        _validate_preview_receipt(manifest, receipt, manifest_sha,
+                                  "PREVIEW_RECEIPT_NOT_READ_ONLY", "PREVIEW_NOT_PASSED")
         manifest_json, result_json = canonical(manifest), canonical(receipt)
         preview_sha = hashlib.sha256(
             (manifest_sha + ":" + hashlib.sha256(
@@ -408,26 +441,7 @@ class DraftStore:
                     "PERSISTED_DRAFT_CORRUPT")
             # A forged preview must not inherit a different stored request's
             # identifier. This check is independent of provider readback.
-            source_items = stored_draft["items"]
-            proposed_items = manifest["changes"]
-            require(len(source_items) == len(proposed_items),
-                    "PREVIEW_DRAFT_BINDING_MISMATCH")
-            for draft_item, proposed in zip(source_items, proposed_items):
-                target = draft_item["target"]
-                require(
-                    proposed["id"] == draft_item["id"] and
-                    proposed["kind"] == draft_item["kind"] and
-                    proposed["before_sha256"] == draft_item["before_sha256"] and
-                    proposed["depends_on"] == draft_item["depends_on"] and
-                    proposed["payload"] == draft_item["payload"] and
-                    proposed["target"] == {
-                        key: target[key] for key in (
-                            "provider", "owner_id", "container_kind",
-                            "container_id", "resource_id",
-                        )
-                    },
-                    "PREVIEW_DRAFT_BINDING_MISMATCH",
-                )
+            _require_preview_draft_binding(stored_draft, manifest, "PREVIEW_DRAFT_BINDING_MISMATCH")
             existing = self.db.execute(
                 """SELECT manifest_sha,manifest_json,result_json FROM previews
                    WHERE request_id=? AND preview_sha=?""",
@@ -480,46 +494,12 @@ class DraftStore:
                         result_json.encode("utf-8")).hexdigest()).encode("ascii")
                 ).hexdigest() == preview_sha and
                 manifest["request_id"] == request_id and
-                manifest["approval_scope"] == "PREVIEW_ONLY:" + request_id and
-                type(receipt) is dict and
-                receipt.get("request_id") == request_id and
-                receipt.get("manifest_sha256") == manifest_sha and
-                receipt.get("mode") == "preview" and
-                receipt.get("request_state") == "PREVIEW_ONLY" and
-                receipt.get("provider_writes") == 0 and
-                receipt.get("provider_writes_claimed") == 0 and
-                receipt.get("publication_enabled") is False,
-                "PREVIEW_RECORD_CORRUPT")
+                manifest["approval_scope"] == "PREVIEW_ONLY:" + request_id, "PREVIEW_RECORD_CORRUPT")
+        _validate_preview_receipt(manifest, receipt, manifest_sha,
+                                  "PREVIEW_RECORD_CORRUPT", "PREVIEW_RECORD_CORRUPT")
         saved_draft = self.get(request_id)
         require(saved_draft is not None, "PREVIEW_ORPHAN_REQUEST")
-        source_items, preview_items = saved_draft["items"], manifest["changes"]
-        require(len(source_items) == len(preview_items),
-                "PREVIEW_RECORD_DRAFT_MISMATCH")
-        for source, observed in zip(source_items, preview_items):
-            required_target = {
-                key: source["target"][key] for key in (
-                    "provider", "owner_id", "container_kind",
-                    "container_id", "resource_id",
-                )
-            }
-            require(
-                observed["id"] == source["id"] and
-                observed["kind"] == source["kind"] and
-                observed["target"] == required_target and
-                observed["payload"] == source["payload"] and
-                observed["before_sha256"] == source["before_sha256"] and
-                observed["depends_on"] == source["depends_on"],
-                "PREVIEW_RECORD_DRAFT_MISMATCH",
-            )
-        outcomes = receipt.get("results")
-        require(type(outcomes) is list and
-                len(outcomes) == len(preview_items) and
-                all(type(row) is dict and row.get("state") in (
-                    "PREFLIGHT_PASS", "DONE_VERIFIED",
-                ) for row in outcomes) and
-                {row.get("id") for row in outcomes} ==
-                {item["id"] for item in preview_items},
-                "PREVIEW_RECORD_CORRUPT")
+        _require_preview_draft_binding(saved_draft, manifest, "PREVIEW_RECORD_DRAFT_MISMATCH")
         return {"manifest": manifest, "receipt": receipt,
                 "preview_sha256": preview_sha, "publication_authorized": False}
 
@@ -543,14 +523,13 @@ class DraftStore:
                 TOKEN.fullmatch(approval_scope) is not None and
                 not approval_scope.startswith("PREVIEW_ONLY:"),
                 "APPROVAL_SCOPE_REQUIRED")
-        expected = [{"kind": item["kind"], "target": item["target"]}
-                    for item in manifest["changes"]]
-        require(type(requested_targets) is list and
-                len(requested_targets) == len(expected) and
-                all(type(item) is dict and set(item) == {"kind", "target"}
-                    for item in requested_targets) and
-                sorted(map(canonical, requested_targets)) ==
-                sorted(map(canonical, expected)), "APPROVAL_TARGET_MISMATCH")
+        from scripts.ironman_jobs.ironman_operation_contracts import (
+            TargetBindingError, require_target_binding,
+        )
+        try:
+            require_target_binding(manifest, requested_targets)
+        except TargetBindingError as exc:
+            raise DraftStop("APPROVAL_TARGET_MISMATCH") from exc
         record = {
             "schema": "IRONMAN_PREVIEW_APPROVAL_V1",
             "request_id": request_id, "preview_sha256": preview_sha,
@@ -565,7 +544,7 @@ class DraftStore:
                         requested_targets: list[dict[str, Any]]) -> dict[str, Any]:
         """Record a trusted review decision for exactly one preview version.
 
-        No flow/tool exposes this method. A checksum identifies the decision;
+        The flow must authorize before calling. A checksum identifies the decision;
         it is NOT a bearer credential or independent provider authorization.
         Multiple reviewed previews may coexist until execution is bound.
         """
@@ -576,6 +555,7 @@ class DraftStore:
                 request_id, preview_sha, approved_revision=approved_revision,
                 approval_scope=approval_scope, requested_targets=requested_targets)
             approval_sha = digest(record)
+            self._require_active_approval(request_id, approval_sha)
             bound = self.db.execute(
                 "SELECT approval_sha FROM execution_bindings WHERE request_id=?",
                 (request_id,),
@@ -600,6 +580,40 @@ class DraftStore:
                 "state": "APPROVAL_RECORDED", "provider_writes": 0,
                 "publication_enabled": False}
 
+    def _require_active_approval(self, request_id: str, approval_sha: str) -> None:
+        require(self.db.execute(
+            "SELECT 1 FROM approval_revocations WHERE request_id=? AND approval_sha=?",
+            (request_id, approval_sha),
+        ).fetchone() is None, "APPROVAL_REVOKED")
+
+    def revoke_approval(self, request_id: str, preview_sha: str, approval_sha: str, *,
+                        approved_revision: str, approval_scope: str,
+                        requested_targets: list[dict[str, Any]]) -> dict[str, Any]:
+        """Monotonic tombstone. Reapproval never resurrects this decision."""
+        from scripts.ironman_jobs.ironman_unified_changeset_engine import digest
+        self.db.execute("BEGIN IMMEDIATE")
+        try:
+            record, _ = self._approval_record(
+                request_id, preview_sha, approved_revision=approved_revision,
+                approval_scope=approval_scope, requested_targets=requested_targets)
+            require(digest(record) == approval_sha, "APPROVAL_BINDING_MISMATCH")
+            row = self.db.execute(
+                "SELECT payload FROM preview_approvals WHERE request_id=? AND approval_sha=?",
+                (request_id, approval_sha),
+            ).fetchone()
+            require(row is not None, "APPROVAL_NOT_FOUND")
+            require(row[0] == canonical(record), "APPROVAL_RECORD_CORRUPT")
+            inserted = self.db.execute(
+                "INSERT OR IGNORE INTO approval_revocations VALUES (?,?)", (request_id, approval_sha))
+            reused = inserted.rowcount == 0
+            self.db.commit()
+        except Exception:
+            self.db.rollback()
+            raise
+        return {"request_id": request_id, "approval_sha256": approval_sha,
+                "state": "APPROVAL_REVOKED", "reused": reused,
+                "provider_writes": 0, "publication_enabled": False}
+
     def bind_execution(self, request_id: str, preview_sha: str, approval_sha: str, *,
                        approved_revision: str, approval_scope: str,
                        requested_targets: list[dict[str, Any]]) -> dict[str, Any]:
@@ -622,6 +636,7 @@ class DraftStore:
                 request_id, preview_sha, approved_revision=approved_revision,
                 approval_scope=approval_scope, requested_targets=requested_targets)
             require(digest(record) == approval_sha, "APPROVAL_BINDING_MISMATCH")
+            self._require_active_approval(request_id, approval_sha)
             row = self.db.execute(
                 "SELECT payload FROM preview_approvals WHERE request_id=? AND approval_sha=?",
                 (request_id, approval_sha),

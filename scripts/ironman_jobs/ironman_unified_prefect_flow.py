@@ -26,6 +26,8 @@ from scripts.ironman_jobs.ironman_dynamic_request_store import (
     DraftStore, prepare_draft, compile_preview_changeset,
 )
 
+from scripts.ironman_jobs.ironman_operation_contracts import get_review_authorizer
+
 MAX_MANIFEST_BYTES = 2_000_000
 
 def require_requested_targets(manifest: dict[str, Any],
@@ -36,37 +38,13 @@ def require_requested_targets(manifest: dict[str, Any],
     supply the resource identities resolved from the current request.
     This is one generic guard for every plan, workout, note, PDF and Library.
     """
-    if type(requested_targets) is not list or not requested_targets:
-        raise ChangeStop("REQUEST_TARGET_BINDING_REQUIRED")
-    if len(requested_targets) > 1000:
-        raise ChangeStop("REQUEST_TARGET_BINDING_LIMIT")
-    expected = set()
-    for entry in requested_targets:
-        if type(entry) is not dict or set(entry) != {"kind", "target"}:
-            raise ChangeStop("REQUEST_TARGET_BINDING_SHAPE")
-        kind, target = entry["kind"], entry["target"]
-        if type(kind) is not str or type(target) is not dict or set(target) != {
-            "provider", "owner_id", "container_kind", "container_id", "resource_id"
-        }:
-            raise ChangeStop("REQUEST_TARGET_BINDING_SHAPE")
-        if (target["provider"] != "trainingpeaks"
-                or type(target["owner_id"]) is not int
-                or target["owner_id"] != manifest["owner_id"]
-                or target["container_kind"] not in ("training_plan", "workout_library")
-                or any(type(target[k]) is not int or target[k] <= 0
-                       for k in ("container_id", "resource_id"))):
-            raise ChangeStop("REQUEST_TARGET_BINDING_INVALID")
-        key = (kind, target["provider"], target["owner_id"],
-               target["container_kind"], target["container_id"],
-               target["resource_id"])
-        if key in expected:
-            raise ChangeStop("REQUEST_TARGET_BINDING_DUPLICATE")
-        expected.add(key)
-    actual = {(i["kind"], i["target"]["provider"], i["target"]["owner_id"],
-               i["target"]["container_kind"], i["target"]["container_id"],
-               i["target"]["resource_id"]) for i in manifest["changes"]}
-    if expected != actual:
-        raise ChangeStop("STOP_TARGET_MISMATCH")
+    from scripts.ironman_jobs.ironman_operation_contracts import (
+        TargetBindingError, require_target_binding,
+    )
+    try:
+        require_target_binding(manifest, requested_targets)
+    except TargetBindingError as exc:
+        raise ChangeStop(str(exc)) from exc
 
 
 @task(name="validate-one-ironman-changeset", retries=0, persist_result=False,
@@ -119,8 +97,53 @@ def unified_changeset_flow(
     route. A separate reviewed release may enable normal approved writers.
     """
     # One shared flow now accepts an operation draft from any authorized chat.
-    # This prepares a persistent request only. It NEVER reads/writes provider
-    # data, declares approval, or selects targets from a previous manifest.
+    # Control actions persist decisions only after independent authorization.
+    # No control action opens a provider or executes a changeset.
+    if mode in {"approve_preview", "revoke_approval", "bind_execution"}:
+        # The caller supplies selectors, never its own authority or principal.
+        fields = {"schema", "request_id", "preview_sha256", "reviewed_revision", "approval_scope"}
+        if mode != "approve_preview":
+            fields.add("approval_sha256")
+        if type(manifest) is not dict or set(manifest) != fields or manifest.get("schema") != "IRONMAN_REVIEW_INPUT_V1":
+            raise ChangeStop("REVIEW_INPUT_SHAPE")
+        store_path = os.environ.get("IRONMAN_OPERATION_DRAFT_STORE")
+        if not store_path:
+            raise ChangeStop("DRAFT_STORE_NOT_CONFIGURED")
+        store = DraftStore(Path(store_path))
+        try:
+            snapshot = store.get_preview(manifest["request_id"], manifest["preview_sha256"])
+            if snapshot is None:
+                raise ChangeStop("PREVIEW_VERSION_NOT_FOUND")
+            require_requested_targets(snapshot["manifest"], requested_targets)
+            # A deep copy prevents an authorizer accidentally mutating the
+            # persisted selectors subsequently used by the store.
+            command = json.loads(json.dumps({
+                "action": mode, "review": manifest,
+                "manifest": snapshot["manifest"],
+                "requested_targets": requested_targets,
+            }))
+            try:
+                allowed = get_review_authorizer().authorize(command)
+            except PermissionError as exc:
+                raise ChangeStop("REVIEW_AUTHORIZATION_DENIED") from exc
+            if allowed is not True:
+                raise ChangeStop("REVIEW_AUTHORIZATION_DENIED")
+            review = dict(approved_revision=manifest["reviewed_revision"],
+                          approval_scope=manifest["approval_scope"],
+                          requested_targets=requested_targets)
+            if mode == "approve_preview":
+                result = store.record_approval(manifest["request_id"], manifest["preview_sha256"], **review)
+            elif mode == "revoke_approval":
+                result = store.revoke_approval(manifest["request_id"], manifest["preview_sha256"],
+                                               manifest["approval_sha256"], **review)
+            else:
+                result = store.bind_execution(manifest["request_id"], manifest["preview_sha256"],
+                                              manifest["approval_sha256"], **review)
+            # Even an approved binding is only a reservation. Do not open the
+            # execution ledger, install adapters or expose an executable mode.
+            return {**result, "mode": mode, "publication_enabled": False, "provider_writes": 0}
+        finally:
+            store.close()
     if mode == "prepare":
         if type(manifest) is not dict or set(manifest) not in (
             {"schema", "items"}, {"schema", "items", "request_key"}
