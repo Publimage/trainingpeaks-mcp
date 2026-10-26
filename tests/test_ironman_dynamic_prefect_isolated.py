@@ -221,3 +221,66 @@ def test_unverified_new_plan_stays_prepare_only_even_if_after_image_is_forged(tm
             mode='preview_draft', requested_targets=[])
     assert not calls
     assert not (tmp_path/'ledger.sqlite3').exists()
+
+
+def test_resume_persisted_preview_in_new_chat_without_provider_reads(tmp_path, monkeypatch, flowhost):
+    module, calls, _ = flowhost
+    db = tmp_path / "drafts.sqlite3"
+    monkeypatch.setenv("IRONMAN_OPERATION_DRAFT_STORE", str(db))
+    intended = {"schema": "IRONMAN_OPERATION_INPUT_V1",
+                "request_key": "rollover-unique-workout-v1",
+                "items": [item("plan.workout.patch", "patch01",
+                               container_id=501, resource_id=31)]}
+    saved = module.unified_changeset_flow.fn(intended, "unused", mode="prepare")
+    target = [{"kind": "plan.workout.patch", "target": {
+        "provider": "trainingpeaks", "owner_id": 2116886,
+        "container_kind": "training_plan", "container_id": 501, "resource_id": 31,
+    }}]
+    preview = module.unified_changeset_flow.fn(
+        {"schema": "IRONMAN_DRAFT_PREVIEW_INPUT_V1",
+         "request_id": saved["request_id"],
+         "after_images": {"patch01": {"title": "revised"}}, "pinned_revision": "f" * 40},
+        str(tmp_path / "execution.sqlite3"), mode="preview_draft",
+        requested_targets=target,
+    )
+    assert preview["preview_persisted"] is True
+    before = calls[:]
+    resume = {"schema": "IRONMAN_PREVIEW_RESUME_INPUT_V1",
+              "request_id": saved["request_id"],
+              "preview_sha256": preview["preview_sha256"]}
+    result = module.unified_changeset_flow.fn(
+        resume, "unused", mode="resume_preview", requested_targets=target,
+    )
+    assert result["request_state"] == "PREVIEW_ONLY"
+    assert result["preview_sha256"] == preview["preview_sha256"]
+    assert result["provider_writes"] == 0
+    assert result["publication_enabled"] is False
+    assert result["results"][0]["state"] == "PREFLIGHT_PASS"
+    assert calls == before
+    wrong_target = [{"kind": "plan.workout.patch",
+                     "target": {**target[0]["target"], "container_id": 902}}]
+    with pytest.raises(Exception, match="STOP_TARGET_MISMATCH"):
+        module.unified_changeset_flow.fn(
+            resume, "unused", mode="resume_preview",
+            requested_targets=wrong_target,
+        )
+    assert calls == before
+
+
+def test_resume_nonexistent_version_rejected_without_provider_reads(tmp_path, monkeypatch, flowhost):
+    module, calls, _ = flowhost
+    monkeypatch.setenv("IRONMAN_OPERATION_DRAFT_STORE", str(tmp_path / "draft.sqlite3"))
+    saved = module.unified_changeset_flow.fn(
+        {"schema": "IRONMAN_OPERATION_INPUT_V1",
+         "items": [item("plan.workout.patch", "patch01",
+                        container_id=501, resource_id=31)]},
+        "unused", mode="prepare",
+    )
+    with pytest.raises(Exception, match="PREVIEW_VERSION_NOT_FOUND"):
+        module.unified_changeset_flow.fn(
+            {"schema": "IRONMAN_PREVIEW_RESUME_INPUT_V1",
+             "request_id": saved["request_id"], "preview_sha256": "f" * 64},
+            "unused", mode="resume_preview",
+            requested_targets=[],
+        )
+    assert not calls
