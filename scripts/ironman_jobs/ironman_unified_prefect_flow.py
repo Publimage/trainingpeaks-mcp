@@ -143,6 +143,45 @@ def unified_changeset_flow(
             },
             "publication_enabled": False, "source": "request_draft_local_only",
         }
+    if mode == "resume_preview":
+        # Read one immutable preview from the existing request store.
+        # The current request must supply the exact targets independently:
+        # a previous chat's manifest is never accepted as the selector.
+        if type(manifest) is not dict or set(manifest) != {
+            "schema", "request_id", "preview_sha256",
+        } or manifest.get("schema") != "IRONMAN_PREVIEW_RESUME_INPUT_V1":
+            raise ChangeStop("PREVIEW_RESUME_INPUT_SHAPE")
+        store_path = os.environ.get("IRONMAN_OPERATION_DRAFT_STORE")
+        if not store_path:
+            raise ChangeStop("DRAFT_STORE_NOT_CONFIGURED")
+        store = DraftStore(Path(store_path))
+        try:
+            original = store.get(manifest["request_id"])
+            if original is None:
+                raise ChangeStop("DRAFT_REQUEST_NOT_FOUND")
+            snapshot = store.get_preview(
+                original["request_id"], manifest["preview_sha256"],
+            )
+        finally:
+            store.close()
+        if snapshot is None:
+            raise ChangeStop("PREVIEW_VERSION_NOT_FOUND")
+        saved_manifest = snapshot["manifest"]
+        validate_change_request(saved_manifest)
+        require_requested_targets(saved_manifest, requested_targets)
+        receipt = snapshot["receipt"]
+        return {
+            "schema": "IRONMAN_PREVIEW_RESUME_RESULT_V1",
+            "request_id": original["request_id"],
+            "preview_sha256": snapshot["preview_sha256"],
+            "manifest_sha256": receipt["manifest_sha256"],
+            "mode": "resume_preview",
+            "request_state": "PREVIEW_ONLY",
+            "results": receipt["results"],
+            "source": "stored_read_only_preview",
+            "provider_writes": 0,
+            "publication_enabled": False,
+        }
     if mode == "preview_draft":
         # A stored operation request is NOT an authorization. Re-read it from
         # the private request store, verify its content hash and bind a second,
