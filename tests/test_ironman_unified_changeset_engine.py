@@ -459,3 +459,45 @@ def test_generated_preview_scope_can_never_authorize_a_provider_write(ledger):
                       reviewed_revision=manifest["reviewed_revision"],
                       approval_scope=manifest["approval_scope"])
     assert fake.writes == 0
+
+
+
+def test_concurrent_registration_of_same_changeset_is_idempotent(tmp_path):
+    """Two SQLite connections race to create one durable request, not two."""
+    from concurrent.futures import ThreadPoolExecutor
+    from threading import Barrier
+
+    manifest = make_manifest(item(
+        "same", "plan.workout.patch", 123, {"v": 1}, {"v": 2},
+    ))
+    manifest_sha = validate_manifest(manifest)
+    path = tmp_path / "one-shared-ledger.sqlite3"
+    ready = Barrier(2)
+
+    def register():
+        local_ledger = Ledger(path)
+        try:
+            ready.wait(timeout=5)
+            local_ledger.setup(manifest, manifest_sha)
+        finally:
+            local_ledger.close()
+
+    with ThreadPoolExecutor(max_workers=2) as executor:
+        jobs = [executor.submit(register) for _ in range(2)]
+        for job in jobs:
+            job.result(timeout=15)
+
+    ledger = Ledger(path)
+    try:
+        assert ledger.db.execute(
+            "SELECT COUNT(*) FROM requests WHERE request_id=?",
+            (manifest["request_id"],),
+        ).fetchone()[0] == 1
+        assert ledger.db.execute(
+            "SELECT COUNT(*) FROM change_events WHERE request_id=?",
+            (manifest["request_id"],),
+        ).fetchone()[0] == 1
+        assert ledger.status(manifest["request_id"], "same") == "PENDING"
+        assert ledger.db.execute("SELECT COUNT(*) FROM resource_claims").fetchone()[0] == 0
+    finally:
+        ledger.close()
