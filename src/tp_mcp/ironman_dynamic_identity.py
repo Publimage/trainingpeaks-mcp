@@ -137,9 +137,13 @@ def require_new_name_absent(rows: list[dict[str, Any]], title: str,
         raise TargetStop("CREATE_KIND_UNSUPPORTED")
     if type(title) is not str or not 1 <= len(title.strip()) <= 180:
         raise TargetStop("CREATE_TITLE_REQUIRED")
-    if type(rows) is not list or any(type(x) is not dict or
-                                     not _positive_id(x.get(id_field)) for x in rows):
+    if type(rows) is not list or len(rows) > 10000 or any(
+        type(x) is not dict or not _positive_id(x.get(id_field)) for x in rows
+    ):
         raise TargetStop("PROVIDER_INVENTORY_INVALID")
+    identifiers = [row[id_field] for row in rows]
+    if len(set(identifiers)) != len(identifiers):
+        raise TargetStop("PROVIDER_DUPLICATE_IDS")
     normalized = _label(title)
     if any(_label(row.get(title_field)) == normalized for row in rows):
         raise TargetStop("CREATE_NAME_CONFLICT")
