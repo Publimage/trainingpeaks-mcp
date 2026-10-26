@@ -219,3 +219,53 @@ def test_prepare_mode_without_admin_store_config_never_touches_provider(tmp_path
             {"schema": "IRONMAN_OPERATION_INPUT_V1", "items": []},
             str(tmp_path / "not-created.sqlite3"), mode="prepare")
     assert not (tmp_path / "not-created.sqlite3").exists()
+
+
+
+def test_multiple_previews_of_same_request_keep_execution_ledger_clean(tmp_path, monkeypatch):
+    """Preview revisions never register the execution request_id in durable SQLite."""
+    monkeypatch.setattr(
+        pipeline, "create_read_registry",
+        lambda read_transport="local": {"plan.workout.patch": SyntheticReadAdapter()},
+    )
+    ledger = tmp_path / "execution.sqlite3"
+    first = manifest()
+    result_a = pipeline.unified_changeset_flow.fn(
+        first, str(ledger), mode="preview", requested_targets=[REQUESTED_TARGET],
+    )
+    second = manifest()
+    second["changes"][0]["payload"]["desired"] = {
+        "id": 77, "description": "new revision",
+    }
+    second["changes"][0]["after_sha256"] = digest(
+        second["changes"][0]["payload"]["desired"],
+    )
+    second["approval_scope"] = "offline:preview:changed-revision"
+    result_b = pipeline.unified_changeset_flow.fn(
+        second, str(ledger), mode="preview", requested_targets=[REQUESTED_TARGET],
+    )
+    assert result_a["results"][0]["state"] == "PREFLIGHT_PASS"
+    assert result_b["results"][0]["state"] == "PREFLIGHT_PASS"
+    assert result_a["provider_writes"] == result_b["provider_writes"] == 0
+    assert not ledger.exists()
+
+
+def test_preview_same_request_does_not_touch_preexisting_execution_ledger(tmp_path, monkeypatch):
+    """An execution ledger made by another process must not change on preview."""
+    import sqlite3
+    ledger = tmp_path / "execution.sqlite3"
+    with sqlite3.connect(ledger) as connection:
+        connection.execute("CREATE TABLE sentinel (item TEXT NOT NULL)")
+        connection.execute("INSERT INTO sentinel VALUES ('untouched')")
+    before = ledger.read_bytes()
+    monkeypatch.setattr(
+        pipeline, "create_read_registry",
+        lambda read_transport="local": {"plan.workout.patch": SyntheticReadAdapter()},
+    )
+    result = pipeline.unified_changeset_flow.fn(
+        manifest(), str(ledger), mode="preview", requested_targets=[REQUESTED_TARGET],
+    )
+    assert result["results"][0]["state"] == "PREFLIGHT_PASS"
+    assert ledger.read_bytes() == before
+    with sqlite3.connect(ledger) as connection:
+        assert connection.execute("SELECT item FROM sentinel").fetchone() == ("untouched",)
