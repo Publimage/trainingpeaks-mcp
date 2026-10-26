@@ -262,3 +262,39 @@ flow source blob `0dbb72d41c41609ed97185c45296ad1737ca0807`
 with a stubbed private store/Prefect/provider. This is NOT full repository CI,
 not a test of the real DraftStore, not a deployment and not a TrainingPeaks
 writer canary. Remain DRAFT/preview-only until gates are satisfied.
+
+## Proposed internal approval and execution binding (offline, not released)
+
+Reuse the immutable request, preview snapshots and ChangeSetV1 engine above.
+`DraftStore.record_approval` stores a separate immutable decision bound to the
+request, exact preview SHA (including its observation receipt), manifest SHA,
+reviewed code revision and approval scope. The caller must independently supply
+the matching kind/target list. Targets are compared without order and with exact
+multiplicity. Repeated identical decisions reuse the same record; a new preview
+or revision never inherits an earlier decision.
+
+`DraftStore.bind_execution` requires that decision plus the independently checked
+revision, scope and targets again. It creates a ChangeSetV1 with the reviewed
+scope, leaving the original preview and draft untouched. A transaction reserves
+exactly one decision/manifest per request. Reopening or retrying returns the same
+manifest digest, avoiding execution-ledger drift; a different decision for an
+already bound request is rejected. Both registrations use SQLite BEGIN IMMEDIATE
+and rollback on failure. A crash after binding and before Ledger.setup resumes
+the same manifest. This is an execution reservation, not a completed receipt.
+
+These methods are INTERNAL persistence primitives, not a user-facing approval
+tool or authentication service. Only a trusted authorization service may supply
+their review context. The approval SHA is an identifier, not a bearer token;
+checksums detect mismatched records but cannot authenticate a malicious database
+writer. Runtime authentication, current grants/revocation, dynamic VPC scope,
+adapter readiness and independent live preflight/readback remain mandatory.
+Neither method reads/writes TrainingPeaks or invokes the engine; the existing
+flow still rejects publish. No new flow, job, deployment or plan-specific file.
+
+Remaining integration gates: wire a reviewed authorization service into the
+existing entrypoint, enforce execution worker ownership across processes/hosts
+(the reservation is not a worker mutex), validate capability-specific writers
+and canaries, and obtain full repository/Prefect CI on the exact revision. The
+existing engine still accepts low-level scope/revision inputs, so this internal
+store boundary must not be advertised as enforcement for all engine callers.
+No earlier explicit denial, staging allowlist or provider gate is changed.

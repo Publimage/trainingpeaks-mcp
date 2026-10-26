@@ -302,6 +302,14 @@ class DraftStore:
                 DEFAULT CURRENT_TIMESTAMP,
             PRIMARY KEY(request_id, preview_sha)
         )""")
+        self.db.execute("""CREATE TABLE IF NOT EXISTS preview_approvals (
+            request_id TEXT NOT NULL, approval_sha TEXT NOT NULL,
+            payload TEXT NOT NULL, PRIMARY KEY(request_id, approval_sha)
+        )""")
+        self.db.execute("""CREATE TABLE IF NOT EXISTS execution_bindings (
+            request_id TEXT PRIMARY KEY, approval_sha TEXT NOT NULL,
+            manifest_sha TEXT NOT NULL
+        )""")
         self.db.commit()
 
     def close(self) -> None:
@@ -514,6 +522,133 @@ class DraftStore:
                 "PREVIEW_RECORD_CORRUPT")
         return {"manifest": manifest, "receipt": receipt,
                 "preview_sha256": preview_sha, "publication_authorized": False}
+
+
+    def _approval_record(self, request_id: str, preview_sha: str, *,
+                         approved_revision: str, approval_scope: str,
+                         requested_targets: list[dict[str, Any]]) -> tuple[dict, dict]:
+        """Validate independent review context against the saved snapshot.
+
+        This is an internal persistence boundary, not an authentication API.
+        Only a trusted authorization service may supply the review context.
+        Provider permission/readiness checks still belong to typed adapters.
+        """
+        from scripts.ironman_jobs.ironman_unified_changeset_engine import digest
+        snapshot = self.get_preview(request_id, preview_sha)
+        require(snapshot is not None, "PREVIEW_VERSION_NOT_FOUND")
+        manifest = snapshot["manifest"]
+        require(approved_revision == manifest["reviewed_revision"],
+                "REVISION_NOT_APPROVED")
+        require(type(approval_scope) is str and
+                TOKEN.fullmatch(approval_scope) is not None and
+                not approval_scope.startswith("PREVIEW_ONLY:"),
+                "APPROVAL_SCOPE_REQUIRED")
+        expected = [{"kind": item["kind"], "target": item["target"]}
+                    for item in manifest["changes"]]
+        require(type(requested_targets) is list and
+                len(requested_targets) == len(expected) and
+                all(type(item) is dict and set(item) == {"kind", "target"}
+                    for item in requested_targets) and
+                sorted(map(canonical, requested_targets)) ==
+                sorted(map(canonical, expected)), "APPROVAL_TARGET_MISMATCH")
+        record = {
+            "schema": "IRONMAN_PREVIEW_APPROVAL_V1",
+            "request_id": request_id, "preview_sha256": preview_sha,
+            "manifest_sha256": digest(manifest),
+            "reviewed_revision": approved_revision,
+            "approval_scope": approval_scope,
+        }
+        return record, manifest
+
+    def record_approval(self, request_id: str, preview_sha: str, *,
+                        approved_revision: str, approval_scope: str,
+                        requested_targets: list[dict[str, Any]]) -> dict[str, Any]:
+        """Record a trusted review decision for exactly one preview version.
+
+        No flow/tool exposes this method. A checksum identifies the decision;
+        it is NOT a bearer credential or independent provider authorization.
+        Multiple reviewed previews may coexist until execution is bound.
+        """
+        from scripts.ironman_jobs.ironman_unified_changeset_engine import digest
+        self.db.execute("BEGIN IMMEDIATE")
+        try:
+            record, _ = self._approval_record(
+                request_id, preview_sha, approved_revision=approved_revision,
+                approval_scope=approval_scope, requested_targets=requested_targets)
+            approval_sha = digest(record)
+            bound = self.db.execute(
+                "SELECT approval_sha FROM execution_bindings WHERE request_id=?",
+                (request_id,),
+            ).fetchone()
+            require(bound is None or bound[0] == approval_sha,
+                    "REQUEST_EXECUTION_ALREADY_BOUND")
+            body = canonical(record)
+            row = self.db.execute(
+                "SELECT payload FROM preview_approvals WHERE request_id=? AND approval_sha=?",
+                (request_id, approval_sha),
+            ).fetchone()
+            if row is None:
+                self.db.execute("INSERT INTO preview_approvals VALUES (?,?,?)",
+                                (request_id, approval_sha, body))
+            else:
+                require(row[0] == body, "APPROVAL_RECORD_CORRUPT")
+            self.db.commit()
+        except Exception:
+            self.db.rollback()
+            raise
+        return {**record, "approval_sha256": approval_sha, "reused": row is not None,
+                "state": "APPROVAL_RECORDED", "provider_writes": 0,
+                "publication_enabled": False}
+
+    def bind_execution(self, request_id: str, preview_sha: str, approval_sha: str, *,
+                       approved_revision: str, approval_scope: str,
+                       requested_targets: list[dict[str, Any]]) -> dict[str, Any]:
+        """Reserve one immutable execution manifest per request, without I/O.
+
+        Recheck current trusted authorization context on EVERY resume. Never
+        accept a persisted approval hash alone as authority. Commit the binding
+        before a future writer opens its execution ledger; a crash in between
+        safely resumes the same manifest. This does not claim a provider write
+        or replace execution worker locks, revocation checks or provider gates.
+        """
+        from scripts.ironman_jobs.ironman_unified_changeset_engine import (
+            digest, validate_manifest,
+        )
+        require(type(approval_sha) is str and SHA.fullmatch(approval_sha) is not None,
+                "APPROVAL_LOOKUP_INVALID")
+        self.db.execute("BEGIN IMMEDIATE")
+        try:
+            record, preview = self._approval_record(
+                request_id, preview_sha, approved_revision=approved_revision,
+                approval_scope=approval_scope, requested_targets=requested_targets)
+            require(digest(record) == approval_sha, "APPROVAL_BINDING_MISMATCH")
+            row = self.db.execute(
+                "SELECT payload FROM preview_approvals WHERE request_id=? AND approval_sha=?",
+                (request_id, approval_sha),
+            ).fetchone()
+            require(row is not None, "APPROVAL_NOT_FOUND")
+            require(row[0] == canonical(record), "APPROVAL_RECORD_CORRUPT")
+            # Approval metadata is kept outside the preview. Neither its SHA
+            # nor the immutable draft is rewritten when review is recorded.
+            execution = {**preview, "approval_scope": approval_scope}
+            manifest_sha = validate_manifest(execution)
+            existing = self.db.execute(
+                "SELECT approval_sha,manifest_sha FROM execution_bindings WHERE request_id=?",
+                (request_id,),
+            ).fetchone()
+            require(existing is None or existing == (approval_sha, manifest_sha),
+                    "REQUEST_EXECUTION_ALREADY_BOUND")
+            if existing is None:
+                self.db.execute("INSERT INTO execution_bindings VALUES (?,?,?)",
+                                (request_id, approval_sha, manifest_sha))
+            self.db.commit()
+        except Exception:
+            self.db.rollback()
+            raise
+        return {"manifest": execution, "manifest_sha256": manifest_sha,
+                "preview_sha256": preview_sha, "approval_sha256": approval_sha,
+                "state": "EXECUTION_BOUND", "reused": existing is not None,
+                "provider_writes": 0, "publication_enabled": False}
 
 
 # This is the subset of the EXISTING universal engine that has read-only

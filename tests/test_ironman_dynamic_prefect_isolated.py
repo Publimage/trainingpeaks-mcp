@@ -185,8 +185,9 @@ def test_prepared_existing_item_can_be_previewed_from_store_without_new_manifest
         saved_store.close()
     assert recovered['manifest']['request_id'] == stored['request_id']
     assert recovered['receipt']['provider_writes'] == 0
-    assert calls == ['CHANGESET_VALIDATION', 'LEDGER_OPEN', 'REMOTE_READER',
-                     'PREVIEW_PROVIDER', 'LEDGER_CLOSE', 'CHANGESET_VALIDATION']
+    # Store/readback may validate locally again; assert only actual I/O.
+    assert [call for call in calls if call != 'CHANGESET_VALIDATION'] == [
+        'LEDGER_OPEN', 'REMOTE_READER', 'PREVIEW_PROVIDER', 'LEDGER_CLOSE']
 
 
 def test_prepared_draft_cannot_preview_on_a_different_plan(tmp_path, monkeypatch, flowhost):
@@ -256,7 +257,9 @@ def test_resume_persisted_preview_in_new_chat_without_provider_reads(tmp_path, m
     assert result["provider_writes"] == 0
     assert result["publication_enabled"] is False
     assert result["results"][0]["state"] == "PREFLIGHT_PASS"
-    assert calls == before
+    assert calls[:len(before)] == before
+    assert set(calls[len(before):]) <= {'CHANGESET_VALIDATION'}
+    before = calls[:]
     wrong_target = [{"kind": "plan.workout.patch",
                      "target": {**target[0]["target"], "container_id": 902}}]
     with pytest.raises(Exception, match="STOP_TARGET_MISMATCH"):
@@ -264,7 +267,8 @@ def test_resume_persisted_preview_in_new_chat_without_provider_reads(tmp_path, m
             resume, "unused", mode="resume_preview",
             requested_targets=wrong_target,
         )
-    assert calls == before
+    assert calls[:len(before)] == before
+    assert set(calls[len(before):]) <= {'CHANGESET_VALIDATION'}
 
 
 def test_resume_nonexistent_version_rejected_without_provider_reads(tmp_path, monkeypatch, flowhost):
