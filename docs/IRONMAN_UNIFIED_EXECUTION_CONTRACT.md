@@ -236,3 +236,29 @@ test_ironman_dynamic_prefect_isolated.py. CI/run status on exact HEAD must
 be checked before release; individual new tests have not been certified by
 GitHub Actions. The separate publish/approval model and true provider
 writer adapters still require authorized implementation and live canaries.
+
+
+## 2026-10-26 - Resume an immutable preview across chats (source-only)
+
+The existing `ironman-unified-changeset-v1` Prefect entrypoint has a read-only
+`mode=resume_preview`; it does NOT add a new job or publishing path.
+The input has exactly `schema=IRONMAN_PREVIEW_RESUME_INPUT_V1`,
+`request_id`, `preview_sha256`. The caller also provides the independently
+resolved `requested_targets` for the current chat. The flow reads the
+immutable draft and exact stored preview from `IRONMAN_OPERATION_DRAFT_STORE`,
+validates the saved ChangeSet and stops if the current target list differs.
+It returns the stored preflight results with `request_state=PREVIEW_ONLY`,
+`provider_writes=0`, `publication_enabled=false` and
+`source=stored_read_only_preview`. A stored preview is NOT a live recheck,
+not an approval and not an authorization to publish. There is no provider
+read/write in this resume mode; a fresh preview is required for fresh provider
+facts. This endpoint has not been deployed or exposed through a general live
+ChatGPT tool yet.
+
+GitHub implementation commits: `238b25959237f7df998e95c1eee62ac657cdc985`
+(flow) and `f03eb87af081d51321b8b8067898e626090952c9`
+(regressions). Offline exact-source QA: seven tests pass on the exact Prefect
+flow source blob `0dbb72d41c41609ed97185c45296ad1737ca0807`
+with a stubbed private store/Prefect/provider. This is NOT full repository CI,
+not a test of the real DraftStore, not a deployment and not a TrainingPeaks
+writer canary. Remain DRAFT/preview-only until gates are satisfied.
