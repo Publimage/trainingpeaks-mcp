@@ -175,6 +175,21 @@ def unified_changeset_flow(
         result["approval_scope"] = preview_manifest["approval_scope"]
         result["publication_enabled"] = False
         result["provider_writes"] = 0
+        # A passing provider-read preview is durable across chat restarts.
+        # This is a separate immutable snapshot, not an execution receipt or
+        # implicit approval. A failed preflight is returned but not promoted.
+        if all(row.get("state") in ("PREFLIGHT_PASS", "DONE_VERIFIED")
+               for row in result.get("results", [])):
+            store = DraftStore(Path(store_path))
+            try:
+                preview_receipt = store.store_preview(preview_manifest, result)
+            finally:
+                store.close()
+            result["preview_sha256"] = preview_receipt["preview_sha256"]
+            result["preview_reused"] = preview_receipt["reused"]
+            result["preview_persisted"] = True
+        else:
+            result["preview_persisted"] = False
         return result
     if mode != "preview":
         raise ChangeStop("PUBLISHING_NOT_YET_ENABLED_FOR_UNIFIED_FLOW")
