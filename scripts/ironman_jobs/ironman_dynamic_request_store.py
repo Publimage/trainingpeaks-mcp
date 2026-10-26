@@ -295,6 +295,13 @@ class DraftStore:
             request_id TEXT PRIMARY KEY, semantic_sha TEXT NOT NULL,
             payload TEXT NOT NULL, created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
         )""")
+        self.db.execute("""CREATE TABLE IF NOT EXISTS previews (
+            request_id TEXT NOT NULL, preview_sha TEXT NOT NULL,
+            manifest_sha TEXT NOT NULL, manifest_json TEXT NOT NULL,
+            result_json TEXT NOT NULL, created_at TEXT NOT NULL
+                DEFAULT CURRENT_TIMESTAMP,
+            PRIMARY KEY(request_id, preview_sha)
+        )""")
         self.db.commit()
 
     def close(self) -> None:
@@ -337,6 +344,91 @@ class DraftStore:
         verify_draft_integrity(loaded)
         require(row[0] == loaded["semantic_sha256"], "PERSISTED_DRAFT_CORRUPT")
         return loaded
+
+    def store_preview(self, manifest: dict[str, Any],
+                      receipt: dict[str, Any]) -> dict[str, Any]:
+        """Persist a reviewed, provider-read-only preview independently of execution.
+
+        The request remains immutable; a new preview or a different provider
+        observation gets its own SHA. This is never a publish approval.
+        """
+        from scripts.ironman_jobs.ironman_unified_changeset_engine import (
+            digest, validate_manifest,
+        )
+        manifest_sha = validate_manifest(manifest)
+        request_id = manifest["request_id"]
+        require(manifest["approval_scope"] == "PREVIEW_ONLY:" + request_id,
+                "PREVIEW_SCOPE_REQUIRED")
+        require(type(receipt) is dict and
+                receipt.get("request_id") == request_id and
+                receipt.get("manifest_sha256") == manifest_sha and
+                receipt.get("mode") == "preview" and
+                receipt.get("request_state") == "PREVIEW_ONLY" and
+                receipt.get("provider_writes") == 0 and
+                receipt.get("provider_writes_claimed") == 0 and
+                receipt.get("publication_enabled") is False,
+                "PREVIEW_RECEIPT_NOT_READ_ONLY")
+        outcomes = receipt.get("results")
+        require(type(outcomes) is list and len(outcomes) == len(manifest["changes"])
+                and all(type(row) is dict and row.get("state") in (
+                    "PREFLIGHT_PASS", "DONE_VERIFIED",
+                ) for row in outcomes), "PREVIEW_NOT_PASSED")
+        manifest_json, result_json = canonical(manifest), canonical(receipt)
+        preview_sha = hashlib.sha256(
+            (manifest_sha + ":" + hashlib.sha256(
+                result_json.encode("utf-8")).hexdigest()).encode("ascii")
+        ).hexdigest()
+        with self.db:
+            row = self.db.execute(
+                "SELECT semantic_sha FROM drafts WHERE request_id=?",
+                (request_id,),
+            ).fetchone()
+            require(row is not None, "DRAFT_REQUEST_NOT_FOUND")
+            existing = self.db.execute(
+                """SELECT manifest_sha,manifest_json,result_json FROM previews
+                   WHERE request_id=? AND preview_sha=?""",
+                (request_id, preview_sha),
+            ).fetchone()
+            if existing:
+                require(existing == (manifest_sha, manifest_json, result_json),
+                        "PREVIEW_TAMPERED")
+                reused = True
+            else:
+                self.db.execute(
+                    """INSERT INTO previews
+                       (request_id,preview_sha,manifest_sha,manifest_json,result_json)
+                       VALUES (?,?,?,?,?)""",
+                    (request_id, preview_sha, manifest_sha, manifest_json, result_json),
+                )
+                reused = False
+        return {"request_id": request_id, "preview_sha256": preview_sha,
+                "reused": reused, "state": "PREVIEW_ONLY",
+                "publication_authorized": False, "provider_writes": 0}
+
+    def get_preview(self, request_id: str, preview_sha: str) -> dict[str, Any] | None:
+        """Resume a specific immutable preview after a chat rollover."""
+        require(type(request_id) is str and TOKEN.fullmatch(request_id) is not None
+                and type(preview_sha) is str and SHA.fullmatch(preview_sha) is not None,
+                "PREVIEW_LOOKUP_INVALID")
+        row = self.db.execute(
+            """SELECT manifest_sha,manifest_json,result_json FROM previews
+               WHERE request_id=? AND preview_sha=?""",
+            (request_id, preview_sha),
+        ).fetchone()
+        if row is None:
+            return None
+        manifest_sha, manifest_json, result_json = row
+        from scripts.ironman_jobs.ironman_unified_changeset_engine import digest
+        manifest, receipt = json.loads(manifest_json), json.loads(result_json)
+        require(digest(manifest) == manifest_sha and
+                hashlib.sha256(
+                    (manifest_sha + ":" + hashlib.sha256(
+                        result_json.encode("utf-8")).hexdigest()).encode("ascii")
+                ).hexdigest() == preview_sha,
+                "PREVIEW_RECORD_CORRUPT")
+        return {"manifest": manifest, "receipt": receipt,
+                "preview_sha256": preview_sha, "publication_authorized": False}
+
 
 # This is the subset of the EXISTING universal engine that has read-only
 # adapters. A prepared request for create/delete is deliberately NOT promoted
