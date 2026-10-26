@@ -381,53 +381,61 @@ class DraftStore:
             (manifest_sha + ":" + hashlib.sha256(
                 result_json.encode("utf-8")).hexdigest()).encode("ascii")
         ).hexdigest()
-        with self.db:
-            row = self.db.execute(
-                "SELECT payload FROM drafts WHERE request_id=?",
-                (request_id,),
-            ).fetchone()
-            require(row is not None, "DRAFT_REQUEST_NOT_FOUND")
-            stored_draft = json.loads(row[0])
-            verify_draft_integrity(stored_draft)
-            # A forged preview must not inherit a different stored request's
-            # identifier. This check is independent of provider readback.
-            source_items = stored_draft["items"]
-            proposed_items = manifest["changes"]
-            require(len(source_items) == len(proposed_items),
-                    "PREVIEW_DRAFT_BINDING_MISMATCH")
-            for draft_item, proposed in zip(source_items, proposed_items):
-                target = draft_item["target"]
-                require(
-                    proposed["id"] == draft_item["id"] and
-                    proposed["kind"] == draft_item["kind"] and
-                    proposed["before_sha256"] == draft_item["before_sha256"] and
-                    proposed["depends_on"] == draft_item["depends_on"] and
-                    proposed["payload"] == draft_item["payload"] and
-                    proposed["target"] == {
-                        key: target[key] for key in (
-                            "provider", "owner_id", "container_kind",
-                            "container_id", "resource_id",
-                        )
-                    },
-                    "PREVIEW_DRAFT_BINDING_MISMATCH",
-                )
-            existing = self.db.execute(
-                """SELECT manifest_sha,manifest_json,result_json FROM previews
-                   WHERE request_id=? AND preview_sha=?""",
-                (request_id, preview_sha),
-            ).fetchone()
-            if existing:
-                require(existing == (manifest_sha, manifest_json, result_json),
-                        "PREVIEW_TAMPERED")
-                reused = True
-            else:
-                self.db.execute(
-                    """INSERT INTO previews
-                       (request_id,preview_sha,manifest_sha,manifest_json,result_json)
-                       VALUES (?,?,?,?,?)""",
-                    (request_id, preview_sha, manifest_sha, manifest_json, result_json),
-                )
-                reused = False
+        # Match store(): claim the SQLite writer slot BEFORE checking for an
+        # existing immutable preview. Two concurrent chats must not race on
+        # SELECT-then-INSERT and mistake a duplicate for a new operation.
+        self.db.execute("BEGIN IMMEDIATE")
+        try:
+                row = self.db.execute(
+                    "SELECT payload FROM drafts WHERE request_id=?",
+                    (request_id,),
+                ).fetchone()
+                require(row is not None, "DRAFT_REQUEST_NOT_FOUND")
+                stored_draft = json.loads(row[0])
+                verify_draft_integrity(stored_draft)
+                # A forged preview must not inherit a different stored request's
+                # identifier. This check is independent of provider readback.
+                source_items = stored_draft["items"]
+                proposed_items = manifest["changes"]
+                require(len(source_items) == len(proposed_items),
+                        "PREVIEW_DRAFT_BINDING_MISMATCH")
+                for draft_item, proposed in zip(source_items, proposed_items):
+                    target = draft_item["target"]
+                    require(
+                        proposed["id"] == draft_item["id"] and
+                        proposed["kind"] == draft_item["kind"] and
+                        proposed["before_sha256"] == draft_item["before_sha256"] and
+                        proposed["depends_on"] == draft_item["depends_on"] and
+                        proposed["payload"] == draft_item["payload"] and
+                        proposed["target"] == {
+                            key: target[key] for key in (
+                                "provider", "owner_id", "container_kind",
+                                "container_id", "resource_id",
+                            )
+                        },
+                        "PREVIEW_DRAFT_BINDING_MISMATCH",
+                    )
+                existing = self.db.execute(
+                    """SELECT manifest_sha,manifest_json,result_json FROM previews
+                       WHERE request_id=? AND preview_sha=?""",
+                    (request_id, preview_sha),
+                ).fetchone()
+                if existing:
+                    require(existing == (manifest_sha, manifest_json, result_json),
+                            "PREVIEW_TAMPERED")
+                    reused = True
+                else:
+                    self.db.execute(
+                        """INSERT INTO previews
+                           (request_id,preview_sha,manifest_sha,manifest_json,result_json)
+                           VALUES (?,?,?,?,?)""",
+                        (request_id, preview_sha, manifest_sha, manifest_json, result_json),
+                    )
+                    reused = False
+            self.db.commit()
+        except Exception:
+            self.db.rollback()
+            raise
         return {"request_id": request_id, "preview_sha256": preview_sha,
                 "reused": reused, "state": "PREVIEW_ONLY",
                 "publication_authorized": False, "provider_writes": 0}
