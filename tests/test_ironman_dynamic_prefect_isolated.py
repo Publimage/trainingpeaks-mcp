@@ -34,12 +34,25 @@ def flowhost(monkeypatch):
             calls.append('LEDGER_OPEN')
         def close(self):
             calls.append('LEDGER_CLOSE')
+    def digest(value):
+        import hashlib
+        import json
+        data = json.dumps(value, ensure_ascii=False, sort_keys=True,
+                          separators=(',', ':'), allow_nan=False)
+        return hashlib.sha256(data.encode('utf-8')).hexdigest()
     def validate_manifest(value):
         calls.append('CHANGESET_VALIDATION')
-        return 'validated'
-    def run_changeset(*args, **kwargs):
+        return digest(value)
+    def run_changeset(manifest, *args, **kwargs):
         calls.append('PREVIEW_PROVIDER')
-        return {'mode': 'preview', 'results': []}
+        return {'schema': 'IRONMAN_CHANGESET_RESULT_V1',
+                'request_id': manifest['request_id'],
+                'manifest_sha256': digest(manifest),
+                'mode': 'preview', 'request_state': 'PREVIEW_ONLY',
+                'provider_writes_claimed': 0,
+                'results': [{'id': x['id'], 'state': 'PREFLIGHT_PASS'}
+                            for x in manifest['changes']]}
+    engine.digest = digest
     engine.ChangeStop = ChangeStop
     engine.Ledger = Ledger
     engine.validate_manifest = validate_manifest
@@ -163,6 +176,15 @@ def test_prepared_existing_item_can_be_previewed_from_store_without_new_manifest
     assert result['provider_writes'] == 0
     assert result['publication_enabled'] is False
     assert result['approval_scope'].startswith('PREVIEW_ONLY:')
+    assert result['preview_persisted'] is True
+    assert len(result['preview_sha256']) == 64
+    saved_store = DraftStore(path)
+    try:
+        recovered = saved_store.get_preview(stored['request_id'], result['preview_sha256'])
+    finally:
+        saved_store.close()
+    assert recovered['manifest']['request_id'] == stored['request_id']
+    assert recovered['receipt']['provider_writes'] == 0
     assert calls == ['CHANGESET_VALIDATION', 'LEDGER_OPEN', 'REMOTE_READER',
                      'PREVIEW_PROVIDER', 'LEDGER_CLOSE']
 
