@@ -391,10 +391,6 @@ def _durable_preview_fixture(tmp_path):
 
 
 def test_durable_previews_multiple_revisions_one_immutable_request(tmp_path):
-    from scripts.ironman_jobs.ironman_dynamic_request_store import (
-        compile_preview_changeset,
-    )
-    from scripts.ironman_jobs.ironman_unified_changeset_engine import digest
     draft, m1, r1 = _durable_preview_fixture(tmp_path)
     db = tmp_path / "request-store.sqlite3"
     store = DraftStore(db)
@@ -405,15 +401,7 @@ def test_durable_previews_multiple_revisions_one_immutable_request(tmp_path):
         assert first["publication_authorized"] is False
         assert first["reused"] is False
         assert store.store_preview(m1, r1)["reused"] is True
-        changed = {"id": 31, "title": "revised prescription"}
-        m2 = compile_preview_changeset(
-            prepare_draft([item("plan.workout.patch", payload={"desired": changed})],
-                          request_key=draft["request_key"]),
-            {"a01": changed}, pinned_revision="a" * 40,
-        )["manifest"]
-        # The immutable request cannot change: a revised preview must keep the
-        # draft payload but may include a new independently reviewed after-image.
-        # Therefore produce a different observation for the same manifest instead.
+        # Same immutable requested change, independent provider observation.
         r2 = {**r1, "results": [{"id": "a01", "state": "DONE_VERIFIED"}]}
         second = store.store_preview(m1, r2)
         assert second["preview_sha256"] != first["preview_sha256"]
