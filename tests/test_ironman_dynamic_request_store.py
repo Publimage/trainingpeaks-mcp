@@ -474,3 +474,70 @@ def test_durable_preview_rejects_mismatched_outcome_identity(tmp_path):
             store.store_preview(manifest, receipt)
     finally:
         store.close()
+
+
+
+def _insert_forged_resume_snapshot(store, manifest, receipt):
+    """Construct a self-consistent snapshot without using store_preview."""
+    from scripts.ironman_jobs.ironman_dynamic_request_store import canonical
+    from scripts.ironman_jobs.ironman_unified_changeset_engine import digest
+    manifest_sha = digest(manifest)
+    receipt["manifest_sha256"] = manifest_sha
+    manifest_json, receipt_json = canonical(manifest), canonical(receipt)
+    preview_sha = hashlib.sha256((
+        manifest_sha + ":" + hashlib.sha256(
+            receipt_json.encode("utf-8"),
+        ).hexdigest()
+    ).encode("ascii")).hexdigest()
+    with store.db:
+        store.db.execute(
+            """INSERT INTO previews
+               (request_id,preview_sha,manifest_sha,manifest_json,result_json)
+               VALUES (?,?,?,?,?)""",
+            (manifest["request_id"], preview_sha, manifest_sha,
+             manifest_json, receipt_json),
+        )
+    return preview_sha
+
+
+def test_resume_rejects_rehashed_snapshot_retargeted_to_another_plan(tmp_path):
+    draft, manifest, receipt = _durable_preview_fixture(tmp_path)
+    store = DraftStore(tmp_path / "draft.sqlite3")
+    try:
+        store.store(draft)
+        forged = json.loads(json.dumps(manifest))
+        forged["changes"][0]["target"]["container_id"] = 999999
+        sha = _insert_forged_resume_snapshot(store, forged, receipt)
+        with pytest.raises(DraftStop, match="PREVIEW_RECORD_DRAFT_MISMATCH"):
+            store.get_preview(draft["request_id"], sha)
+    finally:
+        store.close()
+
+
+def test_resume_rejects_rehashed_receipt_claiming_a_provider_write(tmp_path):
+    draft, manifest, receipt = _durable_preview_fixture(tmp_path)
+    store = DraftStore(tmp_path / "draft.sqlite3")
+    try:
+        store.store(draft)
+        receipt["provider_writes_claimed"] = 1
+        sha = _insert_forged_resume_snapshot(store, manifest, receipt)
+        with pytest.raises(DraftStop, match="PREVIEW_RECORD_CORRUPT"):
+            store.get_preview(draft["request_id"], sha)
+    finally:
+        store.close()
+
+
+def test_resume_rejects_preview_orphaned_from_immutable_request(tmp_path):
+    draft, manifest, receipt = _durable_preview_fixture(tmp_path)
+    store = DraftStore(tmp_path / "draft.sqlite3")
+    try:
+        store.store(draft)
+        stored = store.store_preview(manifest, receipt)
+        with store.db:
+            store.db.execute(
+                "DELETE FROM drafts WHERE request_id=?", (draft["request_id"],),
+            )
+        with pytest.raises(DraftStop, match="PREVIEW_ORPHAN_REQUEST"):
+            store.get_preview(draft["request_id"], stored["preview_sha256"])
+    finally:
+        store.close()
