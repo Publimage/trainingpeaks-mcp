@@ -604,3 +604,42 @@ def test_preview_write_transaction_rolls_back_after_invalid_target(tmp_path):
         assert after["reused"] is False
     finally:
         store.close()
+
+
+def test_persisted_draft_row_must_match_requested_identity(tmp_path):
+    """A valid payload moved under another key is not a valid request."""
+    draft, manifest, receipt = _durable_preview_fixture(tmp_path)
+    store = DraftStore(tmp_path / "identity.sqlite3")
+    try:
+        store.store(draft)
+        changed_id = "wrong-request-key-20261026"
+        with store.db:
+            store.db.execute(
+                "UPDATE drafts SET request_id=? WHERE request_id=?",
+                (changed_id, draft["request_id"]),
+            )
+        with pytest.raises(DraftStop, match="PERSISTED_DRAFT_CORRUPT"):
+            store.get(changed_id)
+        with pytest.raises(DraftStop, match="DRAFT_REQUEST_NOT_FOUND"):
+            store.store_preview(manifest, receipt)
+    finally:
+        store.close()
+
+
+def test_preview_refuses_draft_row_digest_corruption(tmp_path):
+    """Preview creation must check database SHA, not only payload syntax."""
+    draft, manifest, receipt = _durable_preview_fixture(tmp_path)
+    store = DraftStore(tmp_path / "digest.sqlite3")
+    try:
+        store.store(draft)
+        with store.db:
+            store.db.execute(
+                "UPDATE drafts SET semantic_sha=? WHERE request_id=?",
+                ("f" * 64, draft["request_id"]),
+            )
+        with pytest.raises(DraftStop, match="PERSISTED_DRAFT_CORRUPT"):
+            store.get(draft["request_id"])
+        with pytest.raises(DraftStop, match="PERSISTED_DRAFT_CORRUPT"):
+            store.store_preview(manifest, receipt)
+    finally:
+        store.close()
