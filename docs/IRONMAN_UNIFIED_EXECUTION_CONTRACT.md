@@ -203,3 +203,36 @@ The current PR18 engine only supports six existing-resource operation kinds and 
 - One single shared tool and runner entrypoint from different chats, with state/receipts in the service and canonical decisions in Google Drive, independent of chat history.
 
 Status: **PRODUCT REQUIREMENT / NOT YET IMPLEMENTED**. Keep PR18 draft, preview-only and its current allowlists unchanged; keep the proven live adapters for their authorized scopes. No PR18 merge/deploy or provider writes authorized by this requirement.
+
+
+
+## 2026-10-26 - Durable preview boundary (PR18 source-only)
+Status: SOURCE-INTEGRATED / NO FULL CI / NO PROVIDER WRITES. PR18 remains DRAFT.
+
+The request is immutable and persisted once in DraftStore. Each passing preview_draft
+runs against a temporary in-memory SQLite Ledger, so it cannot claim or poison
+the future execution ledger under the same request_id. Passing read-only
+provider observations are persisted as separate immutable preview revisions
+in the existing DraftStore database (request_id + preview_sha256). A new
+observation yields a new preview ID; re-reading the same snapshot reuses it.
+Failed/conflicting previews are returned to the caller but not persisted as
+approved-looking snapshots.
+
+The preview record contains a reviewed ChangeSet manifest and its read-only
+receipt. It is NOT an approval token, does not grant provider permissions,
+does not enable unified publish, and cannot substitute a provider canary. The
+store checks manifest hashes, PREVIEW_ONLY scope, zero provider writes, and
+passing item results. get_preview can recover one exact immutable revision
+across chat rollovers; the active tool surface does not yet expose a generic
+user-facing retrieval method. A changed desired operation requires a new
+immutable request identity rather than silently mutating the old draft.
+
+Source as of commit 139e8b93a3bb8e29ca1ec590357c365eb1bfdb68:
+scripts/ironman_jobs/ironman_unified_prefect_flow.py and
+scripts/ironman_jobs/ironman_dynamic_request_store.py; test cases in
+test_ironman_unified_prefect_flow.py,
+test_ironman_dynamic_request_store.py and
+test_ironman_dynamic_prefect_isolated.py. CI/run status on exact HEAD must
+be checked before release; individual new tests have not been certified by
+GitHub Actions. The separate publish/approval model and true provider
+writer adapters still require authorized implementation and live canaries.
