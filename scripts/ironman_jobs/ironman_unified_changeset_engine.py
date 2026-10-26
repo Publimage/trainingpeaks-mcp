@@ -184,7 +184,11 @@ class Ledger:
 
     def setup(self, manifest: dict[str, Any], manifest_sha: str) -> None:
         request = manifest["request_id"]
-        with self.db:
+        # Lock before reading the request row. Without BEGIN IMMEDIATE two
+        # concurrent callers can both observe an absent row and race on INSERT,
+        # turning an idempotent replay into an IntegrityError.
+        self.db.execute("BEGIN IMMEDIATE")
+        try:
             existing = self.db.execute(
                 "SELECT manifest_sha FROM requests WHERE request_id=?", (request,)
             ).fetchone()
@@ -196,6 +200,10 @@ class Ledger:
                 for item in manifest["changes"]:
                     self.db.execute("INSERT INTO change_events VALUES (?,?,?,?,?,?)",
                                     (request, item["id"], "PENDING", None, utc(), None))
+            self.db.commit()
+        except Exception:
+            self.db.rollback()
+            raise
 
     def status(self, request: str, change_id: str) -> str:
         row = self.db.execute(
