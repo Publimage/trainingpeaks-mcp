@@ -81,3 +81,18 @@ def test_create_preflight_handles_absent_without_fake_id_and_prevents_duplicate(
     with pytest.raises(TargetStop, match="CREATE_NAME_CONFLICT"):
         require_new_name_absent(PLANS, "WINTER FOUNDATION", id_field="plan_id",
                                 title_field="title", scope="training_plan")
+
+
+
+def test_create_preflight_rejects_duplicate_provider_ids_and_oversized_inventory():
+    rows = PLANS + [{"plan_id": 501, "title": "Unrelated repeated identity"}]
+    with pytest.raises(TargetStop, match="PROVIDER_DUPLICATE_IDS"):
+        require_new_name_absent(rows, "Another brand new plan",
+                                id_field="plan_id", title_field="title",
+                                scope="training_plan")
+    oversized = [{"plan_id": i + 1, "title": f"Plan {i}"}
+                 for i in range(10001)]
+    with pytest.raises(TargetStop, match="PROVIDER_INVENTORY_INVALID"):
+        require_new_name_absent(oversized, "Brand new plan",
+                                id_field="plan_id", title_field="title",
+                                scope="training_plan")
