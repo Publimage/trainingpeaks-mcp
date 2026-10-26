@@ -287,3 +287,55 @@ def test_provider_transport_date_may_shift_without_shifting_relative_slots():
     with pytest.raises(MutationStop, match='OTHER_WORKOUTS_CHANGED'):
         verify_plan_workout_absent(
             snapshot,plan=changed_plan,workouts=changed_slot,notes=changed_notes)
+
+
+@pytest.mark.parametrize("field,value", [
+    ("description", "Unexpected overwritten description"),
+    ("planCategory", 0),
+    ("subcategory", 0),
+    ("isSearchable", False),
+    ("customUrl", "unintended-url"),
+    ("sampleWeekOne", {"wrong": "sample"}),
+    ("additionalCriteria", {"wrong": "criteria"}),
+    ("planEmail", "unintended@example.test"),
+])
+def test_plan_workout_delete_postflight_protects_noncalendar_metadata(field, value):
+    # Reproduce the class of provider metadata loss previously observed
+    # after a partially populated Training Plan update.
+    original = plan_detail()
+    original.update({
+        "description": "Approved HTML", "planCategory": 4, "subcategory": 3,
+        "isSearchable": True, "customUrl": "original-slug",
+        "sampleWeekOne": {"approved": "sample"},
+        "additionalCriteria": {"approved": "criteria"},
+        "planEmail": "coach@example.test",
+    })
+    before = preview_delete_plan_workout(
+        delete_change(), coach_id=OWNER, owned_plans=old_plans(),
+        plan=original, workouts=plan_workouts(), notes=notes(),
+    )
+    altered = deepcopy(original)
+    altered[field] = value
+    survivors = [plan_workouts()[0], plan_workouts()[2]]
+    with pytest.raises(MutationStop, match="PLAN_METADATA_CHANGED"):
+        verify_plan_workout_absent(before, plan=altered,
+                                  workouts=survivors, notes=notes())
+
+
+def test_delete_readback_allows_only_provider_transport_date_shift_not_description():
+    original = plan_detail()
+    original["description"] = "Approved coaching notes"
+    before = preview_delete_plan_workout(
+        delete_change(), coach_id=OWNER, owned_plans=old_plans(),
+        plan=original, workouts=plan_workouts(), notes=notes(),
+    )
+    shifted = deepcopy(original)
+    shifted["startDate"] = "2038-04-12T00:00:00"
+    shifted["dayCount"] = 56
+    survivors = [plan_workouts()[0], plan_workouts()[2]]
+    assert verify_plan_workout_absent(before, plan=shifted,
+                                     workouts=survivors, notes=notes())["state"] == "PROVIDER_POSTFLIGHT_MATCH"
+    shifted["description"] = ""
+    with pytest.raises(MutationStop, match="PLAN_METADATA_CHANGED"):
+        verify_plan_workout_absent(before, plan=shifted,
+                                  workouts=survivors, notes=notes())
