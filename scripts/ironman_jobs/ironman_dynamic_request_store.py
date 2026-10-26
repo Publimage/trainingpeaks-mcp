@@ -372,7 +372,10 @@ class DraftStore:
         require(type(outcomes) is list and len(outcomes) == len(manifest["changes"])
                 and all(type(row) is dict and row.get("state") in (
                     "PREFLIGHT_PASS", "DONE_VERIFIED",
-                ) for row in outcomes), "PREVIEW_NOT_PASSED")
+                ) for row in outcomes) and
+                {row.get("id") for row in outcomes} ==
+                {item["id"] for item in manifest["changes"]},
+                "PREVIEW_NOT_PASSED")
         manifest_json, result_json = canonical(manifest), canonical(receipt)
         preview_sha = hashlib.sha256(
             (manifest_sha + ":" + hashlib.sha256(
@@ -380,10 +383,34 @@ class DraftStore:
         ).hexdigest()
         with self.db:
             row = self.db.execute(
-                "SELECT semantic_sha FROM drafts WHERE request_id=?",
+                "SELECT payload FROM drafts WHERE request_id=?",
                 (request_id,),
             ).fetchone()
             require(row is not None, "DRAFT_REQUEST_NOT_FOUND")
+            stored_draft = json.loads(row[0])
+            verify_draft_integrity(stored_draft)
+            # A forged preview must not inherit a different stored request's
+            # identifier. This check is independent of provider readback.
+            source_items = stored_draft["items"]
+            proposed_items = manifest["changes"]
+            require(len(source_items) == len(proposed_items),
+                    "PREVIEW_DRAFT_BINDING_MISMATCH")
+            for draft_item, proposed in zip(source_items, proposed_items):
+                target = draft_item["target"]
+                require(
+                    proposed["id"] == draft_item["id"] and
+                    proposed["kind"] == draft_item["kind"] and
+                    proposed["before_sha256"] == draft_item["before_sha256"] and
+                    proposed["depends_on"] == draft_item["depends_on"] and
+                    proposed["payload"] == draft_item["payload"] and
+                    proposed["target"] == {
+                        key: target[key] for key in (
+                            "provider", "owner_id", "container_kind",
+                            "container_id", "resource_id",
+                        )
+                    },
+                    "PREVIEW_DRAFT_BINDING_MISMATCH",
+                )
             existing = self.db.execute(
                 """SELECT manifest_sha,manifest_json,result_json FROM previews
                    WHERE request_id=? AND preview_sha=?""",
