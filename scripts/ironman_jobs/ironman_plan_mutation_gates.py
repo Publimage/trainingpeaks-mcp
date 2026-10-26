@@ -191,6 +191,17 @@ def preview_delete_plan_workout(change: dict[str, Any], *, coach_id: int,
          change["before_sha256"] == digest(_without_transport_date(selected)), "PLAN_WORKOUT_PREIMAGE_DRIFT")
     need(type(notes) is list and all(type(n) is dict for n in notes),
          "PLAN_NOTES_UNVERIFIABLE")
+    # Workouts/notes are verified separately. Preserve non-calendar plan
+    # metadata explicitly: a previous provider PUT silently reset commercial
+    # category, price and discovery fields even when workouts survived.
+    # startDate and dayCount are technical/recomputed provider coordinates,
+    # NOT canonical dates of a reusable Training Plan.
+    protected_plan_fields = (
+        "planId", "title", "description", "author", "planEmail",
+        "planLanguage", "isPublic", "price", "isSearchable",
+        "planCategory", "subcategory", "additionalCriteria",
+        "customUrl", "sampleWeekOne", "sampleWeekTwo", "weekCount",
+    )
     return {"state": "DELETE_PREFLIGHT_ONLY", "provider_writes": 0,
             "publication_enabled": False, "plan_id": pid, "workout_id": wid,
             "workout_count": len(all_workouts),
@@ -198,8 +209,7 @@ def preview_delete_plan_workout(change: dict[str, Any], *, coach_id: int,
             "survivor_hashes": {str(k): digest(_without_transport_date(v))
                                 for k, v in all_workouts.items() if k != wid},
             "note_sha256": digest([_without_transport_date(n) for n in notes]),
-            "plan_identity": {k: plan.get(k) for k in (
-                "planId", "title", "isPublic", "price", "weekCount")}}
+            "plan_identity": {k: plan.get(k) for k in protected_plan_fields}}
 
 
 def verify_plan_workout_absent(preflight: dict[str, Any], *,
