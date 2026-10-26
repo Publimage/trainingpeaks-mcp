@@ -1212,11 +1212,14 @@ async def tp_get_training_plan_notes(plan_id: int | str) -> dict[str, Any]:
         start = _parse_plan_date((plan.get("startDate") or "")[:10])
         days = max(plan.get("dayCount") or 0,
                    (plan.get("weekCount") or 0) * 7)
+        # An unpopulated plan may not have a startDate. Check it BEFORE
+        # calling weekday() or subtracting timedelta; the resolver must
+        # return a scoped read error, never throw on a newly created plan.
+        if start is None or days <= 0:
+            return _err("API_ERROR", "Plan has no populated calendar range.")
         # Relative Training Plan weeks begin Monday, even when the
         # first scheduled workout is Tuesday or later.
         start = start - timedelta(days=start.weekday())
-        if start is None or days <= 0:
-            return _err("API_ERROR", "Plan has no populated calendar range.")
         if v.plan_id == _INTERMEDIATE_PILOT_ID and start == _INTERMEDIATE_PILOT_START:
             days = max(days, _INTERMEDIATE_PILOT_WEEKS * 7)
         end = start + timedelta(days=days + 1)
