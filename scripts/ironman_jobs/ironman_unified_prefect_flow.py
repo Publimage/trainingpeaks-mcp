@@ -87,7 +87,10 @@ def preview_change_request(manifest: dict[str, Any],
         raise ChangeStop("LEDGER_PARENT_NOT_READY")
     # Read the actual provider object via an allowlisted resource adapter.
     # All adapters are READ-ONLY; there is no provider mutation here.
-    ledger = Ledger(path)
+    # Preview is read-only and must not reserve the durable execution identity.
+    # Each preview gets an isolated SQLite ledger; the persistent request store
+    # remains the sole source of request identity across chats.
+    ledger = Ledger(Path(":memory:"))
     try:
         result = run_changeset(
             manifest, create_read_registry(read_transport), ledger, execute=False,
