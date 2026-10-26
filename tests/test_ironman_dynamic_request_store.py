@@ -541,3 +541,66 @@ def test_resume_rejects_preview_orphaned_from_immutable_request(tmp_path):
             store.get_preview(draft["request_id"], stored["preview_sha256"])
     finally:
         store.close()
+
+
+
+def test_two_concurrent_chat_previews_are_one_immutable_sqlite_version(tmp_path):
+    """Separate SQLite connections cannot double-insert the same preview."""
+    from concurrent.futures import ThreadPoolExecutor
+    from threading import Barrier
+    draft, manifest, receipt = _durable_preview_fixture(tmp_path)
+    db_path = tmp_path / "shared-requests.sqlite3"
+    setup = DraftStore(db_path)
+    try:
+        setup.store(draft)
+    finally:
+        setup.close()
+    barrier = Barrier(2)
+
+    def save_from_another_chat():
+        store = DraftStore(db_path)
+        try:
+            barrier.wait(timeout=8)
+            return store.store_preview(manifest, receipt)
+        finally:
+            store.close()
+
+    with ThreadPoolExecutor(max_workers=2) as pool:
+        f1 = pool.submit(save_from_another_chat)
+        f2 = pool.submit(save_from_another_chat)
+        first, second = f1.result(timeout=15), f2.result(timeout=15)
+
+    assert first["preview_sha256"] == second["preview_sha256"]
+    assert sorted((first["reused"], second["reused"])) == [False, True]
+    reopened = DraftStore(db_path)
+    try:
+        count = reopened.db.execute(
+            "SELECT COUNT(*) FROM previews WHERE request_id=?",
+            (draft["request_id"],),
+        ).fetchone()[0]
+        assert count == 1
+        assert reopened.get_preview(
+            draft["request_id"], first["preview_sha256"],
+        )["publication_authorized"] is False
+    finally:
+        reopened.close()
+
+
+def test_preview_write_transaction_rolls_back_after_invalid_target(tmp_path):
+    """A rejected preview cannot strand the SQLite writer lock."""
+    draft, manifest, receipt = _durable_preview_fixture(tmp_path)
+    db_path = tmp_path / "rollback.sqlite3"
+    store = DraftStore(db_path)
+    try:
+        store.store(draft)
+        bad = json.loads(json.dumps(manifest))
+        bad["changes"][0]["target"]["container_id"] = 999999
+        from scripts.ironman_jobs.ironman_unified_changeset_engine import digest
+        bad_receipt = {**receipt, "manifest_sha256": digest(bad)}
+        with pytest.raises(DraftStop, match="PREVIEW_DRAFT_BINDING_MISMATCH"):
+            store.store_preview(bad, bad_receipt)
+        after = store.store_preview(manifest, receipt)
+        assert after["state"] == "PREVIEW_ONLY"
+        assert after["reused"] is False
+    finally:
+        store.close()
