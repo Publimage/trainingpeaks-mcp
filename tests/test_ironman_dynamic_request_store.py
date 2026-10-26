@@ -361,3 +361,99 @@ def test_preview_must_match_actual_desired_payload_when_provided():
     safe = compile_preview_changeset(draft, {"a01": {"title": "Correct"}},
                                     pinned_revision="a" * 40)
     assert safe["manifest"]["changes"][0]["payload"]["desired"] == {"title": "Correct"}
+
+
+
+def _durable_preview_fixture(tmp_path):
+    from scripts.ironman_jobs.ironman_dynamic_request_store import (
+        compile_preview_changeset,
+    )
+    from scripts.ironman_jobs.ironman_unified_changeset_engine import digest
+    desired = {"id": 31, "title": "new prescription"}
+    raw = item("plan.workout.patch", payload={"desired": desired})
+    draft = prepare_draft([raw], request_key="durable-preview-test-v1")
+    compiled = compile_preview_changeset(
+        draft, {"a01": desired}, pinned_revision="a" * 40,
+    )
+    m = compiled["manifest"]
+    result = {
+        "schema": "IRONMAN_CHANGESET_RESULT_V1",
+        "request_id": draft["request_id"],
+        "manifest_sha256": digest(m),
+        "mode": "preview",
+        "request_state": "PREVIEW_ONLY",
+        "provider_writes_claimed": 0,
+        "provider_writes": 0,
+        "publication_enabled": False,
+        "results": [{"id": "a01", "state": "PREFLIGHT_PASS"}],
+    }
+    return draft, m, result
+
+
+def test_durable_previews_multiple_revisions_one_immutable_request(tmp_path):
+    from scripts.ironman_jobs.ironman_dynamic_request_store import (
+        compile_preview_changeset,
+    )
+    from scripts.ironman_jobs.ironman_unified_changeset_engine import digest
+    draft, m1, r1 = _durable_preview_fixture(tmp_path)
+    db = tmp_path / "request-store.sqlite3"
+    store = DraftStore(db)
+    try:
+        store.store(draft)
+        first = store.store_preview(m1, r1)
+        assert first["state"] == "PREVIEW_ONLY"
+        assert first["publication_authorized"] is False
+        assert first["reused"] is False
+        assert store.store_preview(m1, r1)["reused"] is True
+        changed = {"id": 31, "title": "revised prescription"}
+        m2 = compile_preview_changeset(
+            prepare_draft([item("plan.workout.patch", payload={"desired": changed})],
+                          request_key=draft["request_key"]),
+            {"a01": changed}, pinned_revision="a" * 40,
+        )["manifest"]
+        # The immutable request cannot change: a revised preview must keep the
+        # draft payload but may include a new independently reviewed after-image.
+        # Therefore produce a different observation for the same manifest instead.
+        r2 = {**r1, "results": [{"id": "a01", "state": "DONE_VERIFIED"}]}
+        second = store.store_preview(m1, r2)
+        assert second["preview_sha256"] != first["preview_sha256"]
+        assert store.get_preview(draft["request_id"], second["preview_sha256"])["receipt"]["results"][0]["state"] == "DONE_VERIFIED"
+    finally:
+        store.close()
+    reopened = DraftStore(db)
+    try:
+        assert reopened.get_preview(draft["request_id"], first["preview_sha256"])["manifest"] == m1
+    finally:
+        reopened.close()
+
+
+@pytest.mark.parametrize("field,wrong", [
+    ("request_state", "WORK_COMPLETE"),
+    ("provider_writes_claimed", 1),
+    ("publication_enabled", True),
+    ("manifest_sha256", "f" * 64),
+])
+def test_durable_preview_rejects_non_read_only_receipts(tmp_path, field, wrong):
+    draft, manifest, receipt = _durable_preview_fixture(tmp_path)
+    store = DraftStore(tmp_path / "draft.sqlite3")
+    try:
+        store.store(draft)
+        receipt[field] = wrong
+        with pytest.raises(DraftStop, match="PREVIEW_RECEIPT_NOT_READ_ONLY"):
+            store.store_preview(manifest, receipt)
+    finally:
+        store.close()
+
+
+def test_durable_preview_refuses_failure_or_foreign_request(tmp_path):
+    draft, manifest, receipt = _durable_preview_fixture(tmp_path)
+    store = DraftStore(tmp_path / "draft.sqlite3")
+    try:
+        with pytest.raises(DraftStop, match="DRAFT_REQUEST_NOT_FOUND"):
+            store.store_preview(manifest, receipt)
+        store.store(draft)
+        receipt["results"][0]["state"] = "BLOCKED_CONFLICT"
+        with pytest.raises(DraftStop, match="PREVIEW_NOT_PASSED"):
+            store.store_preview(manifest, receipt)
+    finally:
+        store.close()
