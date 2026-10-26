@@ -269,3 +269,122 @@ def test_preview_same_request_does_not_touch_preexisting_execution_ledger(tmp_pa
     assert ledger.read_bytes() == before
     with sqlite3.connect(ledger) as connection:
         assert connection.execute("SELECT item FROM sentinel").fetchone() == ("untouched",)
+
+
+
+def test_real_sqlite_engine_crosschat_preview_roundtrip(tmp_path, monkeypatch):
+    """Real DraftStore + real Changeset Ledger + one Prefect flow, no TP writes."""
+    from scripts.ironman_jobs.ironman_dynamic_request_store import DraftStore
+
+    old = {"id": 77, "description": "old"}
+    desired = {"id": 77, "description": "revised in later chat"}
+    provider_reads = []
+    provider_writes = []
+
+    class ReadOnlyProvider:
+        def read(self, spec):
+            provider_reads.append(spec["target"]["container_id"])
+            return dict(old)
+
+        def apply(self, spec):
+            provider_writes.append(spec["id"])
+            raise AssertionError("UNAPPROVED_PROVIDER_MUTATION")
+
+    monkeypatch.setattr(
+        pipeline, "create_read_registry",
+        lambda read_transport="local": {"plan.workout.patch": ReadOnlyProvider()},
+    )
+    db = tmp_path / "durable-requests.sqlite3"
+    ledger = tmp_path / "durable-execution.sqlite3"
+    monkeypatch.setenv("IRONMAN_OPERATION_DRAFT_STORE", str(db))
+    target = dict(REQUESTED_TARGET["target"])
+    prepared = pipeline.unified_changeset_flow.fn(
+        {
+            "schema": "IRONMAN_OPERATION_INPUT_V1",
+            "request_key": "real-sqlite-crosschat-20261026",
+            "items": [{
+                "id": "change1",
+                "kind": "plan.workout.patch",
+                "target": target,
+                "payload": {"desired": desired},
+                "before_sha256": digest(old),
+                "depends_on": [],
+            }],
+        },
+        str(ledger),
+        mode="prepare",
+    )
+    request_id = prepared["request_id"]
+    assert prepared["state"] == "DRAFT_ONLY"
+    assert prepared["provider_writes"] == 0
+    assert not provider_reads and not provider_writes
+    assert not ledger.exists()
+
+    preview_input = {
+        "schema": "IRONMAN_DRAFT_PREVIEW_INPUT_V1",
+        "request_id": request_id,
+        "after_images": {"change1": desired},
+        "pinned_revision": "a" * 40,
+    }
+    first = pipeline.unified_changeset_flow.fn(
+        preview_input, str(ledger), mode="preview_draft",
+        requested_targets=[REQUESTED_TARGET],
+    )
+    assert first["preview_persisted"] is True
+    assert first["results"][0]["state"] == "PREFLIGHT_PASS"
+    assert first["provider_writes"] == 0
+    assert provider_reads == [target["container_id"]]
+    assert not provider_writes
+    assert not ledger.exists()
+
+    second = pipeline.unified_changeset_flow.fn(
+        preview_input, str(ledger), mode="preview_draft",
+        requested_targets=[REQUESTED_TARGET],
+    )
+    assert second["preview_sha256"] == first["preview_sha256"]
+    assert second["preview_reused"] is True
+    assert not ledger.exists()
+
+    # Open SQLite from a separate connection, as a subsequent chat would do.
+    reopened = DraftStore(db)
+    try:
+        saved = reopened.get_preview(request_id, first["preview_sha256"])
+    finally:
+        reopened.close()
+    assert saved["manifest"]["request_id"] == request_id
+    assert saved["publication_authorized"] is False
+
+    reads_before_resume = list(provider_reads)
+    resumed = pipeline.unified_changeset_flow.fn(
+        {
+            "schema": "IRONMAN_PREVIEW_RESUME_INPUT_V1",
+            "request_id": request_id,
+            "preview_sha256": first["preview_sha256"],
+        },
+        str(ledger), mode="resume_preview",
+        requested_targets=[REQUESTED_TARGET],
+    )
+    assert resumed["results"][0]["state"] == "PREFLIGHT_PASS"
+    assert resumed["source"] == "stored_read_only_preview"
+    assert resumed["publication_enabled"] is False
+    assert resumed["provider_writes"] == 0
+    assert provider_reads == reads_before_resume
+    assert not provider_writes
+    assert not ledger.exists()
+
+    wrong = [{
+        "kind": "plan.workout.patch",
+        "target": {**target, "container_id": 999999},
+    }]
+    with pytest.raises(ChangeStop, match="STOP_TARGET_MISMATCH"):
+        pipeline.unified_changeset_flow.fn(
+            {
+                "schema": "IRONMAN_PREVIEW_RESUME_INPUT_V1",
+                "request_id": request_id,
+                "preview_sha256": first["preview_sha256"],
+            },
+            str(ledger), mode="resume_preview",
+            requested_targets=wrong,
+        )
+    assert provider_reads == reads_before_resume
+    assert not provider_writes
