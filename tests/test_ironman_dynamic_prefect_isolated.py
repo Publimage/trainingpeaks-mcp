@@ -186,7 +186,7 @@ def test_prepared_existing_item_can_be_previewed_from_store_without_new_manifest
     assert recovered['manifest']['request_id'] == stored['request_id']
     assert recovered['receipt']['provider_writes'] == 0
     assert calls == ['CHANGESET_VALIDATION', 'LEDGER_OPEN', 'REMOTE_READER',
-                     'PREVIEW_PROVIDER', 'LEDGER_CLOSE']
+                     'PREVIEW_PROVIDER', 'LEDGER_CLOSE', 'CHANGESET_VALIDATION']
 
 
 def test_prepared_draft_cannot_preview_on_a_different_plan(tmp_path, monkeypatch, flowhost):
