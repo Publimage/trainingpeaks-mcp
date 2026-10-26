@@ -9,7 +9,6 @@ from __future__ import annotations
 
 import hashlib
 import json
-from datetime import date
 from typing import Any
 
 OWNER = 2116886
@@ -51,7 +50,7 @@ def _inventory(rows: Any) -> dict[int, dict[str, Any]]:
     return output
 
 
-def _create_spec(change: dict[str, Any]) -> tuple[str, int, str]:
+def _create_spec(change: dict[str, Any]) -> tuple[str, int]:
     need(type(change) is dict and change.get("kind") == "plan.create" and
          type(change.get("target")) is dict, "CREATE_OPERATION_INVALID")
     t = change["target"]
@@ -59,30 +58,25 @@ def _create_spec(change: dict[str, Any]) -> tuple[str, int, str]:
                "container_kind": "training_plan", "container_id": None,
                "resource_id": None}, "CREATE_TARGET_INVALID")
     p = change.get("payload")
-    need(type(p) is dict and set(p) == {"title", "week_count", "start_date"},
+    # A Training Plan is a dateless, reusable sequence of relative weeks/days.
+    # The provider's private transport anchor never belongs in the request.
+    need(type(p) is dict and set(p) == {"title", "week_count"},
          "CREATE_PAYLOAD_INVALID")
-    title, count, start = p["title"], p["week_count"], p["start_date"]
+    title, count = p["title"], p["week_count"]
     need(type(title) is str and 1 <= len(title.strip()) <= 120,
          "CREATE_TITLE_INVALID")
     need(type(count) is int and 1 <= count <= 104, "CREATE_WEEKS_INVALID")
-    need(type(start) is str, "CREATE_START_DATE_INVALID")
-    try:
-        start_dt = date.fromisoformat(start)
-    except ValueError as exc:
-        raise MutationStop("CREATE_START_DATE_INVALID") from exc
-    need(start_dt.weekday() == 0 and start_dt.isoformat() == start,
-         "CREATE_START_NOT_MONDAY")
     need(type(change.get("before_sha256")) is str and
          len(change["before_sha256"]) == 64,
          "CREATE_PREIMAGE_REQUIRED")
-    return title.strip(), count, start
+    return title.strip(), count
 
 
 def preview_new_plan(change: dict[str, Any], rows: list[dict[str, Any]],
                      *, coach_id: int) -> dict[str, Any]:
     """Plan creation preview, never creates a plan or grants publish rights."""
     need(type(coach_id) is int and coach_id == OWNER, "COACH_OWNER_MISMATCH")
-    title, count, start = _create_spec(change)
+    title, count = _create_spec(change)
     owned = _inventory(rows)
     need(digest(rows) == change["before_sha256"], "PLAN_INVENTORY_DRIFT")
     name = title.casefold()
@@ -90,7 +84,7 @@ def preview_new_plan(change: dict[str, Any], rows: list[dict[str, Any]],
                  for p in owned.values()), "PLAN_TITLE_ALREADY_EXISTS")
     return {"state": "CREATE_PREFLIGHT_ONLY", "provider_writes": 0,
             "publication_enabled": False, "title": title,
-            "requested_weeks": count, "requested_start_date": start,
+            "requested_weeks": count, "relative_weeks": count,
             "baseline_plan_ids": sorted(owned)}
 
 
@@ -116,12 +110,10 @@ def readback_new_plan(change: dict[str, Any], baseline: list[dict[str, Any]],
          detail.get("price") in (None, 0, 0.0), "CREATE_PRIVACY_DRIFT")
     need(detail.get("weekCount") == preflight["requested_weeks"],
          "CREATE_WEEKS_DRIFT")
-    observed_start = str(detail.get("startDate") or "")[:10]
-    need(not observed_start or observed_start == preflight["requested_start_date"],
-         "CREATE_START_DRIFT")
+    # Provider startDate is only an internal API anchor, never a plan date.
     return {"state": "PROVIDER_READBACK_MATCH", "plan_id": row["planId"],
             "title": preflight["title"], "is_public": False,
-            "calendar_bootstrap_pending": not bool(observed_start),
+            "relative_weeks": preflight["requested_weeks"],
             "writer_authorized_by_this_module": False}
 
 
@@ -141,6 +133,13 @@ def _workout_map(rows: Any) -> dict[int, dict[str, Any]]:
         need(ident is not None and ident not in output, "PLAN_WORKOUT_ID_UNVERIFIABLE")
         output[ident] = w
     return output
+
+
+def _without_transport_date(record: dict[str, Any]) -> dict[str, Any]:
+    """Preserve relative slots/content, discard provider-only date coordinates."""
+    need(type(record) is dict, "PROVIDER_RECORD_INVALID")
+    return {k: v for k, v in record.items()
+            if k not in ("startDate", "workoutDay", "noteDate", "date")}
 
 
 def preview_delete_plan_workout(change: dict[str, Any], *, coach_id: int,
@@ -176,24 +175,31 @@ def preview_delete_plan_workout(change: dict[str, Any], *, coach_id: int,
     need(wid in all_workouts, "PLAN_WORKOUT_NOT_FOUND")
     selected = all_workouts[wid]
     p = change.get("payload")
-    need(type(p) is dict and set(p) == {"expected_title", "expected_date"} and
-         type(p["expected_title"]) is str and type(p["expected_date"]) is str,
+    need(type(p) is dict and set(p) == {
+         "expected_title", "week", "weekday"
+    } and type(p["expected_title"]) is str
+         and type(p["week"]) is int and 1 <= p["week"] <= 104
+         and type(p["weekday"]) is int and 1 <= p["weekday"] <= 7,
          "DELETE_PAYLOAD_INVALID")
-    need((selected.get("title") or "").strip() == p["expected_title"].strip() and
-         str(selected.get("workoutDay") or "")[:10] == p["expected_date"],
-         "PLAN_WORKOUT_CONTENT_MISMATCH")
+    relative_day = (p["week"] - 1) * 7 + p["weekday"]
+    # The reader must provide the independently resolved relative slot.
+    need((selected.get("title") or "").strip() == p["expected_title"].strip()
+         and selected.get("week") == p["week"]
+         and selected.get("day") == relative_day,
+         "PLAN_WORKOUT_RELATIVE_SLOT_MISMATCH")
     need(type(change.get("before_sha256")) is str and
-         change["before_sha256"] == digest(selected), "PLAN_WORKOUT_PREIMAGE_DRIFT")
+         change["before_sha256"] == digest(_without_transport_date(selected)), "PLAN_WORKOUT_PREIMAGE_DRIFT")
     need(type(notes) is list and all(type(n) is dict for n in notes),
          "PLAN_NOTES_UNVERIFIABLE")
     return {"state": "DELETE_PREFLIGHT_ONLY", "provider_writes": 0,
             "publication_enabled": False, "plan_id": pid, "workout_id": wid,
             "workout_count": len(all_workouts),
-            "survivor_hashes": {str(k): digest(v) for k, v in all_workouts.items()
-                                if k != wid},
-            "note_sha256": digest(notes),
+            "relative_week": p["week"], "relative_weekday": p["weekday"],
+            "survivor_hashes": {str(k): digest(_without_transport_date(v))
+                                for k, v in all_workouts.items() if k != wid},
+            "note_sha256": digest([_without_transport_date(n) for n in notes]),
             "plan_identity": {k: plan.get(k) for k in (
-                "planId", "title", "isPublic", "price", "weekCount", "startDate")}}
+                "planId", "title", "isPublic", "price", "weekCount")}}
 
 
 def verify_plan_workout_absent(preflight: dict[str, Any], *,
@@ -206,10 +212,12 @@ def verify_plan_workout_absent(preflight: dict[str, Any], *,
     expected = preflight["survivor_hashes"]
     need(str(preflight["workout_id"]) not in {str(i) for i in observed},
          "TARGET_STILL_PRESENT")
-    need({str(k): digest(v) for k, v in observed.items()} == expected and
+    need({str(k): digest(_without_transport_date(v))
+          for k, v in observed.items()} == expected and
          len(observed) == preflight["workout_count"] - 1,
          "OTHER_WORKOUTS_CHANGED")
-    need(digest(notes) == preflight["note_sha256"], "NATIVE_NOTES_CHANGED")
+    need(digest([_without_transport_date(n) for n in notes])
+         == preflight["note_sha256"], "NATIVE_NOTES_CHANGED")
     need(type(plan) is dict and {k: plan.get(k) for k in preflight["plan_identity"]}
          == preflight["plan_identity"], "PLAN_METADATA_CHANGED")
     return {"state": "PROVIDER_POSTFLIGHT_MATCH",
