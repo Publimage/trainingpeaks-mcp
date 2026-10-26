@@ -445,3 +445,32 @@ def test_durable_preview_refuses_failure_or_foreign_request(tmp_path):
             store.store_preview(manifest, receipt)
     finally:
         store.close()
+
+
+
+def test_durable_preview_cannot_retarget_stored_request(tmp_path):
+    from scripts.ironman_jobs.ironman_unified_changeset_engine import digest
+    draft, manifest, receipt = _durable_preview_fixture(tmp_path)
+    store = DraftStore(tmp_path / "draft.sqlite3")
+    try:
+        store.store(draft)
+        forged = json.loads(json.dumps(manifest))
+        forged["changes"][0]["target"]["container_id"] = 999999
+        receipt["manifest_sha256"] = digest(forged)
+        with pytest.raises(DraftStop, match="PREVIEW_DRAFT_BINDING_MISMATCH"):
+            store.store_preview(forged, receipt)
+        assert store.get_preview(draft["request_id"], "f" * 64) is None
+    finally:
+        store.close()
+
+
+def test_durable_preview_rejects_mismatched_outcome_identity(tmp_path):
+    draft, manifest, receipt = _durable_preview_fixture(tmp_path)
+    store = DraftStore(tmp_path / "draft.sqlite3")
+    try:
+        store.store(draft)
+        receipt["results"][0]["id"] = "other-workout"
+        with pytest.raises(DraftStop, match="PREVIEW_NOT_PASSED"):
+            store.store_preview(manifest, receipt)
+    finally:
+        store.close()
