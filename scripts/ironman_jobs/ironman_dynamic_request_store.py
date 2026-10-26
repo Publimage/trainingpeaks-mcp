@@ -445,13 +445,59 @@ class DraftStore:
         if row is None:
             return None
         manifest_sha, manifest_json, result_json = row
-        from scripts.ironman_jobs.ironman_unified_changeset_engine import digest
-        manifest, receipt = json.loads(manifest_json), json.loads(result_json)
-        require(digest(manifest) == manifest_sha and
+        from scripts.ironman_jobs.ironman_unified_changeset_engine import (
+            digest, validate_manifest,
+        )
+        try:
+            manifest, receipt = json.loads(manifest_json), json.loads(result_json)
+            verified_sha = validate_manifest(manifest)
+        except (TypeError, ValueError, KeyError) as exc:
+            raise DraftStop("PREVIEW_RECORD_CORRUPT") from exc
+        require(verified_sha == manifest_sha and
                 hashlib.sha256(
                     (manifest_sha + ":" + hashlib.sha256(
                         result_json.encode("utf-8")).hexdigest()).encode("ascii")
-                ).hexdigest() == preview_sha,
+                ).hexdigest() == preview_sha and
+                manifest["request_id"] == request_id and
+                manifest["approval_scope"] == "PREVIEW_ONLY:" + request_id and
+                type(receipt) is dict and
+                receipt.get("request_id") == request_id and
+                receipt.get("manifest_sha256") == manifest_sha and
+                receipt.get("mode") == "preview" and
+                receipt.get("request_state") == "PREVIEW_ONLY" and
+                receipt.get("provider_writes") == 0 and
+                receipt.get("provider_writes_claimed") == 0 and
+                receipt.get("publication_enabled") is False,
+                "PREVIEW_RECORD_CORRUPT")
+        saved_draft = self.get(request_id)
+        require(saved_draft is not None, "PREVIEW_ORPHAN_REQUEST")
+        source_items, preview_items = saved_draft["items"], manifest["changes"]
+        require(len(source_items) == len(preview_items),
+                "PREVIEW_RECORD_DRAFT_MISMATCH")
+        for source, observed in zip(source_items, preview_items):
+            required_target = {
+                key: source["target"][key] for key in (
+                    "provider", "owner_id", "container_kind",
+                    "container_id", "resource_id",
+                )
+            }
+            require(
+                observed["id"] == source["id"] and
+                observed["kind"] == source["kind"] and
+                observed["target"] == required_target and
+                observed["payload"] == source["payload"] and
+                observed["before_sha256"] == source["before_sha256"] and
+                observed["depends_on"] == source["depends_on"],
+                "PREVIEW_RECORD_DRAFT_MISMATCH",
+            )
+        outcomes = receipt.get("results")
+        require(type(outcomes) is list and
+                len(outcomes) == len(preview_items) and
+                all(type(row) is dict and row.get("state") in (
+                    "PREFLIGHT_PASS", "DONE_VERIFIED",
+                ) for row in outcomes) and
+                {row.get("id") for row in outcomes} ==
+                {item["id"] for item in preview_items},
                 "PREVIEW_RECORD_CORRUPT")
         return {"manifest": manifest, "receipt": receipt,
                 "preview_sha256": preview_sha, "publication_authorized": False}
