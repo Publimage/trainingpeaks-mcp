@@ -446,12 +446,12 @@ class DraftStore:
             return None
         manifest_sha, manifest_json, result_json = row
         from scripts.ironman_jobs.ironman_unified_changeset_engine import (
-            digest, validate_manifest,
+            ChangeStop, digest, validate_manifest,
         )
         try:
             manifest, receipt = json.loads(manifest_json), json.loads(result_json)
             verified_sha = validate_manifest(manifest)
-        except (TypeError, ValueError, KeyError) as exc:
+        except (ChangeStop, TypeError, ValueError, KeyError) as exc:
             raise DraftStop("PREVIEW_RECORD_CORRUPT") from exc
         require(verified_sha == manifest_sha and
                 hashlib.sha256(
