@@ -342,7 +342,9 @@ class DraftStore:
         except (TypeError, ValueError) as exc:
             raise DraftStop("PERSISTED_DRAFT_CORRUPT") from exc
         verify_draft_integrity(loaded)
-        require(row[0] == loaded["semantic_sha256"], "PERSISTED_DRAFT_CORRUPT")
+        require(row[0] == loaded["semantic_sha256"] and
+                loaded["request_id"] == request_id,
+                "PERSISTED_DRAFT_CORRUPT")
         return loaded
 
     def store_preview(self, manifest: dict[str, Any],
@@ -387,12 +389,15 @@ class DraftStore:
         self.db.execute("BEGIN IMMEDIATE")
         try:
             row = self.db.execute(
-                "SELECT payload FROM drafts WHERE request_id=?",
+                "SELECT semantic_sha,payload FROM drafts WHERE request_id=?",
                 (request_id,),
             ).fetchone()
             require(row is not None, "DRAFT_REQUEST_NOT_FOUND")
-            stored_draft = json.loads(row[0])
+            stored_draft = json.loads(row[1])
             verify_draft_integrity(stored_draft)
+            require(row[0] == stored_draft["semantic_sha256"] and
+                    stored_draft["request_id"] == request_id,
+                    "PERSISTED_DRAFT_CORRUPT")
             # A forged preview must not inherit a different stored request's
             # identifier. This check is independent of provider readback.
             source_items = stored_draft["items"]
