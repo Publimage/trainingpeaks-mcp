@@ -24,8 +24,7 @@ def create_change(rows=None):
         'target': {'provider': 'trainingpeaks', 'owner_id': OWNER,
                    'container_kind': 'training_plan', 'container_id': None,
                    'resource_id': None},
-        'payload': {'title': 'New private plan', 'week_count': 12,
-                    'start_date': '2026-10-26'},
+        'payload': {'title': 'New private plan', 'week_count': 12},
         'before_sha256': digest(rows),
     }
 
@@ -72,7 +71,6 @@ def test_create_never_overwrites_same_title_or_uses_old_provider_id():
     ('isPublic', True, 'CREATE_PRIVACY_DRIFT'),
     ('price', 199, 'CREATE_PRIVACY_DRIFT'),
     ('weekCount', 2, 'CREATE_WEEKS_DRIFT'),
-    ('startDate', '2026-11-02', 'CREATE_START_DRIFT'),
     ('planId', 501, 'CREATE_DETAIL_IDENTITY_DRIFT'),
 ])
 def test_create_readback_must_match_identity_privacy_and_calendar(field, value, code):
@@ -103,13 +101,13 @@ def plan_detail():
 
 def plan_workouts():
     return [
-        {'workoutId':301,'title':'Easy swim', 'workoutDay':'2026-10-26',
+        {'workoutId':301,'title':'Easy swim', 'week':1, 'day':1, 'workoutDay':'2026-10-26',
          'workoutTypeValueId':1,'description':'easy','totalTimePlanned':1,
          'structure':{'steps':[{'duration':600}]}},
-        {'workoutId':302,'title':'Run threshold','workoutDay':'2026-10-27',
+        {'workoutId':302,'title':'Run threshold','week':1, 'day':2, 'workoutDay':'2026-10-27',
          'workoutTypeValueId':2,'description':'4x5','totalTimePlanned':1.2,
          'structure':{'steps':[{'duration':1200}]}},
-        {'workoutId':303,'title':'Long bike','workoutDay':'2026-10-28',
+        {'workoutId':303,'title':'Long bike','week':1, 'day':3, 'workoutDay':'2026-10-28',
          'workoutTypeValueId':3,'description':'easy','totalTimePlanned':2.5,
          'structure':None},
     ]
@@ -125,9 +123,9 @@ def delete_change():
             'target':{'provider':'trainingpeaks','owner_id':OWNER,
                       'container_kind':'training_plan',
                       'container_id':501,'resource_id':302},
-            'payload':{'expected_title':'Run threshold',
-                       'expected_date':'2026-10-27'},
-            'before_sha256':digest(plan_workouts()[1])}
+            'payload':{'expected_title':'Run threshold', 'week':1, 'weekday':2},
+            'before_sha256':digest({k:v for k,v in plan_workouts()[1].items()
+                                    if k!='workoutDay'})}
 
 
 def preview_delete():
@@ -235,3 +233,57 @@ def test_plan_create_blocks_private_detail_if_inventory_row_is_public():
     with pytest.raises(MutationStop,match='CREATE_INVENTORY_PRIVACY_DRIFT'):
         readback_new_plan(create_change(before),before,before+[row],
                           new_plan_detail(),coach_id=OWNER)
+
+
+def test_training_plan_create_never_asks_for_calendar_dates():
+    rows = old_plans()
+    change = create_change(rows)
+    assert 'start_date' not in change['payload']
+    assert preview_new_plan(change, rows, coach_id=OWNER)['relative_weeks'] == 12
+    legacy = deepcopy(change)
+    legacy['payload']['start_date'] = '2026-10-26'
+    with pytest.raises(MutationStop, match='CREATE_PAYLOAD_INVALID'):
+        preview_new_plan(legacy, rows, coach_id=OWNER)
+    detail = new_plan_detail()
+    detail['startDate'] = None
+    current = rows + [{'planId':9001,'title':'New private plan','isPublic':False,'price':None}]
+    assert readback_new_plan(change, rows, current, detail,
+                             coach_id=OWNER)['relative_weeks'] == 12
+    detail['startDate'] = '2040-12-17T00:00:00'
+    assert readback_new_plan(change, rows, current, detail,
+                             coach_id=OWNER)['state'] == 'PROVIDER_READBACK_MATCH'
+
+
+def test_delete_plan_workout_uses_only_relative_week_and_weekday():
+    base = preview_delete()
+    assert base['relative_week'] == 1
+    assert base['relative_weekday'] == 2
+    change = delete_change()
+    change['payload']['weekday'] = 4
+    with pytest.raises(MutationStop, match='PLAN_WORKOUT_RELATIVE_SLOT_MISMATCH'):
+        preview_delete_plan_workout(change,coach_id=OWNER,
+            owned_plans=old_plans(),plan=plan_detail(),workouts=plan_workouts(),notes=notes())
+    bad = delete_change()
+    bad['payload']['expected_date'] = '2026-10-27'
+    with pytest.raises(MutationStop, match='DELETE_PAYLOAD_INVALID'):
+        preview_delete_plan_workout(bad,coach_id=OWNER,
+            owned_plans=old_plans(),plan=plan_detail(),workouts=plan_workouts(),notes=notes())
+
+
+def test_provider_transport_date_may_shift_without_shifting_relative_slots():
+    snapshot = preview_delete()
+    after = deepcopy([plan_workouts()[0], plan_workouts()[2]])
+    after[0]['workoutDay'] = '2038-02-15'
+    after[1]['workoutDay'] = '2038-02-17'
+    changed_notes = deepcopy(notes())
+    changed_notes[0]['noteDate'] = '2038-02-15'
+    changed_plan = deepcopy(plan_detail())
+    changed_plan['startDate'] = '2038-02-15'
+    verified = verify_plan_workout_absent(
+        snapshot,plan=changed_plan,workouts=after,notes=changed_notes)
+    assert verified['state'] == 'PROVIDER_POSTFLIGHT_MATCH'
+    changed_slot = deepcopy(after)
+    changed_slot[0]['day'] = 3
+    with pytest.raises(MutationStop, match='OTHER_WORKOUTS_CHANGED'):
+        verify_plan_workout_absent(
+            snapshot,plan=changed_plan,workouts=changed_slot,notes=changed_notes)
