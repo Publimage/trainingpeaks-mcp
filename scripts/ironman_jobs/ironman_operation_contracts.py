@@ -1,6 +1,35 @@
-"""Shared request selectors and the trusted review boundary; no provider I/O."""
+"""Shared dependency/selector contracts and trusted review; no provider I/O."""
+from collections.abc import Mapping, Sequence
+from graphlib import CycleError, TopologicalSorter
 from typing import Any, Protocol
 import json
+
+
+class DependencyGraphError(ValueError):
+    pass
+
+
+def dependency_order(graph: Mapping[str, Sequence[str]]) -> list[str]:
+    """Validate an already shape-checked graph and return stable ready batches.
+
+    Preserve input order within each batch, including independent nodes. Never
+    recurse, mutate the graph or let TopologicalSorter invent missing nodes.
+    Draft/ChangeSet callers retain their domain-specific error classes/limits.
+    """
+    if any(dep not in graph for deps in graph.values() for dep in deps):
+        raise DependencyGraphError("DEPENDENCY_MISSING")
+    sorter = TopologicalSorter(graph)
+    try:
+        sorter.prepare()
+    except CycleError as exc:
+        raise DependencyGraphError("DEPENDENCY_CYCLE") from exc
+    ordered = []
+    while sorter.is_active():
+        ready = set(sorter.get_ready())
+        batch = [node for node in graph if node in ready]
+        ordered.extend(batch)
+        sorter.done(*batch)
+    return ordered
 
 
 class TargetBindingError(ValueError):
@@ -52,7 +81,7 @@ def get_review_authorizer() -> ReviewAuthorizer:
     return authority_from_host()
 
 
-def apply_review_control(store, command):
+def apply_review_control(store, command) -> dict[str, Any]:
     """Common persistence dispatch; authority must hold its transaction first."""
     review, action = command["review"], command["action"]
     options = dict(approved_revision=review["reviewed_revision"], approval_scope=review["approval_scope"],

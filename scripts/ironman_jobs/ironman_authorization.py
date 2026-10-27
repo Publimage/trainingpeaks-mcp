@@ -123,10 +123,12 @@ class SignedIdentityVerifier:
         require(header.get("alg") == alg, "ASSERTION_ALGORITHM_MISMATCH")
         signed = (parts[0] + "." + parts[1]).encode("ascii")
         try:
-            if alg == "RS256":
+            if alg == "RS256" and isinstance(key, rsa.RSAPublicKey):
                 key.verify(signature, signed, padding.PKCS1v15(), hashes.SHA256())
-            else:
+            elif alg == "EdDSA" and isinstance(key, ed25519.Ed25519PublicKey):
                 key.verify(signature, signed)
+            else:
+                raise PermissionError("ASSERTION_ALGORITHM_MISMATCH")
         except (InvalidSignature, ValueError) as exc:
             raise PermissionError("ASSERTION_SIGNATURE_INVALID") from exc
         require(type(claims) is dict and all(type(claims.get(k)) is int for k in ("iat", "nbf", "exp")),
@@ -315,7 +317,7 @@ class HostReviewAuthority:
         require(command.get("action") in {"approve_preview", "bind_execution", "revoke_approval"},
                 "UNSUPPORTED_REVIEW_CONTROL")
         self._ensure_tables(store)
-        result, error, principal = None, None, None
+        principal = None
         with store.write_transaction():
             try:
                 principal = self._identity()
@@ -324,11 +326,13 @@ class HostReviewAuthority:
                     result = apply_review_control(store, command)
             except (PermissionError, OSError, ValueError, TypeError) as exc:
                 error = exc
-            self._audit(store, principal, command["review"].get("request_id"), command["action"],
-                        command, result is not None, "CONTROL_RECORDED" if result else "CONTROL_DENIED")
-        if error is not None:
-            raise error
-        return result
+                self._audit(store, principal, command["review"].get("request_id"), command["action"],
+                            command, False, "CONTROL_DENIED")
+            else:
+                self._audit(store, principal, command["review"].get("request_id"), command["action"],
+                            command, True, "CONTROL_RECORDED")
+                return result
+        raise error
 
     def _authorize_locked(self, store, principal, command) -> bool:
         require(type(command) is dict and command.get("action") in ACTIONS, "INVALID_AUTH_ACTION")

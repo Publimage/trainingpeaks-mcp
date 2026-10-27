@@ -487,6 +487,7 @@ No feature is WORK_COMPLETE while an applicable gate remains open.
 | STRUCTURAL_REFACTOR — addressed | Divergent flow/Approval selectors and duplicate preview validators could drift | Shared selector and preview validators now used at both boundaries | Same-resource chain, corrupt records, existing regressions |
 | STRUCTURAL_REFACTOR — addressed | Execution checks could create a binding using execute-only permission; grant checks did not inspect the exact persisted approval/binding | Use the common inspector without mutation; inspect approval/binding plus current grants/revocations/audit in one authority transaction. Reservation remains a distinct control permission | Four reproduced failures fixed; execute-only and corrupt-binding refusal, real SQLite exclusion, read-only revoked recovery |
 | STRUCTURAL_REFACTOR — addressed | Explicit readback denials could become transient/uncertain states, including at orphan recovery and transport boundaries | Preserve the security category from local/native HTTP readers through the existing private bridge and common engine. Persist new recovery denials and retain uncertain claims; no automatic retry | Negative cases on prior receipts/postflight, private loopback transport, real Prefect recovery and restored-reader refusal |
+| STRUCTURAL_REFACTOR — addressed | Draft/ChangeSet cycle checks and scheduling implemented the same graph contract three times; valid maximum-depth changesets could overflow Python recursion | One non-recursive dependency contract using the standard library, preserving stable ready batches and immutable input identity. Keep existing 500/1,000 item limits | Maximum chains/cycles, malformed shape errors before I/O, stable execution order and exact prior request/manifest hashes |
 | STRUCTURAL_REFACTOR — addressed in one-ledger domain | Replaying request identity was not worker ownership | Invocation-owned persistent execution slot | Concurrent connections, resumed execution, dead process |
 | SOURCE/TEST COMPLETE — runtime blocker | Concrete signed identity, scoped grants, revocation and audit implemented; trust/assertion handoff not configured live | Owner: Operator maintainer. Connect the existing issuer/launcher to invocation-bound assertions and pinned public trust before enabling control operations; retain default deny | Real signature/algorithm/issuer/audience/time/run binding tests, current grants, admin refusal, revocation, atomic control, audit; actual local Prefect coverage passed; production issuer/launcher and upstream revocation canary still pending |
 | SOURCE/TEST COMPLETE — runtime blocker | Authorized local orphan recovery now uses kernel exclusion and preview readback in the same flow | Owner: Operator maintainer. Review/drain legacy workers and test on the canonical local runtime before release; no auto-takeover or legacy-marker workaround | Real child-process death, active owner refusal, inode mismatch, denial preservation, uncertain claims, rollback, idempotent receipt and revoked-approval recovery |
@@ -593,3 +594,50 @@ the defect on the preceding source. Ruff src/ and changed-file F, mypy src/
 remains attributed only to 52b0ee1; unrelated tests were not rerun for this segment.
 GitHub Actions CI and production issuer/topology/capability canaries remain
 separate release gates. No merge, deploy or universal publisher enablement.
+
+
+### Follow-up: one non-recursive dependency contract
+
+Classification: STRUCTURAL_REFACTOR. Draft preparation, ChangeSet validation
+and engine scheduling now reuse dependency_order in the existing operation
+contracts module. It uses Python's standard-library TopologicalSorter with
+explicit missing-node rejection and input ordering within each ready batch.
+No package, service, job, manifest format, recursion-limit override or batch
+splitting mechanism is introduced. Existing limits remain 500 items for drafts
+and 1,000 for direct ChangeSets; this change does not harmonize or increase them.
+
+A valid reversed chain of 1,000 existing resources previously caused
+RecursionError during manifest validation; a cycle of that depth could fail the
+same way instead of returning DEPENDENCY_CYCLE. Lists/dicts in depends_on or kind
+could also raise TypeError before the declared shape/domain error. Six negative
+cases reproduced these failures on the preceding source. Type/shape checks now
+precede hashed membership, and the common graph contract returns the existing
+DEPENDENCY_MISSING / DEPENDENCY_CYCLE codes in the caller's existing exception
+class. Invalid graphs stop before worker acquisition, ledger registration,
+resource claims or provider reads/writes.
+
+The stored draft and compiled preview keep their input order and serialization;
+only runtime execution follows dependency batches. A fixed regression records
+request_id, semantic_sha256 and manifest SHA captured from 0708daf and verifies
+exact equality after consolidation, plus input immutability. Maximum-depth
+preview executes 1,000 synthetic reads without recursion or provider writes.
+Existing same-resource direct-dependency requirements remain unchanged.
+
+The new import path exposed type ambiguities in adjacent trust contracts.
+Existing missing-preview rejection now uses an explicit narrowing branch;
+review dispatch declares its dictionary result; run_control separates successful
+return/audit from caught failure/audit while retaining transaction/savepoint
+semantics. JWT verification explicitly checks the already-pinned RSA/Ed25519
+key type at its algorithm branch. No algorithms, keys, grants or permissions
+are added. Existing rollback/audit tests now also assert the denied audit outcome.
+No casts, suppressions or workflow changes were introduced for these checks.
+
+Verification: 245 distinct relevant cases passed, including 16 new cases.
+Core/DraftStore/approval/authorization/worker/recovery/migration suites: 215 PASS.
+Actual Prefect runtime, unified flow and isolated contracts: 30 PASS (3 warnings);
+after the final authority type/control cleanup, the seven actual-runtime cases
+were revalidated (7 PASS, 2 warnings), not counted twice. Ruff src/, changed-file
+F checks, mypy src/ --no-incremental (56 files), Python 3.10 syntax and diff
+checks pass. Provider/issuer remain synthetic. The full 1,694-test baseline is
+still attributed only to 52b0ee1; unrelated suites were not repeated. No GitHub
+Actions success, live canary, deployment or publisher activation is inferred.

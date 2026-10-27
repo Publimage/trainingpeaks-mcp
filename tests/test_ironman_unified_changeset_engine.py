@@ -555,3 +555,82 @@ def test_postwrite_readback_denial_remains_security_stop_with_claim(ledger, beha
     assert ledger.db.execute("SELECT count(*) FROM resource_claims").fetchone() == (1,)
     assert run(m, {change["kind"]: provider}, ledger)["results"][0]["state"] == "BLOCKED_SECURITY"
     assert provider.writes == 1
+
+
+def long_chain(count=1000, *, cycle=False):
+    before, after = {"value": 1}, {"value": 2}
+    changes = [item(f"change-{n:04d}", "plan.workout.patch", n + 1, before, after,
+                    depends=[f"change-{n - 1:04d}"] if n else [])
+               for n in range(count)]
+    if cycle:
+        changes[0]["depends_on"] = [changes[-1]["id"]]
+    return make_manifest(*reversed(changes))
+
+
+def test_supported_maximum_chain_does_not_depend_on_python_recursion_limit():
+    manifest = long_chain()
+    assert validate_manifest(manifest) == digest(manifest)
+
+
+def test_cycle_at_supported_maximum_is_reported_as_contract_error():
+    with pytest.raises(ChangeStop, match="DEPENDENCY_CYCLE"):
+        validate_manifest(long_chain(cycle=True))
+
+
+@pytest.mark.parametrize("dependencies", [[[]], [{}], [None], [True]])
+def test_malformed_dependency_shape_returns_contract_error(dependencies):
+    change = item("bad-dependency", "plan.workout.patch", 1, {"v": 1}, {"v": 2})
+    change["depends_on"] = dependencies
+    with pytest.raises(ChangeStop, match="DEPENDENCY_SHAPE"):
+        validate_manifest(make_manifest(change))
+
+
+def test_common_scheduler_preserves_ready_batch_input_order(ledger):
+    before, after = {"value": 1}, {"value": 2}
+    changes = [item("child", "plan.workout.patch", 1, before, after, depends=["parent"]),
+               item("independent", "plan.workout.patch", 2, before, after),
+               item("parent", "plan.workout.patch", 3, before, after),
+               item("tail", "plan.workout.patch", 4, before, after, depends=["child"])]
+    manifest = make_manifest(*changes)
+    provider = FakeAdapter(before)
+    result = run(manifest, {"plan.workout.patch": provider}, ledger, execute=False)
+    assert [r["id"] for r in result["results"]] == ["independent", "parent", "child", "tail"]
+    assert [x["id"] for x in manifest["changes"]] == ["child", "independent", "parent", "tail"]
+    assert all(r["state"] == "PREFLIGHT_PASS" for r in result["results"])
+    assert provider.writes == 0
+
+
+def test_preview_schedules_supported_maximum_chain_without_stack_workaround(ledger):
+    manifest = long_chain()
+    provider = FakeAdapter({"value": 1})
+    result = run(manifest, {"plan.workout.patch": provider}, ledger, execute=False)
+    assert [r["id"] for r in result["results"]] == [f"change-{n:04d}" for n in range(1000)]
+    assert all(r["state"] == "PREFLIGHT_PASS" for r in result["results"])
+    assert result["request_state"] == "PREVIEW_ONLY" and provider.writes == 0
+
+
+@pytest.mark.parametrize("problem,code", [("missing", "DEPENDENCY_MISSING"), ("cycle", "DEPENDENCY_CYCLE")])
+def test_invalid_graph_stops_before_worker_ledger_or_provider_io(ledger, problem, code):
+    before, after = {"value": 1}, {"value": 2}
+    first = item("first", "plan.workout.patch", 1, before, after, depends=["second"])
+    second = item("second", "plan.workout.patch", 2, before, after,
+                  depends=["first"] if problem == "cycle" else ["missing"])
+
+    class NoProviderIO(FakeAdapter):
+        def read(self, spec):
+            raise AssertionError("INVALID_GRAPH_MUST_NOT_READ_PROVIDER")
+
+    provider = NoProviderIO(before)
+    with pytest.raises(ChangeStop, match=code):
+        run(make_manifest(first, second), {"plan.workout.patch": provider}, ledger)
+    for table in ("requests", "change_events", "execution_workers", "resource_claims"):
+        assert ledger.db.execute(f"SELECT count(*) FROM {table}").fetchone() == (0,)
+    assert provider.writes == 0
+
+
+@pytest.mark.parametrize("kind", [[], {}, None])
+def test_malformed_kind_returns_domain_error_before_set_membership(kind):
+    change = item("bad-kind", "plan.workout.patch", 1, {"v": 1}, {"v": 2})
+    change["kind"] = kind
+    with pytest.raises(ChangeStop, match="UNKNOWN_ADAPTER"):
+        validate_manifest(make_manifest(change))

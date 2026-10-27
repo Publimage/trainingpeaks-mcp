@@ -255,6 +255,9 @@ def test_run_control_rolls_back_completed_inner_savepoint(context, authority, mo
         authority["service"].run_control(authority["command"], context["store"])
     assert context["store"].db.execute("SELECT count(*) FROM preview_approvals").fetchone() == (0,)
     assert not context["store"].db.in_transaction
+    audit = context["store"].db.execute(
+        "SELECT allowed,code FROM authority_audit WHERE action='approve_preview'").fetchall()
+    assert audit == ([(0, "CONTROL_DENIED")] if error_type is ValueError else [])
 
 
 def test_revocation_and_control_action_have_one_serial_order(context, authority, monkeypatch):

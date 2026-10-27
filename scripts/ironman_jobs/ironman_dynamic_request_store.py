@@ -223,23 +223,11 @@ def prepare_draft(items: list[dict[str, Any]], *, owner_id: int = OWNER,
                     resource_producer_id in child["depends_on"],
                     "RESOURCE_REF_MUST_MATCH_PARENT_CREATOR")
     graph = {item["id"]: item["depends_on"] for item in normalized}
-    require(all(ref in graph for refs in graph.values() for ref in refs),
-            "DEPENDENCY_MISSING")
-    seen: set[str] = set()
-    active: set[str] = set()
-
-    def visit(node: str) -> None:
-        require(node not in active, "DEPENDENCY_CYCLE")
-        if node in seen:
-            return
-        active.add(node)
-        for dep in graph[node]:
-            visit(dep)
-        active.remove(node)
-        seen.add(node)
-
-    for node in graph:
-        visit(node)
+    from scripts.ironman_jobs.ironman_operation_contracts import DependencyGraphError, dependency_order
+    try:
+        dependency_order(graph)
+    except DependencyGraphError as exc:
+        raise DraftStop(str(exc)) from exc
     semantic = {"schema": SCHEMA, "owner_id": OWNER, "items": normalized}
     semantic_sha = hashlib.sha256(canonical(semantic).encode()).hexdigest()
     key = request_key or "auto-" + semantic_sha[:36]
@@ -538,7 +526,8 @@ class DraftStore:
         """
         from scripts.ironman_jobs.ironman_unified_changeset_engine import digest
         snapshot = self.get_preview(request_id, preview_sha)
-        require(snapshot is not None, "PREVIEW_VERSION_NOT_FOUND")
+        if snapshot is None:
+            raise DraftStop("PREVIEW_VERSION_NOT_FOUND")
         manifest = snapshot["manifest"]
         require(approved_revision == manifest["reviewed_revision"],
                 "REVISION_NOT_APPROVED")

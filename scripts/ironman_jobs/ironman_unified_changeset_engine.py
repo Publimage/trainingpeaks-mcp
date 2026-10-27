@@ -99,7 +99,7 @@ def validate_manifest(value: dict[str, Any]) -> str:
         need(type(change_id) is str and TOKEN.fullmatch(change_id) is not None
              and change_id not in ids, "CHANGE_ID")
         ids.add(change_id)
-        need(item["kind"] in VALID_KINDS, "UNKNOWN_ADAPTER")
+        need(type(item["kind"]) is str and item["kind"] in VALID_KINDS, "UNKNOWN_ADAPTER")
         target = item["target"]
         need(type(target) is dict and set(target) == {
             "provider", "owner_id", "container_kind", "container_id", "resource_id",
@@ -121,27 +121,15 @@ def validate_manifest(value: dict[str, Any]) -> str:
              "EXPECTED_DIGEST")
         need(type(item["payload"]) is dict, "PAYLOAD_SHAPE")
         deps = item["depends_on"]
-        need(type(deps) is list and len(deps) == len(set(deps))
-             and all(type(d) is str for d in deps)
+        need(type(deps) is list and all(type(d) is str for d in deps)
+             and len(deps) == len(set(deps))
              and change_id not in deps, "DEPENDENCY_SHAPE")
-    need(all(d in ids for x in changes for d in x["depends_on"]),
-         "DEPENDENCY_MISSING")
     graph = {x["id"]: x["depends_on"] for x in changes}
-    visited: set[str] = set()
-    visiting: set[str] = set()
-
-    def walk(node: str) -> None:
-        need(node not in visiting, "DEPENDENCY_CYCLE")
-        if node in visited:
-            return
-        visiting.add(node)
-        for dep in graph[node]:
-            walk(dep)
-        visiting.remove(node)
-        visited.add(node)
-
-    for change_id in graph:
-        walk(change_id)
+    from scripts.ironman_jobs.ironman_operation_contracts import DependencyGraphError, dependency_order
+    try:
+        dependency_order(graph)
+    except DependencyGraphError as exc:
+        raise ChangeStop(str(exc)) from exc
     # Multiple edits to one provider resource require explicit ordering.
     last_by_resource: dict[tuple[Any, ...], str] = {}
     for item in changes:
@@ -537,16 +525,10 @@ def _run_changeset(
     Independent changes continue. No retry loops and no credential fallback.
     """
     ledger.setup(manifest, manifest_sha, migrate_schema=execute)
-    ordered = []
+    from scripts.ironman_jobs.ironman_operation_contracts import dependency_order
     by_id = {x["id"]: x for x in manifest["changes"]}
-    pending = set(by_id)
-    while pending:
-        ready = [x for x in manifest["changes"] if x["id"] in pending
-                 and all(d not in pending for d in x["depends_on"])]
-        need(bool(ready), "DAG_STALLED")
-        for x in ready:
-            ordered.append(x)
-            pending.remove(x["id"])
+    ordered = [by_id[name] for name in dependency_order({
+        name: item["depends_on"] for name, item in by_id.items()})]
     outcomes = []
     preview_passed: set[str] = set()
     preview_images: dict[tuple[Any, ...], dict[str, Any]] = {}
