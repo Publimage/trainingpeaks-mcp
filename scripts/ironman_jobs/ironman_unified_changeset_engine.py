@@ -32,7 +32,6 @@ VALID_KINDS = frozenset({
 VALID_STATES = frozenset({
     "PENDING", "RUNNING", "DONE_VERIFIED", "BLOCKED_SECURITY",
     "BLOCKED_CONFLICT", "FAILED_REVIEW", "UNKNOWN_NEEDS_READBACK",
-    "SKIPPED_DEPENDENCY",
 })
 TOKEN = re.compile(r"^[a-zA-Z0-9][a-zA-Z0-9_.:-]{2,119}$")
 SHA = re.compile(r"^[a-f0-9]{64}$")
@@ -188,6 +187,49 @@ class Ledger:
     def close(self) -> None:
         self.db.close()
 
+    def migrate_schema(self) -> dict[str, Any]:
+        """Atomically upgrade a legacy ledger, preserving its original events.
+
+        Explicit maintenance primitive for a trusted, quiescent host. Normal
+        execution invokes the same locked helper atomically inside setup(),
+        after authorization and worker acquisition. Preview/construction do
+        not migrate. Reintroduced legacy rows after version 1 are a conflict.
+        """
+        self.db.execute("BEGIN IMMEDIATE")
+        try:
+            result = self._migrate_schema_locked()
+            self.db.commit()
+            return result
+        except Exception:
+            self.db.rollback()
+            raise
+
+    def _migrate_schema_locked(self) -> dict[str, Any]:
+        self.db.execute("""CREATE TABLE IF NOT EXISTS ledger_migrations (
+            version INTEGER PRIMARY KEY, applied_utc TEXT NOT NULL
+        )""")
+        versions = self.db.execute("SELECT version FROM ledger_migrations ORDER BY version").fetchall()
+        need(versions in ([], [(1,)]), "LEDGER_SCHEMA_UNSUPPORTED")
+        legacy = self.db.execute(
+            """SELECT request_id,change_id,state,provider_sha,observed_utc,reason
+               FROM change_events WHERE state='SKIPPED_DEPENDENCY'
+               ORDER BY request_id,change_id""",
+        ).fetchall()
+        states = {row[0] for row in self.db.execute("SELECT DISTINCT state FROM change_events")}
+        need(states <= VALID_STATES | {"SKIPPED_DEPENDENCY"}, "LEDGER_UNKNOWN_STATE")
+        if versions:
+            need(not legacy, "LEDGER_LEGACY_ROWS_AFTER_MIGRATION")
+            return {"version": 1, "reused": True, "migrated_events": 0}
+        self.db.execute("""CREATE TABLE ledger_event_migration_backup (
+            request_id TEXT NOT NULL, change_id TEXT NOT NULL,
+            state TEXT NOT NULL, provider_sha TEXT, observed_utc TEXT NOT NULL,
+            reason TEXT, PRIMARY KEY(request_id,change_id)
+        )""")
+        self.db.executemany("INSERT INTO ledger_event_migration_backup VALUES (?,?,?,?,?,?)", legacy)
+        self.db.execute("UPDATE change_events SET state='PENDING' WHERE state='SKIPPED_DEPENDENCY'")
+        self.db.execute("INSERT INTO ledger_migrations VALUES (1,?)", (utc(),))
+        return {"version": 1, "reused": False, "migrated_events": len(legacy)}
+
     @contextmanager
     def execution_worker(self, request_id: str):
         """Serialize provider execution on the existing shared ledger.
@@ -214,7 +256,8 @@ class Ledger:
             with self.db:
                 self.db.execute("DELETE FROM execution_workers WHERE slot=1 AND owner=?", (owner,))
 
-    def setup(self, manifest: dict[str, Any], manifest_sha: str) -> None:
+    def setup(self, manifest: dict[str, Any], manifest_sha: str, *,
+              migrate_schema: bool = False) -> None:
         request = manifest["request_id"]
         # Lock before reading the request row. Without BEGIN IMMEDIATE two
         # concurrent callers can both observe an absent row and race on INSERT,
@@ -226,7 +269,9 @@ class Ledger:
             ).fetchone()
             if existing:
                 need(existing[0] == manifest_sha, "IDEMPOTENCY_MANIFEST_DRIFT")
-            else:
+            if migrate_schema:
+                self._migrate_schema_locked()
+            if not existing:
                 self.db.execute("INSERT INTO requests VALUES (?,?,?)",
                                 (request, manifest_sha, utc()))
                 for item in manifest["changes"]:
@@ -341,7 +386,7 @@ def _run_changeset(
     reconcile its state and STOP only that resource and dependent changes.
     Independent changes continue. No retry loops and no credential fallback.
     """
-    ledger.setup(manifest, manifest_sha)
+    ledger.setup(manifest, manifest_sha, migrate_schema=execute)
     ordered = []
     by_id = {x["id"]: x for x in manifest["changes"]}
     pending = set(by_id)
@@ -362,13 +407,6 @@ def _run_changeset(
             "provider", "owner_id", "container_kind", "container_id", "resource_id"
         ))
         state = ledger.status(manifest["request_id"], name)
-        if state == "SKIPPED_DEPENDENCY" and execute:
-            # Migrate an item skipped by an older ledger implementation.
-            # Revalidation below still requires every dependency, preimage
-            # and explicit scope before any provider mutation.
-            ledger.set_state(manifest["request_id"], name, "PENDING",
-                             reason="LEGACY_DEPENDENCY_DEFERRAL_RECOVERED")
-            state = "PENDING"
         if state == "DONE_VERIFIED":
             # The ledger is not the provider source of truth. A resumed flow
             # must recheck the actual object before it claims verification.

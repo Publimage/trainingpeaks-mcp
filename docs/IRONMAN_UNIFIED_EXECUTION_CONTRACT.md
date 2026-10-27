@@ -280,6 +280,33 @@ DraftStore ingress and resume now use shared receipt and draft-binding validator
 validation still runs at both trust boundaries. The immutable draft, preview hashes
 and execution manifest format are preserved.
 
+The reviewed batch publisher and the typed classic workout adapter share the pure
+`plan_patch_batch_core.validate_patch_fields(before, after)` function. Plan title,
+visibility, counts, owner and reviewed scope remain actual publisher metadata;
+no synthetic FIELD_VALIDATION_ONLY manifest is constructed by the adapter.
+Field validation does not select a target, mutate input or grant authorization.
+
+### Versioned ledger migration
+
+Ledger schema version 1 replaces the legacy SKIPPED_DEPENDENCY execution branch.
+After independent execution authorization and worker acquisition, request identity
+verification, migration and registration occur in the SAME SQLite transaction.
+Every converted legacy event is copied in full to ledger_event_migration_backup;
+only its live state changes to PENDING. Provider hashes, reasons, timestamps,
+request digests, claims, DONE_VERIFIED, BLOCKED_SECURITY and uncertain states are
+preserved. The normal dependency/preimage/readback checks then apply unchanged.
+
+Preview and denied execution do not migrate. Rollback preserves both schema and
+events; a mismatched manifest cannot migrate other requests. Version 1 is applied
+once. Future/unrecognized versions, unknown states or legacy rows reintroduced
+after migration are refused, not repaired ad hoc. New set_state calls cannot
+persist SKIPPED_DEPENDENCY; that name remains a non-durable dependency-deferral
+result. Explicit maintenance uses the same migration helper on a trusted,
+quiescent host; no maintenance endpoint/job or live database migration is enabled
+by the code change. Old and new worker versions must not share a ledger during
+upgrade. Runtime migration/rollback must be rehearsed on an authorized ledger
+snapshot before release; no production SQLite data was migrated during QA.
+
 ### Control operations in the existing flow
 
 `ironman-unified-changeset-v1` supports `approve_preview`, `revoke_approval` and
@@ -355,8 +382,8 @@ No feature is WORK_COMPLETE while an applicable gate remains open.
 | MISSING — release blocker | Trusted authority is intentionally unconfigured | Wire authenticated host identity, current grants/expiry/revocation and actor audit behind the existing authority interface before enabling control operations | Runtime authentication, deny/expiry/revocation integration tests; default deny must remain |
 | MISSING — release blocker | Crash slot recovery has no approved operational endpoint | Add authorized quiescence + readback recovery in the existing service before live execution | Dead-owner recovery, active-owner refusal, no duplicate writer |
 | MISSING — release blocker | One-ledger topology is not deployment-attested | Enforce a single canonical service ledger for all workers before live execution; no arbitrary per-request ledger paths | Real-runtime multi-worker canary and readback |
-| TEMPORARY_DEBT | Classic adapter constructs FIELD_VALIDATION_ONLY manifest to reuse proven validation | Owner: Operator maintainer. Extract pure field validation shared with existing publisher before final release; remove synthetic manifest | Equivalent Builder/field rejection and adapter/publisher regressions |
-| TEMPORARY_DEBT | SKIPPED_DEPENDENCY legacy recovery branch lives in normal execution | Owner: Operator maintainer. Replace with versioned migration after archived ledger inventory, before final release; remove branch once migration verified | Migration preserves receipts, dependencies and denials |
+| STRUCTURAL_REFACTOR — addressed in source | Classic adapter constructed FIELD_VALIDATION_ONLY manifest to reuse validation | Pure field validator is now shared with the existing publisher; synthetic manifest removed | Identical acceptance/error parity and input immutability; publisher/adapter regressions |
+| STRUCTURAL_REFACTOR — source/test complete, runtime gate pending | SKIPPED_DEPENDENCY legacy branch in normal execution | Branch removed in favor of atomic version 1 migration and full event backup. Owner: Operator maintainer. Inventory/rehearse the actual ledger snapshot and rollback before release; no mixed worker versions | Concurrent/idempotent migration, rollback, manifest drift, preserved claims/denials and dependent execution |
 | TEMPORARY_DEBT — QA only | Partial exact-source snapshot used because git proxy is unavailable and Prefect is absent | Owner: Operator maintainer. Replace with complete pinned checkout and actual Prefect tests before release; discard isolated harness | Full repository/Prefect CI on exact commit; isolated PASS never substitutes |
 
 Existing staging VPC allowlists and capability guards remain in place. Their

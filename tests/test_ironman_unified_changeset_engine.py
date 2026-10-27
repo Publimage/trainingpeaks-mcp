@@ -408,7 +408,9 @@ def test_legacy_persisted_skipped_dependency_is_migrated_safely(ledger):
                  dependent["kind"]: dependent_provider}
     run(manifest, providers, ledger, execute=False)  # initialize ledger
     ledger.set_state(manifest["request_id"], "predecessor", "DONE_VERIFIED")
-    ledger.set_state(manifest["request_id"], "dependent", "SKIPPED_DEPENDENCY")
+    # Fixture from an older ledger; new code must never persist this state.
+    ledger.db.execute("UPDATE change_events SET state='SKIPPED_DEPENDENCY' WHERE change_id='dependent'")
+    ledger.db.commit()
     recovered = run(manifest, providers, ledger)
     assert recovered["request_state"] == "WORK_COMPLETE"
     assert ledger.status(manifest["request_id"], "dependent") == "DONE_VERIFIED"
