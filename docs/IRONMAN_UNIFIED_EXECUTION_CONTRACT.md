@@ -12,17 +12,18 @@ security denials remain binding: do not edit the denied Actions workflow or
 plan_mutation_gates.py, force CI by moving/retargeting the trusted branch, retry
 the denied plan.create canary, or reuse Social-only deployment credentials.
 
-Reviewed source: PR18 af6d81201d71fbbb064df57db4f830a9cebe0a53, stacked PR19
-0bd3952b459cf4664e932f6b72bcbc0fe15df250. Both draft, clean/mergeable; no submitted
-reviews returned. This internal architectural audit is not a GitHub approval.
-PR19 includes PR18; a green composed checkout is not independent CI of PR18.
+Reviewed source: independent PR18 7fe73c25bc6a10940efcafd5d8eb726cf84524b7;
+stacked PR19 b8123330461cef2bd2d41caf04160163f4972143 includes that parent.
+Both remain draft; no submitted review has been attested. This internal audit is
+not a GitHub approval. Independent parent QA is now recorded separately from
+composed lifecycle QA. The trusted feat branch remains 4b45d9a.
 
 | Gate | Evidence / actual state | Release consequence |
 | --- | --- | --- |
-| Integrated local tests | Full checkout 0bd3952: 1,796 PASS, 3 warnings, 62.32 s; actual local Prefect, MCP, SQLite, child-process crash/concurrency; synthetic issuer/provider | LOCAL_VERIFIED, not production proof |
+| Integrated local tests | Independent PR18 7fe73c2: 1,594 PASS, 3 warnings, 20.23 s. Reconciled PR19 b812333: 1,796 PASS, 3 warnings, 58.57 s. Actual local Prefect, MCP, SQLite and child processes; synthetic issuer/provider | LOCAL_VERIFIED for both code revisions, not production proof |
 | Static contracts | Ruff src/ PASS; mypy src/ --no-incremental PASS, 56 files | LOCAL_VERIFIED |
 | MCP legacy protocol | Real mcp 1.26.0 client against separate SDK 2.0.0 server: initialize 2025-11-25, 115 tools, INVALID_ARGS call PASS | Offline protocol compatibility; not live auth or fresh ChatGPT session |
-| Exact-head GitHub CI/review | PR18/PR19: no commit status or PR-triggered run returned; zero reviews/threads. Run reader is PR-only/first-page. Existing triggers do not cover the stacked PR19 base; workflow/runner changes have prior denials | BLOCKED; no merge to manufacture CI evidence |
+| Exact-head GitHub CI/review | Approved GET actions/runs filtered by each exact SHA, without event restriction, and commits/SHA/check-runs return zero on 7fe73c2 and b812333. The latest listed repository runs are historical, including queued 39855028161 on another SHA. No current green CI or review attested | BLOCKED; no merge or replay of old jobs to manufacture CI evidence |
 | Existing live infrastructure | Both documented DO hosts active. Existing TP MCP and publisher status readable; live_writer_verified=false. Trusted read-only prefect_ssh_inventory job 4b45d9a passed: private TCP 22 reachable, no private key in TP host SSH inventory | Live existing path only; not new operator deployment |
 | Runtime management / rollback | No DO shell tool, no runtime credential/identity binding in Codex, no discovered authorized TP-to-Prefect private key. Social forced SSH is scoped to Social and must not be repurposed | Cannot attest/apply TP/Prefect configuration or rollback through current access |
 | Trusted issuer/revocation feed | Concrete verifier/grants/audit tested; no existing production issuer/launcher identity contract, pinned trust or upstream revocation delivery attested | MISSING integration; never mint an assistant-controlled production identity |
@@ -31,6 +32,26 @@ PR19 includes PR18; a green composed checkout is not independent CI of PR18.
 | Writer capabilities | create_read_registry installs read-only adapters; classic/PDF callback writers default None. Flow rejects publish. Static VPC allowlists remain staging-only | Source does not become an operational publisher by changing a flag |
 | Disposable-lab canary | Canonical 684484 independently read: exact lab title, private, price null, zero workouts. No write canary performed | LAB_IDENTITY_READ_VERIFIED only; denied plan.create excluded |
 | New ChatGPT session | Current connected tool calls and offline MCP reconnect verified; no tool creates/attests a new ChatGPT project conversation | NOT VERIFIED; requires installed/refreshed final surface first |
+
+Independent-parent repair: PR18 could not collect its suite because of an invalid
+literal; stale module paths, frozen tool counts, owner/inventory mocks and local
+validation-call counts also failed. Already verified PR19 fixes were backported
+into the parent, including shared redaction/HTTP error contracts and type checks,
+without relaxing a scope or copying lifecycle/authority features into the base.
+Its clean suite now runs independently. Required Prefect imports were absent
+from dev dependency metadata; the dev extra now declares prefect==3.8.8 and
+fastapi<0.155, the exact existing workflow/QA constraints. Wheel build and METADATA
+checks PASS; production dependency scope is unchanged. Parent legacy SDK 1.26.0
+client/2.0.0 server check also PASS.
+
+PR19 was reconciled with that verified dependency using a normal branch merge;
+the sole conflict was typing-import order. Compared with a1e9b18, its executable
+src/scripts/tests/prefect tree is byte-identical; only dev metadata is added. The
+remaining PR19 delta is 21 files focused on lifecycle contracts, tests and docs.
+Both source pushes were genuine regression repairs; no workflow/trigger edit,
+no-op trigger commit, trusted-branch movement, new job or deployment was used.
+The normally matching parent push has no observed Actions run; the cause is not
+established and is not inferred to be a provider denial or fixed by a retry.
 
 Architecture audit: immutable request/preview/revision hashes, separate binding
 permission, atomic grant/revocation/audit, monotonic consent denial, per-item
