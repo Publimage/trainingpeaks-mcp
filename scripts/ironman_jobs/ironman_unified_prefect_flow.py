@@ -119,7 +119,7 @@ def unified_changeset_flow(
         store = DraftStore(Path(store_path))
         try:
             bound = store.inspect_execution_binding(manifest["request_id"], manifest["preview_sha256"],
-                                                    manifest["approval_sha256"], **review)
+                                                    manifest["approval_sha256"], allow_revoked=True, **review)
         finally:
             store.close()
         guard = BoundRecoveryAuthorization(Path(store_path), manifest["request_id"], manifest["preview_sha256"],

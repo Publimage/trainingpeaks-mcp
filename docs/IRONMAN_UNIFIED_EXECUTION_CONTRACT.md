@@ -386,7 +386,10 @@ synthetic execution are explicit; no production permissive implementation exists
 
 `BoundExecutionAuthorization` is the shared reusable guard for a future reviewed
 writer: match the candidate manifest to the persisted preview, ask the trusted
-authority, then re-open/revalidate the persistent binding and revocation. Its
+authority, then re-open/revalidate the existing persistent binding and revocation.
+The guard never creates a binding or substitutes an execute grant for the distinct
+bind_execution permission. The authority checks the exact approval/binding and
+current grants/revocations in the same SQLite writer transaction. Its
 constructor context must come from the trusted coordinator. The guard is tested
 with a revocation between two dependent synthetic writes; the second is blocked.
 The current flow never calls execute and never installs this guard on live writers.
@@ -430,7 +433,7 @@ versions; a legacy slot without protocol evidence still requires an independentl
 approved quiescent maintenance procedure, not a forced marker or alternate path.
 The production identity handoff, topology and recovery canary remain release gates.
 
-### Complete-checkout local verification
+### Complete-checkout local verification at 52b0ee1
 
 The previous partial-source QA gate has been replaced with a complete git
 worktree of the pinned PR revision and actual Prefect 3.8.8, using the SAME
@@ -439,7 +442,8 @@ Dependencies are isolated under the QA workspace; the original environment,
 published service and production configuration are unchanged. Temporary Prefect
 API/SQLite instances are local-only; real cloud API credentials are disabled.
 
-The full repository suite passes: 1,694 tests on Python 3.12, including six new
+At commit `52b0ee12d62390e0f9add073afe6fcbb70010f0e`, the full repository
+suite passed: 1,694 tests on Python 3.12, including six new
 actual-runtime integration cases. Scheduling, context, signature verification,
 DraftStore, grant/audit transactions, binding and recovery are real. Only the
 upstream issuer handoff and TrainingPeaks provider are synthetic. Tests exercise
@@ -481,6 +485,7 @@ No feature is WORK_COMPLETE while an applicable gate remains open.
 | Classification | Item and reason | Target / removal condition | Verification |
 | --- | --- | --- | --- |
 | STRUCTURAL_REFACTOR — addressed | Divergent flow/Approval selectors and duplicate preview validators could drift | Shared selector and preview validators now used at both boundaries | Same-resource chain, corrupt records, existing regressions |
+| STRUCTURAL_REFACTOR — addressed | Execution checks could create a binding using execute-only permission; grant checks did not inspect the exact persisted approval/binding | Use the common inspector without mutation; inspect approval/binding plus current grants/revocations/audit in one authority transaction. Reservation remains a distinct control permission | Four reproduced failures fixed; execute-only and corrupt-binding refusal, real SQLite exclusion, read-only revoked recovery |
 | STRUCTURAL_REFACTOR — addressed in one-ledger domain | Replaying request identity was not worker ownership | Invocation-owned persistent execution slot | Concurrent connections, resumed execution, dead process |
 | SOURCE/TEST COMPLETE — runtime blocker | Concrete signed identity, scoped grants, revocation and audit implemented; trust/assertion handoff not configured live | Owner: Operator maintainer. Connect the existing issuer/launcher to invocation-bound assertions and pinned public trust before enabling control operations; retain default deny | Real signature/algorithm/issuer/audience/time/run binding tests, current grants, admin refusal, revocation, atomic control, audit; actual local Prefect coverage passed; production issuer/launcher and upstream revocation canary still pending |
 | SOURCE/TEST COMPLETE — runtime blocker | Authorized local orphan recovery now uses kernel exclusion and preview readback in the same flow | Owner: Operator maintainer. Review/drain legacy workers and test on the canonical local runtime before release; no auto-takeover or legacy-marker workaround | Real child-process death, active owner refusal, inode mismatch, denial preservation, uncertain claims, rollback, idempotent receipt and revoked-approval recovery |
@@ -497,3 +502,46 @@ and authorized canaries; no policy removal or widening is part of this change.
 Workflow edits and plan_mutation_gates changes previously denied remain excluded.
 The proven publisher keeps its existing endpoints and scope gates; field validation
 and local exclusion are shared components. No claim of live readiness.
+
+
+### Follow-up: permission checks cannot reserve execution
+
+Classification: STRUCTURAL_REFACTOR, with no temporary compatibility bypass.
+Review of the common execution guard found that it called bind_execution after
+checking execute_change. Thus an approved preview with an execute-only grant
+could create its own execution reservation, bypassing the distinct bind permission.
+The host authority also previously checked grants against preview/revision/scope
+without itself checking the exact existing approval and execution binding.
+Four negative cases reproduce these defects on 52b0ee1 before the fix.
+
+DraftStore.inspect_execution_binding is now the single inspector reused by the
+guard and concrete authority. It verifies the exact approval payload, binding and
+manifest; active consent is required by default. Only the explicitly identified
+read-only recovery action permits inspecting revoked consent, and recovery still
+needs a current grant. Neither check creates/refreshes a binding or resurrects
+consent. The serialized flow input exposes no allow_revoked switch.
+
+HostReviewAuthority performs this inspection inside the same BEGIN IMMEDIATE as
+current grants, token/principal/grant revocations and audit. Missing/corrupt binding,
+missing/incorrect approval SHA and withdrawn consent deny execution. A concurrent
+revocation cannot interleave between binding inspection and the grant decision.
+A decision already completed before revocation is an in-flight decision, not a
+promise to cancel a provider request already sent. Existing per-item checks remain.
+
+The sole reservation route remains the existing independently authorized
+bind_execution control operation. Publisher activation, adapter capabilities,
+endpoints and worker protocol are unchanged. No provider writes, deployment or
+production ledger migration were performed.
+
+Verification of this follow-up is recorded separately from the full-suite result
+above: 152 relevant tests passed across authorization, preview_approval,
+worker_recovery and dynamic_request_store (15 new cases; four failed before the
+fix). Cases include execute-only privilege refusal, exact/absent/corrupt bindings,
+recovery after consent revocation without reactivation, and real concurrent SQLite
+connections proving exclusion and subsequent revocation enforcement. An additional 53 tests passed
+(3 warnings) across actual Prefect runtime, unified flow, changeset engine, worker
+coordination and isolated flow contracts. Total for this follow-up: 205 relevant
+tests, including real local Prefect/SQLite and synthetic issuer/provider boundaries.
+Ruff src/ and changed-file F checks, mypy src/ (56 files), and diff checks pass.
+The unchanged parts of the prior 1,694-test suite were not rerun. Local pytest
+evidence must not be labelled GitHub Actions CI.

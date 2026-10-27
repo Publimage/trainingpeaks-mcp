@@ -98,8 +98,11 @@ class BoundExecutionAuthorization:
                 raise PermissionError("EXECUTION_MANIFEST_BINDING_MISMATCH")
             if get_review_authorizer().authorize(command) is not True:
                 raise PermissionError("EXECUTION_AUTHORIZATION_DENIED")
-            operation = store.inspect_execution_binding if self.action == "recover_worker" else store.bind_execution
-            bound = operation(self.request_id, self.preview_sha, self.approval_sha, **self.review)
+            # A permission to execute/recover is not a permission to reserve a
+            # request. Only the separately authorized control operation binds it.
+            bound = store.inspect_execution_binding(
+                self.request_id, self.preview_sha, self.approval_sha,
+                allow_revoked=self.action == "recover_worker", **self.review)
             if bound["manifest_sha256"] != digest(manifest):
                 raise PermissionError("EXECUTION_MANIFEST_BINDING_MISMATCH")
         finally:

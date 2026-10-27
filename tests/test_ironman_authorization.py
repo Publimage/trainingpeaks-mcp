@@ -324,3 +324,114 @@ def test_grant_retry_is_idempotent_but_cannot_resurrect_revocation(context, auth
     with pytest.raises(PermissionError, match="GRANT_REVOKED"):
         authority["service"].grant(authority["principal"], context["draft"]["request_id"],
                                      context["preview"], **options)
+
+
+def execution_command(ctx, approval, *, action="execute_change"):
+    return {"action": action, "request_id": ctx["draft"]["request_id"],
+            "preview_sha256": ctx["preview"], "approval_sha256": approval["approval_sha256"],
+            "review": ctx["review"], "manifest": {**ctx["manifest"], "approval_scope": SCOPE}}
+
+
+@pytest.mark.parametrize("action", ["execute_change", "recover_worker"])
+def test_execution_grant_requires_existing_exact_binding(context, authority, action):
+    approval = preview_fixtures.approve(context)
+    command = execution_command(context, approval, action=action)
+    assert authority["service"].authorize(command) is False
+    assert context["store"].db.execute("SELECT count(*) FROM execution_bindings").fetchone() == (0,)
+    preview_fixtures.bind(context, approval)
+    assert authority["service"].authorize(command) is True
+    command["approval_sha256"] = "f" * 64
+    assert authority["service"].authorize(command) is False
+
+
+def test_execute_grant_cannot_create_binding_without_bind_permission(context, authority, monkeypatch):
+    from scripts.ironman_jobs import ironman_operation_contracts as contracts
+    from scripts.ironman_jobs.ironman_dynamic_request_store import DraftStop
+    approval = preview_fixtures.approve(context)
+    authority["select"]("test-admin")
+    authority["service"].revoke("grant", authority["grant"])
+    authority["service"].grant(authority["principal"], context["draft"]["request_id"], context["preview"],
+                                 approval_scope=SCOPE, actions=["execute_change"],
+                                 expires_at=authority["now"][0] + 200)
+    authority["select"]()
+    monkeypatch.setattr(contracts, "get_review_authorizer", lambda: authority["service"])
+    guard = contracts.BoundExecutionAuthorization(context["path"], context["draft"]["request_id"],
+                                                  context["preview"], approval["approval_sha256"], **context["review"])
+    with pytest.raises((PermissionError, DraftStop)):
+        guard(execution_command(context, approval)["manifest"], None)
+    assert context["store"].db.execute("SELECT count(*) FROM execution_bindings").fetchone() == (0,)
+
+
+def test_authority_distinguishes_revoked_execution_from_readonly_recovery(context, authority):
+    approval = preview_fixtures.approve(context)
+    preview_fixtures.bind(context, approval)
+    context["store"].revoke_approval(context["draft"]["request_id"], context["preview"],
+                                      approval["approval_sha256"], **context["review"])
+    assert authority["service"].authorize(execution_command(context, approval)) is False
+    assert authority["service"].authorize(execution_command(context, approval, action="recover_worker")) is True
+
+
+@pytest.mark.parametrize("action", ["execute_change", "recover_worker"])
+@pytest.mark.parametrize("revocation", ["approval", "grant"])
+def test_binding_and_current_permission_share_revocation_transaction(
+        context, authority, monkeypatch, action, revocation):
+    from concurrent.futures import ThreadPoolExecutor
+    import sqlite3
+    from threading import Event
+    from scripts.ironman_jobs.ironman_dynamic_request_store import DraftStore
+
+    approval = preview_fixtures.approve(context)
+    preview_fixtures.bind(context, approval)
+    command = execution_command(context, approval, action=action)
+    original = DraftStore.inspect_execution_binding
+    inspected, release = Event(), Event()
+
+    def paused_inspection(store, *args, **kwargs):
+        bound = original(store, *args, **kwargs)
+        assert store.db.in_transaction  # Same writer transaction as grant/audit.
+        inspected.set()
+        assert release.wait(timeout=5)
+        return bound
+
+    with monkeypatch.context() as local:
+        local.setattr(DraftStore, "inspect_execution_binding", paused_inspection)
+        with ThreadPoolExecutor(max_workers=1) as pool:
+            result = pool.submit(authority["service"].authorize, command)
+            try:
+                assert inspected.wait(timeout=5)
+                context["store"].db.execute("PRAGMA busy_timeout=0")
+                with pytest.raises(sqlite3.OperationalError, match="locked"):
+                    context["store"].db.execute("BEGIN IMMEDIATE")
+            finally:
+                release.set()
+            assert result.result(timeout=10) is True
+
+    # The action linearized first. A subsequently committed revocation must
+    # affect the next check; recovery can inspect withdrawn consent, not grants.
+    if revocation == "approval":
+        context["store"].revoke_approval(context["draft"]["request_id"], context["preview"],
+                                          approval["approval_sha256"], **context["review"])
+    else:
+        authority["select"]("test-admin")
+        authority["service"].revoke("grant", authority["grant"])
+        authority["select"]()
+    assert authority["service"].authorize(command) is (action == "recover_worker" and revocation == "approval")
+
+
+@pytest.mark.parametrize("fault", ["absent-approval", "missing-hash", "corrupt-binding", "corrupt-approval"])
+def test_execution_authority_rejects_invalid_persisted_binding(context, authority, fault):
+    approval = preview_fixtures.approve(context)
+    preview_fixtures.bind(context, approval)
+    command = execution_command(context, approval)
+    db = context["store"].db
+    if fault == "absent-approval":
+        db.execute("DELETE FROM preview_approvals")
+    elif fault == "missing-hash":
+        del command["approval_sha256"]
+    elif fault == "corrupt-binding":
+        db.execute("UPDATE execution_bindings SET manifest_sha=?", ("f" * 64,))
+    else:
+        db.execute("UPDATE preview_approvals SET payload='{}'")
+    db.commit()
+    assert authority["service"].authorize(command) is False
+    assert db.execute("SELECT allowed FROM authority_audit ORDER BY sequence DESC LIMIT 1").fetchone() == (0,)

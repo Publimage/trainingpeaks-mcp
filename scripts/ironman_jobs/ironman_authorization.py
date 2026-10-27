@@ -351,6 +351,16 @@ class HostReviewAuthority:
         require(digest({**m, "approval_scope": original["approval_scope"]}) == digest(original), "COMMAND_BINDING")
         if command.get("item") is not None:
             require(command["item"] in m["changes"], "COMMAND_ITEM_BINDING")
+        if action in {"execute_change", "recover_worker"}:
+            # Verify the exact existing reservation on the SAME connection as
+            # current grants, revocations and audit. Never create a binding as
+            # a side effect of an execution/recovery permission check.
+            bound = store.inspect_execution_binding(
+                request_id, preview_sha, command["approval_sha256"],
+                approved_revision=revision, approval_scope=scope,
+                requested_targets=command.get("requested_targets", review.get("requested_targets")),
+                allow_revoked=action == "recover_worker")
+            require(bound["manifest_sha256"] == digest(m), "COMMAND_BINDING")
         if (self._revoked(store, "token", canonical([principal.issuer, principal.token_id])) or
                 self._revoked(store, "principal", canonical([principal.issuer, principal.subject]))):
             return False

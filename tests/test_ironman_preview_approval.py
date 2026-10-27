@@ -532,3 +532,34 @@ def test_bound_guard_fails_closed_without_reserving_execution(context, monkeypat
     with pytest.raises(PermissionError):
         guard(manifest, None)
     assert context["store"].db.execute("SELECT count(*) FROM execution_bindings").fetchone() == (0,)
+
+
+@pytest.mark.parametrize("recovery", [False, True])
+def test_bound_guard_with_allowing_authority_never_creates_missing_reservation(context, monkeypatch, recovery):
+    from scripts.ironman_jobs import ironman_operation_contracts as contracts
+    authority = Authority()
+    monkeypatch.setattr(contracts, "get_review_authorizer", lambda: authority)
+    approval = approve(context)
+    guard_type = contracts.BoundRecoveryAuthorization if recovery else contracts.BoundExecutionAuthorization
+    guard = guard_type(context["path"], context["draft"]["request_id"], context["preview"],
+                       approval["approval_sha256"], **context["review"])
+    with pytest.raises(DraftStop, match="EXECUTION_BINDING_NOT_FOUND"):
+        guard({**context["manifest"], "approval_scope": SCOPE}, None)
+    assert context["store"].db.execute("SELECT count(*) FROM execution_bindings").fetchone() == (0,)
+    assert context["provider"].writes == 0
+
+
+def test_binding_inspection_is_active_by_default_and_recovery_does_not_reactivate_it(context):
+    approval = approve(context)
+    bound = bind(context, approval)
+    store = context["store"]
+    store.revoke_approval(context["draft"]["request_id"], context["preview"],
+                          approval["approval_sha256"], **context["review"])
+    with pytest.raises(DraftStop, match="APPROVAL_REVOKED"):
+        store.inspect_execution_binding(context["draft"]["request_id"], context["preview"],
+                                         approval["approval_sha256"], **context["review"])
+    recovered = store.inspect_execution_binding(context["draft"]["request_id"], context["preview"],
+                                                approval["approval_sha256"], allow_revoked=True, **context["review"])
+    assert recovered["manifest"] == bound["manifest"]
+    with pytest.raises(DraftStop, match="APPROVAL_REVOKED"):
+        bind(context, approval)

@@ -606,11 +606,14 @@ class DraftStore:
 
     def inspect_execution_binding(self, request_id: str, preview_sha: str, approval_sha: str, *,
                                   approved_revision: str, approval_scope: str,
-                                  requested_targets: list[dict[str, Any]]) -> dict[str, Any]:
-        """Read an existing binding even after revocation, solely for recovery.
+                                  requested_targets: list[dict[str, Any]],
+                                  allow_revoked: bool = False) -> dict[str, Any]:
+        """Verify an existing binding without creating or refreshing it.
 
-        This cannot create a binding, activate approval or authorize a write.
-        Recovery has its own independently verified permission.
+        Execution requires active approval. Only independently authorized
+        read-only recovery may explicitly inspect a revoked approval.
+        The authority holds its transaction across this check and grant checks.
+        This method alone never authorizes a write.
         """
         from scripts.ironman_jobs.ironman_unified_changeset_engine import digest
         record, preview = self._approval_record(
@@ -620,6 +623,8 @@ class DraftStore:
         approval = self.db.execute("SELECT payload FROM preview_approvals WHERE request_id=? AND approval_sha=?",
                                     (request_id, approval_sha)).fetchone()
         require(approval is not None and approval[0] == canonical(record), "APPROVAL_RECORD_CORRUPT")
+        if not allow_revoked:
+            self._require_active_approval(request_id, approval_sha)
         manifest = {**preview, "approval_scope": approval_scope}
         binding = self.db.execute("SELECT approval_sha,manifest_sha FROM execution_bindings WHERE request_id=?",
                                    (request_id,)).fetchone()
