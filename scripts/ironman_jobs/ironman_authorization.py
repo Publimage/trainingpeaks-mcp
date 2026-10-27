@@ -21,6 +21,7 @@ from cryptography.hazmat.primitives import hashes, serialization
 from cryptography.hazmat.primitives.asymmetric import ed25519, padding, rsa
 
 from scripts.ironman_jobs.ironman_dynamic_request_store import DraftStore, canonical
+from scripts.ironman_jobs.ironman_local_state import require_private_path
 from scripts.ironman_jobs.ironman_unified_changeset_engine import digest
 
 ACTIONS = frozenset({"approve_preview", "bind_execution", "revoke_approval",
@@ -51,16 +52,34 @@ def _json(raw: bytes):
 def read_host_file(path: Path, limit: int) -> bytes:
     """Bounded, private host input. Never follow a request-selected URL/path."""
     path = Path(path)
-    require(path.is_absolute() and all(not p.is_symlink() for p in (path, *path.parents)),
-            "UNSAFE_AUTH_PATH")
-    fd = os.open(path, os.O_RDONLY | getattr(os, "O_NOFOLLOW", 0))
+    require_private_path(path)
+    require(type(limit) is int and limit > 0, "INVALID_AUTH_FILE_LIMIT")
+    try:
+        # A malformed host input must not hang a Prefect worker waiting for a
+        # FIFO writer. O_NOFOLLOW also protects the final path at open time.
+        fd = os.open(path, os.O_RDONLY | os.O_NOFOLLOW | os.O_NONBLOCK)
+    except OSError as exc:
+        raise PermissionError("UNSAFE_AUTH_FILE") from exc
     try:
         meta = os.fstat(fd)
         require(stat.S_ISREG(meta.st_mode) and meta.st_nlink == 1 and
                 meta.st_uid in {0, os.geteuid()} and not meta.st_mode & 0o077 and
                 meta.st_size <= limit, "UNSAFE_AUTH_FILE")
-        raw = os.read(fd, limit + 1)
+        raw = b""
+        while len(raw) <= limit:
+            chunk = os.read(fd, limit + 1 - len(raw))
+            if not chunk:
+                break
+            raw += chunk
         require(len(raw) <= limit, "AUTH_FILE_TOO_LARGE")
+        # Reject replacement or in-place edits during a read; a subsequent
+        # invocation may consume a completed rotation, never a mixed snapshot.
+        def version(info):
+            return (info.st_dev, info.st_ino, info.st_size, info.st_mtime_ns,
+                    info.st_ctime_ns, info.st_mode, info.st_uid, info.st_nlink)
+        require_private_path(path)
+        require(version(meta) == version(os.fstat(fd)) == version(path.lstat()) and
+                len(raw) == meta.st_size, "AUTH_FILE_CHANGED_DURING_READ")
         return raw
     finally:
         os.close(fd)

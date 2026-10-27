@@ -190,6 +190,85 @@ def test_host_assertion_file_is_private_and_not_a_symlink(authority, tmp_path, u
         read_host_file(path, 32768)
 
 
+@pytest.mark.parametrize("mode", [0o770, 0o777])
+def test_host_trust_input_rejects_writable_ancestor_without_repair(tmp_path, mode):
+    directory = tmp_path / "untrusted-parent"
+    directory.mkdir(mode=0o700)
+    path = directory / "trust.json"
+    path.write_bytes(b"synthetic-trust-input")
+    path.chmod(0o600)
+    directory.chmod(mode)
+    with pytest.raises(PermissionError):
+        read_host_file(path, 32768)
+    assert path.read_bytes() == b"synthetic-trust-input"
+    assert directory.stat().st_mode & 0o777 == mode
+
+
+def test_host_assertion_fifo_is_refused_without_waiting_for_a_writer(tmp_path):
+    import subprocess
+    import sys
+
+    path = tmp_path / "identity.fifo"
+    os.mkfifo(path, 0o600)
+    # Exercise the actual OS open in a child so a regression cannot wedge a worker
+    # or this test process. No writer is ever connected to this FIFO.
+    result = subprocess.run([
+        sys.executable, "-c",
+        "from pathlib import Path; import sys; "
+        "from scripts.ironman_jobs.ironman_authorization import read_host_file\n"
+        "try: read_host_file(Path(sys.argv[1]), 32768)\n"
+        "except PermissionError: sys.exit(0)\n"
+        "sys.exit(1)", str(path),
+    ], capture_output=True, timeout=3)
+    assert result.returncode == 0, result.stderr.decode()
+
+
+@pytest.mark.parametrize("mutation", ["replace", "rewrite", "permissions"])
+def test_host_identity_rotation_during_read_is_refused(tmp_path, monkeypatch, mutation):
+    path = tmp_path / "identity.jwt"
+    path.write_bytes(b"synthetic-original")
+    path.chmod(0o600)
+    original_read = os.read
+    changed = False
+
+    def read_and_rotate(fd, count):
+        nonlocal changed
+        raw = original_read(fd, count)
+        if not changed:
+            changed = True
+            if mutation == "replace":
+                replacement = tmp_path / "replacement.jwt"
+                replacement.write_bytes(b"synthetic-rotated!")
+                replacement.chmod(0o600)
+                replacement.replace(path)
+            elif mutation == "rewrite":
+                path.write_bytes(b"synthetic-rotated!")
+            else:
+                path.chmod(0o644)
+        return raw
+
+    monkeypatch.setattr(os, "read", read_and_rotate)
+    with pytest.raises(PermissionError, match="AUTH_FILE_CHANGED_DURING_READ"):
+        read_host_file(path, 32768)
+
+
+def test_private_host_input_supports_short_reads_and_completed_rotation(tmp_path, monkeypatch):
+    path = tmp_path / "identity.jwt"
+    content = b"synthetic-complete-assertion"
+    path.write_bytes(content)
+    path.chmod(0o400)
+    original_read = os.read
+    monkeypatch.setattr(os, "read", lambda fd, count: original_read(fd, min(count, 3)))
+    assert read_host_file(path, len(content)) == content
+    replacement = tmp_path / "replacement.jwt"
+    replacement.write_bytes(b"new-assertion")
+    replacement.chmod(0o600)
+    replacement.replace(path)
+    assert read_host_file(path, len(content)) == b"new-assertion"
+    with pytest.raises(PermissionError, match="UNSAFE_AUTH_FILE"):
+        read_host_file(path, 2)
+
+
 def test_real_authority_recovers_revoked_binding_via_existing_flow(context, authority, real_flow, tmp_path, monkeypatch):
     from scripts.ironman_jobs.ironman_unified_changeset_engine import Ledger, SecurityDenied, run_changeset
     from scripts.ironman_jobs.ironman_operation_contracts import BoundExecutionAuthorization

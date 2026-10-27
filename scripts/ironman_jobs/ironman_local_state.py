@@ -1,4 +1,4 @@
-"""Private local SQLite opening and inode checks for existing operator stores.
+"""Shared private host paths and SQLite inode checks for operator stores.
 
 Not a distributed store or a defense against a compromised same-UID host.
 All workers/maintenance must preserve file identities while connections exist.
@@ -17,7 +17,8 @@ def _require(ok: bool, code: str) -> None:
         raise PermissionError(code)
 
 
-def _check_path(path: Path) -> None:
+def require_private_path(path: Path) -> None:
+    """Common host-input/store boundary; never repair an unsafe directory."""
     _require(os.name == "posix" and path.is_absolute() and ".." not in path.parts,
              "LOCAL_STATE_PATH_INVALID")
     # Container mounts may map the filesystem root owner to a namespace UID.
@@ -44,7 +45,7 @@ class LocalStateFile:
     identity: tuple[int, int]
 
     def verify(self) -> None:
-        _check_path(self.path)
+        require_private_path(self.path)
         _require(_identity(self.path.lstat()) == self.identity, "LOCAL_STATE_IDENTITY_CHANGED")
         for suffix in ("-wal", "-shm", "-journal"):
             sidecar = Path(str(self.path) + suffix)
@@ -58,7 +59,7 @@ class LocalStateFile:
 def connect_private_sqlite(path: Path) -> tuple[sqlite3.Connection, LocalStateFile]:
     """Create 0600 BEFORE SQLite; reject aliases/unsafe files without repair."""
     path = Path(path)
-    _check_path(path)
+    require_private_path(path)
     try:
         fd = os.open(path, os.O_RDWR | os.O_CREAT | os.O_NOFOLLOW | os.O_NONBLOCK, 0o600)
     except OSError as exc:

@@ -79,6 +79,55 @@ retire callers/helper together. Do not strip hardcoded pilot guards as a shortcu
 No temporary bypass is introduced by this audit. Production release remains
 NOT_COMPLETED; only the independent checks above have been completed.
 
+### Checkpoint continuation: CI diagnosis and trusted host inputs
+
+The 7fe73c2 / 4821be5 checkpoint was re-read without repeating full QA. Approved
+GitHub GETs again return zero all-event runs and zero check-runs on both exact
+HEADs. Repository metadata reports archived=false, disabled=false and user
+permissions admin/maintain/push=true; these flags do not establish the GitHub
+App's Actions permissions or the current workflow enablement/settings.
+
+Trigger diagnosis is specific: PR19's base is the fix branch, which fails the
+dedicated workflow's pull_request base filter; its own branch also fails that
+workflow's push branch filter. PR18's target/source and changed paths match the
+dedicated filters. Draft status alone does not exclude synchronize events in
+this workflow, and its same-repository job condition matches. The general CI
+targets other branches. The old operator run 39855028161 still reports queued,
+attempt=1, head=d0468ea, with no jobs returned; it does not certify either HEAD.
+The workflow-state/settings endpoint is unsupported by the available connector;
+there is no evidence to label Actions disabled or denied. No trigger, workflow,
+base/trusted branch, rerun or dispatch was changed. A legitimate current run and
+independent review remain indispensable; a repository administrator must inspect
+the unavailable Actions settings/event-delivery state through the official UI.
+The existing dedicated job also selects only ten test files, omitting the new
+authority/store/worker suites: even a future green run is not full lifecycle QA.
+
+STRUCTURAL_REFACTOR: trusted-file reads now reuse the same private ancestor-path
+policy as DraftStore/Ledger. The old reader accepted group/world-writable parent
+directories and could block indefinitely opening a FIFO. Three failing tests
+reproduced both defects before the fix. O_NOFOLLOW/O_NONBLOCK, regular/private
+file checks, bounded short-read handling and end-of-read identity/version checks
+now refuse malformed or concurrently replaced/rewritten inputs. Completed atomic
+rotation remains allowed on the next read. No chmod/repair, token exposure,
+issuer creation, new service or temporary compatibility exception is introduced.
+
+New regression verification: 265 tests PASS, 1 existing Prefect logging warning,
+58.56 s, on the affected authority/local-state/store/engine/worker/review/flow
+suites, including actual local Prefect. Seven new cases cover unsafe ancestors,
+FIFO refusal, rotation/permission changes and completed bounded short reads.
+This is affected-suite QA; the previous 1,594/1,796 full results remain attributed
+to their original revisions. Provider and issuer remain synthetic.
+
+The existing private-bridge runbook now specifies management prerequisites,
+request identity boundaries and a state-preserving upgrade/rollback rehearsal.
+It is prepared, not executed on production. Current environment observations
+again show no runtime identity/secret bindings or private TCP/VPN access. No
+production issuer/launcher, upstream revocation feed or authenticated MCP-to-flow
+handoff is available to attest/configure. A permissive facade, assistant-minted
+issuer or Social SSH reuse would not close those gates. These integrations,
+canonical live state/rollback and per-capability writer canaries remain OPEN;
+publish stays denied and all existing writer callbacks stay independently gated.
+
 ## Objective
 
 One coach request -> one durable Prefect flow -> typed, plan-scoped operations -> provider readback -> one verified report. The same operations must handle every Training Plan ID. Stop creating one-off Python scripts or registry entries for individual workout IDs, weeks, notes or PDF filenames.
