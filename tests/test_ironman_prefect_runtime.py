@@ -19,6 +19,7 @@ from scripts.ironman_jobs import ironman_operation_contracts as contracts
 from scripts.ironman_jobs import ironman_unified_prefect_flow as pipeline
 from scripts.ironman_jobs.ironman_authorization import (
     ACTIONS, HostReviewAuthority, SignedIdentityVerifier, current_invocation_id,
+    assertion_path_for_invocation,
 )
 from scripts.ironman_jobs.ironman_dynamic_request_store import DraftStop, DraftStore
 from scripts.ironman_jobs.ironman_unified_changeset_engine import ChangeStop, digest
@@ -85,12 +86,14 @@ def runtime_operator(tmp_path, monkeypatch):
               "required_scope": "ironman:operator", "administrators": ["runtime-admin"],
               "keys": {"test-key": {"algorithm": "EdDSA", "public_key_pem": key.public_key().public_bytes(
                   serialization.Encoding.PEM, serialization.PublicFormat.SubjectPublicKeyInfo).decode()}}}
-    config_path, assertion_path = tmp_path / "trust.json", tmp_path / "assertion.jwt"
+    config_path, assertion_directory = tmp_path / "trust.json", tmp_path / "assertions"
+    assertion_directory.mkdir(mode=0o700)
     config_path.write_text(json.dumps(config))
     config_path.chmod(0o600)
     store_path, ledger_path = tmp_path / "drafts.sqlite3", tmp_path / "execution.sqlite3"
     monkeypatch.setenv("IRONMAN_REVIEW_TRUST_CONFIG", str(config_path))
-    monkeypatch.setenv("IRONMAN_REVIEW_ASSERTION_FILE", str(assertion_path))
+    monkeypatch.delenv("IRONMAN_REVIEW_ASSERTION_FILE", raising=False)
+    monkeypatch.setenv("IRONMAN_REVIEW_ASSERTION_DIRECTORY", str(assertion_directory))
     monkeypatch.setenv("IRONMAN_OPERATION_DRAFT_STORE", str(store_path))
     monkeypatch.setenv("IRONMAN_OPERATION_EXECUTION_LEDGER", str(ledger_path))
     provider = Provider()
@@ -103,6 +106,7 @@ def runtime_operator(tmp_path, monkeypatch):
 
     def write_assertion(claims):
         token = signed(key, claims)
+        assertion_path = assertion_path_for_invocation(assertion_directory, claims["run_id"])
         assertion_path.write_text(token)
         assertion_path.chmod(0o600)
         return token
@@ -122,12 +126,15 @@ def runtime_operator(tmp_path, monkeypatch):
         if state["grant"] is None:
             write_assertion({**claims, "sub": "runtime-admin", "jti": "runtime-admin-" + run_id})
             verifier = SignedIdentityVerifier(config)
-            admin_service = HostReviewAuthority(store_path, verifier, lambda: assertion_path.read_text())
+            admin_service = HostReviewAuthority(store_path, verifier, lambda: assertion_path_for_invocation(
+                assertion_directory, current_invocation_id()).read_text())
             user = verifier.verify(signed(key, claims))
             state["grant"] = admin_service.grant(user, state["request_id"], state["preview_sha256"],
                                                     approval_scope="approved:runtime-review",
                                                     actions=sorted(ACTIONS), expires_at=now + 500)
         write_assertion(claims)
+        if state.get("handoff_barrier") is not None:
+            state["handoff_barrier"].wait(timeout=10)
         return original_factory()
 
     monkeypatch.setattr(pipeline, "get_review_authorizer", issuer_handoff)
@@ -207,6 +214,26 @@ def test_previous_invocation_assertion_is_refused_by_actual_flow(prefect_runtime
     with pytest.raises(ChangeStop, match="REVIEW_AUTHORIZATION_DENIED"):
         state["invoke"]("bind_execution", {**request, "approval_sha256": approval["approval_sha256"]})
     assert not state["ledger"].exists() and state["provider"].writes == 0
+
+
+def test_concurrent_real_flows_keep_separate_issuer_assertions(prefect_runtime, runtime_operator):
+    from concurrent.futures import ThreadPoolExecutor
+    from threading import Barrier
+
+    state = runtime_operator
+    request = prepare_preview(state)
+    approval = state["invoke"]("approve_preview", request)
+    request["approval_sha256"] = approval["approval_sha256"]
+    # Both signed identities are installed before either factory returns. A
+    # shared file would leave one flow holding the other flow's assertion.
+    state["handoff_barrier"] = Barrier(2)
+    with ThreadPoolExecutor(max_workers=2) as pool:
+        futures = [pool.submit(state["invoke"], "bind_execution", request) for _ in range(2)]
+        results = [future.result(timeout=30) for future in futures]
+    assert {row["state"] for row in results} == {"EXECUTION_BOUND"}
+    assert sorted(row["reused"] for row in results) == [False, True]
+    assert len(set(state["invocations"][-2:])) == 2
+    assert state["provider"].writes == 0 and not state["ledger"].exists()
 
 
 def test_orphan_recovery_on_actual_prefect_does_not_reactivate_approval(prefect_runtime, runtime_operator):

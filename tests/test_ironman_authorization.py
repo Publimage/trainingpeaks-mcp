@@ -11,6 +11,7 @@ from cryptography.hazmat.primitives.asymmetric import ed25519, padding, rsa
 
 from scripts.ironman_jobs.ironman_authorization import (
     ACTIONS, HostReviewAuthority, SignedIdentityVerifier, read_host_file,
+    assertion_path_for_invocation, authority_from_host,
 )
 from scripts.ironman_jobs.ironman_dynamic_request_store import canonical
 from scripts.ironman_jobs.ironman_unified_changeset_engine import ChangeStop
@@ -51,7 +52,10 @@ def authority(context, tmp_path, monkeypatch):
     principal = verifier.verify(signed(key, claims))
     grant_id = service.grant(principal, context["draft"]["request_id"], context["preview"],
                              approval_scope=SCOPE, actions=sorted(ACTIONS), expires_at=now[0] + 300)
-    config_path, token_path = tmp_path / "trust.json", tmp_path / "identity.jwt"
+    assertion_directory = tmp_path / "assertions"
+    assertion_directory.mkdir(mode=0o700)
+    config_path = tmp_path / "trust.json"
+    token_path = assertion_path_for_invocation(assertion_directory, claims["run_id"])
     config_path.write_text(json.dumps(config))
     os.chmod(config_path, 0o600)
 
@@ -65,13 +69,14 @@ def authority(context, tmp_path, monkeypatch):
 
     select()
     monkeypatch.setenv("IRONMAN_REVIEW_TRUST_CONFIG", str(config_path))
-    monkeypatch.setenv("IRONMAN_REVIEW_ASSERTION_FILE", str(token_path))
+    monkeypatch.delenv("IRONMAN_REVIEW_ASSERTION_FILE", raising=False)
+    monkeypatch.setenv("IRONMAN_REVIEW_ASSERTION_DIRECTORY", str(assertion_directory))
     monkeypatch.setenv("IRONMAN_OPERATION_DRAFT_STORE", str(context["path"]))
     command = {"action": "approve_preview", "review": control(context), "manifest": context["manifest"],
                "requested_targets": context["review"]["requested_targets"]}
     return dict(service=service, verifier=verifier, claims=claims, config=config, key=key, now=now,
                 reader=reader, select=select, grant=grant_id, principal=principal, command=command,
-                config_path=config_path, token_path=token_path)
+                config_path=config_path, token_path=token_path, assertion_directory=assertion_directory)
 
 
 @pytest.mark.parametrize("change", [
@@ -406,6 +411,79 @@ def test_grant_retry_is_idempotent_but_cannot_resurrect_revocation(context, auth
     with pytest.raises(PermissionError, match="GRANT_REVOKED"):
         authority["service"].grant(authority["principal"], context["draft"]["request_id"],
                                      context["preview"], **options)
+
+
+def test_shared_assertion_configuration_is_refused_even_with_directory(authority, monkeypatch):
+    monkeypatch.setenv("IRONMAN_REVIEW_ASSERTION_FILE", str(authority["token_path"]))
+    with pytest.raises(PermissionError, match="SHARED_ASSERTION_FILE_UNSUPPORTED"):
+        authority_from_host()
+
+
+@pytest.mark.parametrize("mode", [0o755, 0o770, 0o777])
+def test_invocation_assertion_directory_must_be_private(authority, mode):
+    directory = authority["assertion_directory"]
+    directory.chmod(mode)
+    with pytest.raises(PermissionError):
+        assertion_path_for_invocation(directory, "real-scheduler-origin")
+    assert directory.stat().st_mode & 0o777 == mode
+
+
+def test_invocation_path_is_bounded_and_cannot_escape_host_directory(authority):
+    directory = authority["assertion_directory"]
+    one = assertion_path_for_invocation(directory, "flow-one")
+    assert one == assertion_path_for_invocation(directory, "flow-one")
+    assert one != assertion_path_for_invocation(directory, "flow-two")
+    assert assertion_path_for_invocation(directory, "../host-file").parent == directory
+    for invalid in (None, "", "x" * 257):
+        with pytest.raises(PermissionError):
+            assertion_path_for_invocation(directory, invalid)
+
+
+def test_revocation_batch_is_monotonic_idempotent_and_persistent(context, authority):
+    service = authority["service"]
+    assert service.authorize(authority["command"])
+    authority["select"]("test-admin")
+    entries = [("grant", authority["grant"]),
+               ("token", canonical([authority["config"]["issuer"], "user-token"]))]
+    service.revoke_many(entries + entries)
+    service.revoke_many(entries)
+    assert context["store"].db.execute("SELECT count(*) FROM authority_revocations").fetchone() == (2,)
+    authority["select"]()
+    # authorize reopens the persisted store on every decision.
+    assert not service.authorize(authority["command"])
+
+
+@pytest.mark.parametrize("batch", [None, [], [("token", "")], [([], "bad")],
+    [("token", "valid"), ("unsupported", "bad")], [("token", "x" * 4097)]])
+def test_invalid_revocation_batch_cannot_commit_any_tombstone(context, authority, batch):
+    authority["select"]("test-admin")
+    with pytest.raises(PermissionError):
+        authority["service"].revoke_many(batch)
+    assert context["store"].db.execute("SELECT count(*) FROM authority_revocations").fetchone() == (0,)
+
+
+def test_revocation_batch_cannot_bypass_admin_identity(context, authority):
+    with pytest.raises(PermissionError, match="AUTHORITY_ADMIN_REQUIRED"):
+        authority["service"].revoke_many([("grant", authority["grant"])])
+    assert authority["service"].authorize(authority["command"])
+
+
+def test_revocation_batch_rolls_back_tombstones_and_audit_together(context, authority, monkeypatch):
+    service = authority["service"]
+    authority["select"]("test-admin")
+    before = context["store"].db.execute("SELECT count(*) FROM authority_audit").fetchone()
+    original_audit = service._audit
+    calls = []
+    def interrupted_audit(*args):
+        calls.append(True)
+        if len(calls) == 2:
+            raise RuntimeError("SYNTHETIC_REVOCATION_DELIVERY_INTERRUPTED")
+        original_audit(*args)
+    monkeypatch.setattr(service, "_audit", interrupted_audit)
+    with pytest.raises(RuntimeError, match="DELIVERY_INTERRUPTED"):
+        service.revoke_many([("grant", authority["grant"]), ("token", "second-identity")])
+    assert context["store"].db.execute("SELECT count(*) FROM authority_revocations").fetchone() == (0,)
+    assert context["store"].db.execute("SELECT count(*) FROM authority_audit").fetchone() == before
 
 
 def execution_command(ctx, approval, *, action="execute_change"):

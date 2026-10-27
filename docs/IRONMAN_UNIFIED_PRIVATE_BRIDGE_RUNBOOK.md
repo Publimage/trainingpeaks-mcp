@@ -78,11 +78,27 @@ trusted directories and be regular, bounded, private files. Reads reject FIFOs,
 unsafe ancestors and changes during the read. A completed atomic file rotation
 is accepted by a later read. These checks do not authenticate an approving human:
 the existing issuer must provide pinned public trust and a signed assertion for
-the **actual** Prefect flow invocation. The launcher must isolate concurrent
-invocations; replacing one shared assertion file concurrently is not a validated
-handoff. Upstream revocations must reach the same authoritative store before
+the **actual** Prefect flow invocation. Configure the private, host-owned
+`IRONMAN_REVIEW_ASSERTION_DIRECTORY`, not the removed shared-file input. The
+launcher uses `assertion_path_for_invocation(directory, actual_flow_run_id)` to
+select the file: SHA256 of the canonical JSON string of that ID, plus `.jwt`.
+The worker derives that same ID from trusted flow/task context; neither a path
+nor an invocation ID is accepted from MCP/flow parameters. Install the signed
+assertion atomically with private permissions before admitting that run. Separate
+runs never overwrite each other's assertion. The existing issuer/launcher owns
+expiry cleanup after terminal runs; recovery requires its own new signed origin.
+No files, keys or directories are created by the verifier. Old
+`IRONMAN_REVIEW_ASSERTION_FILE` configuration is rejected, including when both
+variables are set. This is a change to an undeployed contract, not a dual-mode
+compatibility workaround. Upstream revocations must reach the same authoritative store before
 subsequent decisions; a JWT signature alone cannot establish current account
-status. No issuer/launcher or upstream delivery has yet been attested live.
+status. The existing host administration API now accepts a bounded atomic
+`revoke_many` batch, with the same administrator signature, revocation checks and
+audit transaction as `revoke`; neither method is exposed to MCP/flow callers.
+Invalid/interrupted batches roll back completely. Re-delivery only adds durable
+tombstones; it never clears an existing revocation. This primitive is not a feed
+transport or proof of delivery freshness. No issuer/launcher or upstream delivery
+has yet been attested live.
 
 The MCP boundary must derive identity from its trusted authenticated transport,
 never `athlete`, a caller-supplied principal/JWT, a stored approval hash or a

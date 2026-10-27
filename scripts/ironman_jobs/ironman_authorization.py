@@ -186,6 +186,24 @@ def current_invocation_id() -> str:
         raise PermissionError("AUTHENTICATED_INVOCATION_REQUIRED") from exc
 
 
+def assertion_path_for_invocation(directory: Path, invocation_id: str) -> Path:
+    """Host launcher/worker contract; neither path nor ID comes from MCP input.
+
+    One private assertion per scheduler invocation prevents concurrent workers
+    from overwriting each other's identity. This only selects an existing file;
+    the trusted issuer/launcher owns signing, atomic installation and cleanup.
+    """
+    directory = Path(directory)
+    require(type(invocation_id) is str and 0 < len(invocation_id) <= 256,
+            "INVOCATION_ID_REQUIRED")
+    path = directory / (digest(invocation_id) + ".jwt")
+    require_private_path(path)
+    meta = directory.lstat()
+    require(stat.S_ISDIR(meta.st_mode) and meta.st_uid in {0, os.geteuid()} and
+            not meta.st_mode & 0o077, "UNSAFE_ASSERTION_DIRECTORY")
+    return path
+
+
 class HostReviewAuthority:
     """Concrete authority over the EXISTING DraftStore database.
 
@@ -285,13 +303,28 @@ class HostReviewAuthority:
             store.close()
 
     def revoke(self, kind: str, identity: str) -> None:
-        require(kind in {"grant", "token", "principal"} and type(identity) is str and bool(identity), "INVALID_REVOCATION")
+        self.revoke_many([(kind, identity)])
+
+    def revoke_many(self, revocations: list[tuple[str, str]]) -> None:
+        """Atomic, monotonic host ingestion through the existing admin identity.
+
+        This is not a public flow/MCP command or an upstream feed implementation.
+        Invalid batches fail before any state access; partial batches never commit.
+        """
+        require(type(revocations) is list and 0 < len(revocations) <= 256,
+                "INVALID_REVOCATION_BATCH")
+        require(all(type(entry) is tuple and len(entry) == 2 and
+                    type(entry[0]) is str and entry[0] in {"grant", "token", "principal"} and
+                    type(entry[1]) is str and 0 < len(entry[1]) <= 4096
+                    for entry in revocations), "INVALID_REVOCATION")
+        revocations = sorted(set(revocations))
         store = self._store()
         try:
             store.db.execute("BEGIN IMMEDIATE")
             admin = self._admin(store)
-            store.db.execute("INSERT OR IGNORE INTO authority_revocations VALUES (?,?)", (kind, identity))
-            self._audit(store, admin, None, "revoke", {"kind": kind, "identity": identity}, True, "REVOKED")
+            for kind, identity in revocations:
+                store.db.execute("INSERT OR IGNORE INTO authority_revocations VALUES (?,?)", (kind, identity))
+                self._audit(store, admin, None, "revoke", {"kind": kind, "identity": identity}, True, "REVOKED")
             store.db.commit()
         except Exception:
             store.db.rollback()
@@ -406,12 +439,15 @@ class HostReviewAuthority:
 def authority_from_host() -> HostReviewAuthority:
     """Configuration and assertion paths are supplied only by the existing host."""
     config_path = os.environ.get("IRONMAN_REVIEW_TRUST_CONFIG")
-    assertion_path = os.environ.get("IRONMAN_REVIEW_ASSERTION_FILE")
+    assertion_directory = os.environ.get("IRONMAN_REVIEW_ASSERTION_DIRECTORY")
     store_path = os.environ.get("IRONMAN_OPERATION_DRAFT_STORE")
-    require(bool(config_path and assertion_path and store_path), "REVIEW_AUTHORITY_NOT_CONFIGURED")
+    require(not os.environ.get("IRONMAN_REVIEW_ASSERTION_FILE"), "SHARED_ASSERTION_FILE_UNSUPPORTED")
+    require(bool(config_path and assertion_directory and store_path), "REVIEW_AUTHORITY_NOT_CONFIGURED")
     try:
         verifier = SignedIdentityVerifier(_json(read_host_file(Path(config_path), 65536)))
         return HostReviewAuthority(Path(store_path), verifier,
-                                   lambda: read_host_file(Path(assertion_path), 32768).decode("ascii").strip())
+                                   lambda: read_host_file(assertion_path_for_invocation(
+                                       Path(assertion_directory), current_invocation_id()),
+                                       32768).decode("ascii").strip())
     except (OSError, ValueError, TypeError) as exc:
         raise PermissionError("REVIEW_AUTHORITY_CONFIGURATION_INVALID") from exc

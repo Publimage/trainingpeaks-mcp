@@ -5,6 +5,28 @@ Status: ARCHITECTURE CONTRACT / NOT DEPLOYED. This is not an authorization to re
 
 ## Current release assessment — 2026-10-27
 
+Latest continuation: canonical KB marker
+`IRONMAN_GITHUB_ACTIONS_ENABLED_UI_20261027_V1` records the coach's official
+Actions re-enablement. It does not replay old events or certify current HEADs.
+Both PRs still have zero all-event runs/checks at the 7fe73c2/8cc9cea checkpoint.
+PR19's filters remain a separate gate; no source is moved into PR18 merely to
+generate CI. The structural follow-up below replaces shared identity-file
+handoff with invocation-isolated files and adds atomic revocation ingestion.
+It does not deploy an issuer or authenticate a human MCP transport.
+
+STRUCTURAL_REFACTOR follow-up validation: 155 affected tests PASS, one existing
+Prefect logging warning, 61.73 s. Actual local Prefect concurrent flows install
+both synthetic issuer assertions before either authority factory returns; each
+reads its own identity and concurrent bindings reuse one durable reservation.
+Previous-invocation/missing assertions still deny. Batch tests verify persistent
+monotonic replay, invalid-input refusal, administrator enforcement and rollback
+of tombstones plus audit on interrupted delivery. Existing approval, recovery
+and flow refusal suites also pass. Full repository QA was not repeated; its
+previous totals remain scoped to their recorded revisions. Compile/diff checks
+pass. No schema migration, public MCP tool, provider writer or new service was
+added. Production issuer/launcher, feed freshness, authenticated MCP facade and
+runtime management/rollback remain separate OPEN gates.
+
 The coach now authorizes conditional merge/deploy, disposable-lab provider
 canaries and scoped publisher activation after the applicable checks pass.
 This supersedes historical blanket no-release instructions below. Explicit
@@ -466,7 +488,7 @@ review caller and are not repurposed for this role.
 
 Host-only configuration is `IRONMAN_REVIEW_TRUST_CONFIG` (issuer, audience,
 required_scope, pinned keys and administrator subjects),
-`IRONMAN_REVIEW_ASSERTION_FILE` (private assertion for THIS scheduler invocation)
+`IRONMAN_REVIEW_ASSERTION_DIRECTORY` (private host directory of per-invocation assertions)
 and the existing `IRONMAN_OPERATION_DRAFT_STORE`. Paths are never serialized flow
 arguments. Files must be regular, private, owner/root-owned and not symlinks.
 Trust configuration is reloaded and identity verified on every operation/check.
@@ -474,10 +496,27 @@ No signing key, issuer, account, listener or production credential is created.
 The existing identity issuer/launcher must supply the signed invocation-bound
 assertion; this upstream connection has NOT been configured or live-attested.
 Missing trust, assertion or scheduler context denies by default.
+The assertion filename is derived by the shared host utility
+`assertion_path_for_invocation(directory, actual_flow_run_id)` using the digest of
+the canonical JSON invocation ID and a `.jwt` suffix. Its ID comes from the real
+Prefect flow/task context, not a caller selector. Concurrent runs select different
+files; signature verification still binds `run_id` to that current context on
+every use. The issuer/launcher must install each private signed file atomically
+before admitting its run and own expiry cleanup. The verifier creates nothing.
+The old shared `IRONMAN_REVIEW_ASSERTION_FILE` variable is rejected rather than
+retained as a fallback. This undeployed contract has one supported handoff.
 Upstream token/account revocations must also reach the persistent token/principal
 revocation API through that trusted host integration: offline signature validation
 alone cannot discover an account disabled at the issuer. This live handoff is a
 release blocker, not an assumed capability of the JWT verifier.
+Host administration can deliver up to 256 `(kind, identity)` revocations using
+`HostReviewAuthority.revoke_many`. Single `revoke` delegates to that same path;
+validation, administrator identity/current revocation, tombstone inserts and
+actor audit commit atomically. Duplicates are coalesced; delivery is monotonic
+and idempotent. Invalid input or an interrupted audit cannot commit part of a
+batch. This reuses the existing store/issuer boundary without a new endpoint or
+service. It does not establish upstream feed availability/freshness or confer
+revocation powers on an ordinary MCP caller.
 
 Exact-preview grants, grant/token/principal revocations and actor audit live in
 new tables of the SAME DraftStore database, with indexed request bindings.
