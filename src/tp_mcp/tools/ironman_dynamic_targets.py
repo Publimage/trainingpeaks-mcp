@@ -13,7 +13,9 @@ from tp_mcp.ironman_dynamic_identity import TargetStop
 from tp_mcp.ironman_dynamic_resolution import resolve_live_request
 from tp_mcp.tools.library import tp_get_libraries
 from tp_mcp.tools.plans import (
-    tp_get_training_plan_notes, tp_get_training_plan_workouts, tp_list_training_plans,
+    tp_get_training_plan_notes,
+    tp_get_training_plan_workouts,
+    tp_list_training_plans,
 )
 from tp_mcp.tools.profile import tp_list_athletes
 from tp_mcp.tools.workouts import tp_get_workouts

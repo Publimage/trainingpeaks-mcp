@@ -8,7 +8,7 @@ reviewed gateway, injected per operation after approval and canary. No new API.
 from __future__ import annotations
 
 from copy import deepcopy
-from typing import Any, Callable
+from typing import Any, Callable, cast
 
 from scripts.ironman_jobs.ironman_unified_changeset_engine import (
     OWNER, ChangeStop, SecurityDenied, digest, need,
@@ -36,6 +36,7 @@ def validate_classic_patch(change: dict[str, Any], current: dict[str, Any]) -> t
     payload = change.get("payload")
     need(type(payload) is dict and set(payload) == {"desired", "fields"},
          "CLASSIC_PATCH_PAYLOAD")
+    payload = cast(dict[str, Any], payload)
     desired, fields = payload["desired"], payload["fields"]
     need(type(desired) is dict and type(fields) is list
          and 1 <= len(fields) <= len(ALLOWED)

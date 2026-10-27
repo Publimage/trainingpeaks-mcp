@@ -19,9 +19,9 @@ from typing import Any
 from urllib.parse import urlparse
 
 from tp_mcp.client.context import athlete_override
+from tp_mcp.swim_audit_bridge import authorize_request, build_swim_input, validate_allowlist
 from tp_mcp.tools.metrics import tp_get_metrics
 from tp_mcp.tools.workouts import tp_get_workout, tp_get_workouts
-from tp_mcp.swim_audit_bridge import authorize_request, build_swim_input, validate_allowlist
 from tp_mcp.unified_read_bridge import READ_PATH, build_private_read, validate_policy
 
 DEFAULT_CONFIG = Path("/home/ironman/.config/ironman/private_bridge.json")
@@ -177,17 +177,21 @@ def _redact_admin_text(value: str) -> str:
     """Redact credentials in Prefect admin logs before storing the receipt."""
     import re
 
-    clean = value[:12000]
-    # Header values may contain spaces (Authorization: Bearer <token>) and
-    # multiple cookies; redact the entire credential-bearing line.
+    # CLI/admin transports can carry physical or escaped line separators.
+    # Normalize only those separators (never unicode_escape arbitrary text)
+    # before applying the one shared log redaction policy.
+    clean = value[:12000].replace("\\r\\n", "\n").replace("\\n", "\n").replace("\\r", "\n")
+    # Values may contain spaces/multiple cookies or quoted JSON fields.
+    # Redact the entire credential-bearing logical line, not just one word.
     clean = re.sub(
-        r"(?im)\b(?:authorization|proxy-authorization|cookie|set-cookie)\s*[:=][^\r\n]*",
+        r"(?im)\b(?:authorization|proxy-authorization|cookie|set-cookie|password|secret|token|"
+        r"access[_-]?token|refresh[_-]?token|api[_-]?key)['\"]?\s*[:=][^\r\n]*",
         "[redacted]",
         clean,
     )
-    # Also catch key=value and bare Bearer forms within ordinary log lines.
+    # A bare Bearer token need not have a credential field name.
     return re.sub(
-        r"(?i)\b(?:bearer\s+\S+|(?:password|secret|token|access[_-]?token|refresh[_-]?token|api[_-]?key)\s*[:=]\s*\S+)",
+        r"(?i)\bbearer\s+\S+",
         "[redacted]",
         clean,
     )
@@ -310,8 +314,12 @@ def _handler_factory(config: dict[str, Any]):
                     raise ValueError("INVALID_BODY_SIZE")
                 payload = json.loads(self.rfile.read(length))
                 if path == READ_PATH:
+                    from scripts.ironman_jobs.ironman_unified_changeset_engine import SecurityDenied
+
                     try:
                         result = asyncio.run(_build_unified_resource_input(payload, config))
+                    except SecurityDenied:
+                        self._write_json(403, {"error": "UNIFIED_PROVIDER_ACCESS_DENIED"})
                     except PermissionError:
                         self._write_json(403, {"error": "UNIFIED_RESOURCE_NOT_ALLOWED"})
                     except (KeyError, TypeError, ValueError):

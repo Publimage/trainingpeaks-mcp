@@ -84,19 +84,16 @@ def test_admin_result_rejects_unallowlisted_operation(tmp_path, monkeypatch):
         _persist_admin_result(payload, {"allowed_athletes": {"2932097"}})
 
 
-def test_admin_receipt_redacts_credential_headers_and_inline_secrets(tmp_path, monkeypatch):
+@pytest.mark.parametrize("separator", ["\n", "\r\n", r"\n", r"\r\n"])
+def test_admin_receipt_redacts_credential_headers_and_inline_secrets(tmp_path, monkeypatch, separator):
     import tp_mcp.private_bridge as bridge
 
     # Synthetic strings only: no real provider credentials in tests.
-    example = (
-        "phase=ok\\n"
-        "Authorization: Bearer DEMO_AUTH_VALUE\\n"
-        "Cookie: session=DEMO_COOKIE_A; pref=DEMO_COOKIE_B\\n"
-        "token=DEMO_INLINE_TOKEN\\n"
-        "api_key: DEMO_API_KEY\\n"
-        "Bearer DEMO_STANDALONE_VALUE\\n"
-        "normal status survives"
-    )
+    example = separator.join([
+        "phase=ok", "Authorization: Bearer DEMO_AUTH_VALUE",
+        "Cookie: session=DEMO_COOKIE_A; pref=DEMO_COOKIE_B", "token=DEMO_INLINE_TOKEN",
+        "api_key: DEMO_API_KEY", "Bearer DEMO_STANDALONE_VALUE", "normal status survives",
+    ])
     sanitized = bridge._redact_admin_text(example)
     for forbidden in (
         "DEMO_AUTH_VALUE", "DEMO_COOKIE_A", "DEMO_COOKIE_B",
@@ -121,3 +118,13 @@ def test_admin_receipt_redacts_credential_headers_and_inline_secrets(tmp_path, m
     assert "DEMO_AUTH_VALUE" not in stored
     assert "DEMO_INLINE_TOKEN" not in stored
     assert "[redacted]" in stored
+
+
+@pytest.mark.parametrize("key", ["Authorization", "Cookie", "password", "token", "api_key"])
+@pytest.mark.parametrize("separator", ["\n", r"\n"])
+def test_admin_redaction_covers_quoted_fields_and_spaced_values(key, separator):
+    from tp_mcp.private_bridge import _redact_admin_text
+    raw = json.dumps({key: "DEMO VALUE WITH SPACES"}) + separator + "normal status survives"
+    clean = _redact_admin_text(raw)
+    assert "DEMO" not in clean and "VALUE WITH SPACES" not in clean
+    assert "normal status survives" in clean

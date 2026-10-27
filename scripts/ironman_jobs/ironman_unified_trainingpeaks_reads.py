@@ -9,16 +9,32 @@ from __future__ import annotations
 
 import asyncio
 from datetime import date, timedelta
-from typing import Any
+from typing import Any, cast
 
 from scripts.ironman_jobs.ironman_unified_changeset_engine import (
-    ChangeStop, SecurityDenied, OWNER, VALID_KINDS
+    Adapter, ChangeStop, SecurityDenied, OWNER, VALID_KINDS
 )
 
 
 def require(condition: bool, code: str) -> None:
     if not condition:
         raise ChangeStop(code)
+
+
+def _require_provider_access(response: Any) -> None:
+    """Preserve explicit denial across the existing two HTTP client types."""
+    error = getattr(response, "error_code", None)
+    code = getattr(error, "value", error)
+    if (getattr(response, "status_code", None) in {401, 403}
+            or (getattr(response, "is_error", False) and code in {
+                "AUTH_EXPIRED", "AUTH_INVALID", "FORBIDDEN_ENDPOINT", "PREMIUM_REQUIRED"})):
+        raise SecurityDenied("TRAININGPEAKS_READ_ACCESS_DENIED")
+
+
+async def _read_api(client: Any, endpoint: str) -> Any:
+    response = await client.get(endpoint)
+    _require_provider_access(response)
+    return response
 
 
 def plan_windows(p: dict[str, Any]) -> list[tuple[str, str]]:
@@ -54,18 +70,18 @@ async def read_trainingpeaks_item(spec: dict[str, Any]) -> dict[str, Any]:
                 "COACH_ACCOUNT_MISMATCH")
         if kind.startswith("library."):
             require(target["container_kind"] == "workout_library", "NOT_LIBRARY_TARGET")
-            r = await c.get(f"/exerciselibrary/v2/libraries/{container_id}/items")
+            r = await _read_api(c, f"/exerciselibrary/v2/libraries/{container_id}/items")
             require(not r.is_error and isinstance(r.data, list), "LIBRARY_READ_FAILED")
-            found = [x for x in r.data
+            found = [x for x in cast(list[dict[str, Any]], r.data)
                      if x.get("exerciseLibraryItemId", x.get("id")) == resource_id]
             require(len(found) == 1, "LIBRARY_ITEM_NOT_UNIQUE")
             return found[0]
 
         require(target["container_kind"] == "training_plan", "NOT_PLAN_TARGET")
-        response = await c.get(f"/plans/v1/plans/{container_id}")
+        response = await _read_api(c, f"/plans/v1/plans/{container_id}")
         require(not response.is_error and isinstance(response.data, dict),
                 "TRAINING_PLAN_READ_FAILED")
-        plan = response.data
+        plan = cast(dict[str, Any], response.data)
         require(plan.get("planId") == container_id
                 and plan.get("ownerPersonId") == OWNER
                 and type(plan.get("planPersonId")) is int, "TRAINING_PLAN_OWNER_DRIFT")
@@ -74,36 +90,38 @@ async def read_trainingpeaks_item(spec: dict[str, Any]) -> dict[str, Any]:
             import httpx
             from tp_mcp.tools.strength import _access, _headers, STRENGTH_API_BASE
             _, token, error = await _access(c)
-            require(not error and token, "STRENGTH_AUTH_FAILED")
+            if error or not token:
+                raise SecurityDenied("STRENGTH_AUTH_FAILED")
             async with httpx.AsyncClient(timeout=30, follow_redirects=False) as h:
-                r = await h.get(
+                strength_response = await h.get(
                     STRENGTH_API_BASE+f"/rx/activity/v1/workouts/{resource_id}",
                     headers=_headers(token)
                 )
-                require(r.status_code == 200, "STRENGTH_READ_FAILED")
-                payload = r.json()
+                _require_provider_access(strength_response)
+                require(strength_response.status_code == 200, "STRENGTH_READ_FAILED")
+                payload = strength_response.json()
                 obj = payload.get("data") if isinstance(payload, dict) else payload
                 require(isinstance(obj, dict) and obj.get("id") == resource_id
                         and obj.get("calendarId") == plan["planPersonId"]
                         and obj.get("workoutType") == "StructuredStrength",
                         "STRENGTH_ITEM_SCOPE_MISMATCH")
-                return obj
+                return cast(dict[str, Any], obj)
 
         windows = plan_windows(plan)
         if kind == "plan.workout.patch":
             workouts: dict[int, dict[str, Any]] = {}
             for first, last in windows:
-                r = await c.get(
+                r = await _read_api(c,
                     f"/plans/v1/plans/{container_id}/workouts/{first}/{last}"
                 )
                 require(not r.is_error and isinstance(r.data, list),
                         "WORKOUT_WINDOW_FAILED")
-                for row in r.data:
+                for row in cast(list[dict[str, Any]], r.data):
                     wid = row.get("workoutId")
                     require(type(wid) is int, "INVALID_WORKOUT_ROW")
                     if wid in workouts:
-                        require(workouts[wid] == row, "WORKOUT_WINDOW_INCONSISTENCY")
-                    workouts[wid] = row
+                        require(workouts[cast(int, wid)] == row, "WORKOUT_WINDOW_INCONSISTENCY")
+                    workouts[cast(int, wid)] = row
             require(resource_id in workouts, "WORKOUT_NOT_IN_TARGET_PLAN")
             return workouts[resource_id]
 
@@ -112,10 +130,10 @@ async def read_trainingpeaks_item(spec: dict[str, Any]) -> dict[str, Any]:
         if kind in ("plan.note.patch", "plan.note.attachment.add",
                     "plan.note.attachment.retire"):
             first, last = windows[0][0], windows[-1][1]
-            r = await c.get(f"/plans/v1/plans/{container_id}/calendarNote/{first}/{last}")
+            r = await _read_api(c, f"/plans/v1/plans/{container_id}/calendarNote/{first}/{last}")
             require(not r.is_error and isinstance(r.data, list),
                     "PLAN_NOTES_READ_FAILED")
-            found = [x for x in r.data if x.get("id") == resource_id]
+            found = [x for x in cast(list[dict[str, Any]], r.data) if x.get("id") == resource_id]
             require(len(found) == 1, "NOTE_NOT_IN_TARGET_PLAN")
             note = found[0]
             require(note.get("planId") == container_id, "NOTE_PLAN_ID_DRIFT")
@@ -136,13 +154,13 @@ class TrainingPeaksReadOnlyAdapter:
 def create_read_registry(transport: str = "local") -> dict[str, Any]:
     """One typed read registry, local on TP host or private VPC on Prefect host."""
     if transport == "local":
-        adapter = TrainingPeaksReadOnlyAdapter()
+        adapter: Adapter = TrainingPeaksReadOnlyAdapter()
     elif transport == "private_bridge":
         from tp_mcp.unified_read_bridge import PrivateBridgeReadAdapter
         adapter = PrivateBridgeReadAdapter()
     else:
         raise ChangeStop("UNIFIED_UNSUPPORTED_READ_TRANSPORT")
-    registry = {kind: adapter for kind in VALID_KINDS}
+    registry: dict[str, Adapter] = {kind: adapter for kind in VALID_KINDS}
     # Reuse the SAME read transport for two reviewed field/attachment
     # validators; no provider writers are installed by this registry.
     from scripts.ironman_jobs.ironman_unified_note_pdf_adapter import (
