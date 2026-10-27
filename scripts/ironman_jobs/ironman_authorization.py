@@ -150,9 +150,17 @@ def current_invocation_id() -> str:
     """Trusted scheduler context, never a flow argument or environment override."""
     try:
         from prefect.context import get_run_context
-        value = str(get_run_context().flow_run.id)
-        require(bool(value) and value != "None", "INVOCATION_ID_REQUIRED")
-        return value
+        context = get_run_context()
+        # Prefect's task context carries the parent flow reference on the
+        # task-run model, not a flow_run object. Never substitute task_run.id:
+        # the signed delegation belongs to the originating flow invocation.
+        flow = getattr(context, "flow_run", None)
+        task = getattr(context, "task_run", None)
+        origins = {str(value) for value in (
+            getattr(flow, "id", None), getattr(task, "flow_run_id", None)
+        ) if value is not None and str(value)}
+        require(len(origins) == 1 and "None" not in origins, "INVOCATION_ID_REQUIRED")
+        return origins.pop()
     except (ImportError, AttributeError, RuntimeError) as exc:
         raise PermissionError("AUTHENTICATED_INVOCATION_REQUIRED") from exc
 
