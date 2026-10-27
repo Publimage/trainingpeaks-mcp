@@ -2,6 +2,62 @@
 
 Status: ARCHITECTURE CONTRACT / NOT DEPLOYED. This is not an authorization to retry a denied operation. Source of truth is Google Drive IRONMAN KNOWLEDGE BASE (00 Core, 00B Emergency, 00C Proven Paths, 11 Agent Orchestration Roadmap).
 
+
+## Current release assessment — 2026-10-27
+
+The coach now authorizes conditional merge/deploy, disposable-lab provider
+canaries and scoped publisher activation after the applicable checks pass.
+This supersedes historical blanket no-release instructions below. Explicit
+security denials remain binding: do not edit the denied Actions workflow or
+plan_mutation_gates.py, force CI by moving/retargeting the trusted branch, retry
+the denied plan.create canary, or reuse Social-only deployment credentials.
+
+Reviewed source: PR18 af6d81201d71fbbb064df57db4f830a9cebe0a53, stacked PR19
+0bd3952b459cf4664e932f6b72bcbc0fe15df250. Both draft, clean/mergeable; no submitted
+reviews returned. This internal architectural audit is not a GitHub approval.
+PR19 includes PR18; a green composed checkout is not independent CI of PR18.
+
+| Gate | Evidence / actual state | Release consequence |
+| --- | --- | --- |
+| Integrated local tests | Full checkout 0bd3952: 1,796 PASS, 3 warnings, 62.32 s; actual local Prefect, MCP, SQLite, child-process crash/concurrency; synthetic issuer/provider | LOCAL_VERIFIED, not production proof |
+| Static contracts | Ruff src/ PASS; mypy src/ --no-incremental PASS, 56 files | LOCAL_VERIFIED |
+| MCP legacy protocol | Real mcp 1.26.0 client against separate SDK 2.0.0 server: initialize 2025-11-25, 115 tools, INVALID_ARGS call PASS | Offline protocol compatibility; not live auth or fresh ChatGPT session |
+| Exact-head GitHub CI/review | PR18/PR19: no commit status or PR-triggered run returned; zero reviews/threads. Run reader is PR-only/first-page. Existing triggers do not cover the stacked PR19 base; workflow/runner changes have prior denials | BLOCKED; no merge to manufacture CI evidence |
+| Existing live infrastructure | Both documented DO hosts active. Existing TP MCP and publisher status readable; live_writer_verified=false. Trusted read-only prefect_ssh_inventory job 4b45d9a passed: private TCP 22 reachable, no private key in TP host SSH inventory | Live existing path only; not new operator deployment |
+| Runtime management / rollback | No DO shell tool, no runtime credential/identity binding in Codex, no discovered authorized TP-to-Prefect private key. Social forced SSH is scoped to Social and must not be repurposed | Cannot attest/apply TP/Prefect configuration or rollback through current access |
+| Trusted issuer/revocation feed | Concrete verifier/grants/audit tested; no existing production issuer/launcher identity contract, pinned trust or upstream revocation delivery attested | MISSING integration; never mint an assistant-controlled production identity |
+| Canonical worker persistence | Local same-ledger/inode/lock, restart/recovery and migration tests PASS; actual service paths, UID/modes, preserved ledger history and upgrade/rollback not inspected | Runtime rehearsal required; no multi-host/NFS safety claim |
+| Universal MCP/control surface | Existing live tool is revision-pinned fixed-job runner; no generic draft/review/execution facade calling the one flow with authenticated handoff is deployed/attested | MISSING integration; do not create one job per request |
+| Writer capabilities | create_read_registry installs read-only adapters; classic/PDF callback writers default None. Flow rejects publish. Static VPC allowlists remain staging-only | Source does not become an operational publisher by changing a flag |
+| Disposable-lab canary | Canonical 684484 independently read: exact lab title, private, price null, zero workouts. No write canary performed | LAB_IDENTITY_READ_VERIFIED only; denied plan.create excluded |
+| New ChatGPT session | Current connected tool calls and offline MCP reconnect verified; no tool creates/attests a new ChatGPT project conversation | NOT VERIFIED; requires installed/refreshed final surface first |
+
+Architecture audit: immutable request/preview/revision hashes, separate binding
+permission, atomic grant/revocation/audit, monotonic consent denial, per-item
+execution checks and persistent uncertain claims are shared contracts, not per-plan
+exceptions. One dependency scheduler and one private SQLite opener replace the
+repeated implementations. Worker ownership is an invocation nonce, never a replayed
+request ID. Recovery is read-only and cannot authorize a replay or clear a denial.
+Real-runtime identity tests still synthesize the issuer handoff; they do not prove
+that the live stdio/tunnel authenticates an approving human or delivers revocation.
+
+Before a limited operational release, the Operator maintainer/security reviewer
+must close the existing gates in order: legitimate exact-head CI and review;
+authorized management/rollback of TP and Prefect services; identify/configure the
+existing issuer/launcher and revocation feed; attest one canonical ledger and
+rehearse state/rollback; wire a single MCP facade to the existing flow; install
+reviewed writer callbacks once per eligible capability with exact scoped authority;
+then independently read back disposable canaries, enable only that validated scope
+and verify catalog refresh/new-session operation. No per-plan job/manifest or new
+infrastructure is proposed as a substitute.
+
+Existing plan-specific helpers remain compatibility debt. Owner: Operator
+maintainer. Remove each only after its callers use the common typed capability,
+semantic/scope parity tests pass and an authorized capability canary succeeds;
+retire callers/helper together. Do not strip hardcoded pilot guards as a shortcut.
+No temporary bypass is introduced by this audit. Production release remains
+NOT_COMPLETED; only the independent checks above have been completed.
+
 ## Objective
 
 One coach request -> one durable Prefect flow -> typed, plan-scoped operations -> provider readback -> one verified report. The same operations must handle every Training Plan ID. Stop creating one-off Python scripts or registry entries for individual workout IDs, weeks, notes or PDF filenames.
