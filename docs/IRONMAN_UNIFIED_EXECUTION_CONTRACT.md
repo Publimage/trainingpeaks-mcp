@@ -5,6 +5,54 @@ Status: ARCHITECTURE CONTRACT / NOT DEPLOYED. This is not an authorization to re
 
 ## Current release assessment — 2026-10-27
 
+### Separate-process worker integration — laboratory PASS
+
+`PrefectProcessLauncher` now connects the existing MCP ingress to the SAME flow
+and `ironman-prefect-staging-process` pool. Only mode, manifest and requested
+targets cross the API. Creation uses an idempotency key; scheduling is released
+only after a trusted issuer port provisions the real invocation. No callback,
+credential, principal, host path or job-variable override is transmitted.
+Failed/uncertain dispatches expose the flow ID and forbid blind provider retry.
+
+Deployed execution requires worker-local protected configuration. It pins the
+deployment and actual entrypoint SHA, verifies existing host environment paths,
+and authenticates a signed assertion binding the real flow ID to the exact
+command digest. The worker reconstructs its own bindings; MCP ContextVars are
+not transported. Reviewed adapter bootstrap is code-only and separately gated by
+host capability policy. No production bootstrap/writer/issuer is installed.
+
+The existing DraftStore holds an administrator-audited monotonic revocation
+sync checkpoint. Workers require an age limit of 1–300 seconds; missing, stale,
+future-dated or invalidated checkpoints deny. Revocations invalidate freshness
+until a confirmed sync. Every business decision rechecks freshness; invocation
+identity/expiry/current revocation and allowed/denied audit share one transaction.
+`refresh_revocations` confirms trusted upstream synchronization; it neither
+fetches a feed nor guarantees rollback protection of historical database copies.
+
+Bounded flow/command receipts travel through existing Prefect API artifacts.
+MCP needs no worker SQLite mount or result-file path. The artifact lookup uses
+one explicit authenticated API body: the pinned SDK's default null filters were
+observed rejected by its server schema. There is no fallback, monkeypatch or
+automatic resubmission.
+
+New tests: **6 PASS, 76 deselected, 58.23 s**, comprising one multiprocess test
+and five targeted admission tests. The previous six in-process scenarios were
+not replayed. In an ephemeral local API, one deployment reuses the existing
+entrypoint/pool name and working-directory pull step. MCP stdio, process worker
+and flow have distinct PIDs. Twelve runs produce six completed stages, a single
+synthetic PUT including execution retry, and six failed admissions: wrong
+command, wrong origin, missing assertion, stale revocations, missing protected
+config and injected ledger path. API metadata verifies domain-only parameters.
+Issuer/provider bootstrap is test-only. Logs/JUnit: `pr19-worker-boundary-final.*`.
+
+Status: **MCP_PREFECT_MULTIPROCESS_LAB_PASS**, not LIVE_VERIFIED. Remaining gates
+are real issuer delivery/feed freshness, authenticated MCP access to the existing
+Prefect API (historically loopback-only), protected worker configuration and
+dependency/bootstrap attestation on existing hosts, exact-head CI/review and
+provider canaries. No live deployment or host change. The existing YAML removes
+privileged parameter defaults; one host process configuration supplies them.
+No new service, per-request job or operation manifest. Publication remains gated.
+
 ### Current isolated integration (supersedes earlier source-only facade gap)
 
 The repository now connects one `tp_ironman_request` MCP entrypoint to the

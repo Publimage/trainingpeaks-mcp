@@ -226,3 +226,29 @@ Three new isolated rehearsal cases PASS on current modules, with synthetic data:
 Local rehearsal is not a live backup/restore. No restore routine, job, service or
 temporary bypass was added. Actual backup coverage, restore fencing and upstream
 revocation freshness remain release gates.
+
+## Worker reconstitution — source/lab verified, not deployed
+
+`IRONMAN_OPERATOR_WORKER_CONFIG` selects one private process configuration:
+deployment ID, entrypoint SHA256, existing DraftStore/ledger/trust/assertion paths,
+read transport, revocation age limit and capability kinds. Existing environment
+path variables must match. It cannot select a module/plugin or create an issuer.
+The existing deployment YAML leaves these privileges to the host; requests carry
+only mode, manifest and independently confirmed targets. Overrides are rejected.
+
+The trusted launcher admits the MCP request, obtains the real Prefect flow ID,
+then installs the private assertion with signed `run_id` and `command_sha256`
+before releasing scheduling. Production delivery is not configured. Signature,
+expiry and current revocation are checked before domain mutation/provider I/O.
+Host authority `refresh_revocations(sequence)` may confirm a completed upstream
+sync only; failed/partial sync must not refresh it. Tombstones remain monotonic.
+The worker requires a fresh checkpoint and rechecks it for business decisions.
+
+Trusted startup code can install reviewed adapters via `install_worker_adapters`
+once. No request-selected loader or serialized callback exists; default writers
+are empty and each kind still needs its own host gate. Results use bounded,
+command/flow-bound receipts in the existing Prefect API. Inspect the returned
+flow ID on failure/uncertainty; never resubmit blindly. The source ports are
+tested with separate processes but do not attest live API access, issuer/feed,
+dependencies, host state or rollout. No real listener/firewall/secret/service was
+changed, and no new server, per-request job or operation manifest was created.

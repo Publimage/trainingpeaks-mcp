@@ -37,6 +37,7 @@ class OperatorBindings:
     writers: Mapping[str, Any] = field(default_factory=dict)
     enabled_write_kinds: frozenset[str] = frozenset()
     on_flow_start: Callable[[str, dict[str, Any]], None] | None = None
+    revocation_max_age_seconds: int | None = None
 
     def __post_init__(self) -> None:
         if (not Path(self.ledger_path).is_absolute() or not callable(self.authorize_request)

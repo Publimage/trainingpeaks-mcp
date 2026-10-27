@@ -394,6 +394,73 @@ def test_invocation_binding_is_mandatory_in_assertion(authority):
         authority["verifier"].verify(signed(authority["key"], claims))
 
 
+def test_worker_invocation_requires_exact_signed_command_and_fresh_revocations(authority, context):
+    from scripts.ironman_jobs.ironman_unified_changeset_engine import digest
+    service = authority["service"]
+    service.revocation_max_age_seconds = 5
+    command = {"mode": "prepare", "manifest": {"schema": "test-only"}, "requested_targets": []}
+    authority["select"](command_sha256=digest(command))
+    with pytest.raises(PermissionError, match="REVOCATIONS_MISSING_OR_STALE"):
+        service.authorize_invocation(command)
+    assert context["store"].db.execute(
+        "SELECT allowed,code FROM authority_audit ORDER BY sequence DESC LIMIT 1"
+    ).fetchone() == (0, "INVOCATION_DENIED")
+    authority["select"]("test-admin")
+    service.refresh_revocations(2)
+    authority["select"](command_sha256=digest(command))
+    service.authorize_invocation(command)
+    with pytest.raises(PermissionError, match="ASSERTION_COMMAND_MISMATCH"):
+        service.authorize_invocation({**command, "mode": "preview_draft"})
+    authority["now"][0] += 6
+    with pytest.raises(PermissionError, match="REVOCATIONS_MISSING_OR_STALE"):
+        service.authorize_invocation(command)
+
+
+def test_worker_revocation_sync_is_monotonic_and_does_not_clear_denials(authority):
+    service = authority["service"]
+    service.revocation_max_age_seconds = 5
+    authority["select"]("test-admin")
+    service.refresh_revocations(3)
+    with pytest.raises(PermissionError, match="REVOCATION_SEQUENCE_STALE"):
+        service.refresh_revocations(2)
+    authority["select"]()
+    assert service.authorize(authority["command"])
+    authority["select"]("test-admin")
+    service.revoke("grant", authority["grant"])
+    # A revocation invalidates the freshness marker until a confirmed sync.
+    service.refresh_revocations(3)
+    authority["select"]()
+    assert not service.authorize(authority["command"])
+
+
+def test_worker_authority_rechecks_freshness_on_each_business_decision(authority):
+    service = authority["service"]
+    service.revocation_max_age_seconds = 5
+    authority["select"]("test-admin")
+    service.refresh_revocations(1)
+    authority["select"]()
+    assert service.authorize(authority["command"])
+    authority["now"][0] += 6
+    assert not service.authorize(authority["command"])
+
+
+def test_worker_admission_rechecks_expiry_after_waiting_for_state(authority, monkeypatch):
+    from scripts.ironman_jobs.ironman_unified_changeset_engine import digest
+    service = authority["service"]
+    service.revocation_max_age_seconds = 5
+    authority["select"]("test-admin")
+    service.refresh_revocations(1)
+    command = {"mode": "prepare", "manifest": {}, "requested_targets": []}
+    authority["select"](command_sha256=digest(command))
+    original_store = service._store
+    def delayed_state_access():
+        authority["now"][0] += 601
+        return original_store()
+    monkeypatch.setattr(service, "_store", delayed_state_access)
+    with pytest.raises(PermissionError, match="ASSERTION_EXPIRED_OR_NOT_CURRENT"):
+        service.authorize_invocation(command)
+
+
 def test_flow_payload_cannot_supply_principal_or_authority(context, authority, real_flow, tmp_path):
     payload = {**control(context), "principal": "test-admin"}
     with pytest.raises(ChangeStop, match="REVIEW_INPUT_SHAPE"):

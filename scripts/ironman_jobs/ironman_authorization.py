@@ -92,6 +92,7 @@ class Principal:
     token_id: str
     expires_at: int
     invocation_id: str
+    command_sha256: str | None = None
 
 
 class SignedIdentityVerifier:
@@ -164,7 +165,10 @@ class SignedIdentityVerifier:
                 "ASSERTION_PRINCIPAL_REQUIRED")
         require(type(claims.get("scope")) is str and self.scope in claims["scope"].split(),
                 "ASSERTION_SCOPE_REQUIRED")
-        return Principal(self.issuer, claims["sub"], claims["jti"], claims["exp"], claims["run_id"])
+        command_sha = claims.get("command_sha256")
+        require(command_sha is None or (type(command_sha) is str and
+                re.fullmatch(r"[a-f0-9]{64}", command_sha) is not None), "ASSERTION_COMMAND_INVALID")
+        return Principal(self.issuer, claims["sub"], claims["jti"], claims["exp"], claims["run_id"], command_sha)
 
 
 def current_invocation_id() -> str:
@@ -212,9 +216,14 @@ class HostReviewAuthority:
     """
     def __init__(self, store_path: Path, verifier: SignedIdentityVerifier,
                  assertion_reader: Callable[[], str], clock: Callable[[], float] = time.time,
-                 invocation_id_provider: Callable[[], str] = current_invocation_id):
+                 invocation_id_provider: Callable[[], str] = current_invocation_id,
+                 revocation_max_age_seconds: int | None = None):
         self.path, self.verifier, self.assertion_reader, self.clock = Path(store_path), verifier, assertion_reader, clock
         self.invocation_id_provider = invocation_id_provider
+        require(revocation_max_age_seconds is None or
+                (type(revocation_max_age_seconds) is int and 1 <= revocation_max_age_seconds <= 300),
+                "REVOCATION_FRESHNESS_POLICY_INVALID")
+        self.revocation_max_age_seconds = revocation_max_age_seconds
 
     def _identity(self):
         principal = self.verifier.verify(self.assertion_reader())
@@ -235,6 +244,9 @@ class HostReviewAuthority:
             CREATE INDEX IF NOT EXISTS authority_grants_binding ON authority_grants(binding_sha);
             CREATE TABLE IF NOT EXISTS authority_revocations (
                 kind TEXT NOT NULL, identity TEXT NOT NULL, PRIMARY KEY(kind,identity));
+            CREATE TABLE IF NOT EXISTS authority_revocation_checkpoint (
+                issuer TEXT PRIMARY KEY, sequence INTEGER NOT NULL, observed_at REAL NOT NULL,
+                current INTEGER NOT NULL);
             CREATE TABLE IF NOT EXISTS authority_audit (
                 sequence INTEGER PRIMARY KEY, observed_at REAL NOT NULL,
                 issuer TEXT, subject TEXT, request_id TEXT, action TEXT,
@@ -325,10 +337,66 @@ class HostReviewAuthority:
             for kind, identity in revocations:
                 store.db.execute("INSERT OR IGNORE INTO authority_revocations VALUES (?,?)", (kind, identity))
                 self._audit(store, admin, None, "revoke", {"kind": kind, "identity": identity}, True, "REVOKED")
+            store.db.execute("UPDATE authority_revocation_checkpoint SET current=0 WHERE issuer=?", (admin.issuer,))
             store.db.commit()
         except Exception:
             store.db.rollback()
             raise
+        finally:
+            store.close()
+
+    def refresh_revocations(self, sequence: int) -> None:
+        """Host feed confirms a completed upstream sync; never clears tombstones.
+
+        This administrative primitive is not an upstream transport or MCP action.
+        A feed must not call it on failed/partial sync. Old sequences cannot
+        replace a newer checkpoint. Any local revocation invalidates freshness.
+        """
+        require(type(sequence) is int and 0 <= sequence <= 2**63 - 1, "REVOCATION_SEQUENCE_INVALID")
+        store = self._store()
+        try:
+            with store.write_transaction():
+                admin = self._admin(store)
+                previous = store.db.execute("SELECT sequence FROM authority_revocation_checkpoint WHERE issuer=?",
+                                            (admin.issuer,)).fetchone()
+                require(previous is None or sequence >= previous[0], "REVOCATION_SEQUENCE_STALE")
+                store.db.execute("INSERT OR REPLACE INTO authority_revocation_checkpoint VALUES (?,?,?,1)",
+                                 (admin.issuer, sequence, self.clock()))
+                self._audit(store, admin, None, "revocation_sync", {"sequence": sequence}, True, "REVOCATIONS_CURRENT")
+        finally:
+            store.close()
+
+    def _require_fresh_revocations(self, store) -> None:
+        if self.revocation_max_age_seconds is None:
+            return
+        checkpoint = store.db.execute(
+            "SELECT observed_at,current FROM authority_revocation_checkpoint WHERE issuer=?",
+            (self.verifier.issuer,)).fetchone()
+        require(checkpoint is not None and checkpoint[1] == 1 and
+                0 <= self.clock() - checkpoint[0] <= self.revocation_max_age_seconds,
+                "REVOCATIONS_MISSING_OR_STALE")
+
+    def authorize_invocation(self, command: dict) -> None:
+        """Worker admission before draft/provider IO, bound to the signed command."""
+        require(self.revocation_max_age_seconds is not None, "REVOCATION_FRESHNESS_POLICY_REQUIRED")
+        store = self._store()
+        principal, error = None, None
+        try:
+            with store.write_transaction():
+                try:
+                    principal = self._identity()
+                    require(principal.command_sha256 == digest(command), "ASSERTION_COMMAND_MISMATCH")
+                    require(self.clock() < principal.expires_at, "ASSERTION_EXPIRED_OR_NOT_CURRENT")
+                    self._require_fresh_revocations(store)
+                    require(not self._revoked(store, "token", canonical([principal.issuer, principal.token_id])) and
+                            not self._revoked(store, "principal", canonical([principal.issuer, principal.subject])),
+                            "INVOCATION_REVOKED")
+                except (PermissionError, OSError, ValueError, TypeError) as exc:
+                    error = exc
+                self._audit(store, principal, command["manifest"].get("request_id"), command["mode"],
+                            command, error is None, "INVOCATION_DENIED" if error else "INVOCATION_ADMITTED")
+            if error is not None:
+                raise error
         finally:
             store.close()
 
@@ -388,6 +456,7 @@ class HostReviewAuthority:
         raise error
 
     def _authorize_locked(self, store, principal, command) -> bool:
+        self._require_fresh_revocations(store)
         require(type(command) is dict and command.get("action") in ACTIONS, "INVALID_AUTH_ACTION")
         action = command["action"]
         review = command["review"]
@@ -444,10 +513,13 @@ def authority_from_host() -> HostReviewAuthority:
     require(not os.environ.get("IRONMAN_REVIEW_ASSERTION_FILE"), "SHARED_ASSERTION_FILE_UNSUPPORTED")
     require(bool(config_path and assertion_directory and store_path), "REVIEW_AUTHORITY_NOT_CONFIGURED")
     try:
+        from tp_mcp.operator_runtime import current_bindings
+        runtime = current_bindings()
         verifier = SignedIdentityVerifier(_json(read_host_file(Path(config_path), 65536)))
         return HostReviewAuthority(Path(store_path), verifier,
                                    lambda: read_host_file(assertion_path_for_invocation(
                                        Path(assertion_directory), current_invocation_id()),
-                                       32768).decode("ascii").strip())
+                                       32768).decode("ascii").strip(),
+                                   revocation_max_age_seconds=runtime.revocation_max_age_seconds if runtime else None)
     except (OSError, ValueError, TypeError) as exc:
         raise PermissionError("REVIEW_AUTHORITY_CONFIGURATION_INVALID") from exc

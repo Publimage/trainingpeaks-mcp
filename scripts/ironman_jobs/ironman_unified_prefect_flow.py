@@ -109,12 +109,32 @@ def preview_change_request(manifest: dict[str, Any],
       log_prints=False, persist_result=False)
 def unified_changeset_flow(
     manifest: dict[str, Any],
-    ledger_path: str,
+    ledger_path: str | None = None,
     *,
     mode: str = "preview",
-    read_transport: str = "local",
+    read_transport: str | None = None,
     requested_targets: list[dict[str, Any]] | None = None,
 ) -> dict[str, Any]:
+    from prefect.context import get_run_context
+    try:
+        deployed = getattr(getattr(get_run_context(), "flow_run", None), "deployment_id", None) is not None
+    except RuntimeError:
+        deployed = False  # Existing host-local .fn callers; remote runs have SDK context.
+    if deployed or os.environ.get("IRONMAN_OPERATOR_WORKER_CONFIG") or ledger_path is None:
+        if ledger_path is not None or read_transport is not None:
+            raise PermissionError("WORKER_PRIVILEGED_PARAMETERS_FORBIDDEN")
+        from scripts.ironman_jobs.ironman_worker_runtime import worker_request, publish_worker_receipt
+        command = dict(mode=mode, manifest=manifest, requested_targets=requested_targets)
+        with worker_request(command, flow_source=__file__) as runtime:
+            result = _run_unified_request(manifest, runtime.ledger_path, mode=mode,
+                read_transport=runtime.read_transport, requested_targets=requested_targets)
+            publish_worker_receipt(command, result)
+            return result
+    return _run_unified_request(manifest, ledger_path, mode=mode,
+        read_transport=read_transport or "local", requested_targets=requested_targets)
+
+
+def _run_unified_request(manifest, ledger_path, *, mode, read_transport, requested_targets):
     """One generic flow: any plan/library resource type and any target ID.
 
     The current deployment stays preview-only. Bound execution requires host
