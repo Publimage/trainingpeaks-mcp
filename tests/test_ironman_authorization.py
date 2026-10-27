@@ -492,6 +492,93 @@ def execution_command(ctx, approval, *, action="execute_change"):
             "review": ctx["review"], "manifest": {**ctx["manifest"], "approval_scope": SCOPE}}
 
 
+def test_quiescent_backup_preserves_authority_and_execution_history(context, authority, tmp_path):
+    """Operational rehearsal on synthetic stores, not an automatic restore path."""
+    from scripts.ironman_jobs.ironman_dynamic_request_store import DraftStore
+    from scripts.ironman_jobs.ironman_local_state import connect_private_sqlite
+    from scripts.ironman_jobs.ironman_unified_changeset_engine import Ledger, run_changeset
+
+    approval = preview_fixtures.approve(context)
+    bound = preview_fixtures.bind(context, approval)
+    command = execution_command(context, approval)
+    ledger = Ledger(tmp_path / "execution.sqlite3")
+    try:
+        result = run_changeset(bound["manifest"], {"plan.workout.patch": context["provider"]}, ledger,
+            execute=True, reviewed_revision=context["review"]["approved_revision"], approval_scope=SCOPE,
+            authorize_execution=lambda *_: authority["service"].authorize(command))
+        assert result["request_state"] == "WORK_COMPLETE"
+        assert ledger.db.execute("SELECT count(*) FROM execution_workers").fetchone() == (0,)
+        context["store"].revoke_approval(context["draft"]["request_id"], context["preview"],
+                                       approval["approval_sha256"], **context["review"])
+        authority["select"]("test-admin")
+        authority["service"].revoke_many([
+            ("grant", authority["grant"]),
+            ("token", canonical([authority["config"]["issuer"], "user-token"])),
+            ("principal", canonical([authority["config"]["issuer"], "test-user"]))])
+        snapshots = tmp_path / "isolated-restore"
+        snapshots.mkdir(mode=0o700)
+        # Admission is quiescent throughout BOTH copies. SQLite backup alone
+        # does not make independent databases one atomic distributed snapshot.
+        paths = []
+        for name, source in (("drafts", context["store"]), ("ledger", ledger)):
+            assert not source.db.in_transaction
+            destination = snapshots / (name + ".sqlite3")
+            db, _ = connect_private_sqlite(destination)
+            try:
+                source.db.backup(db)
+                assert db.execute("PRAGMA integrity_check").fetchone() == ("ok",)
+                assert list(source.db.iterdump()) == list(db.iterdump())
+            finally:
+                db.close()
+            assert destination.stat().st_mode & 0o777 == 0o600
+            paths.append(destination)
+    finally:
+        ledger.close()
+    restored = DraftStore(paths[0])
+    restored_ledger = Ledger(paths[1])
+    try:
+        assert restored.get_preview(context["draft"]["request_id"], context["preview"])
+        with pytest.raises(preview_fixtures.DraftStop, match="APPROVAL_REVOKED"):
+            restored.bind_execution(context["draft"]["request_id"], context["preview"],
+                                    approval["approval_sha256"], **context["review"])
+        assert restored_ledger.status(context["draft"]["request_id"], "patch01") == "DONE_VERIFIED"
+        authority["select"]()
+        service = HostReviewAuthority(paths[0], authority["verifier"], lambda: authority["reader"][0],
+            clock=lambda: authority["now"][0], invocation_id_provider=lambda: "synthetic-prefect-run")
+        assert not service.authorize(command)
+        assert restored.db.execute("SELECT count(*) FROM authority_revocations").fetchone() == (3,)
+        assert context["provider"].writes == 1  # Synthetic provider only; no replay.
+    finally:
+        restored.close()
+        restored_ledger.close()
+
+
+def test_pre_revocation_backup_is_not_safe_for_code_rollback(context, authority, tmp_path):
+    """Demonstrate the restore boundary: old local state has no later tombstone."""
+    from scripts.ironman_jobs.ironman_local_state import connect_private_sqlite
+
+    approval = preview_fixtures.approve(context)
+    preview_fixtures.bind(context, approval)
+    command = execution_command(context, approval)
+    assert authority["service"].authorize(command)
+    path = tmp_path / "stale-backup.sqlite3"
+    db, _ = connect_private_sqlite(path)
+    try:
+        context["store"].db.backup(db)
+    finally:
+        db.close()
+    authority["select"]("test-admin")
+    authority["service"].revoke("grant", authority["grant"])
+    authority["select"]()
+    assert not authority["service"].authorize(command)
+    stale = HostReviewAuthority(path, authority["verifier"], lambda: authority["reader"][0],
+        clock=lambda: authority["now"][0], invocation_id_provider=lambda: "synthetic-prefect-run")
+    # A valid historical copy cannot discover revocations committed elsewhere
+    # afterwards. Production restoration must stay fenced until reconciliation.
+    assert stale.authorize(command)
+    assert context["provider"].writes == 0
+
+
 @pytest.mark.parametrize("action", ["execute_change", "recover_worker"])
 def test_execution_grant_requires_existing_exact_binding(context, authority, action):
     approval = preview_fixtures.approve(context)

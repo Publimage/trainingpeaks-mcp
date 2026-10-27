@@ -141,3 +141,88 @@ evidence must record the real host/service, exact code SHA, snapshot integrity,
 before/after health and preserved authority/receipts. No provider writer may be
 enabled until all applicable CI/review, identity, topology and per-capability
 disposable-canary gates pass.
+
+## Existing access paths and missing handoff — 2026-10-27
+
+Sources: canonical 00B Emergency, 00C Proven Paths, 11 Orchestration, 20 Connector
+Runbook and 21 State marker `DO_READONLY_20261027_V1`. Historical console evidence
+identifies the following paths; it is not current service-configuration inspection.
+
+| Boundary | Existing path | Limit |
+| --- | --- | --- |
+| TP maintenance | Owner's DO console / passphrase-protected Mac SSH identity `~/.ssh/ironman_tp_mcp`; public key IRONMAN-TP-MCP, DO ID 59993332 | No private maintenance identity is bound in Codex; a public DO key is insufficient |
+| TP process | `ironman`; `/home/ironman/trainingpeaks-mcp`, `/home/ironman/tp-mcp-venv`; service `ironman-trainingpeaks-tunnel` | Fixed pinned jobs/reload are not unrestricted administration; do not repeat bootstrap |
+| Prefect maintenance | Owner's console; `ironmanprefect`; `ironman-prefect-server` and `ironman-prefect-worker`; API loopback `127.0.0.1:4200` | VPC/SSH reachability and old process receipts do not grant current access |
+| Prefect execution | Pool `ironman-prefect-staging-process`; CSS source `/opt/ironman-prefect/swim-audit-src`; state `/var/lib/ironman-prefect` | CSS deployment is not the universal deployment or a general launcher |
+| Admin results | `/v1/admin-result` sink plus `prefect_admin_result_read_20261016` | Receipt ingestion/retrieval, not a command or signing endpoint |
+| Social receiver | Separate restricted maintenance channel on Prefect host | Explicitly excludes TP/Prefect |
+
+A new live read using the registered result reader at trusted SHA `4b45d9a`
+returned DONE/exit0 and `bootstrap-status-20261016-001`. This is an old status
+receipt from 2026-10-16T20:44:38Z–20:44:43Z: state FAILED; then server/worker
+active, Prefect health true, bridge health URLError. Later verified CSS bridge
+flows supersede that historical network failure. Neither current failure nor a
+usable administrative command channel follows from this receipt. Nothing was
+restarted or retried.
+
+The missing access is a protected maintenance connection to these existing hosts,
+made available to this repository's managed Codex environment by the owner.
+Reuse/verify the existing identity, account and host fingerprints; no replacement
+key, password reset, Social receiver expansion or secret in chat/Drive/Git.
+Credential/identity binding belongs in protected Codex environment configuration;
+matching account authorization and bounded network access belong on the existing
+hosts/environment policy. Current observations report no such bindings. DO's
+connector supplies droplet operations, not an authenticated terminal. This is
+access provisioning, not another application installation.
+
+No inspected canonical path identifies a production issuer of human approval
+assertions. A tunnel key authenticates the tunnel, a TP cookie the provider
+account, SSH maintenance access; none proves who approved an MCP request. The
+stdio server consumes no trusted human delegation. The workspace/tunnel identity
+owner must attest the identity mechanism, issuer/audience/public keys and how
+authenticated request identity reaches the launcher. Do not invent keys or accept
+a caller principal/JWT. If unavailable, this is an integration design gate, not
+a missing TP password.
+
+After that boundary is attested, the existing Prefect worker's protected host
+environment supplies `IRONMAN_REVIEW_TRUST_CONFIG`,
+`IRONMAN_REVIEW_ASSERTION_DIRECTORY`, `IRONMAN_OPERATION_DRAFT_STORE` and
+`IRONMAN_OPERATION_EXECUTION_LEDGER`. Attest actual private paths/UIDs before
+installation: no universal DraftStore path has been inventoried live. The trusted
+launcher installs each flow's assertion before admission. Revocation delivery
+uses the existing admin API under a current signed administrator; freshness and
+loss/reconnect must be verified. Source primitives do not prove this deployment.
+
+## Backup rehearsal and restoration fence
+
+New DO evidence: daily managed Prefect backups, no active DO policy attested on
+TP. Historical Prefect backups also use `/opt/ironman-prefect/backup_prefect.py`
+and `ironman-prefect-backup.service`/`.timer`. These metadata backups do not prove
+coverage of the new authority store/ledger or the existing TP pilot DB
+`/home/ironman/.local/state/ironman-operator/workflows_v1.sqlite3`. Inventory actual
+paths and restore points first; do not enable paid options/create snapshots from
+an inventory result alone.
+
+Three new isolated rehearsal cases PASS on current modules, with synthetic data:
+
+1. With admission quiescent across both copies, SQLite online backups preserve
+   every SQL table/row, permissions and integrity. Reopened copies retain revoked
+   consent, grant/token/principal tombstones, audit, preview/binding and completed
+   execution receipt; restored authority denies. Two backups alone do not provide
+   a cross-database atomic snapshot while admission remains active. Quiescence
+   covers flow/control/admin writers, not just the provider worker. Any upstream
+   revocations arriving during maintenance must be preserved and reconciled
+   before readmission; no delivery queue is assumed to be installed.
+2. A pre-revocation copy still authorizes its old grant while current state denies
+   it. A historical local DB cannot discover later revocations. Code rollback
+   must preserve current state; disaster restore stays fenced until reconciliation
+   of subsequent authority changes/provider outcomes. No standalone historical
+   DB anti-rollback guarantee is claimed.
+3. An orphan RUNNING worker/uncertain claim survive copying, but the new inode
+   causes recovery to refuse WORKER_QUIESCENCE_UNVERIFIABLE before provider I/O.
+   Both records remain. Do not rewrite protocol identity/delete claims; real
+   restoration requires separately reviewed fencing of the original topology.
+
+Local rehearsal is not a live backup/restore. No restore routine, job, service or
+temporary bypass was added. Actual backup coverage, restore fencing and upstream
+revocation freshness remain release gates.

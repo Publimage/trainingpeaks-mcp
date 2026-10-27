@@ -63,6 +63,34 @@ def recover(ledger, owner, reader, m=None, authority=lambda *_: True):
                                     expected_owner=owner, authorize_recovery=authority)
 
 
+def test_backup_preserves_uncertain_claim_but_cannot_attest_original_worker_quiescence(tmp_path):
+    from scripts.ironman_jobs.ironman_local_state import connect_private_sqlite
+
+    source = tmp_path / "original.sqlite3"
+    owner = orphan(source)
+    ledger = Ledger(source)
+    copy = tmp_path / "restore.sqlite3"
+    db, _ = connect_private_sqlite(copy)
+    try:
+        ledger.db.backup(db)
+        assert db.execute("PRAGMA integrity_check").fetchone() == ("ok",)
+        assert list(db.iterdump()) == list(ledger.db.iterdump())
+    finally:
+        db.close()
+        ledger.close()
+    restored, reader = Ledger(copy), Reader()
+    try:
+        assert restored.status(manifest()["request_id"], "patch01") == "RUNNING"
+        assert restored.db.execute("SELECT count(*) FROM resource_claims").fetchone() == (1,)
+        with pytest.raises(ChangeStop, match="WORKER_QUIESCENCE_UNVERIFIABLE"):
+            recover(restored, owner, reader)
+        assert reader.reads == reader.writes == 0
+        assert restored.db.execute("SELECT count(*) FROM execution_workers").fetchone() == (1,)
+        assert restored.db.execute("SELECT count(*) FROM resource_claims").fetchone() == (1,)
+    finally:
+        restored.close()
+
+
 def test_orphaned_verified_write_is_reconciled_and_never_replayed(tmp_path):
     path = tmp_path / "ledger.sqlite3"
     owner = orphan(path)
