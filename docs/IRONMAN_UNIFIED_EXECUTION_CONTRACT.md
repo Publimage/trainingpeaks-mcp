@@ -488,6 +488,7 @@ No feature is WORK_COMPLETE while an applicable gate remains open.
 | STRUCTURAL_REFACTOR — addressed | Execution checks could create a binding using execute-only permission; grant checks did not inspect the exact persisted approval/binding | Use the common inspector without mutation; inspect approval/binding plus current grants/revocations/audit in one authority transaction. Reservation remains a distinct control permission | Four reproduced failures fixed; execute-only and corrupt-binding refusal, real SQLite exclusion, read-only revoked recovery |
 | STRUCTURAL_REFACTOR — addressed | Explicit readback denials could become transient/uncertain states, including at orphan recovery and transport boundaries | Preserve the security category from local/native HTTP readers through the existing private bridge and common engine. Persist new recovery denials and retain uncertain claims; no automatic retry | Negative cases on prior receipts/postflight, private loopback transport, real Prefect recovery and restored-reader refusal |
 | STRUCTURAL_REFACTOR — addressed | Draft/ChangeSet cycle checks and scheduling implemented the same graph contract three times; valid maximum-depth changesets could overflow Python recursion | One non-recursive dependency contract using the standard library, preserving stable ready batches and immutable input identity. Keep existing 500/1,000 item limits | Maximum chains/cycles, malformed shape errors before I/O, stable execution order and exact prior request/manifest hashes |
+| STRUCTURAL_REFACTOR — addressed in source; runtime inventory required | Unsafe SQLite file aliases/permissions, first-open WAL race and volatile execution ledger | Shared private-file opening/identity checks for DraftStore and Ledger; bounded inode exclusion during initialization; execution requires persistence. Owner: Operator maintainer must inventory owner/modes/paths and preserve canonical history before release | Hardlinks/symlinks/FIFO/sidecars, first-open concurrency, private creation, changed inode, no-provider-write refusal, worker/recovery and publisher regressions |
 | STRUCTURAL_REFACTOR — addressed in one-ledger domain | Replaying request identity was not worker ownership | Invocation-owned persistent execution slot | Concurrent connections, resumed execution, dead process |
 | SOURCE/TEST COMPLETE — runtime blocker | Concrete signed identity, scoped grants, revocation and audit implemented; trust/assertion handoff not configured live | Owner: Operator maintainer. Connect the existing issuer/launcher to invocation-bound assertions and pinned public trust before enabling control operations; retain default deny | Real signature/algorithm/issuer/audience/time/run binding tests, current grants, admin refusal, revocation, atomic control, audit; actual local Prefect coverage passed; production issuer/launcher and upstream revocation canary still pending |
 | SOURCE/TEST COMPLETE — runtime blocker | Authorized local orphan recovery now uses kernel exclusion and preview readback in the same flow | Owner: Operator maintainer. Review/drain legacy workers and test on the canonical local runtime before release; no auto-takeover or legacy-marker workaround | Real child-process death, active owner refusal, inode mismatch, denial preservation, uncertain claims, rollback, idempotent receipt and revoked-approval recovery |
@@ -641,3 +642,68 @@ F checks, mypy src/ --no-incremental (56 files), Python 3.10 syntax and diff
 checks pass. Provider/issuer remain synthetic. The full 1,694-test baseline is
 still attributed only to 52b0ee1; unrelated suites were not repeated. No GitHub
 Actions success, live canary, deployment or publisher activation is inferred.
+
+
+### Follow-up: one private local SQLite boundary
+
+Classification: STRUCTURAL_REFACTOR, not a new service, database product, job,
+manifest or deployment. Both existing stores now use ironman_local_state for
+file creation, SQLite initialization and live connection identity checks.
+Four negative tests reproduced the original gaps: both stores accepted hardlink
+aliases, the ledger could be created non-private with a permissive umask, and
+execution could proceed with an in-memory ledger. A separate synthetic hardlink
+experiment also produced SQLite WAL disk-I/O failure; no claim is made that such
+aliases provide reliable independent databases or safe coordination domains.
+
+The shared opener creates the file with mode 0600 BEFORE SQLite opens it. Files
+must be regular, singly linked and owned by the effective service UID, with exact
+0600 permissions. Existing unsafe files are rejected without chmod, replacement,
+copying or automatic repair. Absolute paths without '..' are required; ancestor
+symlinks and directories writable by untrusted users are refused, with the normal
+sticky filesystem-root temporary directory exception. Filesystem-root ownership
+is derived from the actual root metadata to support mapped container UIDs; this
+does not grant caller identity or relax ownership of database/sidecar files.
+Existing WAL/SHM/journal aliases and unsafe metadata are checked before SQLite.
+No directory is created by this helper.
+
+The live connection pins device/inode. Store reads/transactions, authority table
+initialization and ledger state/worker/write boundaries verify it. Replacing or
+hardlinking the database invalidates the live handle. If identity changes during
+execution, cleanup retains the durable worker slot rather than writing through
+a stale handle; the kernel worker lock still releases normally. The request
+needs explicit quiescent maintenance/recovery, not automatic takeover. An
+in-memory ledger remains available for previews but cannot acquire an execution
+worker or reach provider I/O in execute mode.
+
+Simultaneous first-open testing exposed the existing SQLite journal-mode race:
+busy_timeout alone did not prevent an immediate 'database is locked'. The shared
+POSIX descriptor primitive now serializes SQLite initialization on the database
+inode itself, with a bounded eight-second wait. It creates no additional lock
+file and never expires an owner or retries provider actions. Existing worker and
+reviewed batch locks retain their non-blocking behavior. Invalid database startup
+closes the connection/descriptor without repairing contents.
+
+This is a local cooperating-host protocol, not cross-host/network-filesystem
+coordination or a defense against a compromised service UID/root. File identities
+are pinned for the lifetime of a connection, not permanently across service
+restarts. Host policy must preserve canonical ledger history and prohibit live
+replacement/unlink of database and worker-lock files; replacing/migrating state
+requires the already-pending authorized quiescent procedure. Before release the
+Operator maintainer must inventory actual paths, UID mapping, permissions and
+sidecars, drain old workers and rehearse on an authorized snapshot. Legacy
+0644/other unsafe files now fail closed; no production permissions or data were
+changed during development. No schema/content migration is introduced here.
+
+Verification: 320 distinct relevant cases passed, including 32 new cases.
+Core/DraftStore/approval/authority/ledger/worker/recovery/migration and existing
+reviewed batch publisher: 260 PASS (2.78 s). Actual local Prefect runtime/flow,
+isolated contracts and existing classic/PDF adapters: 60 PASS (45.09 s,
+3 warnings). Tests cover hardlinks before/after open, symlink ancestors/leaves,
+sidecars, FIFO refusal, private creation under permissive umask, no automatic
+permission repair, concurrent first open, bounded exclusion without takeover,
+invalid-file cleanup and inode replacement before/during execution. The latter
+verifies zero provider writes and retained worker evidence. Provider/issuer are
+synthetic. Ruff src/, changed-file F, mypy src/ --no-incremental (56 files), Python
+3.10 syntax and diff checks pass. The earlier full 1,694-test suite remains scoped
+to 52b0ee1; unrelated suites were not repeated. CI GitHub and live runtime gates
+remain distinct. Universal publication is still disabled; no merge or deploy.

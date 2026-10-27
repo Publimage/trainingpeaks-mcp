@@ -11,9 +11,7 @@ import hashlib
 from contextlib import contextmanager
 from uuid import uuid4
 import json
-import os
 import re
-import sqlite3
 from pathlib import Path
 from typing import Any
 
@@ -317,14 +315,8 @@ class DraftStore:
     """
     def __init__(self, path: Path):
         self.path = Path(path)
-        require(self.path.is_absolute() and not self.path.is_symlink() and
-                self.path.parent.is_dir() and not self.path.parent.is_symlink(),
-                "DRAFT_STORE_PATH_INVALID")
-        self.db = sqlite3.connect(str(self.path), timeout=8)
-        if os.name == "posix":
-            os.chmod(self.path, 0o600)
-        self.db.execute("PRAGMA busy_timeout=8000")
-        self.db.execute("PRAGMA journal_mode=WAL")
+        from scripts.ironman_jobs.ironman_local_state import connect_private_sqlite
+        self.db, self._state_file = connect_private_sqlite(self.path)
         self.db.execute("""CREATE TABLE IF NOT EXISTS drafts (
             request_id TEXT PRIMARY KEY, semantic_sha TEXT NOT NULL,
             payload TEXT NOT NULL, created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
@@ -350,12 +342,16 @@ class DraftStore:
         )""")
         self.db.commit()
 
+    def verify_storage(self) -> None:
+        self._state_file.verify()
+
     def close(self) -> None:
         self.db.close()
 
     @contextmanager
     def write_transaction(self):
         """Nest safely inside a trusted authority's atomic control transaction."""
+        self.verify_storage()
         nested = self.db.in_transaction
         savepoint = "review_" + uuid4().hex
         self.db.execute("SAVEPOINT " + savepoint if nested else "BEGIN IMMEDIATE")
@@ -378,6 +374,7 @@ class DraftStore:
         verify_draft_integrity(draft)
         body = canonical(draft)
         require(len(body.encode()) <= MAX_BYTES, "DRAFT_TOO_LARGE")
+        self.verify_storage()
         try:
             self.db.execute("BEGIN IMMEDIATE")
             row = self.db.execute("SELECT semantic_sha, payload FROM drafts WHERE request_id=?",
@@ -400,6 +397,7 @@ class DraftStore:
     def get(self, request_id: str) -> dict[str, Any] | None:
         require(type(request_id) is str and TOKEN.fullmatch(request_id) is not None,
                 "REQUEST_ID_INVALID")
+        self.verify_storage()
         row = self.db.execute("SELECT semantic_sha, payload FROM drafts WHERE request_id=?",
                               (request_id,)).fetchone()
         if not row:
@@ -438,6 +436,7 @@ class DraftStore:
         # Match store(): claim the SQLite writer slot BEFORE checking for an
         # existing immutable preview. Two concurrent chats must not race on
         # SELECT-then-INSERT and mistake a duplicate for a new operation.
+        self.verify_storage()
         self.db.execute("BEGIN IMMEDIATE")
         try:
             row = self.db.execute(
@@ -483,6 +482,7 @@ class DraftStore:
         require(type(request_id) is str and TOKEN.fullmatch(request_id) is not None
                 and type(preview_sha) is str and SHA.fullmatch(preview_sha) is not None,
                 "PREVIEW_LOOKUP_INVALID")
+        self.verify_storage()
         row = self.db.execute(
             """SELECT manifest_sha,manifest_json,result_json FROM previews
                WHERE request_id=? AND preview_sha=?""",

@@ -152,9 +152,11 @@ class Ledger:
     """
     def __init__(self, path: Path):
         self.path = Path(path)
-        self.db = sqlite3.connect(str(self.path), timeout=8)
-        self.db.execute("PRAGMA busy_timeout=8000")
-        self.db.execute("PRAGMA journal_mode=WAL")
+        from scripts.ironman_jobs.ironman_local_state import connect_private_sqlite
+        if str(self.path) == ":memory:":
+            self.db, self._state_file = sqlite3.connect(":memory:", timeout=8), None
+        else:
+            self.db, self._state_file = connect_private_sqlite(self.path)
         self.db.executescript("""
             CREATE TABLE IF NOT EXISTS requests (
               request_id TEXT PRIMARY KEY, manifest_sha TEXT NOT NULL,
@@ -178,6 +180,10 @@ class Ledger:
               manifest_sha TEXT NOT NULL, receipt_sha TEXT NOT NULL, receipt TEXT NOT NULL);
         """)
 
+    def verify_storage(self) -> None:
+        if self._state_file is not None:
+            self._state_file.verify()
+
     def close(self) -> None:
         self.db.close()
 
@@ -189,6 +195,7 @@ class Ledger:
         after authorization and worker acquisition. Preview/construction do
         not migrate. Reintroduced legacy rows after version 1 are a conflict.
         """
+        self.verify_storage()
         self.db.execute("BEGIN IMMEDIATE")
         try:
             result = self._migrate_schema_locked()
@@ -241,12 +248,12 @@ class Ledger:
     @contextmanager
     def _worker_guard(self):
         from scripts.ironman_jobs.ironman_file_lock import FileLockBusy, exclusive_file_lock
-        if str(self.path) == ":memory:":
-            yield None  # Never a recoverable cross-process coordination domain.
-            return
-        path = self.path.resolve()
+        need(self._state_file is not None, "EXECUTION_REQUIRES_PERSISTENT_LEDGER")
+        self.verify_storage()
+        path = self.path
         try:
             with exclusive_file_lock(path.parent / (path.name + ".worker.lock")) as identity:
+                self.verify_storage()
                 yield identity
         except FileLockBusy as exc:
             raise ChangeStop("EXECUTION_WORKER_BUSY") from exc
@@ -254,6 +261,7 @@ class Ledger:
     @contextmanager
     def _owned_worker(self, request_id, identity):
         owner = uuid4().hex
+        self.verify_storage()
         self.db.execute("BEGIN IMMEDIATE")
         try:
             need(self.db.execute("SELECT 1 FROM execution_workers").fetchone() is None,
@@ -269,6 +277,9 @@ class Ledger:
         try:
             yield
         finally:
+            # If maintenance replaced/exposed this DB, retain its durable slot
+            # for explicit recovery instead of writing through a stale handle.
+            self.verify_storage()
             with self.db:
                 self.db.execute("DELETE FROM execution_workers WHERE slot=1 AND owner=?", (owner,))
                 self.db.execute("DELETE FROM execution_worker_protocol WHERE owner=?", (owner,))
@@ -279,6 +290,7 @@ class Ledger:
         # Lock before reading the request row. Without BEGIN IMMEDIATE two
         # concurrent callers can both observe an absent row and race on INSERT,
         # turning an idempotent replay into an IntegrityError.
+        self.verify_storage()
         self.db.execute("BEGIN IMMEDIATE")
         try:
             existing = self.db.execute(
@@ -300,6 +312,7 @@ class Ledger:
             raise
 
     def status(self, request: str, change_id: str) -> str:
+        self.verify_storage()
         row = self.db.execute(
             "SELECT state FROM change_events WHERE request_id=? AND change_id=?",
             (request, change_id),
@@ -309,6 +322,7 @@ class Ledger:
 
     def set_state(self, request: str, change_id: str, state: str,
                   provider_sha: str | None = None, reason: str | None = None) -> None:
+        self.verify_storage()
         need(state in VALID_STATES, "LEDGER_INVALID_STATE")
         with self.db:
             self.db.execute(
@@ -324,6 +338,7 @@ class Ledger:
             target["provider"], target["owner_id"], target["container_kind"],
             target["container_id"], target["resource_id"],
         ))
+        self.verify_storage()
         self.db.execute("BEGIN IMMEDIATE")
         try:
             row = self.db.execute(
@@ -341,6 +356,7 @@ class Ledger:
             raise
 
     def release(self, request: str, item: dict[str, Any]) -> None:
+        self.verify_storage()
         target = item["target"]
         key = ":".join(str(x) for x in (
             target["provider"], target["owner_id"], target["container_kind"],
@@ -744,6 +760,7 @@ def _run_changeset(
                 # Current grants/revocation are checked immediately before
                 # every mutation, including dependent operations in a batch.
                 _require_execution_authority(authorize_execution, manifest, item)
+                ledger.verify_storage()
                 adapter.apply(item)
             except SecurityDenied:
                 after = safe_readback_sha()

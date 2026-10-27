@@ -191,6 +191,7 @@ class HostReviewAuthority:
 
     @staticmethod
     def _ensure_tables(store):
+        store.verify_storage()
         store.db.executescript("""
             CREATE TABLE IF NOT EXISTS authority_grants (
                 grant_id TEXT PRIMARY KEY, binding_sha TEXT NOT NULL, payload TEXT NOT NULL);
