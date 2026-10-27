@@ -317,13 +317,46 @@ requested_targets remain separate. No caller-supplied principal, authorizer,
 module path or callback is accepted in this serialized input.
 
 The flow resolves and validates the stored preview and exact selectors, then
-consults the trusted host's `get_review_authorizer().authorize(command)` for EVERY
-control action. The command includes the action, preview manifest, review input
-and requested targets. Only literal True permits mutation. The production
-provider is deliberately unconfigured and denies by default; host authentication,
-current grants/expiry/revocation and actor audit must be implemented behind this
-boundary before it is enabled. Test authorities are synthetic, not live identity
-verification. There are no bearer secrets in these flow inputs.
+uses `get_review_authorizer().run_control(command, store)`. Identity verification,
+current grant/revocation checks, the control mutation and actor audit share one
+SQLite writer transaction. Nested DraftStore writes use savepoints, so an inner
+commit cannot outrun a concurrent grant revocation. Failed mutations roll back.
+
+The concrete `HostReviewAuthority` uses the existing cryptography dependency to
+verify compact JWT assertions with host-pinned RS256 or EdDSA public keys. It
+checks signature, pinned algorithm/key type, issuer, audience, subject, token ID,
+required scope, iat/nbf/exp and an issuer-signed `run_id` against
+`prefect.context.get_run_context().flow_run.id`. A valid assertion for another
+invocation is denied; caller-supplied principal/context is never trusted. No
+remote JWT key URLs, unsigned tokens, HMAC fallback or provider cookies are used.
+The existing TrainingPeaks credential and VPC source IP do not authenticate a
+review caller and are not repurposed for this role.
+
+Host-only configuration is `IRONMAN_REVIEW_TRUST_CONFIG` (issuer, audience,
+required_scope, pinned keys and administrator subjects),
+`IRONMAN_REVIEW_ASSERTION_FILE` (private assertion for THIS scheduler invocation)
+and the existing `IRONMAN_OPERATION_DRAFT_STORE`. Paths are never serialized flow
+arguments. Files must be regular, private, owner/root-owned and not symlinks.
+Trust configuration is reloaded and identity verified on every operation/check.
+No signing key, issuer, account, listener or production credential is created.
+The existing identity issuer/launcher must supply the signed invocation-bound
+assertion; this upstream connection has NOT been configured or live-attested.
+Missing trust, assertion or scheduler context denies by default.
+Upstream token/account revocations must also reach the persistent token/principal
+revocation API through that trusted host integration: offline signature validation
+alone cannot discover an account disabled at the issuer. This live handoff is a
+release blocker, not an assumed capability of the JWT verifier.
+
+Exact-preview grants, grant/token/principal revocations and actor audit live in
+new tables of the SAME DraftStore database, with indexed request bindings.
+Grant issuance/revocation is host administration only: it requires a current
+signed administrator identity pinned by host policy; no grant-creation tool or
+flow mode is exposed. Ordinary callers cannot grant themselves permissions.
+Grants are immutable, bounded by expiry and bind issuer/subject, request, preview,
+revision, scope and manifest digest plus allowed actions. Removing/revoking a
+principal's grant or its grantor is checked at every use. No live grant has been
+issued by this work. The audit stores actor IDs, decision codes and command
+hashes, not raw JWTs, private keys or command/provider payloads.
 
 Approval records remain immutable and are bound to request, exact preview
 (including its observation), reviewed revision and scope. Retrying reuses them.
@@ -355,20 +388,41 @@ The current flow never calls execute and never installs this guard on live write
 ### Worker coordination and recovery
 
 The execution ledger owns a single persistent worker slot with an invocation UUID,
-not a request ID. Acquisition is atomic; a second connection/process cannot enter
-provider execution even with the same request ID. Whole executions are serialized
-on this existing shared ledger; previews do not reserve a worker. Normal exit
-releases only the acquiring invocation's slot. A process crash leaves it blocked;
-there is no expiry, blind retry or automatic takeover. Existing item/resource
-claims and post-crash readback remain authoritative for uncertain outcomes.
+not a request ID. One shared POSIX file-lock primitive is reused by this engine
+and the existing reviewed batch publisher. It protects the whole execution and
+records its inode/protocol with the worker slot. Normal exit releases only the
+acquiring invocation. Process death releases the kernel lock, but the durable
+slot remains blocked pending explicit authorized recovery. No timeout/PID guess,
+expiry, blind retry or automatic takeover is used.
 
-All workers must use the same configured service ledger. Independent local SQLite
-files are independent coordination domains, not a distributed lock. A future
-release must enforce this topology and test it on the actual runtime; these tests
-do not attest cross-host coordination or network-filesystem SQLite safety.
-Authorized recovery must first establish quiescence and independently reconcile
-provider/item state before clearing an orphaned slot. No recovery endpoint is
-exposed or enabled by this change.
+The SAME Prefect entrypoint now supports `mode=recover_worker`, input
+schema `IRONMAN_RECOVERY_INPUT_V1`, request_id, preview_sha256, approval_sha256,
+reviewed_revision, approval_scope and the exact worker_owner nonce. Current
+requested_targets remain independently checked. Recovery uses the host's
+`IRONMAN_OPERATION_EXECUTION_LEDGER`; a different caller ledger path is refused.
+Only the existing local/private_bridge read registry is used, after independent
+recover_worker permission is verified. Recovery is never an execution grant.
+A revoked approval can be inspected for recovery without being reactivated.
+
+Recovery acquires the SAME kernel lock, verifies the recorded owner and inode
+protocol, verifies the manifest, and reads provider state via the existing engine
+in preview mode. Active owners, replaced lock files, legacy slots without the
+protocol or externally changed ledger state are refused. Authorization is checked
+again after reads. A single transaction records a checksum-protected recovery
+receipt and clears the orphan slot. Verified uncertain items may become
+DONE_VERIFIED and release their resource claims; unresolved items remain
+UNKNOWN_NEEDS_READBACK with claims retained. BLOCKED_SECURITY stays blocked.
+There is no apply() call, automatic replay, approval resurrection or WORK_COMPLETE
+claim. Repeating the same recovery returns the original receipt only after fresh
+authorization. Transaction failure preserves slot, claims and states.
+
+All workers must use the same configured local service ledger and lock inode;
+independent local databases are independent coordination domains. Neither POSIX
+locking nor these tests attest cross-host/network-filesystem safety. No lock
+file may be unlinked/replaced while workers exist. Upgrades must drain old worker
+versions; a legacy slot without protocol evidence still requires an independently
+approved quiescent maintenance procedure, not a forced marker or alternate path.
+The production identity handoff, topology and recovery canary remain release gates.
 
 ### Debt and release gates
 
@@ -379,8 +433,8 @@ No feature is WORK_COMPLETE while an applicable gate remains open.
 | --- | --- | --- | --- |
 | STRUCTURAL_REFACTOR — addressed | Divergent flow/Approval selectors and duplicate preview validators could drift | Shared selector and preview validators now used at both boundaries | Same-resource chain, corrupt records, existing regressions |
 | STRUCTURAL_REFACTOR — addressed in one-ledger domain | Replaying request identity was not worker ownership | Invocation-owned persistent execution slot | Concurrent connections, resumed execution, dead process |
-| MISSING — release blocker | Trusted authority is intentionally unconfigured | Wire authenticated host identity, current grants/expiry/revocation and actor audit behind the existing authority interface before enabling control operations | Runtime authentication, deny/expiry/revocation integration tests; default deny must remain |
-| MISSING — release blocker | Crash slot recovery has no approved operational endpoint | Add authorized quiescence + readback recovery in the existing service before live execution | Dead-owner recovery, active-owner refusal, no duplicate writer |
+| SOURCE/TEST COMPLETE — runtime blocker | Concrete signed identity, scoped grants, revocation and audit implemented; trust/assertion handoff not configured live | Owner: Operator maintainer. Connect the existing issuer/launcher to invocation-bound assertions and pinned public trust before enabling control operations; retain default deny | Real signature/algorithm/issuer/audience/time/run binding tests, current grants, admin refusal, revocation, atomic control, audit; actual Prefect/issuer canary still pending |
+| SOURCE/TEST COMPLETE — runtime blocker | Authorized local orphan recovery now uses kernel exclusion and preview readback in the same flow | Owner: Operator maintainer. Review/drain legacy workers and test on the canonical local runtime before release; no auto-takeover or legacy-marker workaround | Real child-process death, active owner refusal, inode mismatch, denial preservation, uncertain claims, rollback, idempotent receipt and revoked-approval recovery |
 | MISSING — release blocker | One-ledger topology is not deployment-attested | Enforce a single canonical service ledger for all workers before live execution; no arbitrary per-request ledger paths | Real-runtime multi-worker canary and readback |
 | STRUCTURAL_REFACTOR — addressed in source | Classic adapter constructed FIELD_VALIDATION_ONLY manifest to reuse validation | Pure field validator is now shared with the existing publisher; synthetic manifest removed | Identical acceptance/error parity and input immutability; publisher/adapter regressions |
 | STRUCTURAL_REFACTOR — source/test complete, runtime gate pending | SKIPPED_DEPENDENCY legacy branch in normal execution | Branch removed in favor of atomic version 1 migration and full event backup. Owner: Operator maintainer. Inventory/rehearse the actual ledger snapshot and rollback before release; no mixed worker versions | Concurrent/idempotent migration, rollback, manifest drift, preserved claims/denials and dependent execution |
@@ -390,4 +444,5 @@ Existing staging VPC allowlists and capability guards remain in place. Their
 replacement requires request-scoped authorization review, negative scope tests
 and authorized canaries; no policy removal or widening is part of this change.
 Workflow edits and plan_mutation_gates changes previously denied remain excluded.
-The old proven publisher remains scoped and untouched; no claim of live readiness.
+The proven publisher keeps its existing endpoints and scope gates; field validation
+and local exclusion are shared components. No claim of live readiness.

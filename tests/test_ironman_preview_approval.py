@@ -303,6 +303,10 @@ def real_flow(monkeypatch):
 
     reads.create_read_registry = forbidden
     monkeypatch.setitem(sys.modules, "prefect", prefect)
+    scheduler_context = types.ModuleType("prefect.context")
+    scheduler_context.get_run_context = lambda: types.SimpleNamespace(
+        flow_run=types.SimpleNamespace(id="synthetic-prefect-run"))
+    monkeypatch.setitem(sys.modules, "prefect.context", scheduler_context)
     monkeypatch.setitem(sys.modules, reads.__name__, reads)
     path = Path(__file__).parents[1] / "scripts/ironman_jobs/ironman_unified_prefect_flow.py"
     spec = importlib.util.spec_from_file_location("approval_flow_integration", path)
@@ -320,6 +324,12 @@ class Authority:
     def authorize(self, command):
         self.calls.append(copy.deepcopy(command))
         return self.currently_allowed
+
+    def run_control(self, command, store):
+        from scripts.ironman_jobs.ironman_operation_contracts import apply_review_control
+        if self.authorize(command) is not True:
+            raise PermissionError("TEST_AUTHORITY_DENIED")
+        return apply_review_control(store, command)
 
 
 def control(ctx, approval=None):

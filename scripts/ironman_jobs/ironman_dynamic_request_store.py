@@ -8,6 +8,8 @@ The draft database is hosted in the EXISTING Prefect service, never GitHub.
 from __future__ import annotations
 
 import hashlib
+from contextlib import contextmanager
+from uuid import uuid4
 import json
 import os
 import re
@@ -363,6 +365,27 @@ class DraftStore:
     def close(self) -> None:
         self.db.close()
 
+    @contextmanager
+    def write_transaction(self):
+        """Nest safely inside a trusted authority's atomic control transaction."""
+        nested = self.db.in_transaction
+        savepoint = "review_" + uuid4().hex
+        self.db.execute("SAVEPOINT " + savepoint if nested else "BEGIN IMMEDIATE")
+        try:
+            yield
+        except Exception:
+            if nested:
+                self.db.execute("ROLLBACK TO " + savepoint)
+                self.db.execute("RELEASE " + savepoint)
+            else:
+                self.db.rollback()
+            raise
+        else:
+            if nested:
+                self.db.execute("RELEASE " + savepoint)
+            else:
+                self.db.commit()
+
     def store(self, draft: dict[str, Any]) -> dict[str, Any]:
         verify_draft_integrity(draft)
         body = canonical(draft)
@@ -411,7 +434,7 @@ class DraftStore:
         observation gets its own SHA. This is never a publish approval.
         """
         from scripts.ironman_jobs.ironman_unified_changeset_engine import (
-            digest, validate_manifest,
+            validate_manifest,
         )
         manifest_sha = validate_manifest(manifest)
         request_id = manifest["request_id"]
@@ -481,7 +504,7 @@ class DraftStore:
             return None
         manifest_sha, manifest_json, result_json = row
         from scripts.ironman_jobs.ironman_unified_changeset_engine import (
-            ChangeStop, digest, validate_manifest,
+            ChangeStop, validate_manifest,
         )
         try:
             manifest, receipt = json.loads(manifest_json), json.loads(result_json)
@@ -549,8 +572,7 @@ class DraftStore:
         Multiple reviewed previews may coexist until execution is bound.
         """
         from scripts.ironman_jobs.ironman_unified_changeset_engine import digest
-        self.db.execute("BEGIN IMMEDIATE")
-        try:
+        with self.write_transaction():
             record, _ = self._approval_record(
                 request_id, preview_sha, approved_revision=approved_revision,
                 approval_scope=approval_scope, requested_targets=requested_targets)
@@ -572,10 +594,6 @@ class DraftStore:
                                 (request_id, approval_sha, body))
             else:
                 require(row[0] == body, "APPROVAL_RECORD_CORRUPT")
-            self.db.commit()
-        except Exception:
-            self.db.rollback()
-            raise
         return {**record, "approval_sha256": approval_sha, "reused": row is not None,
                 "state": "APPROVAL_RECORDED", "provider_writes": 0,
                 "publication_enabled": False}
@@ -586,13 +604,34 @@ class DraftStore:
             (request_id, approval_sha),
         ).fetchone() is None, "APPROVAL_REVOKED")
 
+    def inspect_execution_binding(self, request_id: str, preview_sha: str, approval_sha: str, *,
+                                  approved_revision: str, approval_scope: str,
+                                  requested_targets: list[dict[str, Any]]) -> dict[str, Any]:
+        """Read an existing binding even after revocation, solely for recovery.
+
+        This cannot create a binding, activate approval or authorize a write.
+        Recovery has its own independently verified permission.
+        """
+        from scripts.ironman_jobs.ironman_unified_changeset_engine import digest
+        record, preview = self._approval_record(
+            request_id, preview_sha, approved_revision=approved_revision,
+            approval_scope=approval_scope, requested_targets=requested_targets)
+        require(digest(record) == approval_sha, "APPROVAL_BINDING_MISMATCH")
+        approval = self.db.execute("SELECT payload FROM preview_approvals WHERE request_id=? AND approval_sha=?",
+                                    (request_id, approval_sha)).fetchone()
+        require(approval is not None and approval[0] == canonical(record), "APPROVAL_RECORD_CORRUPT")
+        manifest = {**preview, "approval_scope": approval_scope}
+        binding = self.db.execute("SELECT approval_sha,manifest_sha FROM execution_bindings WHERE request_id=?",
+                                   (request_id,)).fetchone()
+        require(binding == (approval_sha, digest(manifest)), "EXECUTION_BINDING_NOT_FOUND")
+        return {"manifest": manifest, "manifest_sha256": digest(manifest)}
+
     def revoke_approval(self, request_id: str, preview_sha: str, approval_sha: str, *,
                         approved_revision: str, approval_scope: str,
                         requested_targets: list[dict[str, Any]]) -> dict[str, Any]:
         """Monotonic tombstone. Reapproval never resurrects this decision."""
         from scripts.ironman_jobs.ironman_unified_changeset_engine import digest
-        self.db.execute("BEGIN IMMEDIATE")
-        try:
+        with self.write_transaction():
             record, _ = self._approval_record(
                 request_id, preview_sha, approved_revision=approved_revision,
                 approval_scope=approval_scope, requested_targets=requested_targets)
@@ -606,10 +645,6 @@ class DraftStore:
             inserted = self.db.execute(
                 "INSERT OR IGNORE INTO approval_revocations VALUES (?,?)", (request_id, approval_sha))
             reused = inserted.rowcount == 0
-            self.db.commit()
-        except Exception:
-            self.db.rollback()
-            raise
         return {"request_id": request_id, "approval_sha256": approval_sha,
                 "state": "APPROVAL_REVOKED", "reused": reused,
                 "provider_writes": 0, "publication_enabled": False}
@@ -630,8 +665,7 @@ class DraftStore:
         )
         require(type(approval_sha) is str and SHA.fullmatch(approval_sha) is not None,
                 "APPROVAL_LOOKUP_INVALID")
-        self.db.execute("BEGIN IMMEDIATE")
-        try:
+        with self.write_transaction():
             record, preview = self._approval_record(
                 request_id, preview_sha, approved_revision=approved_revision,
                 approval_scope=approval_scope, requested_targets=requested_targets)
@@ -656,10 +690,6 @@ class DraftStore:
             if existing is None:
                 self.db.execute("INSERT INTO execution_bindings VALUES (?,?,?)",
                                 (request_id, approval_sha, manifest_sha))
-            self.db.commit()
-        except Exception:
-            self.db.rollback()
-            raise
         return {"manifest": execution, "manifest_sha256": manifest_sha,
                 "preview_sha256": preview_sha, "approval_sha256": approval_sha,
                 "state": "EXECUTION_BOUND", "reused": existing is not None,

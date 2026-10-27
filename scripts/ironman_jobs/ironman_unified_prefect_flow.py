@@ -99,6 +99,40 @@ def unified_changeset_flow(
     # One shared flow now accepts an operation draft from any authorized chat.
     # Control actions persist decisions only after independent authorization.
     # No control action opens a provider or executes a changeset.
+    if mode == "recover_worker":
+        from scripts.ironman_jobs.ironman_operation_contracts import BoundRecoveryAuthorization
+        from scripts.ironman_jobs.ironman_unified_changeset_engine import recover_execution_worker
+        fields = {"schema", "request_id", "preview_sha256", "approval_sha256",
+                  "reviewed_revision", "approval_scope", "worker_owner"}
+        if type(manifest) is not dict or set(manifest) != fields or manifest.get("schema") != "IRONMAN_RECOVERY_INPUT_V1":
+            raise ChangeStop("RECOVERY_INPUT_SHAPE")
+        store_path = os.environ.get("IRONMAN_OPERATION_DRAFT_STORE")
+        canonical_ledger = os.environ.get("IRONMAN_OPERATION_EXECUTION_LEDGER")
+        if not store_path or not canonical_ledger or not Path(canonical_ledger).is_absolute():
+            raise ChangeStop("RECOVERY_RUNTIME_NOT_CONFIGURED")
+        if Path(ledger_path).resolve() != Path(canonical_ledger).resolve():
+            raise ChangeStop("RECOVERY_LEDGER_MISMATCH")
+        if read_transport not in {"local", "private_bridge"}:
+            raise ChangeStop("UNIFIED_UNSUPPORTED_READ_TRANSPORT")
+        review = dict(approved_revision=manifest["reviewed_revision"], approval_scope=manifest["approval_scope"],
+                      requested_targets=requested_targets)
+        store = DraftStore(Path(store_path))
+        try:
+            bound = store.inspect_execution_binding(manifest["request_id"], manifest["preview_sha256"],
+                                                    manifest["approval_sha256"], **review)
+        finally:
+            store.close()
+        guard = BoundRecoveryAuthorization(Path(store_path), manifest["request_id"], manifest["preview_sha256"],
+                                           manifest["approval_sha256"], **review)
+        # Authorize before even constructing the provider reader or opening its ledger.
+        if guard(bound["manifest"], None) is not True:
+            raise ChangeStop("RECOVERY_AUTHORIZATION_DENIED")
+        ledger = Ledger(Path(canonical_ledger))
+        try:
+            return recover_execution_worker(bound["manifest"], create_read_registry(read_transport), ledger,
+                                            expected_owner=manifest["worker_owner"], authorize_recovery=guard)
+        finally:
+            ledger.close()
     if mode in {"approve_preview", "revoke_approval", "bind_execution"}:
         # The caller supplies selectors, never its own authority or principal.
         fields = {"schema", "request_id", "preview_sha256", "reviewed_revision", "approval_scope"}
@@ -123,22 +157,9 @@ def unified_changeset_flow(
                 "requested_targets": requested_targets,
             }))
             try:
-                allowed = get_review_authorizer().authorize(command)
+                result = get_review_authorizer().run_control(command, store)
             except PermissionError as exc:
                 raise ChangeStop("REVIEW_AUTHORIZATION_DENIED") from exc
-            if allowed is not True:
-                raise ChangeStop("REVIEW_AUTHORIZATION_DENIED")
-            review = dict(approved_revision=manifest["reviewed_revision"],
-                          approval_scope=manifest["approval_scope"],
-                          requested_targets=requested_targets)
-            if mode == "approve_preview":
-                result = store.record_approval(manifest["request_id"], manifest["preview_sha256"], **review)
-            elif mode == "revoke_approval":
-                result = store.revoke_approval(manifest["request_id"], manifest["preview_sha256"],
-                                               manifest["approval_sha256"], **review)
-            else:
-                result = store.bind_execution(manifest["request_id"], manifest["preview_sha256"],
-                                              manifest["approval_sha256"], **review)
             # Even an approved binding is only a reservation. Do not open the
             # execution ledger, install adapters or expose an executable mode.
             return {**result, "mode": mode, "publication_enabled": False, "provider_writes": 0}

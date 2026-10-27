@@ -8,8 +8,6 @@ Existing endpoint-specific publishers can migrate to this engine incrementally.
 """
 from __future__ import annotations
 
-import asyncio
-import fcntl
 import copy
 import hashlib
 import json
@@ -18,6 +16,8 @@ import tempfile
 from pathlib import Path
 from contextlib import contextmanager
 from typing import Any, Protocol
+
+from scripts.ironman_jobs.ironman_file_lock import FileLockBusy, exclusive_file_lock
 
 
 SCHEMA = "IRONMAN_PLAN_PATCH_V1"
@@ -252,16 +252,11 @@ def _exclusive_run(path: Path):
     require(not path.parent.is_symlink(), "UNSAFE_LOCK_PARENT")
     os.chmod(path.parent, 0o700)
     lock_path = path.parent / (path.name + ".lock")
-    fd = os.open(lock_path, os.O_CREAT | os.O_RDWR | getattr(os, "O_NOFOLLOW", 0), 0o600)
-    with os.fdopen(fd, "a+") as handle:
-        try:
-            fcntl.flock(handle.fileno(), fcntl.LOCK_EX | fcntl.LOCK_NB)
-        except BlockingIOError as exc:
-            raise PlanPatchStop("ANOTHER_PLAN_BATCH_RUNNING") from exc
-        try:
+    try:
+        with exclusive_file_lock(lock_path):
             yield
-        finally:
-            fcntl.flock(handle.fileno(), fcntl.LOCK_UN)
+    except FileLockBusy as exc:
+        raise PlanPatchStop("ANOTHER_PLAN_BATCH_RUNNING") from exc
 
 
 async def run_batch(

@@ -182,6 +182,12 @@ class Ledger:
             CREATE TABLE IF NOT EXISTS execution_workers (
               slot INTEGER PRIMARY KEY CHECK(slot=1),
               owner TEXT NOT NULL, request_id TEXT NOT NULL);
+            CREATE TABLE IF NOT EXISTS execution_worker_protocol (
+              owner TEXT PRIMARY KEY, device INTEGER NOT NULL,
+              inode INTEGER NOT NULL, protocol TEXT NOT NULL);
+            CREATE TABLE IF NOT EXISTS worker_recoveries (
+              owner TEXT PRIMARY KEY, request_id TEXT NOT NULL,
+              manifest_sha TEXT NOT NULL, receipt_sha TEXT NOT NULL, receipt TEXT NOT NULL);
         """)
 
     def close(self) -> None:
@@ -240,12 +246,34 @@ class Ledger:
         until an authorized, quiescent recovery reconciles it. Separate ledger
         files are separate coordination domains, not a distributed lock.
         """
+        with self._worker_guard() as identity:
+            with self._owned_worker(request_id, identity):
+                yield
+
+    @contextmanager
+    def _worker_guard(self):
+        from scripts.ironman_jobs.ironman_file_lock import FileLockBusy, exclusive_file_lock
+        if str(self.path) == ":memory:":
+            yield None  # Never a recoverable cross-process coordination domain.
+            return
+        path = self.path.resolve()
+        try:
+            with exclusive_file_lock(path.parent / (path.name + ".worker.lock")) as identity:
+                yield identity
+        except FileLockBusy as exc:
+            raise ChangeStop("EXECUTION_WORKER_BUSY") from exc
+
+    @contextmanager
+    def _owned_worker(self, request_id, identity):
         owner = uuid4().hex
         self.db.execute("BEGIN IMMEDIATE")
         try:
             need(self.db.execute("SELECT 1 FROM execution_workers").fetchone() is None,
                  "EXECUTION_WORKER_BUSY")
             self.db.execute("INSERT INTO execution_workers VALUES (1,?,?)", (owner, request_id))
+            if identity is not None:
+                self.db.execute("INSERT INTO execution_worker_protocol VALUES (?,?,?,?)",
+                                (owner, *identity, "POSIX_FLOCK_V1"))
             self.db.commit()
         except Exception:
             self.db.rollback()
@@ -255,6 +283,7 @@ class Ledger:
         finally:
             with self.db:
                 self.db.execute("DELETE FROM execution_workers WHERE slot=1 AND owner=?", (owner,))
+                self.db.execute("DELETE FROM execution_worker_protocol WHERE owner=?", (owner,))
 
     def setup(self, manifest: dict[str, Any], manifest_sha: str, *,
               migrate_schema: bool = False) -> None:
@@ -369,6 +398,109 @@ def _require_execution_authority(check, manifest, item) -> None:
         raise SecurityDenied("EXECUTION_AUTHORIZATION_DENIED") from exc
     if allowed is not True:
         raise SecurityDenied("EXECUTION_AUTHORIZATION_DENIED")
+
+
+def recover_execution_worker(manifest, adapters, ledger, *, expected_owner,
+                             authorize_recovery=None) -> dict[str, Any]:
+    """Authorized READ-only reconciliation of a provably orphaned local worker.
+
+    No timeouts/PID guesses, automatic takeover or apply() call. Older slots
+    without the kernel-lock protocol are deliberately NOT recoverable here.
+    A still-uncertain resource keeps its claim and cannot be blindly replayed.
+    """
+    manifest_sha = validate_manifest(manifest)
+    need(type(expected_owner) is str and re.fullmatch(r"[0-9a-f]{32}", expected_owner) is not None,
+         "RECOVERY_OWNER_REQUIRED")
+    _require_execution_authority(authorize_recovery, manifest, None)
+    prior = ledger.db.execute("SELECT request_id,manifest_sha,receipt_sha,receipt FROM worker_recoveries WHERE owner=?",
+                              (expected_owner,)).fetchone()
+    if prior:
+        need(prior[:2] == (manifest["request_id"], manifest_sha), "RECOVERY_BINDING_MISMATCH")
+        receipt = json.loads(prior[3])
+        need(digest(receipt) == prior[2] and receipt.get("owner") == expected_owner and
+             receipt.get("request_id") == manifest["request_id"] and
+             receipt.get("manifest_sha256") == manifest_sha and receipt.get("provider_writes") == 0 and
+             receipt.get("publication_enabled") is False, "RECOVERY_RECEIPT_CORRUPT")
+        return {**receipt, "reused": True}
+
+    def snapshot():
+        return {
+            "worker": ledger.db.execute("SELECT owner,request_id FROM execution_workers WHERE slot=1").fetchone(),
+            "protocol": ledger.db.execute("SELECT device,inode,protocol FROM execution_worker_protocol WHERE owner=?",
+                                           (expected_owner,)).fetchone(),
+            "request": ledger.db.execute("SELECT manifest_sha FROM requests WHERE request_id=?",
+                                          (manifest["request_id"],)).fetchone(),
+            "events": ledger.db.execute("SELECT * FROM change_events WHERE request_id=? ORDER BY change_id",
+                                         (manifest["request_id"],)).fetchall(),
+            "claims": ledger.db.execute("SELECT * FROM resource_claims WHERE request_id=? ORDER BY resource_key",
+                                         (manifest["request_id"],)).fetchall(),
+        }
+
+    with ledger._worker_guard() as identity:
+        need(identity is not None, "RECOVERY_REQUIRES_PERSISTENT_LEDGER")
+        before = snapshot()
+        need(before["worker"] == (expected_owner, manifest["request_id"]), "RECOVERY_OWNER_MISMATCH")
+        need(before["protocol"] == (*identity, "POSIX_FLOCK_V1"), "WORKER_QUIESCENCE_UNVERIFIABLE")
+        need(before["request"] in (None, (manifest_sha,)), "RECOVERY_BINDING_MISMATCH")
+        observed = {}
+
+        class ReadOnly:
+            def __init__(self, adapter):
+                self.adapter = adapter
+
+            def read(self, spec):
+                result = self.adapter.read(spec)
+                observed[spec["id"]] = digest(result)
+                return result
+
+            def validate(self, spec, current):
+                validator = getattr(self.adapter, "validate", None)
+                if callable(validator):
+                    validator(spec, current)
+
+            def apply(self, spec):
+                raise SecurityDenied("RECOVERY_IS_READ_ONLY")
+
+        if before["request"] is None:
+            need(not before["events"] and not before["claims"], "RECOVERY_UNREGISTERED_STATE")
+            results = []  # Crash after worker acquisition, before atomic setup.
+        else:
+            preview = _run_changeset(manifest, {k: ReadOnly(a) for k, a in adapters.items()}, ledger,
+                                    manifest_sha=manifest_sha, execute=False)
+            results = preview["results"]
+        _require_execution_authority(authorize_recovery, manifest, None)
+        ledger.db.execute("BEGIN IMMEDIATE")
+        try:
+            need(snapshot() == before, "RECOVERY_STATE_CHANGED")
+            original_states = {row[1]: row[2] for row in before["events"]}
+            for result in results:
+                name = result["id"]
+                if original_states.get(name) not in {"RUNNING", "UNKNOWN_NEEDS_READBACK"}:
+                    continue
+                verified = result["state"] == "DONE_VERIFIED" and name in observed
+                ledger.db.execute("""UPDATE change_events SET state=?,provider_sha=?,observed_utc=?,reason=?
+                    WHERE request_id=? AND change_id=?""", (
+                        "DONE_VERIFIED" if verified else "UNKNOWN_NEEDS_READBACK", observed.get(name), utc(),
+                        "RECOVERY_PROVIDER_VERIFIED" if verified else "RECOVERY_REQUIRES_READBACK",
+                        manifest["request_id"], name))
+                if verified:
+                    ledger.db.execute("DELETE FROM resource_claims WHERE request_id=? AND change_id=?",
+                                      (manifest["request_id"], name))
+            receipt = {"schema": "IRONMAN_WORKER_RECOVERY_V1", "request_id": manifest["request_id"],
+                       "manifest_sha256": manifest_sha, "owner": expected_owner, "results": results,
+                       "reused": False, "provider_writes": 0, "publication_enabled": False,
+                       "state": "WORKER_RECOVERED", "recovered_at": utc(),
+                       "reconciliation_required": any(r["state"] != "DONE_VERIFIED" for r in results)}
+            ledger.db.execute("INSERT INTO worker_recoveries VALUES (?,?,?,?,?)",
+                              (expected_owner, manifest["request_id"], manifest_sha, digest(receipt),
+                               json.dumps(receipt, sort_keys=True, separators=(",", ":"))))
+            ledger.db.execute("DELETE FROM execution_workers WHERE slot=1 AND owner=?", (expected_owner,))
+            ledger.db.execute("DELETE FROM execution_worker_protocol WHERE owner=?", (expected_owner,))
+            ledger.db.commit()
+            return receipt
+        except Exception:
+            ledger.db.rollback()
+            raise
 
 
 def _run_changeset(

@@ -43,11 +43,27 @@ class ReviewAuthorizer(Protocol):
     by a flow parameter, module path, request payload or stored approval SHA.
     """
     def authorize(self, command: dict[str, Any]) -> bool: ...
+    def run_control(self, command: dict[str, Any], store) -> dict[str, Any]: ...
 
 
 def get_review_authorizer() -> ReviewAuthorizer:
-    """No production authority is configured in this unreleased segment."""
-    raise PermissionError("REVIEW_AUTHORITY_NOT_CONFIGURED")
+    """Resolve pinned host trust; missing/invalid configuration still denies."""
+    from scripts.ironman_jobs.ironman_authorization import authority_from_host
+    return authority_from_host()
+
+
+def apply_review_control(store, command):
+    """Common persistence dispatch; authority must hold its transaction first."""
+    review, action = command["review"], command["action"]
+    options = dict(approved_revision=review["reviewed_revision"], approval_scope=review["approval_scope"],
+                   requested_targets=command["requested_targets"])
+    if action == "approve_preview":
+        return store.record_approval(review["request_id"], review["preview_sha256"], **options)
+    if action == "bind_execution":
+        return store.bind_execution(review["request_id"], review["preview_sha256"], review["approval_sha256"], **options)
+    if action == "revoke_approval":
+        return store.revoke_approval(review["request_id"], review["preview_sha256"], review["approval_sha256"], **options)
+    raise PermissionError("UNSUPPORTED_REVIEW_CONTROL")
 
 
 class BoundExecutionAuthorization:
@@ -64,11 +80,13 @@ class BoundExecutionAuthorization:
             approved_revision=approved_revision, approval_scope=approval_scope,
             requested_targets=requested_targets)))
 
+    action = "execute_change"
+
     def __call__(self, manifest: dict, item: dict | None) -> bool:
         from scripts.ironman_jobs.ironman_dynamic_request_store import DraftStore
         from scripts.ironman_jobs.ironman_unified_changeset_engine import digest
         command = json.loads(json.dumps({
-            "action": "execute_change", "request_id": self.request_id,
+            "action": self.action, "request_id": self.request_id,
             "preview_sha256": self.preview_sha, "approval_sha256": self.approval_sha,
             "review": self.review, "manifest": manifest, "item": item,
         }))
@@ -80,10 +98,15 @@ class BoundExecutionAuthorization:
                 raise PermissionError("EXECUTION_MANIFEST_BINDING_MISMATCH")
             if get_review_authorizer().authorize(command) is not True:
                 raise PermissionError("EXECUTION_AUTHORIZATION_DENIED")
-            bound = store.bind_execution(self.request_id, self.preview_sha, self.approval_sha,
-                                         **self.review)
+            operation = store.inspect_execution_binding if self.action == "recover_worker" else store.bind_execution
+            bound = operation(self.request_id, self.preview_sha, self.approval_sha, **self.review)
             if bound["manifest_sha256"] != digest(manifest):
                 raise PermissionError("EXECUTION_MANIFEST_BINDING_MISMATCH")
         finally:
             store.close()
         return True
+
+
+class BoundRecoveryAuthorization(BoundExecutionAuthorization):
+    """Recovery permission allows readback of a revoked binding, never execution."""
+    action = "recover_worker"
