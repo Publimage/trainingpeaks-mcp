@@ -56,7 +56,7 @@ def inspect_publisher(repo: Path = ROOT) -> dict[str, Any]:
         and manifest.get("schema") == "IRONMAN_REVIEWED_PLAN_PATCH_CONFIG_V1"
         and type(manifest.get("configured")) is bool
     )
-    configured = bool(schema_valid and manifest["configured"] is True)
+    configured = bool(schema_valid and manifest is not None and manifest["configured"] is True)
     result = {
         "stage": "IRONMAN_PUBLISHER_READ_ONLY_STATUS",
         "account_owner_id": OWNER,

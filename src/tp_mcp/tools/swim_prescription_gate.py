@@ -5,9 +5,11 @@ duration (hours). Planned source duration is an estimate, not a CSS target.
 Pure module: no reads and no writes.
 """
 from __future__ import annotations
-from collections.abc import Iterable,Mapping
+
+from collections.abc import Iterable, Mapping
 from math import isfinite
 from typing import Any
+
 
 class SwimPrescriptionGateError(ValueError):
     pass

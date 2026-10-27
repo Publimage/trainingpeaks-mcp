@@ -366,14 +366,28 @@ async def test_add_workout_refuses_out_of_range_date():
     client.post.assert_not_called()
 
 
+def _owned_plan_note_client(notes, *, coach_id=2116886, owned=True):
+    """Model the actual coach -> owned inventory -> plan -> notes protocol."""
+    client = AsyncMock()
+    client._get_user_data = AsyncMock(return_value={"personId": coach_id})
+
+    async def get(path):
+        if path == "/plans/v1/plans":
+            return APIResponse(success=True, data=[_TEST_PLAN] if owned else [])
+        if path == "/plans/v1/plans/91919":
+            return APIResponse(success=True, data=_TEST_PLAN)
+        if path.startswith("/plans/v1/plans/91919/calendarNote/"):
+            return APIResponse(success=True, data=notes)
+        raise AssertionError("Unexpected plan-note read: " + path)
+
+    client.get = AsyncMock(side_effect=get)
+    client.post = AsyncMock(return_value=APIResponse(success=True, data={}))
+    return client
+
+
 @pytest.mark.asyncio
 async def test_plan_note_payload_and_protection():
-    client = AsyncMock()
-    client.get = AsyncMock(side_effect=[
-        APIResponse(success=True, data=_TEST_PLAN),
-        APIResponse(success=True, data=[]),  # no same-day note
-    ])
-    client.post = AsyncMock(return_value=APIResponse(success=True, data={}))
+    client = _owned_plan_note_client([])
     p = _patch(client)
     try:
         result = await tp_add_training_plan_note(
@@ -649,16 +663,10 @@ async def test_workouts_reader_survives_a_notes_endpoint_failure():
 
 @pytest.mark.asyncio
 async def test_plan_note_duplicate_is_detected_before_post():
-    client = AsyncMock()
-    client.get = AsyncMock(side_effect=[
-        APIResponse(success=True, data=_TEST_PLAN),
-        APIResponse(success=True, data=[{
-            "calendarNoteId": 99515,
-            "title": "[MCP TEST] Instructions",
-            "noteDate": "2027-06-24T00:00:00",
-        }]),
-    ])
-    client.post = AsyncMock()
+    client = _owned_plan_note_client([{
+        "calendarNoteId": 99515, "title": "[MCP TEST] Instructions",
+        "noteDate": "2027-06-24T00:00:00",
+    }])
     p = _patch(client)
     try:
         result = await tp_add_training_plan_note(
@@ -675,12 +683,7 @@ async def test_plan_note_duplicate_is_detected_before_post():
 
 @pytest.mark.asyncio
 async def test_plan_note_aborts_on_unexpected_preflight_response():
-    client = AsyncMock()
-    client.get = AsyncMock(side_effect=[
-        APIResponse(success=True, data=_TEST_PLAN),
-        APIResponse(success=True, data={"unexpected": "shape"}),
-    ])
-    client.post = AsyncMock()
+    client = _owned_plan_note_client({"unexpected": "shape"})
     p = _patch(client)
     try:
         result = await tp_add_training_plan_note(
@@ -1240,3 +1243,48 @@ async def test_cleanup_failed_delete_keeps_no_success_claim():
     assert result["isError"] is True
     inst._request.assert_awaited_once()
 
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize("coach_id,owned", [(999999, True), (2116886, False)])
+async def test_plan_note_checks_independent_coach_and_owned_inventory(coach_id, owned):
+    client = _owned_plan_note_client([], coach_id=coach_id, owned=owned)
+    patcher = _patch(client)
+    try:
+        result = await tp_add_training_plan_note(91919, "2027-06-21", "Instructions", "Synthetic only")
+    finally:
+        patcher.stop()
+    assert result["error_code"] == "PROTECTED_RESOURCE"
+    client.post.assert_not_awaited()
+    if coach_id != 2116886:
+        client.get.assert_not_awaited()
+    else:
+        assert client.get.await_count == 1
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize("payload", [[], [123]])
+async def test_mutable_plan_rejects_non_object_readback(payload):
+    from tp_mcp.tools.plans import _get_writable_test_plan
+
+    client = AsyncMock()
+    client.get.return_value = APIResponse(success=True, data=payload)
+    plan, error = await _get_writable_test_plan(client, 91919)
+    assert plan is None and error["error_code"] == "API_ERROR"
+    client.post.assert_not_called()
+
+
+@pytest.mark.asyncio
+async def test_creation_does_not_retry_when_inventory_readback_has_unknown_shape():
+    client = AsyncMock()
+    client.get.side_effect = [APIResponse(success=True, data=[]),
+                              APIResponse(success=True, data={"unexpected": "wrapper"})]
+    client.post.return_value = APIResponse(success=True, data={})
+    p = _patch(client)
+    try:
+        result = await tp_create_training_plan(
+            title="[MCP TEST] Integration Plan", start_date="2027-06-21", week_count=1)
+    finally:
+        p.stop()
+    assert result["error_code"] == "WRITE_UNVERIFIED"
+    assert client.post.await_count == 1

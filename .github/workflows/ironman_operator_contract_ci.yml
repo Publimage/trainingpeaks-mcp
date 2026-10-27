@@ -1,0 +1,75 @@
+name: IRONMAN unified operator - offline contract
+on:
+  push:
+    branches:
+      - fix/ironman-unified-operator-errors-20261022
+    paths:
+      - 'scripts/ironman_jobs/ironman_unified_*.py'
+      - 'tests/test_ironman_unified_*.py'
+      - 'src/tp_mcp/unified_read_bridge.py'
+      - 'src/tp_mcp/private_bridge.py'
+      - 'src/tp_mcp/tools/ironman_operator.py'
+      - 'src/tp_mcp/server.py'
+      - 'scripts/ironman_jobs/reviewed_plan_patch_pipeline.py'
+      - 'tests/test_ironman_operator.py'
+      - 'tests/test_reviewed_plan_patch_pipeline.py'
+      - 'tests/test_private_bridge.py'
+      - 'scripts/ironman_jobs/plan_patch_batch_core.py'
+      - 'tests/test_plan_patch_batch_core.py'
+      - 'prefect/ironman-unified-changeset-v1.yaml'
+      - 'docs/IRONMAN_UNIFIED_EXECUTION_CONTRACT.md'
+      - 'docs/IRONMAN_UNIFIED_PRIVATE_BRIDGE_RUNBOOK.md'
+      - '.github/workflows/ironman_operator_contract_ci.yml'
+  pull_request:
+    types: [opened, reopened, synchronize, edited, ready_for_review]
+    branches:
+      - feat/mcp-test-training-plan-lab
+    paths:
+      - src/tp_mcp/tools/ironman_operator.py
+      - src/tp_mcp/server.py
+      - scripts/ironman_jobs/reviewed_plan_patch_pipeline.py
+      - tests/test_ironman_operator.py
+      - tests/test_reviewed_plan_patch_pipeline.py
+      - scripts/ironman_jobs/ironman_unified_changeset_engine.py
+      - tests/test_ironman_unified_changeset_engine.py
+      - scripts/ironman_jobs/ironman_unified_trainingpeaks_reads.py
+      - scripts/ironman_jobs/ironman_unified_note_pdf_adapter.py
+      - scripts/ironman_jobs/ironman_unified_plan_workout_adapter.py
+      - tests/test_ironman_unified_trainingpeaks_reads.py
+      - tests/test_ironman_unified_note_pdf_adapter.py
+      - tests/test_ironman_unified_plan_workout_adapter.py
+      - tests/test_plan_patch_batch_core.py
+      - scripts/ironman_jobs/plan_patch_batch_core.py
+      - src/tp_mcp/unified_read_bridge.py
+      - src/tp_mcp/private_bridge.py
+      - tests/test_ironman_unified_private_bridge.py
+      - scripts/ironman_jobs/ironman_unified_prefect_flow.py
+      - tests/test_ironman_unified_prefect_flow.py
+      - prefect/ironman-unified-changeset-v1.yaml
+      - docs/IRONMAN_UNIFIED_EXECUTION_CONTRACT.md
+      - docs/IRONMAN_UNIFIED_PRIVATE_BRIDGE_RUNBOOK.md
+      - .github/workflows/ironman_operator_contract_ci.yml
+permissions:
+  contents: read
+concurrency:
+  group: ironman-operator-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+jobs:
+  operator-offline:
+    if: github.event_name == 'push' || github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install package and test dependencies
+        run: |
+          python -m pip install -e '.[dev]'
+          python -m pip install 'prefect==3.8.8' 'fastapi<0.155'
+      - name: Verify common operator safety and conflict diagnostics
+        run: python -m pytest -q tests/test_ironman_operator.py tests/test_ironman_unified_changeset_engine.py tests/test_ironman_unified_trainingpeaks_reads.py tests/test_ironman_unified_note_pdf_adapter.py tests/test_ironman_unified_plan_workout_adapter.py tests/test_plan_patch_batch_core.py tests/test_reviewed_plan_patch_pipeline.py tests/test_ironman_unified_prefect_flow.py tests/test_ironman_unified_private_bridge.py tests/test_private_bridge.py

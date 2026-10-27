@@ -17,6 +17,7 @@ linked plan application).
 
 import json
 import logging
+from contextlib import suppress
 from datetime import date as date_type
 from datetime import timedelta
 from typing import Any
@@ -174,10 +175,17 @@ async def _fetch_plan_workouts(
         return None, _api_err(det)
     d = det.data or {}
     start = (d.get("startDate") or "")[:10]
-    days = d.get("dayCount") or (d.get("weekCount") or 0) * 7
+    days = max(int(d.get("dayCount") or 0),
+               int(d.get("weekCount") or 0) * 7)
     if not start or not days:
-        return None, _err("API_ERROR", "Plan has no startDate/dayCount.")
-    sd = date_type.fromisoformat(start)
+        return None, _err("API_ERROR", "Provider has no technical calendar anchor/range.")
+    try:
+        sd = date_type.fromisoformat(start)
+    except ValueError:
+        return None, _err("API_ERROR", "Provider technical anchor is invalid.")
+    # Training Plans have NO canonical absolute start date. The provider
+    # anchor exists solely to retrieve week/day-relative records via its API.
+    sd = sd - timedelta(days=sd.weekday())
     # Native TrainingPeaks plan metadata can shrink when the latest legacy
     # Other is removed. Preserve a stable, fixed archive-pilot read window
     # so W3/W4 native notes remain discoverable.
@@ -217,15 +225,11 @@ async def tp_get_training_plan_workouts(plan_id: int | str) -> dict[str, Any]:
         for w in ws:
             wd = (w.get("workoutDay") or "")[:10]
             try:
+                # The provider date is an internal coordinate, not a plan date.
+                # Every plan uses the same Monday-based Wnn/D1-D7 layout.
                 rel = (date_type.fromisoformat(wd) - sd).days + 1 if wd else None
             except ValueError:
                 rel = None
-            # On private assembly plans the first added workout may be a
-            # Tuesday: the provider startDate then reflects the first workout,
-            # NOT the Monday of W1. Expose correct relative week/weekday slots.
-            if v.plan_id == 684602 and wd:
-                relative_monday = sd - timedelta(days=sd.weekday())
-                rel = (date_type.fromisoformat(wd) - relative_monday).days + 1
             out.append({
                 "workout_id": _plan_workout_id(w),
                 "week": ((rel - 1) // 7 + 1) if rel else None,
@@ -241,7 +245,7 @@ async def tp_get_training_plan_workouts(plan_id: int | str) -> dict[str, Any]:
         # Read-only QA: return provider-native swim steps for private test plans.
         # The normal list response stays small for every commercial plan.
         if v.plan_id in (684206, _INTERMEDIATE_PILOT_ID):
-            for summary, raw in zip(out, ws):
+            for summary, raw in zip(out, ws, strict=False):
                 if raw.get("workoutTypeValueId") == 1 and summary["title"].startswith("[MCP TEST]"):
                     summary["native_structure"] = raw.get("structure")
                     summary["native_distance_planned_m"] = raw.get("distancePlanned")
@@ -571,7 +575,9 @@ async def tp_create_training_plan(
             if after.is_error:
                 return _err("WRITE_UNVERIFIED",
                             "POST accepted but listing failed; check existing plans before retrying.")
-            candidates = [p for p in (after.data or [])
+            if not isinstance(after.data, list):
+                return _err("WRITE_UNVERIFIED", "Unexpected plan listing; inspect before retrying.")
+            candidates = [p for p in after.data
                           if (p.get("title") or "").strip() == title.strip()]
             if len(candidates) != 1 or not candidates[0].get("planId"):
                 return _err("WRITE_UNVERIFIED",
@@ -607,7 +613,9 @@ async def _get_writable_test_plan(
     result = await client.get(f"/plans/v1/plans/{plan_id}")
     if result.is_error:
         return None, _api_err(result)
-    d = result.data or {}
+    if not isinstance(result.data, dict):
+        return None, _err("API_ERROR", "Unexpected plan payload.")
+    d = result.data
     guard = _test_plan_guard(d)
     if guard:
         return None, guard
@@ -729,12 +737,12 @@ async def tp_add_training_plan_library_workout(
                 "PROTECTED_RESOURCE",
                 "Only existing [MCP TEST] library items can be inserted.",
             )
-        if (plan.get("title") or "").strip() == _INTERMEDIATE_PILOT_TITLE:
-            if not (candidate.get("itemName") or "").startswith("[MCP TEST] IMINT24W-"):
-                return _err(
-                    "PROTECTED_RESOURCE",
-                    "Intermediate pilot requires a canonical UID-prefixed template.",
-                )
+        if ((plan.get("title") or "").strip() == _INTERMEDIATE_PILOT_TITLE
+                and not (candidate.get("itemName") or "").startswith("[MCP TEST] IMINT24W-")):
+            return _err(
+                "PROTECTED_RESOURCE",
+                "Intermediate pilot requires a canonical UID-prefixed template.",
+            )
         if is_archive_pilot:
             date_error = _check_plan_date(
                 plan, workout_date, allow_first_workout_bootstrap=True,
@@ -894,7 +902,7 @@ async def tp_batch_add_training_plan_library_workouts(
         for lib, template, week, day, title in validated:
             day_date = (anchor + timedelta(weeks=week - 1, days=day)).isoformat()
             manifest.append((lib, template, day_date, title))
-        libraries: dict[int, dict[int, dict[str, Any]]] = {}
+        libraries: dict[int, dict[Any, dict[str, Any]]] = {}
         for lib in sorted({v[0] for v in validated}):
             response = await client.get(f"/exerciselibrary/v2/libraries/{lib}/items")
             if response.is_error:
@@ -958,8 +966,8 @@ async def tp_batch_add_training_plan_library_workouts(
                 ],
             }
 
-        attempted = []
-        for lib, template, day_date, title, candidate in to_add:
+        attempted: list[dict[str, Any]] = []
+        for _lib, template, day_date, title, _candidate in to_add:
             response = await client.post(
                 f"/plans/v1/plans/{assembly_id}/commands/addworkoutfromlibraryitem",
                 json={"planId": assembly_id, "exerciseLibraryItemId": template,
@@ -982,7 +990,7 @@ async def tp_batch_add_training_plan_library_workouts(
                         f"Provider acknowledged {len(attempted)} writes; readback unavailable.")
         after = after_resp.data
         qa = []
-        for lib, template, day_date, title, candidate in candidates:
+        for _lib, template, day_date, title, candidate in candidates:
             matches = [w for w in after
                        if (w.get("workoutDay") or "")[:10] == day_date
                        and (w.get("title") or "").strip() == title]
@@ -1212,11 +1220,14 @@ async def tp_get_training_plan_notes(plan_id: int | str) -> dict[str, Any]:
         start = _parse_plan_date((plan.get("startDate") or "")[:10])
         days = max(plan.get("dayCount") or 0,
                    (plan.get("weekCount") or 0) * 7)
+        # An unpopulated plan may not have a startDate. Check it BEFORE
+        # calling weekday() or subtracting timedelta; the resolver must
+        # return a scoped read error, never throw on a newly created plan.
+        if start is None or days <= 0:
+            return _err("API_ERROR", "Plan has no populated calendar range.")
         # Relative Training Plan weeks begin Monday, even when the
         # first scheduled workout is Tuesday or later.
         start = start - timedelta(days=start.weekday())
-        if start is None or days <= 0:
-            return _err("API_ERROR", "Plan has no populated calendar range.")
         if v.plan_id == _INTERMEDIATE_PILOT_ID and start == _INTERMEDIATE_PILOT_START:
             days = max(days, _INTERMEDIATE_PILOT_WEEKS * 7)
         end = start + timedelta(days=days + 1)
@@ -1236,10 +1247,8 @@ async def tp_get_training_plan_notes(plan_id: int | str) -> dict[str, Any]:
         for note in response.data:
             day = (note.get("noteDate") or note.get("date") or "")[:10]
             offset = None
-            try:
+            with suppress(ValueError):
                 offset = (date_type.fromisoformat(day) - start).days + 1
-            except ValueError:
-                pass
             out.append({
                 "note_id": note.get("id") or note.get("calendarNoteId")
                           or note.get("noteId"),

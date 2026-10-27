@@ -163,6 +163,9 @@ def test_operator_schema_declares_live_verified_target_plan_id():
     tool = next(t for t in TOOLS if t.name == "tp_ironman_operator")
     assert tool.input_schema["properties"]["target_plan_id"]["type"] == "integer"
     assert tool.input_schema["properties"]["target_plan_id"]["minimum"] == 1
+    assert tool.input_schema["properties"]["request_scope"]["type"] == "string"
+    assert tool.input_schema["properties"]["requested_workout_ids"]["uniqueItems"] is True
+    assert tool.input_schema["properties"]["requested_workout_ids"]["maxItems"] == 150
 
 
 def test_reviewed_manifest_mismatch_stops_before_any_provider_job(monkeypatch, tmp_path):
@@ -184,5 +187,157 @@ def test_reviewed_manifest_inactive_must_not_publish(monkeypatch, tmp_path):
     manifest = tmp_path / "data/ironman_reviewed_plan_patch.json"
     manifest.write_text('{"configured":false}')
     op._check_reviewed_manifest_target("reviewed_plan_patch_preview", 689369)
+    op._check_reviewed_manifest_request("reviewed_plan_patch_preview", None, None)
     with pytest.raises(op.BridgeStop, match="REVIEWED_MANIFEST_NOT_ACTIVE"):
         op._check_reviewed_manifest_target("reviewed_plan_patch_publish", 689369)
+
+
+def test_busy_operator_has_actionable_error_code(monkeypatch, tmp_path):
+    job = _setup(monkeypatch, tmp_path)
+    def busy(*args, **kwargs):
+        raise BlockingIOError("another process holds the lock")
+    monkeypatch.setattr(op.fcntl, "flock", busy)
+    with pytest.raises(op.BridgeStop, match="Another IRONMAN job") as caught:
+        op._execute_blocking(job, "a" * 40, "execute", None)
+    assert caught.value.code == "OPERATOR_BUSY"
+
+
+def test_revision_drift_reports_revisions_and_never_checkouts(monkeypatch, tmp_path):
+    job = _setup(monkeypatch, tmp_path)
+    revisions = []
+    def fake(*args, timeout=30):
+        revisions.append(args)
+        if args[:3] == ("git", "remote", "get-url"):
+            value = "https://github.com/Publimage/trainingpeaks-mcp.git\n"
+        elif args[:3] == ("git", "rev-parse", "FETCH_HEAD"):
+            value = "b" * 40 + "\n"
+        else:
+            value = ""
+        return subprocess.CompletedProcess(args, 0, value, "")
+    monkeypatch.setattr(op, "_run", fake)
+    with pytest.raises(op.BridgeStop, match="Pinned revision differs") as caught:
+        op._execute_blocking(job, "a" * 40, "execute", None)
+    assert caught.value.code == "REVISION_DRIFT"
+    assert "requested=aaaaaaaaaaaa" in str(caught.value)
+    assert "current=bbbbbbbbbbbb" in str(caught.value)
+    assert not any(x[:3] == ("git", "checkout", "--detach") for x in revisions)
+
+
+def test_failed_registered_job_has_failure_code_without_retry(monkeypatch, tmp_path):
+    job = _setup(monkeypatch, tmp_path)
+    revision = "a" * 40
+    def fake(*args, timeout=30):
+        if args[:3] == ("git", "remote", "get-url"):
+            return subprocess.CompletedProcess(args, 0, "https://github.com/Publimage/trainingpeaks-mcp.git\n", "")
+        if args[:3] == ("git", "rev-parse", "FETCH_HEAD"):
+            return subprocess.CompletedProcess(args, 0, revision + "\n", "")
+        if args[0] == str(tmp_path / "python") and args[1].endswith(".py"):
+            return subprocess.CompletedProcess(args, 2, '{"stage":"SAFE_STOP"}', "")
+        return subprocess.CompletedProcess(args, 0, "", "")
+    monkeypatch.setattr(op, "_run", fake)
+    result = op._execute_blocking(job, revision, "execute", None)
+    assert result["stage"] == "STOP_REVIEW"
+    assert result["error_code"] == "JOB_SCRIPT_FAILED"
+    assert result["never_retry_ambiguous_post"] is False
+
+
+
+def test_stale_same_plan_manifest_cannot_select_a_new_request(monkeypatch, tmp_path):
+    """Plan ID alone cannot distinguish two edits of WINTER FOUNDATION."""
+    _setup(monkeypatch, tmp_path)
+    (tmp_path / "data").mkdir()
+    prior_scope = "trainingpeaks:plan:689369:winter8-batch-already-completed"
+    payload = {"configured": True, "manifest": {
+        "plan_id": 689369, "scope": prior_scope,
+        "items": [{"workout_id": 36271815}, {"workout_id": 36271819}],
+    }}
+    (tmp_path / "data/ironman_reviewed_plan_patch.json").write_text(
+        __import__("json").dumps(payload))
+
+    op._check_reviewed_manifest_target("reviewed_plan_patch_preview", 689369)
+    op._check_reviewed_manifest_request(
+        "reviewed_plan_patch_preview", prior_scope, [36271815, 36271819])
+    # Same plan, different request: stop before the provider or a write receipt.
+    with pytest.raises(op.BridgeStop, match="STOP_REQUEST_SCOPE_MISMATCH"):
+        op._check_reviewed_manifest_request(
+            "reviewed_plan_patch_publish",
+            "trainingpeaks:plan:689369:new-single-description",
+            [36271815, 36271819])
+    with pytest.raises(op.BridgeStop, match="STOP_REQUEST_RESOURCE_MISMATCH"):
+        op._check_reviewed_manifest_request(
+            "reviewed_plan_patch_publish", prior_scope, [36271815])
+    with pytest.raises(op.BridgeStop, match="REQUEST_SCOPE_REQUIRED"):
+        op._check_reviewed_manifest_request(
+            "reviewed_plan_patch_publish", None, [36271815, 36271819])
+    with pytest.raises(op.BridgeStop, match="REQUEST_WORKOUT_IDS_REQUIRED"):
+        op._check_reviewed_manifest_request(
+            "reviewed_plan_patch_publish", prior_scope, [36271815, 36271815])
+    with pytest.raises(op.BridgeStop, match="REQUEST_WORKOUT_IDS_REQUIRED"):
+        op._check_reviewed_manifest_request(
+            "reviewed_plan_patch_publish", prior_scope, [True, 36271819])
+
+
+def test_reviewed_job_passes_only_verified_request_identity_to_child(monkeypatch, tmp_path):
+    _setup(monkeypatch, tmp_path)
+    captured = {}
+
+    def fake_run(args, **kwargs):
+        captured["env"] = kwargs["env"]
+        return subprocess.CompletedProcess(args, 0, "", "")
+
+    monkeypatch.setattr(op.subprocess, "run", fake_run)
+    scope = "trainingpeaks:plan:689369:another-request"
+    op._run("python", "approved.py", request_plan_id=689369,
+            request_scope=scope, request_workout_ids=[13, 11])
+    assert captured["env"]["IRONMAN_REQUEST_TARGET_PLAN_ID"] == "689369"
+    assert captured["env"]["IRONMAN_REQUEST_TARGET_SCOPE"] == scope
+    assert captured["env"]["IRONMAN_REQUEST_WORKOUT_IDS_JSON"] == "[11,13]"
+    assert not any("PASSWORD" in k or "TOKEN" in k for k in captured["env"])
+
+
+
+def test_operator_stdout_never_returns_provider_credentials(monkeypatch, tmp_path):
+    job = _setup(monkeypatch, tmp_path)
+    revision = "a" * 40
+
+    def fake(*args, timeout=30):
+        if args[:3] == ("git", "remote", "get-url"):
+            value = "https://github.com/Publimage/trainingpeaks-mcp.git\n"
+        elif args[:3] == ("git", "rev-parse", "FETCH_HEAD"):
+            value = revision + "\n"
+        elif args[0] == str(tmp_path / "python") and args[1].endswith(".py"):
+            value = (
+                "Authorization: Bearer DEMO_OPERATOR_AUTH\n"
+                "Cookie: session=DEMO_OPERATOR_COOKIE; mode=secret\n"
+                "token=DEMO_OPERATOR_TOKEN\n"
+                "SAFE_STATUS: PASS\n"
+            )
+        else:
+            value = ""
+        return subprocess.CompletedProcess(args, 0, value, "")
+
+    monkeypatch.setattr(op, "_run", fake)
+    result = op._execute_blocking(job, revision, "execute", None)
+    assert result["success"] is True
+    assert result["stage"] == "DONE"
+    for token in ("DEMO_OPERATOR_AUTH", "DEMO_OPERATOR_COOKIE",
+                  "DEMO_OPERATOR_TOKEN"):
+        assert token not in result["output"]
+    assert "SAFE_STATUS: PASS" in result["output"]
+
+
+
+def test_shared_dynamic_target_resolver_is_registered_read_only():
+    from tp_mcp.server import TOOLS, _TOOL_HANDLERS
+
+    found = [t for t in TOOLS if t.name == "tp_ironman_resolve_target"]
+    assert len(found) == 1
+    tool = found[0]
+    assert tool.annotations.read_only_hint is True
+    assert tool.annotations.destructive_hint is False
+    assert tool.annotations.idempotent_hint is True
+    assert "tp_ironman_resolve_target" in _TOOL_HANDLERS
+    assert tool.input_schema["required"] == ["kind", "query"]
+    assert "new_training_plan" in tool.input_schema["properties"]["kind"]["enum"]
+    assert "athlete_workout" in tool.input_schema["properties"]["kind"]["enum"]
+    assert "plan_note" in tool.input_schema["properties"]["kind"]["enum"]

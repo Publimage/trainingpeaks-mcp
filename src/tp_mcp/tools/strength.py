@@ -1019,7 +1019,8 @@ async def tp_batch_add_intermediate_strength(
     Unlike standard workout endpoints, the legacy plan-workouts reader cannot
     see StructuredStrength, so GET plan.workoutCount and Strength GET are used.
     """
-    from datetime import date as dt, timedelta
+    from datetime import date as dt
+    from datetime import timedelta
 
     plan_id = 684602
     plan_title = "[MCP TEST] IRONMAN Intermediate Assembly 24W"
@@ -1056,9 +1057,11 @@ async def tp_batch_add_intermediate_strength(
             return _err("VALIDATION_ERROR", "Duplicate week/day in batch.")
         signatures.add((week, day))
         date = (dt(2026, 10, 5) + timedelta(days=(week-1)*7 + valid_days[day])).isoformat()
+        set_counts: list[int] = [len(e["sets"]) for b in blocks for e in b["exercises"]]
+        total_sets = sum(set_counts)
         manifest.append({"uid": uid, "title": title, "date": date, "blocks": blocks,
                          "instructions": instructions,
-                         "sets": sum(len(e["sets"]) for b in blocks for e in b["exercises"])})
+                         "sets": total_sets})
     async with TPClient() as client:
         r = await client.get(f"/plans/v1/plans/{plan_id}")
         if r.is_error or not isinstance(r.data, dict):
@@ -1128,7 +1131,7 @@ async def tp_batch_add_intermediate_strength(
                 or (src.get("snapshot") or {}).get("totalSets") != 1
                 or source_calendar_id != lab_person_id):
                 return _err("SOURCE_UNVERIFIED", "LAB Strength calendarId did not match LAB planPersonId.")
-            saved = []
+            saved: list[dict[str, Any]] = []
             for z in manifest:
                 # Stop before each write if provider count has drifted.
                 fresh = await client.get(f"/plans/v1/plans/{plan_id}")
@@ -1171,7 +1174,7 @@ async def tp_batch_add_intermediate_strength(
                 if resp.status_code != 200:
                     # A rejected request is not an ambiguous POST. Surface only
                     # bounded validation diagnostics, never headers or tokens.
-                    validation = {}
+                    validation: dict[str, Any] = {}
                     try:
                         problem = resp.json()
                         if isinstance(problem, dict):

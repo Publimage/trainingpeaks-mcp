@@ -240,3 +240,27 @@ def test_target_binding_requires_clean_numeric_plan_id():
     with pytest.raises(PlanPatchStop, match="STOP_TARGET_MISMATCH"):
         require_explicit_target(cfg, "684602")
     require_explicit_target(cfg, "689369")
+
+
+
+def test_requested_change_scope_and_ids_are_independent_of_old_manifest():
+    from scripts.ironman_jobs.reviewed_plan_patch_pipeline import (
+        require_explicit_change_request,
+    )
+
+    reviewed = config()
+    old_scope = reviewed["manifest"]["scope"]
+    require_explicit_change_request(reviewed, old_scope, "[11]")
+    # The same plan ID is NOT enough for a different request.
+    with pytest.raises(PlanPatchStop, match="STOP_REQUEST_SCOPE_MISMATCH"):
+        require_explicit_change_request(
+            reviewed, "trainingpeaks:plan:777:different-new-change", "[11]")
+    with pytest.raises(PlanPatchStop, match="STOP_REQUEST_RESOURCE_MISMATCH"):
+        require_explicit_change_request(reviewed, old_scope, "[12]")
+    with pytest.raises(PlanPatchStop, match="REQUEST_SCOPE_REQUIRED"):
+        require_explicit_change_request(reviewed, None, "[11]")
+    with pytest.raises(PlanPatchStop, match="REQUEST_WORKOUT_IDS_REQUIRED"):
+        require_explicit_change_request(reviewed, old_scope, None)
+    for invalid in ('[11,11]', '["11"]', '[true]', 'not-json', '[]'):
+        with pytest.raises(PlanPatchStop, match="REQUEST_WORKOUT_IDS_INVALID"):
+            require_explicit_change_request(reviewed, old_scope, invalid)
