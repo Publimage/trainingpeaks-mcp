@@ -5,6 +5,72 @@ Status: ARCHITECTURE CONTRACT / NOT DEPLOYED. This is not an authorization to re
 
 ## Current release assessment — 2026-10-27
 
+### Current isolated integration (supersedes earlier source-only facade gap)
+
+The repository now connects one `tp_ironman_request` MCP entrypoint to the
+existing `ironman-unified-changeset-v1` flow. `compose_operator_runtime` is the
+single host composition root. Its request-scoped bindings carry admission policy,
+the local flow launcher and independently gated writer adapters. They are never
+accepted as serialized MCP/flow parameters. No binding is installed in the live
+server; missing admission/runtime, athlete override and injected principals deny.
+The old fixed-job `tp_ironman_operator` remains unchanged for compatibility.
+
+Actual isolated path:
+
+`MCP Client -> SDK JSON-RPC dispatcher -> signed synthetic ingress admission ->
+real local Prefect flow/tasks -> DraftStore prepare/preview -> signed real-flow-ID
+assertion + exact grants -> Approval -> immutable execution binding ->
+execute_bound -> existing changeset engine/SQLite worker slot -> reviewed classic
+adapter -> native TP read gateway -> synthetic HTTP/PUT -> independent readback
+-> persistent receipt -> idempotent retry / authorized read-only recovery`.
+
+Execution and recovery share one reservation/authority inspector. Existing
+dependency scheduling, locks, claims, uncertainty and denial policies are reused.
+Read adapters still come from the existing registry, with no alternate reader
+factory. The test replaces only provider transport, not ownership/membership
+checks, the native reader or the reviewed field validator. Synthetic signing and
+ingress/launcher policy exist only in tests. The host must install BOTH a writer
+and its kind capability; an installed adapter alone cannot enable execution.
+`mode=publish` stays denied. `publication_enabled=false` is the universal-release
+gate, not a claim that an explicitly gated synthetic execution performed no PUT.
+
+Verified checklist:
+
+- [x] Real MCP SDK client/server protocol and registered handler; 116 local tools.
+- [x] One real local Prefect flow/task runtime, real flow origin assertions,
+  immutable drafts/previews, approval, binding and per-item authority checks.
+- [x] Existing SQLite worker lock/claims, native TP owner/container discovery,
+  reviewed classic adapter validation, execution and independent readback.
+- [x] Complete success, lost response after synthetic commit, retry without a
+  duplicate PUT, persisted DONE_VERIFIED, child-process orphan recovery through
+  MCP, idempotent recovery receipt and refusal after consent revocation.
+- [x] Default deny, injected principal refusal, exact-command admission binding,
+  installed-writer-without-gate and gate-without-writer refusal before ledger IO.
+- [x] Targeted regression: 209 PASS, 1 existing warning, 111.18 s. After removing
+  the unnecessary reader override and wiring the native gateway, 38 final
+  integration/reader tests PASS, 53.83 s (includes six end-to-end scenarios).
+  Ruff PASS; mypy PASS, 57 source files. Real legacy MCP 1.26.0 client against
+  SDK 2.0.0 stdio server PASS: 116 tools, handshake and INVALID_ARGS. Full repository
+  QA was not repeated; historical totals remain attached to original revisions.
+
+Remaining release checklist:
+
+- [ ] Real trusted MCP admission identity/issuer mapping and upstream revocation
+  freshness/delivery; the synthetic test policy is not a production identity.
+- [ ] Host launcher and binding inside the existing deployed Prefect process
+  work-pool runtime. The tested launcher is local/in-process; the engine worker
+  lock and real child crash are not a remote process-worker deployment proof.
+- [ ] Live canonical state paths, backup coverage, restore fencing and safe
+  management/rollback on existing hosts; no SSH/Mac work performed in this cycle.
+- [ ] Exact-head GitHub CI and independent review before merge/deploy. No denied
+  workflow edit, artificial event or trusted-branch retargeting.
+- [ ] Request-scoped private bridge authorization and independent per-capability
+  disposable canaries, followed by limited activation and fresh-chat readback.
+
+Classification: STRUCTURAL_INTEGRATION, no temporary bypass/new service/job or
+per-request manifest. This passes the isolated integration milestone, **not**
+LIVE_VERIFIED authentication, TrainingPeaks publication or operational release.
+
 Latest continuation: canonical KB marker
 `IRONMAN_GITHUB_ACTIONS_ENABLED_UI_20261027_V1` records the coach's official
 Actions re-enablement. It does not replay old events or certify current HEADs.
