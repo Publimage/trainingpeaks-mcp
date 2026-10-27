@@ -252,3 +252,84 @@ flow ID on failure/uncertainty; never resubmit blindly. The source ports are
 tested with separate processes but do not attest live API access, issuer/feed,
 dependencies, host state or rollout. No real listener/firewall/secret/service was
 changed, and no new server, per-request job or operation manifest was created.
+
+## Single controlled installation on the existing runtime — not executed
+
+Use one maintenance session on the existing MCP and Prefect hosts after review
+and exact-head CI pass. This procedure connects existing ports; it does not
+create an issuer, service, work pool or per-request deployment. Missing evidence
+at any step keeps that boundary closed. The source laboratory is not evidence
+that these identities, routes or files are installed in production.
+
+1. **Attest the trust contract before installation.** The identity owner identifies
+   the actual authenticated MCP principal, issuer/audience, pinned public keys,
+   approved administrative subject and upstream revocation source/sequence.
+   Define the authenticated operation intent ID that remains stable across
+   retransmission/reconnect/token renewal. Bind it to issuer, subject and exact
+   command; never derive trust from tool arguments, a random per-attempt ID or
+   an assistant-minted key. Missing real issuer/feed is a design gate, not a
+   request to create credentials. Keep private keys/tokens out of Git, Drive and
+   chat. `authorize_request` must perform current admission on every call,
+   including historical receipt retrieval; `resolve_identity` uses that same
+   request-scoped verified context, not an unverified principal object.
+2. **Verify existing access and preserve state.** Use only the owner's authorized
+   maintenance path to the existing hosts. Attest the actual Prefect deployment
+   UUID, pool/entrypoint, protected API address and authenticated MCP-to-API route;
+   historical loopback access or membership in the VPC is insufficient. API run
+   metadata and artifacts are part of the trust boundary, not signed provider
+   evidence: restrict who can mutate them. If no approved route/identity exists,
+   stop that connection; do not expose the loopback listener publicly or reuse
+   Social credentials. Drain/fence all flow/control/admin admission, inventory
+   actual state files and open/uncertain runs, preserve current revocations and
+   take coherent protected SQLite backups plus Prefect metadata backup using
+   existing facilities. Retain run records/idempotency keys and assertion files
+   for the full retry/reconciliation lifetime. Verify restore coverage/ownership
+   and current services before applying any configuration.
+3. **Connect the host ports once.** The existing trusted MCP startup installs
+   `OperatorBindings` and `PrefectProcessLauncher` with the attested deployment,
+   admission/identity resolver and issuer delivery port. Only mode, manifest and
+   targets travel in flow parameters. The issuer port must durably and atomically
+   deliver the assertion into the worker's protected assertion directory before
+   acknowledging success, bound to the returned real run ID and command digest.
+   No MCP signing key is required merely to verify incoming identity. Use the
+   issuer's existing authorized delivery channel; its absence remains a gate.
+   The launcher allocates a non-scheduled Pending run and only its persisted
+   creation owner releases it. Retransmissions observe the same run. A partial
+   delivery or producer crash may leave a held run: inspect that exact run and
+   current authority/provider evidence under fenced maintenance; never generate
+   a new intent, re-sign, release or cancel it as an automatic retry workaround.
+4. **Connect the protected worker and feed.** Existing worker startup supplies
+   private `IRONMAN_OPERATOR_WORKER_CONFIG`, matching environment paths, exact
+   deployment/entrypoint SHA, validated installed dependencies and code bootstrap.
+   No configuration comes from the request. The existing feed consumer delivers
+   tombstones through `revoke_many`, then confirms a completed current upstream
+   sync via `refresh_revocations(sequence)` under the real administrative
+   assertion. A timer alone must not refresh freshness. Missing/failed/gapped
+   synchronization keeps admission closed; verify restart/reconnect preserves
+   tombstones and sequence. Choose the host age policy within 1–300 seconds.
+   Keep writer installation and each capability independently disabled pending
+   their review/provider gates; no universal publish flag is enabled here.
+5. **Validate, then admit only the authorized scope.** Verify protected-file
+   UID/modes, actual flow origin, current revocations, identity isolation, bound
+   receipt transport, durable state and service health through the approved
+   runtime path. Laboratory receipts are not substitutes. Any provider canary
+   requires its separate disposable-resource/capability authorization. Before
+   rollback, stop new admission and establish worker quiescence; preserve current
+   stores, tombstones, claims, assertions and Prefect records. Revert code/config
+   only to a compatible revision. A historical database restore remains fenced
+   until subsequent revocations and provider outcomes are reconciled; never clear
+   uncertainty or revive approval by restoring an old copy. The initial Pending
+   hold is not an operator lock: privileged manual API transitions remain within
+   the trusted maintenance boundary and cannot bypass these checks.
+
+Release review tools: the official GitHub connector can read exact-SHA runs,
+checks and submitted reviews. It cannot turn local QA into CI or independent
+approval. The dedicated workflow excludes PR19's current base; its protected
+filters are unchanged. DO's available connector has droplet metadata/lifecycle
+operations but no authenticated process terminal. A browser skill being listed
+does not supply an active browser-control tool; none was callable in this cycle.
+No source change can attest an unconnected administrative session or upstream
+human identity. First owner decision: identify the real identity provider and
+its responsible maintainer, so that the above contract can be attested; do not
+send another TP password or repeat Actions re-enablement. Independent review,
+authorized CI coverage and actual runtime access remain separate release gates.

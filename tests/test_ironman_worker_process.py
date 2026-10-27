@@ -11,6 +11,7 @@ import sqlite3
 import subprocess
 import sys
 import time
+from uuid import uuid4
 
 from cryptography.hazmat.primitives import serialization
 from cryptography.hazmat.primitives.asymmetric import ed25519
@@ -105,7 +106,9 @@ async def test_separate_mcp_and_prefect_worker_restore_trusted_context(prefect_r
                        "container_id": 501, "resource_id": 101}}]}
         now = int(time.time())
         proof = {"iss": config["issuer"], "aud": config["audience"], "scope": config["required_scope"],
-            "sub": "test-user", "jti": "ingress", "run_id": "ingress-only", "iat": now - 1,
+            # Each call here is a separately admitted operation. The transport
+            # retransmission case holds intent stable in its dedicated test.
+            "sub": "test-user", "jti": "ingress", "run_id": str(uuid4()), "iat": now - 1,
             "nbf": now - 1, "exp": now + 600, "command_sha256": digest(command)}
         private("ingress.jwt", signed(key, proof))
         result = await client.call_tool("tp_ironman_request", command)

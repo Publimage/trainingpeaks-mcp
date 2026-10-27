@@ -5,6 +5,40 @@ Status: ARCHITECTURE CONTRACT / NOT DEPLOYED. This is not an authorization to re
 
 ## Current release assessment — 2026-10-27
 
+### Release review: transport retransmission
+
+The random per-call dispatch key could allocate a second flow for the same
+admitted operation. A red API-only regression reproduced distinct flow IDs.
+The launcher now requires a host-resolved `DispatchIdentity(issuer, subject,
+intent_id)`. Its key binds the deployment and that identity; an intent survives
+reconnection/token rotation. Changed command content under the same intent
+denies, while a separately admitted operation uses a new intent. Domain request
+IDs, bearer JTIs and flow IDs are not substitutes for this ingress contract.
+
+The native atomic Prefect insert persists a creation-owner nonce as metadata.
+Only that owner provisions once and releases the initial, non-scheduled
+`Pending/AwaitingTrustedInvocation` state. Retransmissions only observe; they
+never issue again, reset scheduling or cancel existing work. Delivery failure
+leaves the run held with no timed release. Allocation/release/read uncertainty
+preserves the known flow ID (or stable dispatch key if creation is unconfirmed)
+and prohibits provider retry. A completed retransmission returns an explicitly
+historical `DISPATCH_RESULT_REUSED`, not a fresh provider readback.
+
+New focused QA: **9 PASS, 12.98 s**, one real ephemeral Prefect API regression
+plus fault/identity tests; no ProcessWorker, provider or flow execution. Native
+queue polling excludes the held run. Concurrent/reconnected dispatch creates one
+flow and issues once; body conflicts and cross-subject isolation are checked.
+State/receipt/allocation/release failures preserve uncertainty, and an advanced
+run cannot be provisioned/reset. Prior 12-run multiprocess and six in-process
+evidence is retained at its original revisions; neither was repeated here.
+Ruff, mypy (57 source files), affected compilation and diff checks PASS.
+
+This is a structural correction in the existing launcher, without another
+deduplication store/service. It requires retention/integrity of the existing
+Prefect run records and metadata for the operation's retry lifetime. Deleting
+or restoring those records is a fenced recovery event, never proof that an
+operation did not execute. Independent review and exact-head CI remain gates.
+
 ### Separate-process worker integration — laboratory PASS
 
 `PrefectProcessLauncher` now connects the existing MCP ingress to the SAME flow

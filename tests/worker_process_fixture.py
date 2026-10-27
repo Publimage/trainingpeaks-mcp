@@ -4,6 +4,7 @@ import os
 from pathlib import Path
 import sqlite3
 import time
+from contextvars import ContextVar
 
 from cryptography.hazmat.primitives import serialization
 from scripts.ironman_jobs.ironman_authorization import (
@@ -58,12 +59,13 @@ def install_worker():
 def run_mcp():
     from tp_mcp.operator_runtime import OperatorBindings, bind_operator_runtime
     from tp_mcp.server import run_server
-    from scripts.ironman_jobs.ironman_prefect_dispatch import PrefectProcessLauncher
+    from scripts.ironman_jobs.ironman_prefect_dispatch import DispatchIdentity, PrefectProcessLauncher
     home = root()
     config = json.loads(read_host_file(home / "trust.json", 65536))
     key = serialization.load_pem_private_key(read_host_file(home / "issuer.pem", 65536), password=None)
     verifier = SignedIdentityVerifier(config)
     grants = set()
+    admitted_identity = ContextVar("synthetic_ingress_identity", default=None)
     (home / "mcp.pid").write_text(str(os.getpid()))
 
     def claims(origin, subject="test-user", **extra):
@@ -74,7 +76,17 @@ def run_mcp():
 
     def admit(command):
         principal = verifier.verify(read_host_file(home / "ingress.jwt", 32768).decode())
-        return principal.subject == "test-user" and principal.command_sha256 == digest(command)
+        allowed = principal.subject == "test-user" and principal.command_sha256 == digest(command)
+        if allowed:
+            admitted_identity.set(principal)
+        return allowed
+
+    def resolve_identity(command):
+        principal = admitted_identity.get()
+        if (principal is None or principal.expires_at <= time.time() or
+                principal.command_sha256 != digest(command)):
+            raise PermissionError("SYNTHETIC_ADMISSION_REQUIRED")
+        return DispatchIdentity(principal.issuer, principal.subject, principal.invocation_id)
 
     def provision(origin, command):
         control = json.loads((home / "control.json").read_text())
@@ -102,7 +114,7 @@ def run_mcp():
         pending.replace(target)
 
     deployment = (home / "deployment.id").read_text().strip()
-    launcher = PrefectProcessLauncher(deployment, provision, timeout=90)
+    launcher = PrefectProcessLauncher(deployment, provision, resolve_identity=resolve_identity, timeout=90)
     bindings = OperatorBindings(str(home / "execution.sqlite3"), admit, launcher)
     with bind_operator_runtime(bindings):
         run_server()
