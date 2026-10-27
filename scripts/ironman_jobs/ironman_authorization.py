@@ -95,21 +95,18 @@ class Principal:
     command_sha256: str | None = None
 
 
-class SignedIdentityVerifier:
+class PinnedJWTVerifier:
     """Strict compact JWT verifier using pinned public keys, never token URLs.
 
     Algorithm and key type are pinned in host trust config. Both RS256 and
     EdDSA use the repository's existing cryptography dependency.
     """
     def __init__(self, config: dict, clock: Callable[[], float] = time.time):
-        require(type(config) is dict and set(config) == {"issuer", "audience", "required_scope", "keys", "administrators"},
+        require(type(config) is dict and set(config) == {"issuer", "audience", "required_scope", "keys"},
                 "AUTH_TRUST_CONFIG")
         require(all(type(config[k]) is str and config[k] for k in ("issuer", "audience", "required_scope")) and
                 type(config["keys"]) is dict and 0 < len(config["keys"]) <= 16, "AUTH_TRUST_CONFIG")
         self.issuer, self.audience, self.scope = (config[k] for k in ("issuer", "audience", "required_scope"))
-        require(type(config["administrators"]) is list and
-                all(type(s) is str and 0 < len(s) <= 256 for s in config["administrators"]), "AUTH_ADMIN_CONFIG")
-        self.administrators = frozenset(config["administrators"])
         self.keys, self.clock = {}, clock
         for kid, entry in config["keys"].items():
             require(type(kid) is str and 0 < len(kid) <= 120 and type(entry) is dict and
@@ -121,7 +118,8 @@ class SignedIdentityVerifier:
                     "AUTH_TRUST_ALGORITHM")
             self.keys[kid] = (alg, key)
 
-    def verify(self, token: str) -> Principal:
+    def _verified_claims(self, token: str, *, access_token: bool = False) -> dict:
+        """Shared pinned cryptography; token profiles keep separate callers."""
         require(type(token) is str and 0 < len(token) <= 32768, "INVALID_ASSERTION")
         parts = token.split(".")
         require(len(parts) == 3, "INVALID_ASSERTION")
@@ -137,7 +135,7 @@ class SignedIdentityVerifier:
 
         header, claims, signature = _json(decode(parts[0])), _json(decode(parts[1])), decode(parts[2])
         require(type(header) is dict and set(header) in ({"kid", "alg"}, {"kid", "alg", "typ"}) and
-                header.get("typ", "JWT") in {"JWT", "at+jwt"} and
+                header.get("typ", "JWT") in ({"at+jwt"} if access_token else {"JWT", "at+jwt"}) and
                 type(header.get("kid")) is str and header["kid"] in self.keys, "INVALID_ASSERTION_HEADER")
         alg, key = self.keys[header["kid"]]
         require(header.get("alg") == alg, "ASSERTION_ALGORITHM_MISMATCH")
@@ -151,24 +149,114 @@ class SignedIdentityVerifier:
                 raise PermissionError("ASSERTION_ALGORITHM_MISMATCH")
         except (InvalidSignature, ValueError) as exc:
             raise PermissionError("ASSERTION_SIGNATURE_INVALID") from exc
-        require(type(claims) is dict and all(type(claims.get(k)) is int for k in ("iat", "nbf", "exp")),
-                "ASSERTION_TIME_REQUIRED")
+        times = ("iat", "exp") if access_token else ("iat", "nbf", "exp")
+        require(type(claims) is dict and all(type(claims.get(k)) is int for k in times) and
+                ("nbf" not in claims or type(claims["nbf"]) is int), "ASSERTION_TIME_REQUIRED")
         now = self.clock()
-        require(claims["iat"] <= now and claims["nbf"] <= now < claims["exp"] and
+        require(claims["iat"] <= now and claims.get("nbf", claims["iat"]) <= now < claims["exp"] and
                 claims["iat"] < claims["exp"], "ASSERTION_EXPIRED_OR_NOT_CURRENT")
         audiences = claims.get("aud")
         audiences = [audiences] if type(audiences) is str else audiences
         require(claims.get("iss") == self.issuer and type(audiences) is list and
                 all(type(x) is str for x in audiences) and self.audience in audiences,
                 "ASSERTION_ISSUER_OR_AUDIENCE")
-        require(all(type(claims.get(k)) is str and 0 < len(claims[k]) <= 256 for k in ("sub", "jti", "run_id")),
+        require(all(type(claims.get(k)) is str and 0 < len(claims[k]) <= 256 for k in ("sub", "jti")),
                 "ASSERTION_PRINCIPAL_REQUIRED")
         require(type(claims.get("scope")) is str and self.scope in claims["scope"].split(),
                 "ASSERTION_SCOPE_REQUIRED")
+        return claims
+
+
+
+class SignedIdentityVerifier(PinnedJWTVerifier):
+    """Run-bound worker assertion profile; existing host configuration unchanged."""
+    def __init__(self, config: dict, clock: Callable[[], float] = time.time):
+        require(type(config) is dict and set(config) ==
+                {"issuer", "audience", "required_scope", "keys", "administrators"}, "AUTH_TRUST_CONFIG")
+        require(type(config["administrators"]) is list and
+                all(type(s) is str and 0 < len(s) <= 256 for s in config["administrators"]), "AUTH_ADMIN_CONFIG")
+        self.administrators = frozenset(config["administrators"])
+        super().__init__({k: v for k, v in config.items() if k != "administrators"}, clock)
+
+    def verify(self, token: str) -> Principal:
+        claims = self._verified_claims(token)
+        require(type(claims.get("run_id")) is str and 0 < len(claims["run_id"]) <= 256,
+                "ASSERTION_PRINCIPAL_REQUIRED")
         command_sha = claims.get("command_sha256")
         require(command_sha is None or (type(command_sha) is str and
                 re.fullmatch(r"[a-f0-9]{64}", command_sha) is not None), "ASSERTION_COMMAND_INVALID")
         return Principal(self.issuer, claims["sub"], claims["jti"], claims["exp"], claims["run_id"], command_sha)
+
+
+@dataclass(frozen=True)
+class OAuthHumanIdentity:
+    """Authenticated IdP user, NOT approval, grant or worker invocation evidence."""
+    issuer: str
+    subject: str
+    client_id: str
+    token_id: str
+    expires_at: int
+
+
+class OAuthHumanIdentityVerifier:
+    """Opt-in RFC 9068 JWT access-token profile using the common pinned verifier.
+
+    Protected host configuration attests which IdP subjects are human accounts
+    and which OAuth clients may delegate them. No email/client-id fallback,
+    discovery from token URLs, signing, network fetch or runtime installation.
+    Opaque access tokens need the actual IdP's reviewed introspection adapter;
+    an ID token is never an MCP access token. Revocation/admission remain gates
+    outside authentication and are required before using any operation authority.
+    """
+    def __init__(self, config: dict, clock: Callable[[], float] = time.time):
+        common = {"issuer", "audience", "required_scope", "keys"}
+        require(type(config) is dict and set(config) == common | {"human_subjects", "client_ids"},
+                "OAUTH_TRUST_CONFIG")
+        for field in ("human_subjects", "client_ids"):
+            require(type(config[field]) is list and 0 < len(config[field]) <= 256 and
+                    all(type(value) is str and 0 < len(value) <= 2048 for value in config[field]),
+                    "OAUTH_HUMAN_AND_CLIENT_BINDINGS_REQUIRED")
+        self.human_subjects = frozenset(config["human_subjects"])
+        self.client_ids = frozenset(config["client_ids"])
+        self.verifier = PinnedJWTVerifier({k: config[k] for k in common}, clock)
+
+    def verify(self, token: str) -> OAuthHumanIdentity:
+        claims = self.verifier._verified_claims(token, access_token=True)
+        require(claims["sub"] in self.human_subjects, "OAUTH_HUMAN_SUBJECT_NOT_ATTESTED")
+        require(type(claims.get("client_id")) is str and claims["client_id"] in self.client_ids,
+                "OAUTH_CLIENT_NOT_ATTESTED")
+        return OAuthHumanIdentity(self.verifier.issuer, claims["sub"], claims["client_id"],
+                                  claims["jti"], claims["exp"])
+
+
+class OAuthMCPTokenVerifier:
+    """Official SDK TokenVerifier port; host-only, never auto-installed.
+
+    The required async feed policy must attest current revocations for this
+    issuer/subject/token. It does not grant changeset approval or worker access.
+    The SDK must receive both issuer and subject; client_id alone identifies
+    ChatGPT's OAuth application, not the human owning an HTTP session.
+    """
+    def __init__(self, identities: OAuthHumanIdentityVerifier, *, revocations_current):
+        require(isinstance(identities, OAuthHumanIdentityVerifier) and callable(revocations_current),
+                "OAUTH_IDENTITY_AND_REVOCATION_PORT_REQUIRED")
+        self.identities, self.revocations_current = identities, revocations_current
+
+    async def verify_token(self, token: str):
+        from mcp.server.auth.provider import AccessToken
+
+        try:
+            identity = self.identities.verify(token)
+            if await self.revocations_current(identity) is not True:
+                return None
+            if self.identities.verifier.clock() >= identity.expires_at:
+                return None
+        except (PermissionError, OSError, ValueError):
+            return None
+        return AccessToken(token=token, client_id=identity.client_id, subject=identity.subject,
+                           expires_at=identity.expires_at, resource=self.identities.verifier.audience,
+                           scopes=[self.identities.verifier.scope],
+                           claims={"iss": identity.issuer, "jti": identity.token_id})
 
 
 def current_invocation_id() -> str:

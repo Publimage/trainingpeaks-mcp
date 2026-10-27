@@ -5,6 +5,35 @@ Status: ARCHITECTURE CONTRACT / NOT DEPLOYED. This is not an authorization to re
 
 ## Current release assessment — 2026-10-27
 
+### Human identity boundary: OAuth source preparation, not a live connection
+
+Canonical input `IRONMAN_TUNNEL_STDIO_IDENTITY_LIMIT_20261027_V1` identifies a
+transport limit: tunnel control-plane authentication does not identify the human
+to a stdio child. The selected design retains the private tunnel and existing
+droplets, changing its local main binding to SDK Streamable HTTP in the existing
+TP application only after the real IdP/resource/runtime contract is attested.
+Detailed identity/delegation/revocation boundaries and the one owner UI inspection
+are in the existing private-bridge runbook. No HTTP listener is installed here.
+
+`OAuthHumanIdentityVerifier` now reuses shared pinned JWT validation for an
+opt-in RFC 9068 profile. It checks exact issuer/audience/scope/time and host-attested
+human subjects/OAuth clients, producing a distinct identity without worker origin
+or approval authority. The SDK `OAuthMCPTokenVerifier` port requires a separate
+current-revocation policy, rechecks expiry after waiting and preserves issuer and
+human subject so session ownership does not collapse to ChatGPT's shared client
+ID. Missing policy, rejected current state or feed failure cannot authenticate.
+No automatic runtime binding, network discovery, new issuer or token passthrough.
+Opaque/non-profile tokens remain unsupported until an actual provider is selected.
+
+Focused QA: **43 PASS, 62 deselected, 0.85 s**: 25 new identity/SDK-boundary cases
+and 18 existing signature/invocation regressions selected because their shared
+verifier changed. No retransmission tests, six old in-process scenarios or 12
+multiprocess runs replayed. Tests use synthetic signing only; no HTTP or live
+authentication is claimed. New-test Ruff, affected compile and diff checks PASS;
+the existing authority module retains five of six baseline lint findings, with
+zero new findings (not presented as a clean lint result). Full QA/CI/independent review
+remain scoped to their actual revisions and separate release gates.
+
 ### Release review: transport retransmission
 
 The random per-call dispatch key could allocate a second flow for the same

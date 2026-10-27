@@ -329,7 +329,122 @@ filters are unchanged. DO's available connector has droplet metadata/lifecycle
 operations but no authenticated process terminal. A browser skill being listed
 does not supply an active browser-control tool; none was callable in this cycle.
 No source change can attest an unconnected administrative session or upstream
-human identity. First owner decision: identify the real identity provider and
-its responsible maintainer, so that the above contract can be attested; do not
-send another TP password or repeat Actions re-enablement. Independent review,
-authorized CI coverage and actual runtime access remain separate release gates.
+human identity. The concrete identity design and first owner interface action
+below supersede the earlier request to identify an unspecified maintainer.
+Independent review, authorized CI coverage and actual runtime access remain
+separate release gates.
+
+## Human approver: private OAuth HTTP ingress — design, not installed
+
+Checkpoint input: `IRONMAN_TUNNEL_STDIO_IDENTITY_LIMIT_20261027_V1`.
+Official OpenAI tunnel architecture distinguishes the following boundaries:
+
+| Evidence | Authenticates | Does not authorize |
+| --- | --- | --- |
+| Tunnel runtime API key | tunnel-client to OpenAI control plane | A particular human or changeset |
+| ChatGPT membership / tunnel access | Use of the workspace's connector | A verified human principal at the stdio child |
+| TP cookie / SSH identity | Provider account / host maintenance | Human MCP approval |
+| MCP OAuth access token | IdP subject delegated through a registered client to this MCP resource | Exact preview, binding or provider write |
+| Existing grants / signed invocation | Exact operation/revision/subject/run and current authority | Unrelated resources or capabilities |
+
+Current source is `stdio_server() -> server.run(...)`; no HTTP Authorization
+header is delivered to that stream. Tool arguments, JSON-RPC metadata, an email,
+an API key or a static injected header cannot fill the gap. Current host/plugin
+configuration was not inspected live. Official plugin search returned no exact
+TrainingPeaks plugin record, although its connected tools exist; absence from
+search is not proof of no app, no OAuth or access denial. No backend plugin ID
+was guessed, and no OAuth settings were changed.
+
+**Selected architecture:** ChatGPT's OAuth authorization-code + PKCE/S256 flow
+with an existing compatible IdP; the SAME Secure MCP Tunnel and main binding;
+Streamable HTTP into the SAME TP MCP application on loopback on `ironman-tp-mcp`;
+existing operator bindings/launcher and the existing separate Prefect worker on
+`ironman-prefect-staging`. Reuse the SDK HTTP session manager and registered
+handlers, not a JSON-to-stdio wrapper that loses per-request transport identity.
+No public MCP port, new droplet, authorization server, per-plan job or parallel
+application service. Changing from the current stdio binding requires a reviewed
+runtime change using existing process supervision; it is not performed here.
+Local HTTP transport/discovery must meet the existing TLS/Host/Origin policy;
+no plaintext-discovery override or disabled validation is enabled to make it work.
+
+The HTTP resource must publish RFC 9728 protected-resource metadata and a 401
+Bearer challenge. The IdP must support discovery, resource/audience binding,
+PKCE S256 and a supported registration method (CIMD, DCR or predefined client).
+Use the canonical resource and issuer from the actual tunneled discovery and
+IdP configuration, never a guessed audience or loopback URL. Pin trust and human
+subject/client mappings in host configuration. Per-request verified SDK identity
+must populate BOTH `subject` and `claims.iss`; a shared ChatGPT `client_id` alone
+cannot identify the session's human owner. Preserve request-scoped context into
+the launcher. Keep legacy tool capabilities independently restricted; adding
+HTTP must not implicitly authorize every existing write handler.
+
+An existing workspace IdP is suitable only if it can issue access tokens for this
+MCP resource. Connected Google Drive credentials, workspace SSO, an ID token or
+a Google API access token do not establish that capability. No such provider is
+attested yet. Sign in with ChatGPT is documented for participating integrations;
+its availability for this private custom app is not established and is not the
+default plan. No new identity tenant or synthetic production issuer is created.
+
+**Independent software completed:** `OAuthHumanIdentityVerifier` reuses the
+existing pinned-signature parser and issuer/audience/time/scope checks. Its opt-in
+RFC 9068 access-token profile requires `typ=at+jwt`, configured human subjects
+and OAuth clients; it does not require or fabricate `run_id`. It returns a
+separate immutable `OAuthHumanIdentity`, not the worker's `Principal`, an approval
+or a grant. Pinned RS256/EdDSA keys are supported; opaque tokens/other profiles
+remain refused and need the real IdP's reviewed adapter if actually selected.
+`OAuthMCPTokenVerifier` implements the installed official SDK verifier port,
+preserving issuer/subject/client for session ownership. It requires a separate
+async current-revocation policy, rechecks expiry after waiting for that policy
+and returns no authenticated SDK token on denial/unavailability. Neither class
+is registered with the live server. No HTTP listener, auth endpoint, identity,
+credential, signing key, grant, issuer or feed consumer is installed.
+
+**Worker delegation remains separate:** a generic MCP access token lacks the
+existing signed real-flow-ID/command binding. It must not be forwarded as the
+worker assertion or converted into a trusted `Principal` by copying claims.
+The selected IdP/its existing authorized delegation facility must support the
+already defined issuer handoff (for example, token exchange only if actually
+supported and attested). Otherwise this remains an explicit delegation gate,
+not grounds to add an assistant-controlled signing service. Exact-preview
+approval/binding and capability checks remain in the existing DraftStore flow.
+The stable admitted operation intent from the previous release fix must survive
+HTTP reconnect/token refresh; a bearer JTI or shared client ID is not that intent.
+
+**Real revocations have two inputs:** IdP subject/token/session withdrawal, and
+operator consent/grant withdrawal. OAuth discovery of a `revocation_endpoint`
+only describes where a client may revoke a token; it is not a subscription/feed
+and does not prove current access-token status. Before admission, the real IdP's
+reviewed current-state source (introspection or a supported authenticated event/
+reconciliation path) must drive the SDK policy. Separately, a trusted administrative
+identity applies the actual withdrawal to persistent issuer/subject/token/grant
+tombstones in the existing authority store, with a confirmed monotonic checkpoint.
+If upstream identity uses a different issuer/subject namespace from worker
+delegation, attest an explicit mapping and preserve originating-token revocation;
+never join by email or assume an OAuth JTI equals a worker assertion JTI. Feed
+loss, sequence gaps, stale status and restart keep admission closed until
+reconciliation. Existing 1–300-second worker freshness is unchanged. No timer
+alone or successful login refreshes the checkpoint. No feed is claimed installed.
+
+**First owner action, one read-only interface inspection:** open the existing
+TrainingPeaks MCP app's connection/authentication details in ChatGPT and provide
+only the method displayed and provider name/issuer URL if present. Do not change
+the app, recreate it, disconnect it or share secrets. These account-owned values
+are not returned by the available tools. This determines whether the existing
+connection can be reused; it does not imply that selecting OAuth alone fixes the
+stdio transport. Any later OAuth selection/sign-in waits for the protected HTTP
+resource and verified provider contract; no speculative setup instructions.
+
+Official references checked 2026-10-27:
+
+- [Secure MCP Tunnel](https://developers.openai.com/api/docs/guides/secure-mcp-tunnels)
+- [Tunnel credential/header boundaries](https://github.com/openai/tunnel-client/blob/master/docs/architecture.md)
+- [Tunnel HTTP bindings and OAuth discovery](https://github.com/openai/tunnel-client/blob/master/docs/connectors.md)
+- [MCP OAuth 2.1 authentication](https://developers.openai.com/plugins/build/auth)
+- [ChatGPT connection interface](https://help.openai.com/en/articles/12584461-connecting-custom-mcp-servers-in-chatgpt)
+- [Sign in with ChatGPT availability](https://help.openai.com/en/articles/20001410-sign-in-with-chatgpt)
+
+CI, independent review, actual runtime access/configuration, protected state and
+rollback, live identity/delegation/feed and provider canaries remain separate
+release gates. This section supersedes the original migration preference for
+stdio where a verified human approver is required; it does not propose public
+HTTP or invalidate existing read-only stdio paths. No merge/deploy/TP write.
