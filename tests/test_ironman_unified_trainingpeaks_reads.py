@@ -170,3 +170,78 @@ def test_same_generic_registry_selects_vpc_read_transport():
         registry["plan.note.attachment.retire"].apply(spec("plan.note.attachment.retire", NOTE))
     with pytest.raises(Exception, match="UNIFIED_UNSUPPORTED_READ_TRANSPORT"):
         create_read_registry("arbitrary_url")
+
+
+@pytest.mark.parametrize("error_name", ["AUTH_EXPIRED", "AUTH_INVALID", "FORBIDDEN_ENDPOINT", "PREMIUM_REQUIRED"])
+@pytest.mark.parametrize("stage,kind,rid,container", [
+    ("plan", "plan.workout.patch", WORKOUT, PLAN),
+    ("workouts", "plan.workout.patch", WORKOUT, PLAN),
+    ("calendarNote", "plan.note.patch", NOTE, PLAN),
+    ("library", "library.workout.patch", LIB_ITEM, LIBRARY),
+])
+def test_provider_permission_denial_is_not_a_temporary_read_failure(
+        monkeypatch, error_name, stage, kind, rid, container):
+    import tp_mcp.client
+    from tp_mcp.client.http import APIResponse, ErrorCode
+
+    class DeniedTP(FakeTP):
+        async def get(self, route):
+            matches = ((stage == "plan" and route == f"/plans/v1/plans/{PLAN}")
+                       or (stage == "library" and "/libraries/" in route)
+                       or f"/{stage}/" in route)
+            if matches:
+                return APIResponse(success=False, error_code=ErrorCode[error_name], message="synthetic-private-detail")
+            return await super().get(route)
+
+    monkeypatch.setattr(tp_mcp.client, "TPClient", DeniedTP)
+    with pytest.raises(SecurityDenied) as denied:
+        asyncio.run(read_trainingpeaks_item(spec(kind, rid, container)))
+    assert "synthetic-private-detail" not in str(denied.value)
+
+
+@pytest.mark.parametrize("status", [401, 403, 503])
+def test_strength_http_denial_preserves_security_category(monkeypatch, status):
+    import httpx
+    import tp_mcp.client
+    import tp_mcp.tools.strength as strength
+    from scripts.ironman_jobs.ironman_unified_changeset_engine import ChangeStop
+
+    async def access(_):
+        return 123, "synthetic", None
+
+    class MockHttp:
+        def __init__(self, **kwargs):
+            assert kwargs["follow_redirects"] is False
+
+        async def __aenter__(self):
+            return self
+
+        async def __aexit__(self, *_):
+            return False
+
+        async def get(self, *args, **kwargs):
+            return httpx.Response(status, json={"error": "synthetic-private-detail"})
+
+    monkeypatch.setattr(tp_mcp.client, "TPClient", FakeTP)
+    monkeypatch.setattr(strength, "_access", access)
+    monkeypatch.setattr(httpx, "AsyncClient", MockHttp)
+    with pytest.raises(SecurityDenied if status in {401, 403} else ChangeStop) as failure:
+        asyncio.run(read_trainingpeaks_item(spec("plan.strength.relocate", STRENGTH)))
+    assert isinstance(failure.value, SecurityDenied) is (status in {401, 403})
+    assert "synthetic-private-detail" not in str(failure.value)
+
+
+@pytest.mark.parametrize("error_name", ["NETWORK_ERROR", "RATE_LIMITED", "NOT_FOUND"])
+def test_non_security_read_errors_keep_existing_failure_category(monkeypatch, error_name):
+    import tp_mcp.client
+    from tp_mcp.client.http import APIResponse, ErrorCode
+    from scripts.ironman_jobs.ironman_unified_changeset_engine import ChangeStop
+
+    class UnavailableTP(FakeTP):
+        async def get(self, route):
+            return APIResponse(success=False, error_code=ErrorCode[error_name])
+
+    monkeypatch.setattr(tp_mcp.client, "TPClient", UnavailableTP)
+    with pytest.raises(ChangeStop, match="TRAINING_PLAN_READ_FAILED") as failure:
+        asyncio.run(read_trainingpeaks_item(spec("plan.workout.patch", WORKOUT)))
+    assert not isinstance(failure.value, SecurityDenied)

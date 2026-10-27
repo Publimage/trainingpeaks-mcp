@@ -2,7 +2,6 @@
 from __future__ import annotations
 
 import json
-from pathlib import Path
 
 import pytest
 
@@ -503,3 +502,56 @@ def test_concurrent_registration_of_same_changeset_is_idempotent(tmp_path):
         assert ledger.db.execute("SELECT COUNT(*) FROM resource_claims").fetchone()[0] == 0
     finally:
         ledger.close()
+
+
+@pytest.mark.parametrize("prior_state", ["DONE_VERIFIED", "UNKNOWN_NEEDS_READBACK", "RUNNING"])
+@pytest.mark.parametrize("execute", [False, True])
+def test_explicit_readback_denial_is_terminal_and_never_retried(ledger, prior_state, execute):
+    before, after = {"value": 1}, {"value": 2}
+    change = item("denied-read", "plan.note.patch", 601, before, after)
+    m = make_manifest(change)
+    ledger.setup(m, validate_manifest(m))
+    ledger.set_state(m["request_id"], change["id"], prior_state)
+
+    class DeniedReader(FakeAdapter):
+        denied = True
+        reads = 0
+
+        def read(self, spec):
+            self.reads += 1
+            if self.denied:
+                raise SecurityDenied("SYNTHETIC_PROVIDER_ACCESS_DENIED")
+            return super().read(spec)
+
+    provider = DeniedReader(after)
+    result = run(m, {change["kind"]: provider}, ledger, execute=execute)
+    assert result["results"][0]["state"] == "BLOCKED_SECURITY"
+    assert ledger.status(m["request_id"], change["id"]) == ("BLOCKED_SECURITY" if execute else prior_state)
+    if execute:
+        provider.denied = False
+        reads = provider.reads
+        retried = run(m, {change["kind"]: provider}, ledger)
+        assert retried["results"][0]["state"] == "BLOCKED_SECURITY"
+        assert provider.reads == reads
+    assert provider.writes == 0
+
+
+@pytest.mark.parametrize("behavior", ["normal", "committed_then_timeout", "deny"])
+def test_postwrite_readback_denial_remains_security_stop_with_claim(ledger, behavior):
+    before, after = {"value": 1}, {"value": 2}
+    change = item("denied-postflight", "plan.workout.patch", 602, before, after)
+    m = make_manifest(change)
+
+    class PostflightDenied(FakeAdapter):
+        def read(self, spec):
+            if self.writes:
+                raise SecurityDenied("SYNTHETIC_READBACK_DENIED")
+            return super().read(spec)
+
+    provider = PostflightDenied(before, behavior=behavior)
+    result = run(m, {change["kind"]: provider}, ledger)
+    assert result["results"][0]["state"] == "BLOCKED_SECURITY"
+    assert ledger.status(m["request_id"], change["id"]) == "BLOCKED_SECURITY"
+    assert ledger.db.execute("SELECT count(*) FROM resource_claims").fetchone() == (1,)
+    assert run(m, {change["kind"]: provider}, ledger)["results"][0]["state"] == "BLOCKED_SECURITY"
+    assert provider.writes == 1

@@ -223,3 +223,35 @@ def test_orphan_recovery_on_actual_prefect_does_not_reactivate_approval(prefect_
     assert recovered["reconciliation_required"] is False and state["provider"].writes == 0
     with pytest.raises(DraftStop, match="APPROVAL_REVOKED"):
         state["invoke"]("bind_execution", request)
+
+
+def test_actual_prefect_recovery_persists_new_provider_denial(prefect_runtime, runtime_operator, monkeypatch):
+    from scripts.ironman_jobs.ironman_unified_changeset_engine import Ledger, SecurityDenied
+
+    state = runtime_operator
+    request = prepare_preview(state)
+    approval = state["invoke"]("approve_preview", request)
+    request["approval_sha256"] = approval["approval_sha256"]
+    bound = state["invoke"]("bind_execution", request)
+    owner = orphan(state["ledger"], bound["manifest"])
+    original_read = state["provider"].read
+
+    def denied(_):
+        state["provider"].reads += 1
+        raise SecurityDenied("SYNTHETIC_PROVIDER_DENIED")
+
+    monkeypatch.setattr(state["provider"], "read", denied)
+    recovery = {**request, "schema": "IRONMAN_RECOVERY_INPUT_V1", "worker_owner": owner}
+    result = state["invoke"]("recover_worker", recovery)
+    assert result["results"][0]["state"] == "BLOCKED_SECURITY"
+    assert result["provider_writes"] == 0 and result["reconciliation_required"] is True
+    reads = state["provider"].reads
+    monkeypatch.setattr(state["provider"], "read", original_read)
+    assert state["invoke"]("recover_worker", recovery)["reused"] is True
+    assert state["provider"].reads == reads and state["provider"].writes == 0
+    ledger = Ledger(state["ledger"])
+    try:
+        assert ledger.status(state["request_id"], "patch01") == "BLOCKED_SECURITY"
+        assert ledger.db.execute("SELECT count(*) FROM resource_claims").fetchone() == (1,)
+    finally:
+        ledger.close()

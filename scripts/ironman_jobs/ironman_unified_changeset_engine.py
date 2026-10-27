@@ -475,6 +475,16 @@ def recover_execution_worker(manifest, adapters, ledger, *, expected_owner,
             original_states = {row[1]: row[2] for row in before["events"]}
             for result in results:
                 name = result["id"]
+                if result["state"] == "BLOCKED_SECURITY":
+                    if original_states.get(name) != "BLOCKED_SECURITY":
+                        ledger.db.execute("""UPDATE change_events
+                            SET state='BLOCKED_SECURITY',provider_sha=?,observed_utc=?,reason=?
+                            WHERE request_id=? AND change_id=?""", (
+                                observed.get(name), utc(), "RECOVERY_SECURITY_DENIED_NO_RETRY",
+                                manifest["request_id"], name))
+                    # A fresh denial is durable even if the old receipt was
+                    # verified. Claims remain held; recovery never clears it.
+                    continue
                 if original_states.get(name) not in {"RUNNING", "UNKNOWN_NEEDS_READBACK"}:
                     continue
                 verified = result["state"] == "DONE_VERIFIED" and name in observed
@@ -501,6 +511,14 @@ def recover_execution_worker(manifest, adapters, ledger, *, expected_owner,
         except Exception:
             ledger.db.rollback()
             raise
+
+
+def _security_denial_result(ledger, request_id, change_id, *, execute):
+    """One terminal policy for explicit denials at every provider read stage."""
+    if execute:
+        ledger.set_state(request_id, change_id, "BLOCKED_SECURITY",
+                         reason="AUTHORIZATION_OR_PROVIDER_DENIAL_NO_RETRY")
+    return {"id": change_id, "state": "BLOCKED_SECURITY"}
 
 
 def _run_changeset(
@@ -554,6 +572,10 @@ def _run_changeset(
             try:
                 observed = adapter.read(item)
                 live_sha = digest(observed)
+            except SecurityDenied:
+                outcomes.append(_security_denial_result(
+                    ledger, manifest["request_id"], name, execute=execute))
+                continue
             except Exception:
                 # Never let dependent writes rely on a receipt that we cannot
                 # re-confirm on the provider during this execution.
@@ -604,6 +626,10 @@ def _run_changeset(
             adapter = adapters.get(kind)
             try:
                 observed_sha = digest(adapter.read(item)) if adapter else None
+            except SecurityDenied:
+                outcomes.append(_security_denial_result(
+                    ledger, manifest["request_id"], name, execute=execute))
+                continue
             except Exception:
                 observed_sha = None
             # A previous verified edit can have been superseded by a later
@@ -728,6 +754,8 @@ def _run_changeset(
             def safe_readback_sha() -> str | None:
                 try:
                     return digest(adapter.read(item))
+                except SecurityDenied:
+                    raise
                 except Exception:
                     return None
             try:
@@ -772,9 +800,8 @@ def _run_changeset(
                 outcomes.append({"id": name, "state": "DONE_VERIFIED",
                                  "source": "provider_postflight"})
         except SecurityDenied:
-            if execute:
-                ledger.set_state(manifest["request_id"], name, "BLOCKED_SECURITY")
-            outcomes.append({"id": name, "state": "BLOCKED_SECURITY"})
+            outcomes.append(_security_denial_result(
+                ledger, manifest["request_id"], name, execute=execute))
         except ChangeStop as error:
             if execute:
                 ledger.set_state(manifest["request_id"], name, "FAILED_REVIEW",

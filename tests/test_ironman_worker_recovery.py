@@ -249,3 +249,34 @@ def test_state_changed_outside_worker_protocol_refuses_recovery(tmp_path):
         assert ledger.db.execute("SELECT count(*) FROM worker_recoveries").fetchone() == (0,)
     finally:
         ledger.close()
+
+
+@pytest.mark.parametrize("prior_state", ["RUNNING", "UNKNOWN_NEEDS_READBACK", "DONE_VERIFIED", "PENDING"])
+def test_denial_observed_during_orphan_recovery_is_persisted_and_not_retried(tmp_path, prior_state):
+    path = tmp_path / "ledger.sqlite3"
+    owner = orphan(path, state=prior_state)
+    ledger = Ledger(path)
+
+    class DeniedReader(Reader):
+        def read(self, spec):
+            self.reads += 1
+            raise SecurityDenied("SYNTHETIC_PROVIDER_DENIED")
+
+    reader = DeniedReader()
+    try:
+        result = recover(ledger, owner, reader)
+        assert result["results"][0]["state"] == "BLOCKED_SECURITY"
+        assert result["reconciliation_required"] is True
+        assert ledger.status(manifest()["request_id"], "patch01") == "BLOCKED_SECURITY"
+        expected_claims = int(prior_state in {"RUNNING", "UNKNOWN_NEEDS_READBACK"})
+        assert ledger.db.execute("SELECT count(*) FROM resource_claims").fetchone() == (expected_claims,)
+        assert recover(ledger, owner, Reader())["reused"] is True
+        assert reader.writes == 0
+        restored = Reader()
+        resumed = run_changeset(manifest(), {"plan.workout.patch": restored}, ledger, execute=True,
+                                reviewed_revision="a" * 40, approval_scope="approved:worker-test",
+                                authorize_execution=lambda *_: True)
+        assert resumed["results"][0]["state"] == "BLOCKED_SECURITY"
+        assert restored.reads == restored.writes == 0
+    finally:
+        ledger.close()

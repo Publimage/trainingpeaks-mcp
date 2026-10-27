@@ -486,6 +486,7 @@ No feature is WORK_COMPLETE while an applicable gate remains open.
 | --- | --- | --- | --- |
 | STRUCTURAL_REFACTOR — addressed | Divergent flow/Approval selectors and duplicate preview validators could drift | Shared selector and preview validators now used at both boundaries | Same-resource chain, corrupt records, existing regressions |
 | STRUCTURAL_REFACTOR — addressed | Execution checks could create a binding using execute-only permission; grant checks did not inspect the exact persisted approval/binding | Use the common inspector without mutation; inspect approval/binding plus current grants/revocations/audit in one authority transaction. Reservation remains a distinct control permission | Four reproduced failures fixed; execute-only and corrupt-binding refusal, real SQLite exclusion, read-only revoked recovery |
+| STRUCTURAL_REFACTOR — addressed | Explicit readback denials could become transient/uncertain states, including at orphan recovery and transport boundaries | Preserve the security category from local/native HTTP readers through the existing private bridge and common engine. Persist new recovery denials and retain uncertain claims; no automatic retry | Negative cases on prior receipts/postflight, private loopback transport, real Prefect recovery and restored-reader refusal |
 | STRUCTURAL_REFACTOR — addressed in one-ledger domain | Replaying request identity was not worker ownership | Invocation-owned persistent execution slot | Concurrent connections, resumed execution, dead process |
 | SOURCE/TEST COMPLETE — runtime blocker | Concrete signed identity, scoped grants, revocation and audit implemented; trust/assertion handoff not configured live | Owner: Operator maintainer. Connect the existing issuer/launcher to invocation-bound assertions and pinned public trust before enabling control operations; retain default deny | Real signature/algorithm/issuer/audience/time/run binding tests, current grants, admin refusal, revocation, atomic control, audit; actual local Prefect coverage passed; production issuer/launcher and upstream revocation canary still pending |
 | SOURCE/TEST COMPLETE — runtime blocker | Authorized local orphan recovery now uses kernel exclusion and preview readback in the same flow | Owner: Operator maintainer. Review/drain legacy workers and test on the canonical local runtime before release; no auto-takeover or legacy-marker workaround | Real child-process death, active owner refusal, inode mismatch, denial preservation, uncertain claims, rollback, idempotent receipt and revoked-approval recovery |
@@ -545,3 +546,50 @@ tests, including real local Prefect/SQLite and synthetic issuer/provider boundar
 Ruff src/ and changed-file F checks, mypy src/ (56 files), and diff checks pass.
 The unchanged parts of the prior 1,694-test suite were not rerun. Local pytest
 evidence must not be labelled GitHub Actions CI.
+
+
+### Follow-up: preserve explicit denials through readback and recovery
+
+Classification: STRUCTURAL_REFACTOR, reusing the existing read gateway, bridge,
+engine and ledger; no temporary workaround or new production infrastructure.
+Before this correction, generic exception handling could turn SecurityDenied
+while rechecking DONE_VERIFIED/RUNNING/UNKNOWN_NEEDS_READBACK into an uncertain
+read failure. Postwrite readback could similarly swallow the denial, and orphan
+recovery could persist UNKNOWN_NEEDS_READBACK instead of the newly observed
+security stop. Separately, the local reader treated final provider permission
+errors as ordinary read failures and the existing bridge converted SecurityDenied
+to HTTP 424, losing its category across the private transport.
+
+The shared provider-access classifier now preserves final AUTH_EXPIRED,
+AUTH_INVALID, FORBIDDEN_ENDPOINT and PREMIUM_REQUIRED responses from TPClient,
+and native HTTP 401/403, as bounded SecurityDenied without provider diagnostics.
+Plan, workout, note and library reads share the same checked GET helper. Native
+Strength authentication failure also stops as SecurityDenied. Existing endpoints,
+client token-refresh behavior, allowlists and transient-error handling are unchanged.
+The existing private read handler returns a bounded 403 for provider SecurityDenied;
+its existing remote reader already preserves 401/403 as SecurityDenied. Temporary
+503 and generic 424 retain their previous categories. No fallback is attempted.
+
+The engine uses one terminal-denial policy for initial/readback/reconciliation
+security failures. Normal previews report BLOCKED_SECURITY without mutating the
+ledger; execution persists it. Orphan recovery persists a newly observed denial
+atomically with its existing receipt/slot transaction, even for an originally
+verified or pending event. Existing denials retain their evidence. Uncertain
+claims stay held. A restored reader or repeated recovery cannot clear a persisted
+denial, claim completion or trigger another provider write. No security tombstone
+is removed by this change.
+
+Verification on this follow-up: 248 distinct relevant tests passed, including
+39 new cases. The core/authorization/approval/coordination/local-reader group
+passed 177 tests in 1.72 s; all 41 private/unified bridge cases passed within a
+70-test run (29 overlapping reader cases are not counted twice). Actual Prefect
+runtime, unified flow and isolated flow contracts passed 30 tests in 47.99 s
+(3 warnings), including a new signed-authority recovery case proving durable
+BLOCKED_SECURITY, retained claim and idempotent receipt after the reader recovers.
+Synthetic provider/issuer and loopback HTTP only; no TrainingPeaks credentials,
+cloud Prefect API or deployment. 27 engine/local-reader negative cases reproduced
+the defect on the preceding source. Ruff src/ and changed-file F, mypy src/
+(56 files), Python 3.10 syntax and diff checks pass. The full 1,694-test baseline
+remains attributed only to 52b0ee1; unrelated tests were not rerun for this segment.
+GitHub Actions CI and production issuer/topology/capability canaries remain
+separate release gates. No merge, deploy or universal publisher enablement.

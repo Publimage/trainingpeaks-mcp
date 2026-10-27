@@ -314,8 +314,12 @@ def _handler_factory(config: dict[str, Any]):
                     raise ValueError("INVALID_BODY_SIZE")
                 payload = json.loads(self.rfile.read(length))
                 if path == READ_PATH:
+                    from scripts.ironman_jobs.ironman_unified_changeset_engine import SecurityDenied
+
                     try:
                         result = asyncio.run(_build_unified_resource_input(payload, config))
+                    except SecurityDenied:
+                        self._write_json(403, {"error": "UNIFIED_PROVIDER_ACCESS_DENIED"})
                     except PermissionError:
                         self._write_json(403, {"error": "UNIFIED_RESOURCE_NOT_ALLOWED"})
                     except (KeyError, TypeError, ValueError):

@@ -7,7 +7,6 @@ import json
 import threading
 from http.client import HTTPConnection
 from http.server import ThreadingHTTPServer
-from pathlib import Path
 
 import pytest
 
@@ -321,6 +320,36 @@ def test_existing_bridge_ip_boundary_rejects_vpc_unauthorized_source(monkeypatch
         assert out["error"]=="SOURCE_NOT_ALLOWED"
         assert calls==[]
         conn.close()
+    finally:
+        server.shutdown()
+        server.server_close()
+        thread.join(timeout=3)
+
+
+@pytest.mark.parametrize("category", ["security", "temporary", "other"])
+def test_private_bridge_preserves_provider_failure_category_without_details(monkeypatch, category):
+    import tp_mcp.private_bridge as bridge
+    import tp_mcp.unified_read_bridge as transport
+    from scripts.ironman_jobs.ironman_unified_changeset_engine import ChangeStop, SecurityDenied
+
+    exception = {"security": SecurityDenied, "temporary": ConnectionError, "other": ChangeStop}[category]
+
+    async def provider_denied(payload, config):
+        raise exception("synthetic-private-detail")
+
+    monkeypatch.setattr(bridge, "_build_unified_resource_input", provider_denied)
+    cfg = {"allowed_sources": {"127.0.0.1"}, "allowed_unified_reads": policy(),
+           "allowed_athletes": set(), "result_writer_sources": set(), "max_window_days": 21}
+    server = ThreadingHTTPServer(("127.0.0.1", 0), _handler_factory(cfg))
+    thread = threading.Thread(target=server.serve_forever, daemon=True)
+    thread.start()
+    # Synthetic loopback server only; production URL and VPC policy stay fixed.
+    monkeypatch.setattr(transport, "READ_URL", f"http://127.0.0.1:{server.server_address[1]}{READ_PATH}")
+    try:
+        with pytest.raises(exception) as failure:
+            PrivateBridgeReadAdapter().read(spec())
+        assert isinstance(failure.value, SecurityDenied) is (category == "security")
+        assert "synthetic-private-detail" not in str(failure.value)
     finally:
         server.shutdown()
         server.server_close()
