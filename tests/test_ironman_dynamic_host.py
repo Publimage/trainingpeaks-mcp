@@ -11,7 +11,7 @@ import pytest
 
 @pytest.fixture
 def host(monkeypatch):
-    path = Path(__file__).parents[1] / "src/tp_mcp/ironman_dynamic_targets.py"
+    path = Path(__file__).parents[1] / "src/tp_mcp/tools/ironman_dynamic_targets.py"
     athlete_override = contextvars.ContextVar("athlete_override", default=None)
     events = []
     state = {"coach_id": 2116886}

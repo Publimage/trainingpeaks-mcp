@@ -54,7 +54,8 @@ def convert_archive_structure(
         if isinstance(n, bool) or not isinstance(n, (int, float)) or n <= 0:
             raise ArchiveStructureError("Step length must be positive.")
         a, b = s.get("intensityMin"), s.get("intensityMax")
-        if any(isinstance(x, bool) or not isinstance(x, (int, float)) for x in (a, b)) or a > b:
+        if (isinstance(a, bool) or not isinstance(a, (int, float))
+                or isinstance(b, bool) or not isinstance(b, (int, float)) or a > b):
             raise ArchiveStructureError("Intensity range invalid.")
         name = s.get("name")
         if not isinstance(name, str) or not name.strip():
@@ -78,9 +79,11 @@ def convert_archive_structure(
         if kind == "step":
             reps, exercise_steps = 1, [inner_step(step)]
         elif kind == "repetition":
-            reps = step.get("reps")
-            if isinstance(reps, bool) or not isinstance(reps, int) or reps < 1:
+            repetition_count = step.get("reps")
+            if (isinstance(repetition_count, bool)
+                    or not isinstance(repetition_count, int) or repetition_count < 1):
                 raise ArchiveStructureError("Invalid repetition count.")
+            reps = repetition_count
             contents = step.get("steps")
             if not isinstance(contents, list) or not contents:
                 raise ArchiveStructureError("Repetition must contain steps.")
@@ -102,11 +105,10 @@ def convert_archive_structure(
         raise ArchiveStructureError(
             "Mixed meter/second length units need separate library render QA."
         )
-    if expected_primary_total is not None:
-        if abs(total - expected_primary_total) > 0.0001:
-            raise ArchiveStructureError(
-                f"Primary prescription {total:g} != expected {expected_primary_total:g}."
-            )
+    if expected_primary_total is not None and abs(total - expected_primary_total) > 0.0001:
+        raise ArchiveStructureError(
+            f"Primary prescription {total:g} != expected {expected_primary_total:g}."
+        )
     converted = {
         "primaryLengthMetric": length_type,
         "primaryIntensityMetric": metric,

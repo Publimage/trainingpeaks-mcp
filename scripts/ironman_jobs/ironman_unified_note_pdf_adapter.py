@@ -13,7 +13,7 @@ from __future__ import annotations
 
 import asyncio
 from copy import deepcopy
-from typing import Any, Callable
+from typing import Any, cast, Callable
 
 from scripts.ironman_jobs.ironman_unified_changeset_engine import (
     OWNER, ChangeStop, SecurityDenied, WriteUncertain, digest, need,
@@ -39,6 +39,7 @@ def validate_pdf_retirement(change: dict[str, Any], note: dict[str, Any]) -> tup
     need(type(payload) is dict and set(payload) == {
         "desired", "attachment_id", "expected_file_name", "expected_content_length"
     }, "PDF_RETIRE_PAYLOAD_FIELDS")
+    payload = cast(dict[str, Any], payload)
     target_id = payload["attachment_id"]
     need(type(target_id) is int and target_id > 0, "PDF_RETIRE_ATTACHMENT_ID")
     filename, length = payload["expected_file_name"], payload["expected_content_length"]
@@ -46,6 +47,7 @@ def validate_pdf_retirement(change: dict[str, Any], note: dict[str, Any]) -> tup
          and type(length) is int and length > 100, "PDF_RETIRE_FILE_IDENTITY")
     current = note.get("attachments")
     need(type(current) is list and bool(current), "PDF_RETIRE_INVENTORY_REQUIRED")
+    current = cast(list[dict[str, Any]], current)
     ids = [row.get("id") for row in current if type(row) is dict]
     need(len(ids) == len(current) and all(type(i) is int for i in ids)
          and len(set(ids)) == len(ids), "PDF_RETIRE_AMBIGUOUS_INVENTORY")

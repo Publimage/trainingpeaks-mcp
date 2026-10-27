@@ -11,8 +11,8 @@ import base64
 import hashlib
 import re
 from datetime import date, timedelta
-from urllib.parse import urlsplit
 from typing import Any
+from urllib.parse import urlsplit
 
 import httpx
 

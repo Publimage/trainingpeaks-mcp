@@ -118,7 +118,10 @@ Prefect's local SQLite resource claim is not a distributed lock. Before any real
 
 ## Verified and pending
 
-CI now runs the existing operator suite, the generic change-set/idempotency suite, synthetic TrainingPeaks read tests for all resource kinds, and a live local Prefect flow over a synthetic provider. This demonstrates code integration, not an authenticated end-to-end TP operation.
+The existing workflow defines operator, change-set, synthetic reader and local
+Prefect checks. Its presence is not evidence of a successful run on the current
+HEAD; verify per-commit GitHub status independently. Local full-checkout results
+are documented below and are not a TrainingPeaks/issuer production canary.
 
 CI uses prefect==3.8.8 and fastapi<0.155 to avoid a backward-incompatible FastAPI Body(min_items) removal. This is dependency pinning, not a TP failure.
 
@@ -326,7 +329,10 @@ The concrete `HostReviewAuthority` uses the existing cryptography dependency to
 verify compact JWT assertions with host-pinned RS256 or EdDSA public keys. It
 checks signature, pinned algorithm/key type, issuer, audience, subject, token ID,
 required scope, iat/nbf/exp and an issuer-signed `run_id` against
-`prefect.context.get_run_context().flow_run.id`. A valid assertion for another
+the trusted Prefect context: FlowRunContext.flow_run.id for a flow, or
+TaskRunContext.task_run.flow_run_id for a child task. Standalone tasks and missing
+or ambiguous parent references are denied; task_run.id is never an origin substitute.
+A valid assertion for another
 invocation is denied; caller-supplied principal/context is never trusted. No
 remote JWT key URLs, unsigned tokens, HMAC fallback or provider cookies are used.
 The existing TrainingPeaks credential and VPC source IP do not authenticate a
@@ -424,6 +430,49 @@ versions; a legacy slot without protocol evidence still requires an independentl
 approved quiescent maintenance procedure, not a forced marker or alternate path.
 The production identity handoff, topology and recovery canary remain release gates.
 
+### Complete-checkout local verification
+
+The previous partial-source QA gate has been replaced with a complete git
+worktree of the pinned PR revision and actual Prefect 3.8.8, using the SAME
+prefect==3.8.8 / fastapi<0.155 constraints already defined by the operator workflow.
+Dependencies are isolated under the QA workspace; the original environment,
+published service and production configuration are unchanged. Temporary Prefect
+API/SQLite instances are local-only; real cloud API credentials are disabled.
+
+The full repository suite passes: 1,694 tests on Python 3.12, including six new
+actual-runtime integration cases. Scheduling, context, signature verification,
+DraftStore, grant/audit transactions, binding and recovery are real. Only the
+upstream issuer handoff and TrainingPeaks provider are synthetic. Tests exercise
+flow/task origin, standalone-task refusal, control lifecycle, replay of an old
+invocation assertion and recovery without approval resurrection. This is NOT an
+attestation of the existing production issuer, VPC bridge or deployed worker.
+
+Complete testing also exposed inherited test defects (invalid literal preventing
+collection, moved host-module path, frozen tool count and note mocks missing
+coach/inventory preflight). These are corrected at their actual test contracts;
+production plan/owner guards are not relaxed and no alias module or skipped test
+is introduced. A real shared redaction defect was corrected: physical/escaped
+line boundaries are normalized before credential-line redaction, including
+quoted fields and spaced values. The existing admin receipt and operator output
+both use that same function; endpoints and source/target policy stay unchanged.
+
+Repository checks `ruff check src/` and `mypy src/` now pass (56 source files).
+The parent commit had 53 Ruff findings and 43 mypy errors, independently reproduced
+in a clean worktree. Repairs reuse the engine's existing Adapter protocol, narrow
+validated identities and provider shapes, distinguish APIResponse/httpx transports,
+and declare actual heterogeneous result types. Type casts only describe values
+already checked by runtime guards; none replace validation or authorize an action.
+Unknown plan objects/listing readbacks now return errors rather than reaching a
+mutation/retry. Exception names follow the Error convention with import-compatible
+aliases. Other lint repairs preserve tool schemas, endpoints and allowlists.
+No type/lint suppressions, dependency changes or workflow edits were added.
+
+The complete suite includes three additional regressions for unknown plan/listing
+payloads, plus signed Prefect runtime and shared-redaction cases. Full local tests
+and static checks do not imply a green GitHub Actions run: status/check runs must
+be observed separately on the published commit. The stacked PR base is unchanged;
+workflow trigger filters must not be bypassed to manufacture CI evidence.
+
 ### Debt and release gates
 
 Owner below means the Operator component maintainer, not the coach/user.
@@ -433,12 +482,14 @@ No feature is WORK_COMPLETE while an applicable gate remains open.
 | --- | --- | --- | --- |
 | STRUCTURAL_REFACTOR — addressed | Divergent flow/Approval selectors and duplicate preview validators could drift | Shared selector and preview validators now used at both boundaries | Same-resource chain, corrupt records, existing regressions |
 | STRUCTURAL_REFACTOR — addressed in one-ledger domain | Replaying request identity was not worker ownership | Invocation-owned persistent execution slot | Concurrent connections, resumed execution, dead process |
-| SOURCE/TEST COMPLETE — runtime blocker | Concrete signed identity, scoped grants, revocation and audit implemented; trust/assertion handoff not configured live | Owner: Operator maintainer. Connect the existing issuer/launcher to invocation-bound assertions and pinned public trust before enabling control operations; retain default deny | Real signature/algorithm/issuer/audience/time/run binding tests, current grants, admin refusal, revocation, atomic control, audit; actual Prefect/issuer canary still pending |
+| SOURCE/TEST COMPLETE — runtime blocker | Concrete signed identity, scoped grants, revocation and audit implemented; trust/assertion handoff not configured live | Owner: Operator maintainer. Connect the existing issuer/launcher to invocation-bound assertions and pinned public trust before enabling control operations; retain default deny | Real signature/algorithm/issuer/audience/time/run binding tests, current grants, admin refusal, revocation, atomic control, audit; actual local Prefect coverage passed; production issuer/launcher and upstream revocation canary still pending |
 | SOURCE/TEST COMPLETE — runtime blocker | Authorized local orphan recovery now uses kernel exclusion and preview readback in the same flow | Owner: Operator maintainer. Review/drain legacy workers and test on the canonical local runtime before release; no auto-takeover or legacy-marker workaround | Real child-process death, active owner refusal, inode mismatch, denial preservation, uncertain claims, rollback, idempotent receipt and revoked-approval recovery |
 | MISSING — release blocker | One-ledger topology is not deployment-attested | Enforce a single canonical service ledger for all workers before live execution; no arbitrary per-request ledger paths | Real-runtime multi-worker canary and readback |
 | STRUCTURAL_REFACTOR — addressed in source | Classic adapter constructed FIELD_VALIDATION_ONLY manifest to reuse validation | Pure field validator is now shared with the existing publisher; synthetic manifest removed | Identical acceptance/error parity and input immutability; publisher/adapter regressions |
 | STRUCTURAL_REFACTOR — source/test complete, runtime gate pending | SKIPPED_DEPENDENCY legacy branch in normal execution | Branch removed in favor of atomic version 1 migration and full event backup. Owner: Operator maintainer. Inventory/rehearse the actual ledger snapshot and rollback before release; no mixed worker versions | Concurrent/idempotent migration, rollback, manifest drift, preserved claims/denials and dependent execution |
-| TEMPORARY_DEBT — QA only | Partial exact-source snapshot used because git proxy is unavailable and Prefect is absent | Owner: Operator maintainer. Replace with complete pinned checkout and actual Prefect tests before release; discard isolated harness | Full repository/Prefect CI on exact commit; isolated PASS never substitutes |
+| RESOLVED — local QA | Partial-source snapshot and missing Prefect | Replaced by pinned complete worktree, actual Prefect runtime and full suite; production/CI attestations remain separate | 1,694 passed; local API/SQLite, signed invocation and orphan-recovery cases |
+| RESOLVED — local static QA | Parent lint/type findings | Corrected contracts and local lint defects without weakening runtime checks or adding suppressions | Ruff src/ PASS; mypy src/ PASS, 56 files; full suite PASS |
+| EXISTING_DEBT — before universal release | Plan-specific legacy helpers remain in plans.py, strength.py, beginner_strength_plan.py and native_note_library.py; their hardcoded pilot scopes are safety constraints, not universal interfaces | Owner: Operator maintainer. Keep isolated and unavailable to universal publication. Replace their callers with common typed capabilities only after semantic parity, scope review and an authorized capability canary; remove retired helpers/callers in the same review. Do not generalize by stripping IDs or allowlists | Inventory remaining callers; negative owner/scope and parity tests, then reviewed migration/removal; no new per-plan helpers introduced here |
 
 Existing staging VPC allowlists and capability guards remain in place. Their
 replacement requires request-scoped authorization review, negative scope tests

@@ -5,12 +5,17 @@ network and of any historical plan ID. No operation here can publish or delete.
 """
 from __future__ import annotations
 
+from collections.abc import Awaitable, Callable
 from datetime import date
-from typing import Any, Awaitable, Callable
+from typing import Any
 
 from tp_mcp.ironman_dynamic_identity import (
-    TargetStop, _positive_id, require_new_name_absent,
-    resolve_plan_note, resolve_plan_workout, select_live_item,
+    TargetStop,
+    _positive_id,
+    require_new_name_absent,
+    resolve_plan_note,
+    resolve_plan_workout,
+    select_live_item,
 )
 
 OWNER = 2116886

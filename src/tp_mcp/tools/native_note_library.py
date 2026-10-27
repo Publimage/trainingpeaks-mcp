@@ -8,7 +8,7 @@ from __future__ import annotations
 
 import json
 from pathlib import Path
-from typing import Any
+from typing import Any, NoReturn
 
 from tp_mcp.client import TPClient
 from tp_mcp.tools.plans import tp_get_training_plan, tp_get_training_plan_notes
@@ -28,11 +28,14 @@ EXPORT_PATH = (
 )
 
 
-class NativeNoteStop(Exception):
+class NativeNoteError(Exception):
     """Fail closed: never retry a write with an ambiguous provider result."""
 
 
-def _stop(message: str) -> None:
+NativeNoteStop = NativeNoteError
+
+
+def _stop(message: str) -> NoReturn:
     raise NativeNoteStop(message)
 
 

@@ -11,7 +11,7 @@ from unittest.mock import AsyncMock, patch
 import pytest
 
 from tp_mcp.client.http import APIResponse
-from tp_mcp.server import call_tool, list_tools
+from tp_mcp.server import _TOOL_HANDLERS, call_tool, list_tools
 
 
 def _parse_result(text_contents: list) -> dict:
@@ -130,7 +130,10 @@ class TestListTools:
             "tp_apply_training_plan",
         }
         assert v2_tools.issubset(names)
-        assert len(names) == len(core_tools) + len(v2_tools)
+        # Legacy tools remain available; newer tools must have real dispatch
+        # handlers and unique advertised names rather than a frozen v2 count.
+        assert len(names) == len(tools)
+        assert names == set(_TOOL_HANDLERS)
 
     @pytest.mark.asyncio
     async def test_training_plan_cleanup_tool_is_destructive_and_dry_run_by_default(self):

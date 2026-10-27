@@ -7,17 +7,20 @@ select a target. This module never grants permission to mutate a resource.
 from __future__ import annotations
 
 import unicodedata
-from typing import Any
+from typing import Any, TypeGuard
 
 
-class TargetStop(ValueError):
+class TargetError(ValueError):
     def __init__(self, code: str, candidates: list[dict[str, Any]] | None = None):
         super().__init__(code)
         self.code = code
         self.candidates = candidates or []
 
 
-def _positive_id(value: Any) -> bool:
+TargetStop = TargetError  # Preserve the existing exception import contract.
+
+
+def _positive_id(value: Any) -> TypeGuard[int]:
     return type(value) is int and 0 < value <= (2**63 - 1)
 
 

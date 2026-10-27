@@ -17,6 +17,7 @@ linked plan application).
 
 import json
 import logging
+from contextlib import suppress
 from datetime import date as date_type
 from datetime import timedelta
 from typing import Any
@@ -244,7 +245,7 @@ async def tp_get_training_plan_workouts(plan_id: int | str) -> dict[str, Any]:
         # Read-only QA: return provider-native swim steps for private test plans.
         # The normal list response stays small for every commercial plan.
         if v.plan_id in (684206, _INTERMEDIATE_PILOT_ID):
-            for summary, raw in zip(out, ws):
+            for summary, raw in zip(out, ws, strict=False):
                 if raw.get("workoutTypeValueId") == 1 and summary["title"].startswith("[MCP TEST]"):
                     summary["native_structure"] = raw.get("structure")
                     summary["native_distance_planned_m"] = raw.get("distancePlanned")
@@ -574,7 +575,9 @@ async def tp_create_training_plan(
             if after.is_error:
                 return _err("WRITE_UNVERIFIED",
                             "POST accepted but listing failed; check existing plans before retrying.")
-            candidates = [p for p in (after.data or [])
+            if not isinstance(after.data, list):
+                return _err("WRITE_UNVERIFIED", "Unexpected plan listing; inspect before retrying.")
+            candidates = [p for p in after.data
                           if (p.get("title") or "").strip() == title.strip()]
             if len(candidates) != 1 or not candidates[0].get("planId"):
                 return _err("WRITE_UNVERIFIED",
@@ -610,7 +613,9 @@ async def _get_writable_test_plan(
     result = await client.get(f"/plans/v1/plans/{plan_id}")
     if result.is_error:
         return None, _api_err(result)
-    d = result.data or {}
+    if not isinstance(result.data, dict):
+        return None, _err("API_ERROR", "Unexpected plan payload.")
+    d = result.data
     guard = _test_plan_guard(d)
     if guard:
         return None, guard
@@ -732,12 +737,12 @@ async def tp_add_training_plan_library_workout(
                 "PROTECTED_RESOURCE",
                 "Only existing [MCP TEST] library items can be inserted.",
             )
-        if (plan.get("title") or "").strip() == _INTERMEDIATE_PILOT_TITLE:
-            if not (candidate.get("itemName") or "").startswith("[MCP TEST] IMINT24W-"):
-                return _err(
-                    "PROTECTED_RESOURCE",
-                    "Intermediate pilot requires a canonical UID-prefixed template.",
-                )
+        if ((plan.get("title") or "").strip() == _INTERMEDIATE_PILOT_TITLE
+                and not (candidate.get("itemName") or "").startswith("[MCP TEST] IMINT24W-")):
+            return _err(
+                "PROTECTED_RESOURCE",
+                "Intermediate pilot requires a canonical UID-prefixed template.",
+            )
         if is_archive_pilot:
             date_error = _check_plan_date(
                 plan, workout_date, allow_first_workout_bootstrap=True,
@@ -897,7 +902,7 @@ async def tp_batch_add_training_plan_library_workouts(
         for lib, template, week, day, title in validated:
             day_date = (anchor + timedelta(weeks=week - 1, days=day)).isoformat()
             manifest.append((lib, template, day_date, title))
-        libraries: dict[int, dict[int, dict[str, Any]]] = {}
+        libraries: dict[int, dict[Any, dict[str, Any]]] = {}
         for lib in sorted({v[0] for v in validated}):
             response = await client.get(f"/exerciselibrary/v2/libraries/{lib}/items")
             if response.is_error:
@@ -961,8 +966,8 @@ async def tp_batch_add_training_plan_library_workouts(
                 ],
             }
 
-        attempted = []
-        for lib, template, day_date, title, candidate in to_add:
+        attempted: list[dict[str, Any]] = []
+        for _lib, template, day_date, title, _candidate in to_add:
             response = await client.post(
                 f"/plans/v1/plans/{assembly_id}/commands/addworkoutfromlibraryitem",
                 json={"planId": assembly_id, "exerciseLibraryItemId": template,
@@ -985,7 +990,7 @@ async def tp_batch_add_training_plan_library_workouts(
                         f"Provider acknowledged {len(attempted)} writes; readback unavailable.")
         after = after_resp.data
         qa = []
-        for lib, template, day_date, title, candidate in candidates:
+        for _lib, template, day_date, title, candidate in candidates:
             matches = [w for w in after
                        if (w.get("workoutDay") or "")[:10] == day_date
                        and (w.get("title") or "").strip() == title]
@@ -1242,10 +1247,8 @@ async def tp_get_training_plan_notes(plan_id: int | str) -> dict[str, Any]:
         for note in response.data:
             day = (note.get("noteDate") or note.get("date") or "")[:10]
             offset = None
-            try:
+            with suppress(ValueError):
                 offset = (date_type.fromisoformat(day) - start).days + 1
-            except ValueError:
-                pass
             out.append({
                 "note_id": note.get("id") or note.get("calendarNoteId")
                           or note.get("noteId"),

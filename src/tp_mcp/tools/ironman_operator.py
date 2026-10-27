@@ -18,7 +18,7 @@ import os
 import re
 import subprocess
 from pathlib import Path
-from typing import Any
+from typing import Any, cast
 
 from tp_mcp.client import TPClient
 from tp_mcp.client.context import athlete_override
@@ -38,12 +38,15 @@ GUARDED_WRITE = "GUARDED_WRITE"
 REVIEWED_PLAN_JOBS = frozenset({"reviewed_plan_patch_preview", "reviewed_plan_patch_publish"})
 
 
-class BridgeStop(Exception):
+class BridgeError(Exception):
     """Fail closed with a machine-readable operational failure category."""
 
     def __init__(self, message: str, *, code: str = "SAFE_STOP") -> None:
         super().__init__(message)
         self.code = code
+
+
+BridgeStop = BridgeError
 
 
 def _run(*argv: str, timeout: int = 30, request_plan_id: int | None = None,
@@ -205,7 +208,7 @@ def _check_reviewed_manifest_request(job: str, requested_scope: str | None,
     actual_ids = [x.get("workout_id") for x in items if isinstance(x, dict)]
     if len(actual_ids) != len(items) or any(type(x) is not int or x <= 0 for x in actual_ids):
         raise BridgeStop("REVIEWED_MANIFEST_ITEMS_INVALID")
-    if sorted(ids) != sorted(actual_ids):
+    if sorted(ids) != sorted(cast(list[int], actual_ids)):
         raise BridgeStop("STOP_REQUEST_RESOURCE_MISMATCH")
 
 
@@ -217,9 +220,9 @@ def _execute_blocking(job: str, revision: str, operation: str, ack_scope: str | 
         raise BridgeStop("A complete pinned 40-character commit SHA is required.")
     # Job registration is generic. Bind each reviewed plan execution to the
     # caller-confirmed plan ID independently of any persisted JSON manifest.
-    if operation == "execute" and job in REVIEWED_PLAN_JOBS:
-        if type(target_plan_id) is not int or target_plan_id <= 0:
-            raise BridgeStop("TARGET_PLAN_ID_REQUIRED_FOR_REVIEWED_PUBLISHER")
+    if (operation == "execute" and job in REVIEWED_PLAN_JOBS
+            and (type(target_plan_id) is not int or target_plan_id <= 0)):
+        raise BridgeStop("TARGET_PLAN_ID_REQUIRED_FOR_REVIEWED_PUBLISHER")
     if not REPO.is_dir() or not VENV_PYTHON.is_file():
         raise BridgeStop("Verified cloud installation unavailable.")
     STATE_DIR.mkdir(mode=0o700, parents=True, exist_ok=True)
@@ -266,7 +269,7 @@ def _execute_blocking(job: str, revision: str, operation: str, ack_scope: str | 
         receipt_path = None
         if kind == GUARDED_WRITE:
             fingerprint = hashlib.sha256(
-                f"{job}|{revision}|{spec['scope']}".encode("utf-8")
+                f"{job}|{revision}|{spec['scope']}".encode()
             ).hexdigest()[:32]
             receipt_path = STATE_DIR / f"{fingerprint}.json"
             if receipt_path.exists():
