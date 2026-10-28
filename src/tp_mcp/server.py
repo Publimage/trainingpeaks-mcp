@@ -27,6 +27,7 @@ from mcp.types import (
 from tp_mcp import __version__, apps
 from tp_mcp.auth import get_credential, validate_auth
 from tp_mcp.client.context import athlete_override
+from tp_mcp.operator_http import guard_operator_http
 from tp_mcp.operator_runtime import MODES as OPERATOR_MODES
 from tp_mcp.private_bridge import maybe_start_private_bridge
 from tp_mcp.tools import (
@@ -3053,6 +3054,16 @@ server = Server(
     on_read_resource=_on_read_resource,
 )
 server.extensions[apps.EXTENSION_ID] = {}
+
+# Transport policy on the same server; no HTTP app/listener starts with stdio.
+server.middleware.append(guard_operator_http)
+
+
+def create_operator_http_app(**protected_dependencies):
+    """Trusted host opt-in factory; default serve command remains stdio."""
+    from tp_mcp.operator_http import create_operator_http_app as compose_http
+    return compose_http(server, **protected_dependencies)
+
 
 
 async def _validate_auth_on_startup() -> bool:

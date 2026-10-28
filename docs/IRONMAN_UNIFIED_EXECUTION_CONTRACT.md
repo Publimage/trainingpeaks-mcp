@@ -5,6 +5,50 @@ Status: ARCHITECTURE CONTRACT / NOT DEPLOYED. This is not an authorization to re
 
 ## Current release assessment — 2026-10-27
 
+### 2026-10-28: local OAuth HTTP transport implemented, not activated
+
+Canonical UI checkpoint `IRONMAN_TP_MCP_APP_AUTH_NONE_UI_20261028_V1` confirms
+the existing dev app advertises/uses no authorization. It is not already OAuth.
+`tp_mcp.server.create_operator_http_app` now composes an opt-in ASGI ingress using
+the SAME SDK server/handlers, with its native Streamable HTTP manager. Existing
+stdio startup functions are unchanged; no HTTP app/listener is created by serve.
+No new MCP server, service, issuer, deployment or per-request manifest.
+
+HTTP requires a host-configured verifier with current revocation policy and a
+per-human runtime binding factory. Loopback/TLS scheme, exact Host/Origin,
+unambiguous bearer, resource/issuer/subject/scope/expiry and bounded bodies are
+enforced. The SDK resource metadata/challenge path and OAuth tool metadata are
+implemented; the configured issuer is preserved exactly. Only the universal
+operator is advertised/allowed through HTTP. Legacy tools/resources cannot be
+invoked through this new route, including by directly naming them. Stdio's tool
+registry is unchanged. Missing runtime never inherits ambient stdio privileges.
+
+Native stateless exchanges deliberately avoid a transport-session identity cache:
+the existing DraftStore/ledger/Prefect records own durable operation state. Each
+request has its own verified context, copied through the existing thread launcher
+and reset afterwards; operation admission revalidates current identity/revocation
+after SDK dispatch waiting. No identity or callback comes from tool arguments.
+Expired/revoked admission can return OAuth linking metadata, not a write retry.
+The real issuer/delegation/stable-intent/feed/runtime ports remain unconnected.
+
+New tests: **16 PASS**, real SDK/ASGI + signed synthetic IdP and synthetic current
+revocation policy. Protocols 2025-11-25 and 2026-07-28 cover discovery and concurrent
+human calls/token renewal; the latter uses native single-exchange envelopes.
+Tests cover 401/discovery, denied methods/identity injection, revocation between
+admission and execution, missing host runtime, edge/body limits and stdio policy
+passthrough. The launcher is a test stub: no Prefect/provider execution, actual
+network TLS handshake or live ChatGPT authentication is claimed. Ruff src/new
+tests, mypy (58 source files), compilation and diff checks PASS. Previous suites
+were not replayed. Independent review and exact-head CI remain release gates.
+
+Official direct-custom-connection update path: deploy the verified server under
+the SAME tunnel after runtime gates, then Refresh the SAME connection and verify
+changed authentication metadata. This is documented for authentication changes;
+recreation is not the prescribed default. Actual UI execution remains pending.
+Published/package submission authentication has separate mcp.json/version/client
+registration restrictions; those must not be applied speculatively to this dev
+app. See the runbook for evidence, cutover/rollback and the one future UI action.
+
 ### Human identity boundary: OAuth source preparation, not a live connection
 
 Canonical input `IRONMAN_TUNNEL_STDIO_IDENTITY_LIMIT_20261027_V1` identifies a

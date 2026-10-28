@@ -425,14 +425,11 @@ loss, sequence gaps, stale status and restart keep admission closed until
 reconciliation. Existing 1–300-second worker freshness is unchanged. No timer
 alone or successful login refreshes the checkpoint. No feed is claimed installed.
 
-**First owner action, one read-only interface inspection:** open the existing
-TrainingPeaks MCP app's connection/authentication details in ChatGPT and provide
-only the method displayed and provider name/issuer URL if present. Do not change
-the app, recreate it, disconnect it or share secrets. These account-owned values
-are not returned by the available tools. This determines whether the existing
-connection can be reused; it does not imply that selecting OAuth alone fixes the
-stdio transport. Any later OAuth selection/sign-in waits for the protected HTTP
-resource and verified provider contract; no speculative setup instructions.
+**Owner inspection completed 2026-10-28:** canonical checkpoint
+`IRONMAN_TP_MCP_APP_AUTH_NONE_UI_20261028_V1` records supported authorization=None,
+used authorization=None and DEVELOPMENT state for the existing dev app. Do not
+ask the owner to repeat this inspection. The official update path and next future
+UI action are documented below; no app settings have been changed.
 
 Official references checked 2026-10-27:
 
@@ -448,3 +445,107 @@ rollback, live identity/delegation/feed and provider canaries remain separate
 release gates. This section supersedes the original migration preference for
 stdio where a verified human approver is required; it does not propose public
 HTTP or invalidate existing read-only stdio paths. No merge/deploy/TP write.
+
+## Existing dev app update and prepared HTTP ingress — 2026-10-28
+
+The official [Connect and test your plugin](https://developers.openai.com/plugins/deploy/connect-chatgpt)
+guide, section **Refresh metadata**, explicitly covers changes to authentication
+as well as tools/UI. It instructs the operator to deploy/restart the MCP server,
+open the existing custom connection in ChatGPT Plugins, select **Refresh**, verify
+the new metadata and test in a new conversation. It states that this flow applies
+to custom MCP servers connected directly in ChatGPT. With the same tunnel ID and
+connector-facing URL, changing only the private main binding does not require a
+new app. This is the documented path for this dev connection; execution and UI
+support on this account remain unverified until rollout, not assumed impossible.
+No OAuth configuration is inferred from the current None/None display.
+
+Do not confuse that path with the [submission portal](https://developers.openai.com/plugins/deploy/submission):
+its advanced authentication comes from package mcp.json/uploaded versions; the
+connection panel is not an advanced editor, and an existing OAuth client can lock
+credential changes. Those are concrete restrictions on the packaged submission
+flow, not proof this direct dev app must be recreated. Current documentation is
+more specific than the older developer-mode article's generic published-app
+limitations. No app recreation, package upload, reconnect/disconnect, credential
+replacement, permission change or live Refresh was performed in this cycle.
+
+The prepared factory is `tp_mcp.server.create_operator_http_app`, composed with
+protected `OperatorHTTPConfig`, a real `OAuthMCPTokenVerifier` and a code-installed
+`bindings_for(AccessToken)` factory. It returns an ASGI application for the SAME
+SDK server; it neither opens a socket nor alters the default serve entrypoint.
+Use existing runtime supervision when rollout is actually authorized. No new
+service/unit, alternative MCP Server instance, job or operation manifest is
+introduced. The existing SDK/Starlette dependencies are reused.
+
+The native SDK manager uses stateless HTTP exchanges with JSON responses, not a
+new session store. Identity is carried by the authenticated ASGI context into the
+SDK's request dispatch, then into the existing operator handler and thread
+launcher. Context resets after every request. Issuer + subject + client must match
+the protected resource policy. Scope admission is not an approval or provider
+permission. Before invoking the operator, the verifier runs again to account for
+dispatch waiting; a withdrawn/expired token returns a standard OAuth linking
+challenge. `bindings_for` cannot fall back to ambient stdio bindings. Actual
+operation intents, grants, delegated worker assertions and persistent authority
+continue to use their existing ports; bearer JTIs are never invented as intents.
+
+Only `tp_ironman_request` is advertised and callable on this protected ingress.
+Its descriptor advertises OAuth securitySchemes (including compatibility metadata).
+Direct legacy tool calls and other resource/method access deny; adding the HTTP
+transport cannot implicitly expose every old writer. Existing stdio descriptors
+are not mutated. RFC9728 resource metadata and the 401 Bearer challenge are served
+without authenticating a user; the issuer string is preserved exactly to avoid
+URL-library slash normalization breaking OAuth issuer matching. No authorization
+server/discovery proxy, signing key or production configuration is created.
+
+The edge permits only loopback clients over an HTTPS ASGI scope, exact local Host
+and same local Origin when supplied; DNS-rebinding checks stay enabled. Forwarded
+IP/identity headers do not supply a principal. Duplicate Authorization headers and
+bodies beyond 2 MB deny. Real socket binding/TLS certificates, trust/proxy policy,
+rate limits and the tunnel's ability to reach the protected local endpoint must
+be attested in runtime before exposure. ASGI tests enforce declared scheme/client
+policy; they do not verify a real TLS handshake or the DigitalOcean service.
+
+**New QA:** 16 focused tests pass with real SDK routing/ASGI and test-only signed
+IdP/current-state policy. The two protocol paths (2025-11-25 and 2026-07-28) cover
+OAuth discovery, a shared client with concurrent distinct humans, token renewal
+and context delivery into the launcher stub. The new protocol uses its required
+single-exchange envelope/method headers rather than the legacy initialize flow.
+Other cases cover challenges, hidden legacy methods, forged identity metadata,
+revocation while dispatch waits, missing binding despite an ambient stdio runtime,
+unconfigured HTTP context, Host/Origin/remote/TLS/duplicate/body limits and feed
+unavailability. No live network listener, provider request or Prefect flow ran.
+Previous crypto/retransmission/in-process/multiprocess tests were not repeated.
+
+**Autonomous operation after one setup:** keep identity middleware, token renewal
+and revocation reconciliation automatic within the approved trust contract. The
+IdP/OpenAI client must actually support automatic refresh (including appropriate
+offline access policy if required); MCP does not store or fabricate refresh tokens.
+Existing durable grants/bindings cover only the approved task/scope and must not
+prompt for another manual handoff on every request/retry. Middleware rechecks are
+internal checks, not new user approvals. Reauthentication, a genuinely new scope,
+withdrawn consent or unavailable trust can still require a real authorization.
+
+**Controlled future cutover, not executed:** first pass independent review/CI,
+attest the actual IdP/resource/keys, current revocations, authorized delegation,
+host binding factory, protected local TLS, existing API/runtime access and coherent
+state/rollback. Test the local HTTP surface before changing the running tunnel.
+Drain existing work without deleting claims/records; change the SAME tunnel's main
+binding under existing supervision with no overlapping active stdio tunnel clients.
+Do not move the connector URL or publish a new listener to bypass a restriction.
+Then the owner's one planned interface operation is **Refresh on the existing
+TrainingPeaks MCP connection, completing the initial OAuth sign-in if prompted**.
+Verify Supported/Used authorization, unchanged app/tunnel identity and a fresh-chat
+bounded check before calling the transition verified. No Refresh is needed now
+while the server remains stdio/None; it would not supply the missing IdP.
+
+Before OAuth cutover, the unchanged stdio setup remains operational. After OAuth
+activation, rollback must preserve the authenticated ingress contract and current
+revocations/operation state; close execution if a compatible rollback cannot be
+attested. Do not silently downgrade to no-auth or erase approval/uncertainty to
+restore availability. An incompatible authentication rollback is a release gate,
+not an excuse to ask the owner for repetitive configuration changes.
+
+The first real missing connection remains an existing attested IdP and current
+revocation/delegation policies wired into the protected host composition. None is
+configured by this commit. CI, independent review, runtime management and rollback
+are separate gates. No new owner action is requested until its prerequisite is
+ready; the completed None/None inspection is not reopened.
