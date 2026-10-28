@@ -5,6 +5,45 @@ Status: ARCHITECTURE CONTRACT / NOT DEPLOYED. This is not an authorization to re
 
 ## Current release assessment — 2026-10-27
 
+### 2026-10-28: combined HTTP/process-worker release proof
+
+`test_ironman_http_worker_release.py` contains ONE combined release scenario:
+verified local TLS HTTP/OAuth -> the existing MCP SDK server/handler -> native
+PrefectProcessLauncher -> real isolated Prefect API -> existing process pool and
+separate flow processes -> DraftStore/preview/approval/binding -> reviewed adapter
+and disposable provider -> independent readback -> persistent ledger/API receipt.
+It reuses the previous worker-lab startup, issuer and adapter fixtures; the old
+18 multiprocess assertions are preserved, and its 12-run scenario is not replayed.
+No production source, workflow, job, manifest, service or infrastructure changes.
+
+Final result: **1 PASS, 155.38 s**. Five completed invocations of the one flow,
+five issuer deliveries, one synthetic provider write and one matching execution
+receipt. HTTP returned uncertainty in **90.25 s**; recovered completion arrived at
+**127.55 s**, after a new MCP producer process and renewed token. Independent
+ledger read is DONE_VERIFIED; producer/worker/flow PIDs are distinct. New-test and
+shared-bootstrap Ruff, affected compile and diff checks PASS. The test query uses
+the existing explicit FlowRunSort.ID_DESC contract; no SDK/server patch was added.
+
+The new provider deliberately commits one synthetic PUT then delays completion
+125 real seconds. The native 90-second launcher budget returns DISPATCH_UNCERTAIN
+with its run handle rather than attempting another write. The caller restarts
+its actual HTTP MCP process and reconnects with a renewed bearer and the SAME
+issuer-attested operation intent. Reconciliation observes the existing flow and
+recovers its command-bound persistent receipt as historical DISPATCH_RESULT_REUSED.
+No second flow, issuer handoff, approval or provider mutation is admitted for the
+retransmitted execution. Actual provider state and DONE_VERIFIED ledger state are
+read separately from the receipt. The original response's flow ID is used only
+for assertions, never as an authorization or manual input into recovery.
+
+This is a local release proof with a real loopback TLS listener and separate MCP,
+process-worker and flow PIDs. The IdP/key/intent contract and provider are test-only.
+It does not test OpenAI's hosted tunnel queue, production identity/feed or DO TLS.
+The hosted 120-second absolute budget includes queue time; the launcher's observe
+budget starts after allocation/handoff. A local response under 120 seconds is
+not an end-to-end hosted latency guarantee. Stable intent reconciliation remains
+necessary even if the initial HTTP result is lost. No worker-crash/DR restore
+scenario is added: their previous evidence remains attached to its revisions.
+
 ### 2026-10-28: local OAuth HTTP transport implemented, not activated
 
 Canonical UI checkpoint `IRONMAN_TP_MCP_APP_AUTH_NONE_UI_20261028_V1` confirms

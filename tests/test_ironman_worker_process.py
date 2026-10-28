@@ -6,11 +6,11 @@ previous in-process scenarios are replayed. All signing/provider state is lab-on
 import hashlib
 import json
 import os
-from pathlib import Path
 import sqlite3
 import subprocess
 import sys
 import time
+from pathlib import Path
 from uuid import uuid4
 
 from cryptography.hazmat.primitives import serialization
@@ -18,19 +18,20 @@ from cryptography.hazmat.primitives.asymmetric import ed25519
 from mcp import Client, StdioServerParameters
 from mcp.client.stdio import stdio_client
 from prefect.client.orchestration import get_client
-from prefect.client.schemas.actions import WorkPoolCreate, DeploymentUpdate
+from prefect.client.schemas.actions import DeploymentUpdate, WorkPoolCreate
 from prefect.settings import PREFECT_API_URL
-
-from scripts.ironman_jobs.ironman_unified_prefect_flow import unified_changeset_flow
-from scripts.ironman_jobs.ironman_unified_changeset_engine import digest
 from test_ironman_authorization import signed
 from test_ironman_prefect_runtime import prefect_runtime
 from test_ironman_unified_plan_workout_adapter import workout
 
+from scripts.ironman_jobs.ironman_unified_changeset_engine import digest
+from scripts.ironman_jobs.ironman_unified_prefect_flow import unified_changeset_flow
+
 
 def test_worker_domain_envelope_preserves_preview_without_privileged_parameters():
-    from scripts.ironman_jobs.ironman_worker_runtime import validate_worker_command
     import pytest
+
+    from scripts.ironman_jobs.ironman_worker_runtime import validate_worker_command
     command = {"mode": "preview", "manifest": {}, "requested_targets": []}
     validate_worker_command(command)
     for injection in ({"ledger_path": "/tmp/elsewhere"}, {"principal": "admin"},
@@ -39,7 +40,7 @@ def test_worker_domain_envelope_preserves_preview_without_privileged_parameters(
             validate_worker_command({**command, **injection})
 
 
-async def test_separate_mcp_and_prefect_worker_restore_trusted_context(prefect_runtime, tmp_path):
+async def start_process_lab(tmp_path):
     repo = Path(__file__).parents[1]
     home = tmp_path / "lab"
     home.mkdir(mode=0o700)
@@ -99,6 +100,25 @@ async def test_separate_mcp_and_prefect_worker_restore_trusted_context(prefect_r
         "import asyncio; from prefect.workers.process import ProcessWorker; "
         "asyncio.run(ProcessWorker(work_pool_name='ironman-prefect-staging-process').start())"],
         cwd=repo, env=worker_env, stdout=log, stderr=subprocess.STDOUT)
+    from types import SimpleNamespace
+    return SimpleNamespace(repo=repo, home=home, key=key, config=config, private=private,
+                           deployment_id=deployment_id, env=env, process=process, log=log)
+
+
+def stop_process_lab(lab):
+    lab.process.terminate()
+    try:
+        lab.process.wait(timeout=15)
+    except subprocess.TimeoutExpired:
+        lab.process.kill()
+        lab.process.wait(timeout=5)
+    lab.log.close()
+
+
+async def test_separate_mcp_and_prefect_worker_restore_trusted_context(prefect_runtime, tmp_path):
+    lab = await start_process_lab(tmp_path)
+    repo, home, config, key, private = lab.repo, lab.home, lab.config, lab.key, lab.private
+    env, deployment_id, process = lab.env, lab.deployment_id, lab.process
     seen = []
     async def call(client, mode, payload):
         command = {"mode": mode, "manifest": payload, "requested_targets": [{"kind": "plan.workout.patch",
@@ -152,10 +172,11 @@ async def test_separate_mcp_and_prefect_worker_restore_trusted_context(prefect_r
             assert len(pids) == 1
             assert pids[0][0] not in {os.getpid(), process.pid, int((home / "mcp.pid").read_text())}
         async with get_client() as api:
+            import asyncio
+
             from prefect.client.schemas.filters import FlowRunFilter, FlowRunFilterDeploymentId
             from prefect.client.schemas.sorting import FlowRunSort
             from prefect.states import Scheduled
-            import asyncio
             (home / "worker.off").rename(home / "worker.json")
             injected = await api.create_flow_run_from_deployment(deployment_id, parameters={
                 "mode": "prepare", "manifest": draft, "requested_targets": [],
@@ -185,10 +206,4 @@ async def test_separate_mcp_and_prefect_worker_restore_trusted_context(prefect_r
                 assert "issuer.pem" not in json.dumps(run.parameters)
         print("MULTIPROCESS_PASS: distinct MCP/worker/flow PIDs; one synthetic PUT; six worker admission denials")
     finally:
-        process.terminate()
-        try:
-            process.wait(timeout=15)
-        except subprocess.TimeoutExpired:
-            process.kill()
-            process.wait(timeout=5)
-        log.close()
+        stop_process_lab(lab)

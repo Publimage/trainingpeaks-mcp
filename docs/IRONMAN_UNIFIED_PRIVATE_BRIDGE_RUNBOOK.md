@@ -549,3 +549,86 @@ revocation/delegation policies wired into the protected host composition. None i
 configured by this commit. CI, independent review, runtime management and rollback
 are separate gates. No new owner action is requested until its prerequisite is
 ready; the completed None/None inspection is not reopened.
+
+## Combined release proof and long operations — 2026-10-28
+
+One new scenario joins the previously separate HTTP/OAuth and process-worker
+proofs. It uses the same worker startup/cleanup, synthetic issuer and reviewed
+adapter fixtures. Only test fixtures and evidence documentation change; the
+production src/scripts/prefect/workflow trees remain identical to 20f434e. Previous
+source QA remains valid for those same bytes, not a newly rerun full suite.
+
+Final observed result: **1 PASS in 155.38 s**, five completed domain-phase flow
+runs, five issuer handoffs, one provider write, one command/flow-bound execution
+receipt and DONE_VERIFIED ledger read. HTTP response was **90.25 s**; completion
+recovered at **127.55 s**. MCP producer PIDs 24689 -> 24764, Prefect worker 24688,
+flow/provider PID 24732; the pytest caller is a fifth distinct process. These are
+ephemeral local evidence IDs, not production topology. No old suite was replayed.
+
+The new test's final audit query explicitly uses FlowRunSort.ID_DESC, as the
+existing process test does: the pinned SDK's default null sort is rejected by
+the API. This corrects only the test query. The first attempt had already read
+DONE_VERIFIED but failed this read-only audit; only the new case was rerun after
+correction, in a separate disposable harness. Failure and final logs/JUnit are
+retained as pr19-http-worker-release-query-failure.* and pr19-http-worker-release.*.
+No uncertain provider operation was blindly retried, and no runtime code changed.
+
+The ephemeral MCP process serves the actual ASGI factory on loopback HTTPS.
+The test client verifies a generated lab certificate with an explicit private
+trust context; TLS verification is never disabled. The OAuth verifier checks a
+synthetic IdP access token whose signed claims attest the command and a stable
+logical intent. This is a test issuer contract, not an assertion that the real
+IdP already provides these claims. The separate worker reconstructs its protected
+dependencies and signed real-flow identity through the existing implementation.
+There is one pool/deployment/entrypoint in the disposable Prefect harness and no
+new production service or request-specific job.
+
+The complete task automatically prepares, previews, approves and binds, then
+executes against the synthetic provider. A 125-second post-commit delay exceeds
+the actual documented tunnel deadline without shortening the clock in the test.
+The HTTP call returns the existing dispatch-uncertainty handle before completion.
+The caller restarts the MCP process, opens a new TLS connection and renews the
+bearer. It repeats the SAME admitted intent, not a fresh execution request; the
+launcher observes its existing Prefect run. The final artifact/ledger/provider
+readbacks verify one execution and its historical receipt. The recorder checks
+that only the original producer provisioned assertions. No manual grant, flow ID
+entry, new approval or provider retry is inserted between interruption/recovery.
+
+The official [Tunnel limits](https://developers.openai.com/api/docs/guides/secure-mcp-tunnels)
+define 120 seconds from hosted queue admission to final response; progress events
+do not reset it. The local native 90-second observe limit leaves response margin
+in this laboratory, but cannot bound hosted queue/issuer/API allocation latency.
+When the initial response is unavailable, keep the same admitted intent and
+reconcile the existing run/receipt; never infer no-write from a timeout or create
+a new intent to replay the provider operation. Receipt reuse remains explicitly
+historical and subject to current ingress authorization. Long work outlives its
+HTTP producer in Prefect; no polling daemon/new service is required.
+
+This proof concerns producer restart and receipt recovery. It does not certify a
+Prefect host crash, DB rollback, production authorization or hosted tunnel traffic.
+The existing restore fence, tombstones, worker claims and backup requirements are
+unchanged. A real feed must connect both upstream identity withdrawal and durable
+operator consent withdrawal; a valid bearer alone cannot refresh a checkpoint.
+
+Release gates remain independent:
+
+| Gate | Evidence and remaining boundary |
+| --- | --- |
+| Combined local path | One focused TLS/OAuth/MCP/process-worker scenario; no production credentials or provider request |
+| Official CI | Inspect exact final SHA; the dedicated workflow excludes PR19's base. No protected workflow edit, artificial event or repeated Actions setup |
+| Independent review | Author QA is not approval; a different authorized reviewer must review the actual candidate |
+| Real IdP/delegation/revocations | No attested provider/key/intent/delegation/feed installed; test contracts do not supply this gate |
+| Runtime access/configuration | Managed Codex reports no secret/outbound identity binding; DO connector has no authenticated process terminal. No new host inventory/setup is repeated |
+| Rollback | Preserve current authority/ledger/claims and authenticated ingress; actual host backup coverage/quiescence/restore is not attested by producer restart |
+
+No app Refresh, merge, deploy, canary or TP write occurs in this proof. The existing
+None/None UI evidence is not rechecked. A future app Refresh still waits for the
+verified real configuration and release gates. Routine operation/reconciliation
+within the approved scope remains automatic; independent release review is a
+one-time security gate, not another approval for every training request.
+
+For the owner, the next single release action is to assign an authorized reviewer
+different from the author to PR19 (including its PR18 dependency in the review).
+This enables independent review of the concrete candidate; it does not substitute
+for CI or supply missing IdP/runtime credentials. Do not repeat Actions enablement,
+the completed app-auth inspection, setup or an early app Refresh.
