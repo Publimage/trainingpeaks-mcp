@@ -4,6 +4,11 @@ Purpose: connect the **existing** Prefect staging worker to the **existing** pri
 
 ## Source and trust boundary
 
+- **Current candidate migration gate (2026-10-28):** see
+  [AI review reconciliation](IRONMAN_PR19_REVIEW_RECONCILIATION.md) for mandatory
+  standard mTLS and pinned peer roles on the same private listener. Source IP is
+  an additional network restriction, not authentication. All real clients need
+  coordinated HTTPS/PKI configuration before rollout; no current runtime changed.
 - Source of truth: canonical Drive `11_AGENT_ORCHESTRATION_ROADMAP`, `00B_IRONMAN_EMERGENCY_ACCESS_AND_RECOVERY`, `00C_IRONMAN_PROVEN_PATHS_REGISTRY`.
 - Endpoint in existing `tp_mcp.private_bridge`: `POST /v1/unified-resource-read`, bound to the currently configured private VPC address, not public interfaces.
 - Caller allowlist uses the existing `allowed_sources` IP control. Do not expand it or alter the existing Radar or CSS policies unless independently approved.
@@ -33,7 +38,7 @@ Purpose: connect the **existing** Prefect staging worker to the **existing** pri
 
 3. Validate existing source IP allowlist and private bind; stage a controlled reload of the existing bridge after revision review. No new public listener or credential forwarding.
 4. Ensure the separate Prefect worker has a copy of the reviewed code and an existing private directory for `/var/lib/ironman-prefect/unified-changesets/ledger.sqlite3`, owned by its non-root service account. No changes to TP-host credential permissions.
-5. Deploy only `prefect/ironman-unified-changeset-v1.yaml` (`mode=preview`, `read_transport=private_bridge`, no schedule). It reuses the existing work pool. Do not use the old CSS deployment for generic requests.
+5. After release gates, deploy only `prefect/ironman-unified-changeset-v1.yaml` (`mode=preview`, no schedule). It reuses the existing work pool. Transport and ledger paths come from protected worker configuration, never deployment/request parameters. Do not use the old CSS deployment for generic requests.
 6. Run a **single synthetic/approved read-only** changeset on a disposable Training Plan and verify every returned object, SHA, expected pre-image, owner and counts. Check Radar and CSS still return their original read-only results.
 7. Verify no provider mutations, HTTP redirects, credential fields or unexpected file URLs. Verify denial of a different plan and a different source IP, and state recovery for a duplicate request ID.
 8. Record provider readback and logs in the canonical KB only after successful staging evidence.
@@ -627,8 +632,7 @@ verified real configuration and release gates. Routine operation/reconciliation
 within the approved scope remains automatic; independent release review is a
 one-time security gate, not another approval for every training request.
 
-For the owner, the next single release action is to assign an authorized reviewer
-different from the author to PR19 (including its PR18 dependency in the review).
-This enables independent review of the concrete candidate; it does not substitute
-for CI or supply missing IdP/runtime credentials. Do not repeat Actions enablement,
-the completed app-auth inspection, setup or an early app Refresh.
+An independent reviewer (ideanetfano) is already requested on PR19, including its
+PR18 dependency. Do not ask the owner to assign one again. A requested review is
+not an approval, CI result or IdP/runtime configuration. Do not repeat Actions
+enablement, the completed app-auth inspection, setup or an early app Refresh.

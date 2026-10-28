@@ -2,8 +2,9 @@
 
 The bridge is disabled unless an explicit server-local JSON config exists.
 It binds only to the configured private interface, accepts only allowlisted
-source IPs and athlete IDs. Swim template reads require a separate, explicit
-server-local allowlist. Existing Radar behavior is preserved.
+source IPs and athlete IDs, and requires an authenticated, pinned mTLS peer.
+Swim reads require a separate server-local allowlist. Endpoint payload semantics
+are preserved; existing clients need coordinated TLS migration.
 No TrainingPeaks write tools are imported or reachable here.
 """
 from __future__ import annotations
@@ -18,6 +19,7 @@ from pathlib import Path
 from typing import Any
 from urllib.parse import urlparse
 
+from tp_mcp.bridge_tls import BridgeTLSError, authenticated_peer, tls_context, validate_tls_config
 from tp_mcp.client.context import athlete_override
 from tp_mcp.swim_audit_bridge import authorize_request, build_swim_input, validate_allowlist
 from tp_mcp.tools.metrics import tp_get_metrics
@@ -37,7 +39,8 @@ def _load_config(path: Path | None = None) -> dict[str, Any] | None:
     config_path = path or Path(os.environ.get("IRONMAN_PRIVATE_BRIDGE_CONFIG", str(DEFAULT_CONFIG)))
     if not config_path.exists():
         return None
-    raw = json.loads(config_path.read_text(encoding="utf-8"))
+    from scripts.ironman_jobs.ironman_authorization import read_host_file
+    raw = json.loads(read_host_file(config_path, 65536))
     host = str(raw.get("host") or "").strip()
     port = int(raw.get("port") or 0)
     allowed_sources = {str(x).strip() for x in raw.get("allowed_sources", []) if str(x).strip()}
@@ -62,7 +65,12 @@ def _load_config(path: Path | None = None) -> dict[str, Any] | None:
         allowed_unified_reads = validate_policy(raw.get("allowed_unified_reads", []))
     except ValueError as exc:
         raise BridgeConfigError("INVALID_UNIFIED_READ_ALLOWLIST") from exc
+    try:
+        tls = validate_tls_config(raw.get("tls"), server=True)
+    except BridgeTLSError as exc:
+        raise BridgeConfigError(str(exc)) from exc
     return {
+        "tls": tls,
         "allowed_swim_templates": allowed_swim_templates,
         "allowed_unified_reads": allowed_unified_reads,
         "host": host,
@@ -282,6 +290,11 @@ def _handler_factory(config: dict[str, Any]):
             if not self._source_allowed():
                 self._write_json(403, {"error": "SOURCE_NOT_ALLOWED"})
                 return
+            try:
+                authenticated_peer(self.connection, str(self.client_address[0]), config)
+            except BridgeTLSError:
+                self._write_json(403, {"error": "BRIDGE_PEER_NOT_AUTHORIZED"})
+                return
             if urlparse(self.path).path == "/health":
                 self._write_json(200, {
                     "status": "ok",
@@ -294,6 +307,11 @@ def _handler_factory(config: dict[str, Any]):
         def do_POST(self) -> None:
             if not self._source_allowed():
                 self._write_json(403, {"error": "SOURCE_NOT_ALLOWED"})
+                return
+            try:
+                peer = authenticated_peer(self.connection, str(self.client_address[0]), config)
+            except BridgeTLSError:
+                self._write_json(403, {"error": "BRIDGE_PEER_NOT_AUTHORIZED"})
                 return
             path = urlparse(self.path).path
             if path not in {"/v1/radar-input", "/v1/radar-result", "/v1/admin-result",
@@ -346,7 +364,7 @@ def _handler_factory(config: dict[str, Any]):
                         self._write_json(200, result)
                     return
                 if path in {"/v1/radar-result", "/v1/admin-result"}:
-                    if str(self.client_address[0]) not in config["result_writer_sources"]:
+                    if not peer["result_writer"] or str(self.client_address[0]) not in config["result_writer_sources"]:
                         self._write_json(403, {"error": "RESULT_WRITER_NOT_ALLOWED"})
                         return
                     if path == "/v1/radar-result":
@@ -392,10 +410,12 @@ def maybe_start_private_bridge(path: Path | None = None) -> PrivateBridge | None
     config = _load_config(path)
     if config is None:
         return None
+    context = tls_context(config["tls"], server=True)
     server = ThreadingHTTPServer(
         (config["host"], config["port"]),
         _handler_factory(config),
     )
+    server.socket = context.wrap_socket(server.socket, server_side=True)
     thread = threading.Thread(
         target=server.serve_forever,
         name="ironman-private-bridge",

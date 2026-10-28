@@ -150,13 +150,20 @@ class Ledger:
     Resource claims are NOT auto-expired: after a crash, human/provider
     reconciliation is required before reassigning a possibly modified item.
     """
-    def __init__(self, path: Path):
+    def __init__(self, path: Path, *, create: bool = True):
         self.path = Path(path)
         from scripts.ironman_jobs.ironman_local_state import connect_private_sqlite
         if str(self.path) == ":memory:":
             self.db, self._state_file = sqlite3.connect(":memory:", timeout=8), None
         else:
-            self.db, self._state_file = connect_private_sqlite(self.path)
+            self.db, self._state_file = connect_private_sqlite(self.path, create=create)
+        if not create:
+            tables = {row[0] for row in self.db.execute("SELECT name FROM sqlite_master WHERE type='table'")}
+            required = {"requests", "change_events", "resource_claims", "execution_workers",
+                        "execution_worker_protocol", "worker_recoveries"}
+            if not required <= tables:
+                self.db.close()
+                raise ChangeStop("LEDGER_RECONCILIATION_REQUIRED")
         self.db.executescript("""
             CREATE TABLE IF NOT EXISTS requests (
               request_id TEXT PRIMARY KEY, manifest_sha TEXT NOT NULL,

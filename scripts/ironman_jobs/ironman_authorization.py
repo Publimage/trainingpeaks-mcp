@@ -464,7 +464,7 @@ class HostReviewAuthority:
                 0 <= self.clock() - checkpoint[0] <= self.revocation_max_age_seconds,
                 "REVOCATIONS_MISSING_OR_STALE")
 
-    def authorize_invocation(self, command: dict) -> None:
+    def authorize_invocation(self, command: dict, *, expected_identity: tuple[str, str] | None = None) -> None:
         """Worker admission before draft/provider IO, bound to the signed command."""
         require(self.revocation_max_age_seconds is not None, "REVOCATION_FRESHNESS_POLICY_REQUIRED")
         store = self._store()
@@ -473,6 +473,8 @@ class HostReviewAuthority:
             with store.write_transaction():
                 try:
                     principal = self._identity()
+                    require(expected_identity is None or (principal.issuer, principal.subject) == expected_identity,
+                            "ASSERTION_DISPATCH_IDENTITY_MISMATCH")
                     require(principal.command_sha256 == digest(command), "ASSERTION_COMMAND_MISMATCH")
                     require(self.clock() < principal.expires_at, "ASSERTION_EXPIRED_OR_NOT_CURRENT")
                     self._require_fresh_revocations(store)
@@ -611,3 +613,20 @@ def authority_from_host() -> HostReviewAuthority:
                                    revocation_max_age_seconds=runtime.revocation_max_age_seconds if runtime else None)
     except (OSError, ValueError, TypeError) as exc:
         raise PermissionError("REVIEW_AUTHORITY_CONFIGURATION_INVALID") from exc
+
+
+def delivered_invocation_reconciler(store_path, verifier, assertion_directory, *, revocation_max_age_seconds):
+    """Host-installed read/verify port; never signs, grants or refreshes a feed.
+
+    Run this at authoritative worker-side state, not a producer-side token copy.
+    Worker business/approval/target gates still run before any provider I/O.
+    Same-issuer human mapping is exact. Different IdP/delegation namespaces need
+    an independently attested host mapping, never email or a caller override.
+    """
+    def reconcile(run_id, command, identity):
+        authority = HostReviewAuthority(store_path, verifier,
+            lambda: read_host_file(assertion_path_for_invocation(Path(assertion_directory), run_id), 32768).decode(),
+            invocation_id_provider=lambda: run_id, revocation_max_age_seconds=revocation_max_age_seconds)
+        authority.authorize_invocation(command, expected_identity=(identity.issuer, identity.subject))
+        return True
+    return reconcile

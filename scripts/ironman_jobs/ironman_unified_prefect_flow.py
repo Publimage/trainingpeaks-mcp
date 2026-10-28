@@ -158,7 +158,7 @@ def _run_unified_request(manifest, ledger_path, *, mode, read_transport, request
             raise ChangeStop("EXECUTION_RUNTIME_NOT_CONFIGURED")
         bound, review, guard = checked_execution_binding(manifest, requested_targets)
         adapters = runtime.execution_adapters(bound["manifest"])
-        ledger = Ledger(Path(runtime.ledger_path))
+        ledger = Ledger(Path(runtime.ledger_path), create=False)
         try:
             result = run_changeset(bound["manifest"], adapters, ledger, execute=True,
                                    reviewed_revision=review["approved_revision"],
@@ -181,7 +181,7 @@ def _run_unified_request(manifest, ledger_path, *, mode, read_transport, request
         if read_transport not in {"local", "private_bridge"}:
             raise ChangeStop("UNIFIED_UNSUPPORTED_READ_TRANSPORT")
         bound, _, guard = checked_execution_binding(manifest, requested_targets, recovery=True)
-        ledger = Ledger(Path(canonical_ledger))
+        ledger = Ledger(Path(canonical_ledger), create=False)
         try:
             return recover_execution_worker(bound["manifest"], create_read_registry(read_transport), ledger,
                                             expected_owner=manifest["worker_owner"], authorize_recovery=guard)

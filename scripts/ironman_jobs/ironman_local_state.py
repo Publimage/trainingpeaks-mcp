@@ -56,12 +56,12 @@ class LocalStateFile:
             _identity(meta)
 
 
-def connect_private_sqlite(path: Path) -> tuple[sqlite3.Connection, LocalStateFile]:
+def connect_private_sqlite(path: Path, *, create: bool = True) -> tuple[sqlite3.Connection, LocalStateFile]:
     """Create 0600 BEFORE SQLite; reject aliases/unsafe files without repair."""
     path = Path(path)
     require_private_path(path)
     try:
-        fd = os.open(path, os.O_RDWR | os.O_CREAT | os.O_NOFOLLOW | os.O_NONBLOCK, 0o600)
+        fd = os.open(path, os.O_RDWR | (os.O_CREAT if create else 0) | os.O_NOFOLLOW | os.O_NONBLOCK, 0o600)
     except OSError as exc:
         raise PermissionError("LOCAL_STATE_OPEN_DENIED") from exc
     try:
@@ -71,7 +71,9 @@ def connect_private_sqlite(path: Path) -> tuple[sqlite3.Connection, LocalStateFi
         # inode itself, reusing the shared POSIX primitive without another file.
         with locked_descriptor(fd, timeout=8):
             state.verify()
-            connection = sqlite3.connect(str(path), timeout=8)
+            _require(create or os.fstat(fd).st_size > 0, "LOCAL_STATE_HISTORY_MISSING")
+            connection = sqlite3.connect(str(path) if create else path.as_uri() + "?mode=rw",
+                                         timeout=8, uri=not create)
             try:
                 state.verify()
                 connection.execute("PRAGMA busy_timeout=8000")

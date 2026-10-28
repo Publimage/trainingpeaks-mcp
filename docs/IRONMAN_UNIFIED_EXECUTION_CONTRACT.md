@@ -5,6 +5,23 @@ Status: ARCHITECTURE CONTRACT / NOT DEPLOYED. This is not an authorization to re
 
 ## Current release assessment — 2026-10-27
 
+### 2026-10-28: separate AI review reconciliation (base 3874fd5)
+
+See [the finding-by-finding remediation and verification record](IRONMAN_PR19_REVIEW_RECONCILIATION.md).
+A-01 peer authentication, A-03 held-flow recovery for already delivered assertions,
+and A-02 missing/empty execution-ledger initialization were confirmed and corrected.
+A-04 exact approval/grant binding is already present; B-01 is a false positive on
+integrated PR19. Full valid-snapshot rollback, real IdP/feed/PKI/runtime installation,
+official CI and independent review remain release gates. This supersedes earlier
+release assessments below; historical lab results remain valid within their scope.
+
+The bridge now requires coordinated mTLS migration of all existing clients before
+deployment. It has no plaintext fallback. Held-run reconciliation requires a
+host-installed authoritative verification port and one protected producer lock;
+it cannot mint authority or replace missing assertions. Execution/recovery opens
+an existing ledger only; trusted first provisioning is distinct from restoration.
+No current runtime, protected workflow, denied diagnostic or provider data changed.
+
 ### 2026-10-28: combined HTTP/process-worker release proof
 
 `test_ironman_http_worker_release.py` contains ONE combined release scenario:

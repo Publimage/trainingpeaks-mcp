@@ -45,6 +45,8 @@ async def start_process_lab(tmp_path):
     home = tmp_path / "lab"
     home.mkdir(mode=0o700)
     (home / "assertions").mkdir(mode=0o700)
+    from scripts.ironman_jobs.ironman_unified_changeset_engine import Ledger
+    Ledger(home / "execution.sqlite3").close()  # Explicit trusted host initialization, never request recovery.
     key = ed25519.Ed25519PrivateKey.generate()
     config = {"issuer": "https://synthetic-worker.invalid", "audience": "worker-lab",
         "required_scope": "ironman:operator", "administrators": ["test-admin"],

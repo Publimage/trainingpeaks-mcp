@@ -67,6 +67,8 @@ def host(tmp_path, monkeypatch):
     monkeypatch.delenv("IRONMAN_REVIEW_ASSERTION_FILE", raising=False)
     monkeypatch.setenv("IRONMAN_OPERATION_DRAFT_STORE", str(store))
     ledger = tmp_path / "execution.sqlite3"
+    from scripts.ironman_jobs.ironman_unified_changeset_engine import Ledger
+    Ledger(ledger).close()  # Explicit trusted host initialization, never request recovery.
     monkeypatch.setenv("IRONMAN_OPERATION_EXECUTION_LEDGER", str(ledger))
     verifier = SignedIdentityVerifier(config)
     state = {"proof": None, "grants": set(), "origins": [], "admissions": [], "key": key,
