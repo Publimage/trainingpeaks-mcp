@@ -9,6 +9,7 @@ import socket
 from pathlib import Path
 
 _PROC_TCP = Path("/proc/net/tcp")
+_BRIDGE_IP = "10.114.0.2"
 _BRIDGE_PORT = 8787
 _TUNNEL_PORT = 8080
 
@@ -42,8 +43,7 @@ def tp_get_ironman_runtime_status() -> dict[str, str | int]:
     if listeners is None:
         bridge = tunnel = "UNKNOWN"
     else:
-        bridge = ("LISTENING" if any(ip.startswith("10.") and port == _BRIDGE_PORT
-                                     for ip, port in listeners) else "NOT_OBSERVED")
+        bridge = ("LISTENING" if (_BRIDGE_IP, _BRIDGE_PORT) in listeners else "NOT_OBSERVED")
         tunnel = ("LISTENING" if ("127.0.0.1", _TUNNEL_PORT) in listeners
                   else "NOT_OBSERVED")
     return {
