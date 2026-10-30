@@ -93,6 +93,8 @@ def test_signed_but_invalid_identity_claims_are_refused(authority, change):
     {"alg": "none", "kid": "test-key"}, {"alg": "HS256", "kid": "test-key"},
     {"alg": "RS256", "kid": "test-key"}, {"alg": "EdDSA", "kid": "unknown"},
     {"alg": "EdDSA", "kid": "test-key", "jku": "https://untrusted.invalid/keys"},
+    {"alg": "EdDSA", "kid": "test-key", "typ": []},
+    {"alg": "EdDSA", "kid": "test-key", "typ": {}},
 ])
 def test_token_cannot_choose_another_algorithm_or_key_source(authority, header):
     with pytest.raises(PermissionError):

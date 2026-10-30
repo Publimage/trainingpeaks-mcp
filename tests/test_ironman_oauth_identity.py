@@ -54,7 +54,7 @@ def test_oauth_identity_requires_exact_resource_human_client_and_current_token(o
         OAuthHumanIdentityVerifier(config, clock=lambda: 1000).verify(token(changes))
 
 
-@pytest.mark.parametrize("typ", ["JWT", "id_token", "anything"])
+@pytest.mark.parametrize("typ", ["JWT", "id_token", "anything", [], {}, None, True, 1])
 def test_id_tokens_and_unattested_token_profiles_are_not_access_tokens(oauth_identity, typ):
     config, _, token = oauth_identity
     with pytest.raises(PermissionError):

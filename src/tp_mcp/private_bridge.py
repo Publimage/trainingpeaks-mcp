@@ -223,7 +223,7 @@ def _persist_admin_result(payload: dict[str, Any], config: dict[str, Any]) -> di
     if str(payload.get("source_host") or "") != "ironman-prefect-staging":
         raise ValueError("ADMIN_RESULT_SOURCE_HOST_INVALID")
 
-    clean = {
+    clean: dict[str, Any] = {
         "schema": "IRONMAN_PREFECT_ADMIN_RESULT_V1",
         "job_id": job_id,
         "operation": operation,

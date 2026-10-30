@@ -91,8 +91,6 @@ def runtime_operator(tmp_path, monkeypatch):
     config_path.write_text(json.dumps(config))
     config_path.chmod(0o600)
     store_path, ledger_path = tmp_path / "drafts.sqlite3", tmp_path / "execution.sqlite3"
-    from scripts.ironman_jobs.ironman_unified_changeset_engine import Ledger
-    Ledger(ledger_path).close()  # Explicit trusted host initialization, never request recovery.
     monkeypatch.setenv("IRONMAN_REVIEW_TRUST_CONFIG", str(config_path))
     monkeypatch.delenv("IRONMAN_REVIEW_ASSERTION_FILE", raising=False)
     monkeypatch.setenv("IRONMAN_REVIEW_ASSERTION_DIRECTORY", str(assertion_directory))

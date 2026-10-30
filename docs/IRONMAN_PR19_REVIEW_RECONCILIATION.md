@@ -84,3 +84,56 @@ No temporary plaintext path, request-specific job, new service or infrastructure
 was added. Legacy read-only diagnostic scripts were not repurposed or changed;
 their transport compatibility is part of the coordinated rollout gate. The
 previously denied self-test, mutation-gates file and workflow are untouched.
+
+## 2026-10-30 — corrections from the Linux review of 396ce1c
+
+The separate technical review of the integrated candidate ran the entire suite:
+1905 passed and 7 failed. This follow-up addresses its six finding classes without
+altering production trust, workflow triggers or deployment parameters:
+
+- R1: the common pinned JWT parser requires a textual `typ` before set membership.
+  Both worker and OAuth profiles reject malformed types as authentication errors.
+  Real ASGI regressions alter unsigned headers to list/dict values and require
+  HTTP 401 with no operator admission; there is no broad exception suppression.
+- R2: trusted initial ledger provisioning belongs only to scenarios that execute.
+  Control-only/capability-denial fixtures no longer provision it in advance. The
+  six existing assertions that controls/denials do not create the execution ledger
+  remain intact. Execution and orphan scenarios still provision explicitly.
+- R3: the deployment test requires exactly `{"mode": "preview"}`. No privileged
+  transport/path parameter is restored. The YAML and worker trust gates are unchanged.
+- R4: the admin receipt projection has an explicit `dict[str, Any]` annotation;
+  full source mypy now passes, without disabling a check.
+- R5: uv.lock now matches project 3.2.0 and its already declared runtime/dev extras,
+  including Prefect 3.8.8, FastAPI, Pillow and fitdecode. Resolution preserves
+  existing pins where compatible; this is not a blanket dependency upgrade.
+- R6: keyring availability uses the backend's documented positive-priority API,
+  including its unavailable-priority failure, rather than a class-name heuristic.
+  Tests use real fail/null backends; encrypted fallback remains intact. No real
+  credential is read/written to verify backend capability.
+
+Verification includes a new isolated `uv sync --locked --extra dev` installation,
+lock consistency and installed dependency checks. The locked environment uses
+MCP 2.0.0 / cryptography 46.0.5 / keyring 25.7.0 / Prefect 3.8.8; the fresh-install
+review environment uses MCP 2.3.0 / cryptography 50.0.2 with the same keyring/Prefect.
+Focused locked tests: 139 PASS, 2 deselected. Fresh-install affected authentication,
+HTTP, keyring and all seven formerly failing cases: 66 PASS, 21 deselected, 53.99 s.
+These are overlapping scopes, not a full-suite total. Ruff source/new tests and
+full source mypy pass in both dependency environments; the real SDK 1.26 client
+also passes against the locked server. The full locked regression is warranted
+because the previously stale lock records different SDK/transitive versions.
+
+The operational release remains gated by independent review, official exact-head
+CI, real human identity/delegation/revocations, authenticated runtime management,
+coordinated all-client mTLS migration, authoritative held-run reconciliation and
+verified state-preserving backup/rollback. No new service, request-specific job,
+manifest, permissive fallback or temporary workaround is introduced. No merge,
+deploy, app Refresh or TrainingPeaks write is performed by this follow-up.
+
+Final locked full-suite result: **1923 PASS, 0 failures/errors/skips, 378.34 s**.
+All seven previously failing cases pass with their safety assertions preserved.
+One existing Prefect logging-context warning remains; no warning/error is suppressed.
+Local artifacts: `work/pr19-review-evidence/fixes-full.*` (actual workspace path
+`/workspace/pr19-review-evidence/`), `fixes-focused.*`, `fixes-fresh-regression.*`,
+`fixes-legacy.log` and `fixes-locked-install.log`. These are local QA, not GitHub CI
+or an independent approval. The original 396ce1c review remains historical evidence
+of the pre-correction candidate; this result supersedes its local failing checks.

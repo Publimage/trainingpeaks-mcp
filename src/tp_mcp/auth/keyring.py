@@ -26,12 +26,10 @@ class CredentialResult:
 def is_keyring_available() -> bool:
     """Check if a keyring backend is available."""
     try:
-        # Try to get the current keyring backend
         backend = keyring.get_keyring()
-        # Check if it's a "fail" backend (no real keyring available)
-        backend_name = type(backend).__name__.lower()
-        return not ("fail" in backend_name or "null" in backend_name)
-    except (NoKeyringError, KeyringError):
+        # Use the backend capability API: fail/null both have class name Keyring.
+        return backend.priority > 0
+    except (NoKeyringError, KeyringError, RuntimeError):
         return False
 
 

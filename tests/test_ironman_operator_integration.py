@@ -67,8 +67,6 @@ def host(tmp_path, monkeypatch):
     monkeypatch.delenv("IRONMAN_REVIEW_ASSERTION_FILE", raising=False)
     monkeypatch.setenv("IRONMAN_OPERATION_DRAFT_STORE", str(store))
     ledger = tmp_path / "execution.sqlite3"
-    from scripts.ironman_jobs.ironman_unified_changeset_engine import Ledger
-    Ledger(ledger).close()  # Explicit trusted host initialization, never request recovery.
     monkeypatch.setenv("IRONMAN_OPERATION_EXECUTION_LEDGER", str(ledger))
     verifier = SignedIdentityVerifier(config)
     state = {"proof": None, "grants": set(), "origins": [], "admissions": [], "key": key,
@@ -174,6 +172,7 @@ async def reviewed_request(client, host):
 
 @pytest.mark.parametrize("lose_response", [False, True])
 async def test_complete_mcp_prefect_lifecycle_and_safe_retry(prefect_runtime, host, lose_response):
+    Ledger(host["ledger"]).close()  # Trusted first provisioning for execution only.
     with bind_operator_runtime(host["bindings"]):
         async with Client(server) as client:
             review = await reviewed_request(client, host)
@@ -228,6 +227,7 @@ async def test_mcp_admission_and_writer_capability_are_independent(prefect_runti
 
 
 async def test_mcp_recovers_orphan_without_reactivating_revoked_approval(prefect_runtime, host):
+    Ledger(host["ledger"]).close()  # This scenario executes before orphan recovery.
     from test_ironman_worker_recovery import orphan
     with bind_operator_runtime(host["bindings"]):
         async with Client(server) as client:

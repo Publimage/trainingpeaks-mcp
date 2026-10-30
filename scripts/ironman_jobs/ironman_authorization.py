@@ -135,6 +135,7 @@ class PinnedJWTVerifier:
 
         header, claims, signature = _json(decode(parts[0])), _json(decode(parts[1])), decode(parts[2])
         require(type(header) is dict and set(header) in ({"kid", "alg"}, {"kid", "alg", "typ"}) and
+                type(header.get("typ", "JWT")) is str and
                 header.get("typ", "JWT") in ({"at+jwt"} if access_token else {"JWT", "at+jwt"}) and
                 type(header.get("kid")) is str and header["kid"] in self.keys, "INVALID_ASSERTION_HEADER")
         alg, key = self.keys[header["kid"]]

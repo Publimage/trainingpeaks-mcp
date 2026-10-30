@@ -1,6 +1,7 @@
 """New HTTP boundary only: real SDK/ASGI and test-only IdP, no worker/provider."""
 
 import asyncio
+import base64
 import json
 import time
 from contextlib import asynccontextmanager
@@ -141,6 +142,20 @@ async def test_discovery_and_401_challenge_preserve_exact_issuer_without_authent
         assert denied.status_code == 401
         assert CONFIG.metadata_url in denied.headers["www-authenticate"]
         assert (await rpc(api, "invalid")).status_code == 401
+    assert not boundary.admitted and not boundary.invoked
+
+
+@pytest.mark.parametrize("typ", [[], {}])
+async def test_malformed_unsigned_jwt_header_returns_401_without_invocation(boundary, typ):
+    parts = boundary.token().split(".")
+    header = json.loads(base64.urlsafe_b64decode(parts[0] + "=" * (-len(parts[0]) % 4)))
+    header["typ"] = typ
+    parts[0] = base64.urlsafe_b64encode(json.dumps(header).encode()).decode().rstrip("=")
+    # Deliberately do not re-sign: invalid input must fail as authentication,
+    # before either an uncaught parser error or any trusted host invocation.
+    async with client(boundary) as api:
+        response = await rpc(api, ".".join(parts))
+        assert response.status_code == 401
     assert not boundary.admitted and not boundary.invoked
 
 
