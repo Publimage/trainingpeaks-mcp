@@ -1,8 +1,8 @@
 """ONE Prefect entrypoint for generic IRONMAN plan/library changesets.
 
-Stage 1: provider-backed preview with all six resource categories. Execution
-of provider writes is disabled until each reusable writer adapter has been
-reviewed and canaried via the canonical Proven Paths process.
+Provider-backed preview with all six resource categories. Bound execution
+requires host-installed, independently gated adapters and exact current authority.
+No live writer or production runtime binding is installed by this module.
 
 Prefect owns flow/task history; the SQLite ledger owns item-level receipts.
 Do not duplicate either for an individual plan, workout or attachment.
@@ -26,7 +26,33 @@ from scripts.ironman_jobs.ironman_dynamic_request_store import (
     DraftStore, prepare_draft, compile_preview_changeset,
 )
 
+from scripts.ironman_jobs.ironman_operation_contracts import get_review_authorizer
+
 MAX_MANIFEST_BYTES = 2_000_000
+
+
+def checked_execution_binding(manifest, requested_targets, *, recovery=False):
+    """One immutable reservation/authority boundary for execution and recovery."""
+    from scripts.ironman_jobs.ironman_operation_contracts import (
+        BoundExecutionAuthorization, BoundRecoveryAuthorization,
+    )
+    store_path = os.environ.get("IRONMAN_OPERATION_DRAFT_STORE")
+    if not store_path:
+        raise ChangeStop("DRAFT_STORE_NOT_CONFIGURED")
+    review = dict(approved_revision=manifest["reviewed_revision"], approval_scope=manifest["approval_scope"],
+                  requested_targets=requested_targets)
+    store = DraftStore(Path(store_path))
+    try:
+        bound = store.inspect_execution_binding(manifest["request_id"], manifest["preview_sha256"],
+                                                manifest["approval_sha256"], allow_revoked=recovery, **review)
+    finally:
+        store.close()
+    guard_type = BoundRecoveryAuthorization if recovery else BoundExecutionAuthorization
+    guard = guard_type(Path(store_path), manifest["request_id"], manifest["preview_sha256"],
+                       manifest["approval_sha256"], **review)
+    if guard(bound["manifest"], None) is not True:
+        raise ChangeStop("RECOVERY_AUTHORIZATION_DENIED" if recovery else "EXECUTION_AUTHORIZATION_DENIED")
+    return bound, review, guard
 
 def require_requested_targets(manifest: dict[str, Any],
                               requested_targets: list[dict[str, Any]] | None) -> None:
@@ -36,37 +62,13 @@ def require_requested_targets(manifest: dict[str, Any],
     supply the resource identities resolved from the current request.
     This is one generic guard for every plan, workout, note, PDF and Library.
     """
-    if type(requested_targets) is not list or not requested_targets:
-        raise ChangeStop("REQUEST_TARGET_BINDING_REQUIRED")
-    if len(requested_targets) > 1000:
-        raise ChangeStop("REQUEST_TARGET_BINDING_LIMIT")
-    expected = set()
-    for entry in requested_targets:
-        if type(entry) is not dict or set(entry) != {"kind", "target"}:
-            raise ChangeStop("REQUEST_TARGET_BINDING_SHAPE")
-        kind, target = entry["kind"], entry["target"]
-        if type(kind) is not str or type(target) is not dict or set(target) != {
-            "provider", "owner_id", "container_kind", "container_id", "resource_id"
-        }:
-            raise ChangeStop("REQUEST_TARGET_BINDING_SHAPE")
-        if (target["provider"] != "trainingpeaks"
-                or type(target["owner_id"]) is not int
-                or target["owner_id"] != manifest["owner_id"]
-                or target["container_kind"] not in ("training_plan", "workout_library")
-                or any(type(target[k]) is not int or target[k] <= 0
-                       for k in ("container_id", "resource_id"))):
-            raise ChangeStop("REQUEST_TARGET_BINDING_INVALID")
-        key = (kind, target["provider"], target["owner_id"],
-               target["container_kind"], target["container_id"],
-               target["resource_id"])
-        if key in expected:
-            raise ChangeStop("REQUEST_TARGET_BINDING_DUPLICATE")
-        expected.add(key)
-    actual = {(i["kind"], i["target"]["provider"], i["target"]["owner_id"],
-               i["target"]["container_kind"], i["target"]["container_id"],
-               i["target"]["resource_id"]) for i in manifest["changes"]}
-    if expected != actual:
-        raise ChangeStop("STOP_TARGET_MISMATCH")
+    from scripts.ironman_jobs.ironman_operation_contracts import (
+        TargetBindingError, require_target_binding,
+    )
+    try:
+        require_target_binding(manifest, requested_targets)
+    except TargetBindingError as exc:
+        raise ChangeStop(str(exc)) from exc
 
 
 @task(name="validate-one-ironman-changeset", retries=0, persist_result=False,
@@ -107,20 +109,116 @@ def preview_change_request(manifest: dict[str, Any],
       log_prints=False, persist_result=False)
 def unified_changeset_flow(
     manifest: dict[str, Any],
-    ledger_path: str,
+    ledger_path: str | None = None,
     *,
     mode: str = "preview",
-    read_transport: str = "local",
+    read_transport: str | None = None,
     requested_targets: list[dict[str, Any]] | None = None,
 ) -> dict[str, Any]:
+    from prefect.context import get_run_context
+    try:
+        deployed = getattr(getattr(get_run_context(), "flow_run", None), "deployment_id", None) is not None
+    except RuntimeError:
+        deployed = False  # Existing host-local .fn callers; remote runs have SDK context.
+    if deployed or os.environ.get("IRONMAN_OPERATOR_WORKER_CONFIG") or ledger_path is None:
+        if ledger_path is not None or read_transport is not None:
+            raise PermissionError("WORKER_PRIVILEGED_PARAMETERS_FORBIDDEN")
+        from scripts.ironman_jobs.ironman_worker_runtime import worker_request, publish_worker_receipt
+        command = dict(mode=mode, manifest=manifest, requested_targets=requested_targets)
+        with worker_request(command, flow_source=__file__) as runtime:
+            result = _run_unified_request(manifest, runtime.ledger_path, mode=mode,
+                read_transport=runtime.read_transport, requested_targets=requested_targets)
+            publish_worker_receipt(command, result)
+            return result
+    return _run_unified_request(manifest, ledger_path, mode=mode,
+        read_transport=read_transport or "local", requested_targets=requested_targets)
+
+
+def _run_unified_request(manifest, ledger_path, *, mode, read_transport, requested_targets):
     """One generic flow: any plan/library resource type and any target ID.
 
-    NOTE: this deployment is preview-only, not a hidden alternate publishing
-    route. A separate reviewed release may enable normal approved writers.
+    The current deployment stays preview-only. Bound execution requires host
+    composition and per-capability gates; mode=publish remains denied.
     """
     # One shared flow now accepts an operation draft from any authorized chat.
-    # This prepares a persistent request only. It NEVER reads/writes provider
-    # data, declares approval, or selects targets from a previous manifest.
+    # Control actions persist decisions only after independent authorization.
+    # No control action opens a provider or executes a changeset.
+    from tp_mcp.operator_runtime import current_bindings
+    runtime = current_bindings()
+    if mode == "publish":
+        raise ChangeStop("PUBLISHING_NOT_YET_ENABLED_FOR_UNIFIED_FLOW")
+    if runtime is not None and runtime.on_flow_start is not None:
+        runtime.on_flow_start(mode, json.loads(json.dumps(manifest)))
+    if mode == "execute_bound":
+        fields = {"schema", "request_id", "preview_sha256", "approval_sha256",
+                  "reviewed_revision", "approval_scope"}
+        if type(manifest) is not dict or set(manifest) != fields or manifest.get("schema") != "IRONMAN_REVIEW_INPUT_V1":
+            raise ChangeStop("REVIEW_INPUT_SHAPE")
+        if runtime is None or Path(ledger_path) != Path(runtime.ledger_path):
+            raise ChangeStop("EXECUTION_RUNTIME_NOT_CONFIGURED")
+        bound, review, guard = checked_execution_binding(manifest, requested_targets)
+        adapters = runtime.execution_adapters(bound["manifest"])
+        ledger = Ledger(Path(runtime.ledger_path), create=False)
+        try:
+            result = run_changeset(bound["manifest"], adapters, ledger, execute=True,
+                                   reviewed_revision=review["approved_revision"],
+                                   approval_scope=review["approval_scope"], authorize_execution=guard)
+            return {**result, "mode": mode, "publication_enabled": False}
+        finally:
+            ledger.close()
+    if mode == "recover_worker":
+        from scripts.ironman_jobs.ironman_unified_changeset_engine import recover_execution_worker
+        fields = {"schema", "request_id", "preview_sha256", "approval_sha256",
+                  "reviewed_revision", "approval_scope", "worker_owner"}
+        if type(manifest) is not dict or set(manifest) != fields or manifest.get("schema") != "IRONMAN_RECOVERY_INPUT_V1":
+            raise ChangeStop("RECOVERY_INPUT_SHAPE")
+        store_path = os.environ.get("IRONMAN_OPERATION_DRAFT_STORE")
+        canonical_ledger = os.environ.get("IRONMAN_OPERATION_EXECUTION_LEDGER")
+        if not store_path or not canonical_ledger or not Path(canonical_ledger).is_absolute():
+            raise ChangeStop("RECOVERY_RUNTIME_NOT_CONFIGURED")
+        if Path(ledger_path).resolve() != Path(canonical_ledger).resolve():
+            raise ChangeStop("RECOVERY_LEDGER_MISMATCH")
+        if read_transport not in {"local", "private_bridge"}:
+            raise ChangeStop("UNIFIED_UNSUPPORTED_READ_TRANSPORT")
+        bound, _, guard = checked_execution_binding(manifest, requested_targets, recovery=True)
+        ledger = Ledger(Path(canonical_ledger), create=False)
+        try:
+            return recover_execution_worker(bound["manifest"], create_read_registry(read_transport), ledger,
+                                            expected_owner=manifest["worker_owner"], authorize_recovery=guard)
+        finally:
+            ledger.close()
+    if mode in {"approve_preview", "revoke_approval", "bind_execution"}:
+        # The caller supplies selectors, never its own authority or principal.
+        fields = {"schema", "request_id", "preview_sha256", "reviewed_revision", "approval_scope"}
+        if mode != "approve_preview":
+            fields.add("approval_sha256")
+        if type(manifest) is not dict or set(manifest) != fields or manifest.get("schema") != "IRONMAN_REVIEW_INPUT_V1":
+            raise ChangeStop("REVIEW_INPUT_SHAPE")
+        store_path = os.environ.get("IRONMAN_OPERATION_DRAFT_STORE")
+        if not store_path:
+            raise ChangeStop("DRAFT_STORE_NOT_CONFIGURED")
+        store = DraftStore(Path(store_path))
+        try:
+            snapshot = store.get_preview(manifest["request_id"], manifest["preview_sha256"])
+            if snapshot is None:
+                raise ChangeStop("PREVIEW_VERSION_NOT_FOUND")
+            require_requested_targets(snapshot["manifest"], requested_targets)
+            # A deep copy prevents an authorizer accidentally mutating the
+            # persisted selectors subsequently used by the store.
+            command = json.loads(json.dumps({
+                "action": mode, "review": manifest,
+                "manifest": snapshot["manifest"],
+                "requested_targets": requested_targets,
+            }))
+            try:
+                result = get_review_authorizer().run_control(command, store)
+            except PermissionError as exc:
+                raise ChangeStop("REVIEW_AUTHORIZATION_DENIED") from exc
+            # Even an approved binding is only a reservation. Do not open the
+            # execution ledger, install adapters or expose an executable mode.
+            return {**result, "mode": mode, "publication_enabled": False, "provider_writes": 0}
+        finally:
+            store.close()
     if mode == "prepare":
         if type(manifest) is not dict or set(manifest) not in (
             {"schema", "items"}, {"schema", "items", "request_key"}
@@ -237,6 +335,16 @@ def unified_changeset_flow(
     validate_change_request(manifest)
     require_requested_targets(manifest, requested_targets)
     return preview_change_request(manifest, ledger_path, read_transport)
+
+
+def compose_operator_runtime(**host_dependencies):
+    """One host composition root; no Prefect dependency in MCP catalog startup.
+
+    Only trusted host code calls this. Tool/flow parameters cannot install
+    dependencies, identities or callbacks. The production host is not wired yet.
+    """
+    from tp_mcp.operator_runtime import OperatorBindings
+    return OperatorBindings(invoke_flow=unified_changeset_flow, **host_dependencies)
 
 
 def load_manifest(path: Path) -> dict[str, Any]:

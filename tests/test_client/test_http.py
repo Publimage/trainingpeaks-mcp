@@ -1,4 +1,4 @@
-"""Tests for HTTP client, including throttling and athlete ID caching."""
+"""Tests for HTTP client, including throttling and live athlete identity."""
 
 import time
 from unittest.mock import AsyncMock
@@ -72,97 +72,108 @@ class TestThrottling:
 
 
 class TestEnsureAthleteId:
-    """Tests for athlete ID caching via ensure_athlete_id."""
-
-    @pytest.fixture(autouse=True)
-    def _clear_cache(self):
-        """Reset class-level caches between tests."""
-        TPClient._cached_athlete_id = None
-        TPClient._cached_user_data = None
-        TPClient._shared_token_cache = None
-        yield
-        TPClient._cached_athlete_id = None
-        TPClient._cached_user_data = None
-        TPClient._shared_token_cache = None
+    """Identity must come from a current provider response, not process memory."""
 
     @pytest.mark.asyncio
-    async def test_returns_cached_class_level_value(self):
-        """Should return class-level cached athlete ID without API call."""
-        TPClient._cached_athlete_id = 999
+    async def test_rechecks_same_client_and_does_not_reuse_previous_self(self):
         client = TPClient()
-        client.get = AsyncMock()  # should not be called
-
-        result = await client.ensure_athlete_id()
-
-        assert result == 999
-        client.get.assert_not_called()
+        client.get = AsyncMock(side_effect=[
+            APIResponse(success=True, data={"user": {"personId": 42}}),
+            APIResponse(success=True, data={"user": {"personId": 84}}),
+        ])
+        assert await client.ensure_athlete_id() == 42
+        assert await client.ensure_athlete_id() == 84
+        assert client.athlete_id == 84
+        assert client.get.await_count == 2
 
     @pytest.mark.asyncio
-    async def test_fetches_from_api_and_caches(self):
-        """Should fetch athlete ID from API and cache at class level."""
+    async def test_fetches_provider_identity(self):
         client = TPClient()
         client.get = AsyncMock(return_value=APIResponse(success=True, data={"user": {"personId": 42}}))
-
-        result = await client.ensure_athlete_id()
-
-        assert result == 42
-        assert TPClient._cached_athlete_id == 42
+        assert await client.ensure_athlete_id() == 42
         assert client.athlete_id == 42
 
     @pytest.mark.asyncio
     async def test_falls_back_to_athletes_array(self):
-        """Should use athletes[0].athleteId when personId is missing."""
         client = TPClient()
-        client.get = AsyncMock(
-            return_value=APIResponse(
-                success=True,
-                data={"user": {"athletes": [{"athleteId": 77}]}},
-            )
-        )
-
-        result = await client.ensure_athlete_id()
-
-        assert result == 77
-        assert TPClient._cached_athlete_id == 77
+        client.get = AsyncMock(return_value=APIResponse(success=True, data={"athletes": [{"athleteId": 77}]}))
+        assert await client.ensure_athlete_id() == 77
 
     @pytest.mark.asyncio
-    async def test_returns_none_on_api_failure(self):
-        """Should return None when API call fails (no caching)."""
+    async def test_failed_provider_read_clears_last_identity_without_fallback(self):
         client = TPClient()
-        client.get = AsyncMock(return_value=APIResponse(success=False, message="Auth failed"))
-
-        result = await client.ensure_athlete_id()
-
-        assert result is None
-        assert TPClient._cached_athlete_id is None
-
-    @pytest.mark.asyncio
-    async def test_class_cache_persists_across_instances(self):
-        """Class-level cache should persist across TPClient instances."""
-        client1 = TPClient()
-        client1.get = AsyncMock(return_value=APIResponse(success=True, data={"user": {"personId": 123}}))
-        await client1.ensure_athlete_id()
-
-        # Second instance should use cached value without API call
-        client2 = TPClient()
-        client2.get = AsyncMock()
-
-        result = await client2.ensure_athlete_id()
-
-        assert result == 123
-        client2.get.assert_not_called()
+        client.get = AsyncMock(side_effect=[APIResponse(success=True, data={"personId": 42}),
+                                            APIResponse(success=False, message="Auth failed")])
+        assert await client.ensure_athlete_id() == 42
+        assert await client.ensure_athlete_id() is None
+        assert client.athlete_id is None
 
     @pytest.mark.asyncio
-    async def test_returns_instance_athlete_id_if_set(self):
-        """Should return instance-level athlete_id if already set."""
+    async def test_different_client_has_its_own_provider_identity(self):
+        first, second = TPClient(), TPClient()
+        first.get = AsyncMock(return_value=APIResponse(success=True, data={"personId": 123}))
+        second.get = AsyncMock(return_value=APIResponse(success=True, data={"personId": 456}))
+        assert await first.ensure_athlete_id() == 123
+        assert await second.ensure_athlete_id() == 456
+        second.get.assert_awaited_once_with("/users/v3/user")
+
+    @pytest.mark.asyncio
+    async def test_manually_set_last_identity_does_not_replace_provider_read(self):
         client = TPClient()
         client.athlete_id = 555
-        client.get = AsyncMock()
+        client.get = AsyncMock(return_value=APIResponse(success=True, data={"personId": 42}))
+        assert await client.ensure_athlete_id() == 42
+        client.get.assert_awaited_once_with("/users/v3/user")
 
-        result = await client.ensure_athlete_id()
 
-        assert result == 555
-        client.get.assert_not_called()
+class TestLiveRoster:
+    @pytest.mark.asyncio
+    @pytest.mark.parametrize("athlete_id", [901, 12004, 890001])
+    async def test_new_link_and_withdrawal_are_seen_without_restart(self, athlete_id):
+        from tp_mcp.client.context import athlete_override
+
+        member = {"athleteId": athlete_id, "firstName": "New", "lastName": "Runner"}
+        client = TPClient()
+        client.get = AsyncMock(side_effect=[
+            APIResponse(success=True, data={"personId": 123, "athletes": []}),
+            APIResponse(success=True, data={"personId": 123, "athletes": [member]}),
+            APIResponse(success=True, data={"personId": 123, "athletes": []}),
+            APIResponse(success=False, message="Provider refused access"),
+        ])
+        token = athlete_override.set("New Runner")
+        try:
+            assert await client.ensure_athlete_id() is None
+            assert await client.ensure_athlete_id() == athlete_id
+            assert await client.ensure_athlete_id() is None
+            assert client.athlete_id is None
+            assert await client.ensure_athlete_id() is None
+        finally:
+            athlete_override.reset(token)
+        assert client.get.await_count == 4
+        assert all(c.args == ("/users/v3/user",) for c in client.get.await_args_list)
+
+    @pytest.mark.asyncio
+    async def test_group_only_id_is_not_an_authorized_roster_identity(self):
+        from tp_mcp.client.context import athlete_override
+
+        client = TPClient()
+        client.get = AsyncMock(return_value=APIResponse(success=True, data={"personId": 123, "athletes": []}))
+        token = athlete_override.set("901")
+        try:
+            assert await client.ensure_athlete_id() is None
+        finally:
+            athlete_override.reset(token)
+
+    @pytest.mark.asyncio
+    @pytest.mark.parametrize("payload", [[], {"user": None}, {"athletes": None}, {"athletes": [None]}])
+    async def test_invalid_roster_fails_closed_instead_of_returning_previous_data(self, payload):
+        client = TPClient()
+        client.get = AsyncMock(side_effect=[
+            APIResponse(success=True, data={"personId": 123, "athletes": []}),
+            APIResponse(success=True, data=payload),
+        ])
+        assert await client._get_user_data() == {"personId": 123, "athletes": []}
+        assert await client._get_user_data() is None
 
 
 class TestSharedTokenCache:

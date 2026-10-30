@@ -133,9 +133,8 @@ class TPClient:
     Handles authentication, error handling, and response parsing.
     """
 
-    # Class-level caches: persist across instances within the MCP server process
-    _cached_athlete_id: int | None = None
-    _cached_user_data: dict | None = None
+    # Only transport tokens are shared. Provider identity/roster are live data,
+    # not process-lifetime authority: new links and withdrawals must be visible.
     _shared_token_cache: TokenCache | None = None
 
     @classmethod
@@ -582,25 +581,30 @@ class TPClient:
 
     @property
     def athlete_id(self) -> int | None:
-        """Get the cached athlete ID."""
+        """Get the last resolved athlete ID (not authorization for another call)."""
         return self._athlete_id
 
     @athlete_id.setter
     def athlete_id(self, value: int | None) -> None:
-        """Set the athlete ID."""
+        """Set the last observation; ensure_athlete_id still consults the provider."""
         self._athlete_id = value
 
     async def _get_user_data(self) -> dict | None:
-        """Get user data, using class-level cache to avoid redundant API calls."""
-        if TPClient._cached_user_data is not None:
-            return TPClient._cached_user_data
+        """Read the authenticated provider account/roster without a local cache.
 
+        In particular, never reuse an earlier roster after an unsuccessful read.
+        Callers can reconcile a group membership change with another bounded
+        read through this same method; group IDs alone never establish identity.
+        """
         response = await self.get("/users/v3/user")
-        if not response.success or not response.data:
+        if not response.success or not isinstance(response.data, dict):
             return None
 
         user_data = response.data.get("user", response.data)
-        TPClient._cached_user_data = user_data
+        if (not isinstance(user_data, dict) or not user_data
+                or not isinstance(user_data.get("athletes", []), list)
+                or any(not isinstance(a, dict) for a in user_data.get("athletes", []))):
+            return None
         return user_data
 
     async def ensure_athlete_id(self) -> int | None:
@@ -610,22 +614,15 @@ class TPClient:
         target a specific athlete by name or ID. When no override is set,
         resolves to the coach's own athlete entry.
 
-        Caches at class level only when no athlete override is active.
+        Re-resolve from the current provider roster, including the default self.
+        The athlete_id property records the last successful lookup only; it is
+        never a substitute for current provider evidence.
         """
         from tp_mcp.client.context import athlete_override
 
         athlete = athlete_override.get()
 
-        # Use cache only when no specific athlete is requested
-        if athlete is None:
-            if TPClient._cached_athlete_id is not None:
-                self._athlete_id = TPClient._cached_athlete_id
-                return TPClient._cached_athlete_id
-
-            if self._athlete_id is not None:
-                TPClient._cached_athlete_id = self._athlete_id
-                return self._athlete_id
-
+        self._athlete_id = None
         user_data = await self._get_user_data()
         if not user_data:
             return None
@@ -687,8 +684,6 @@ class TPClient:
 
         if athlete_id:
             self._athlete_id = athlete_id
-            if athlete is None:
-                TPClient._cached_athlete_id = athlete_id
 
         return athlete_id
 

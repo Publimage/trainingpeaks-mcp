@@ -27,6 +27,8 @@ from mcp.types import (
 from tp_mcp import __version__, apps
 from tp_mcp.auth import get_credential, validate_auth
 from tp_mcp.client.context import athlete_override
+from tp_mcp.operator_http import guard_operator_http
+from tp_mcp.operator_runtime import MODES as OPERATOR_MODES
 from tp_mcp.private_bridge import maybe_start_private_bridge
 from tp_mcp.tools import (
     tp_add_athletes_to_group,
@@ -1495,6 +1497,19 @@ TOOLS = [
             "required": ["kind", "query"],
         },
     ),
+    Tool(
+        name="tp_ironman_request",
+        description=("One durable IRONMAN request through the existing Prefect flow. "
+                     "Requires trusted host request identity and runtime bindings; missing bindings deny. "
+                     "Execution also requires exact preview approval and independently enabled writer capabilities. "
+                     "Does not activate publishing or accept runtime paths, credentials or principals."),
+        input_schema={"type": "object", "additionalProperties": False,
+                      "properties": {
+                          "mode": {"type": "string", "enum": list(OPERATOR_MODES)},
+                          "manifest": {"type": "object"},
+                          "requested_targets": {"type": "array", "items": {"type": "object"}}},
+                      "required": ["mode", "manifest", "requested_targets"]},
+    ),
     # --- IRONMAN Cloud Operator ---
     Tool(
         name="tp_ironman_operator",
@@ -2177,6 +2192,7 @@ _READ_ONLY_EXTRA = {"tp_auth_status", "tp_ironman_resolve_target"}
 # these writes to the account selected by the authenticated session; the
 # Publishing Gate additionally restricts real-athlete mutations.
 _DESTRUCTIVE_TOOLS = {
+    "tp_ironman_request",
     "tp_batch_delete_beginner_classic_strength",
     "tp_delete_availability",
     "tp_delete_equipment",
@@ -2211,6 +2227,7 @@ _DESTRUCTIVE_TOOLS = {
 # sets, deletes and membership changes converge on the same state and are
 # therefore idempotent.
 _NON_IDEMPOTENT_WRITES = {
+    "tp_ironman_request",
     "tp_ironman_operator",
     "tp_add_note_comment",
     "tp_add_workout_comment",
@@ -2858,6 +2875,12 @@ async def _h_ironman_operator(args):
         requested_workout_ids=args.get("requested_workout_ids"),
     )
 
+
+@_handler("tp_ironman_request")
+async def _h_ironman_request(args):
+    from tp_mcp.operator_runtime import dispatch_operator_request
+    return await dispatch_operator_request(args)
+
 @_handler("tp_sync_intermediate_native_notes")
 async def _h_sync_native_notes(args):
     return await tp_sync_intermediate_native_notes(
@@ -3031,6 +3054,16 @@ server = Server(
     on_read_resource=_on_read_resource,
 )
 server.extensions[apps.EXTENSION_ID] = {}
+
+# Transport policy on the same server; no HTTP app/listener starts with stdio.
+server.middleware.append(guard_operator_http)
+
+
+def create_operator_http_app(**protected_dependencies):
+    """Trusted host opt-in factory; default serve command remains stdio."""
+    from tp_mcp.operator_http import create_operator_http_app as compose_http
+    return compose_http(server, **protected_dependencies)
+
 
 
 async def _validate_auth_on_startup() -> bool:

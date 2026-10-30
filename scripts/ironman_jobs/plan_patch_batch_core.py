@@ -8,8 +8,6 @@ Existing endpoint-specific publishers can migrate to this engine incrementally.
 """
 from __future__ import annotations
 
-import asyncio
-import fcntl
 import copy
 import hashlib
 import json
@@ -18,6 +16,8 @@ import tempfile
 from pathlib import Path
 from contextlib import contextmanager
 from typing import Any, Protocol
+
+from scripts.ironman_jobs.ironman_file_lock import FileLockBusy, exclusive_file_lock
 
 
 SCHEMA = "IRONMAN_PLAN_PATCH_V1"
@@ -51,6 +51,32 @@ def sha256(obj: Any) -> str:
     return hashlib.sha256(canonical(obj).encode("utf-8")).hexdigest()
 
 
+def validate_patch_fields(before: dict[str, Any], after: dict[str, Any]) -> None:
+    """Validate a selected-field delta without inventing plan metadata.
+
+    Shared by the reviewed batch publisher and the typed ChangeSet adapter.
+    This pure function grants no permission and does not modify its inputs.
+    """
+    require(isinstance(before, dict) and isinstance(after, dict)
+            and bool(after) and before.keys() == after.keys(), "FIELD_SET_MISMATCH")
+    require(set(after).issubset(ALLOWED), "FIELD_NOT_PERMITTED")
+    for field, value in after.items():
+        if field in {"title", "description"}:
+            require(isinstance(value, str) and bool(value.strip()), "EMPTY_TEXT")
+            if field == "title":
+                require(len(value) <= 255, "TITLE_TOO_LONG")
+            if field == "description":
+                require("\\n" not in value, "LITERAL_NEWLINE_ESCAPE")
+        if field in {"distancePlanned", "totalTimePlanned"}:
+            require(type(value) in {int, float} and 0 < value < 10000000,
+                    "BAD_POSITIVE_PLANNED_VALUE")
+        if field == "structure":
+            require(isinstance(value, dict) and isinstance(value.get("structure"), list)
+                    and bool(value["structure"]), "BUILDER_STRUCTURE_REQUIRED")
+            require(bool(value.get("polyline")), "BUILDER_POLYLINE_REQUIRED")
+    require(before != after, "NO_CHANGE_ITEM")
+
+
 def validate_manifest(manifest: dict[str, Any]) -> str:
     require(isinstance(manifest, dict), "MANIFEST_REQUIRED")
     require(manifest.get("schema") == SCHEMA, "MANIFEST_SCHEMA")
@@ -72,24 +98,7 @@ def validate_manifest(manifest: dict[str, Any]) -> str:
         require(type(wid) is int and wid > 0 and wid not in ids, "DUPLICATE_OR_BAD_ID")
         ids.add(wid)
         before, after = row.get("before"), row.get("after")
-        require(isinstance(before, dict) and isinstance(after, dict)
-                and bool(after) and before.keys() == after.keys(), "FIELD_SET_MISMATCH")
-        require(set(after).issubset(ALLOWED), "FIELD_NOT_PERMITTED")
-        for field, value in after.items():
-            if field in {"title", "description"}:
-                require(isinstance(value, str) and bool(value.strip()), "EMPTY_TEXT")
-                if field == "title":
-                    require(len(value) <= 255, "TITLE_TOO_LONG")
-                if field == "description":
-                    require("\\n" not in value, "LITERAL_NEWLINE_ESCAPE")
-            if field in {"distancePlanned", "totalTimePlanned"}:
-                require(type(value) in {int, float} and 0 < value < 10000000,
-                        "BAD_POSITIVE_PLANNED_VALUE")
-            if field == "structure":
-                require(isinstance(value, dict) and isinstance(value.get("structure"), list)
-                        and bool(value["structure"]), "BUILDER_STRUCTURE_REQUIRED")
-                require(bool(value.get("polyline")), "BUILDER_POLYLINE_REQUIRED")
-        require(before != after, "NO_CHANGE_ITEM")
+        validate_patch_fields(before, after)
     return sha256(manifest)
 
 
@@ -243,16 +252,11 @@ def _exclusive_run(path: Path):
     require(not path.parent.is_symlink(), "UNSAFE_LOCK_PARENT")
     os.chmod(path.parent, 0o700)
     lock_path = path.parent / (path.name + ".lock")
-    fd = os.open(lock_path, os.O_CREAT | os.O_RDWR | getattr(os, "O_NOFOLLOW", 0), 0o600)
-    with os.fdopen(fd, "a+") as handle:
-        try:
-            fcntl.flock(handle.fileno(), fcntl.LOCK_EX | fcntl.LOCK_NB)
-        except BlockingIOError as exc:
-            raise PlanPatchStop("ANOTHER_PLAN_BATCH_RUNNING") from exc
-        try:
+    try:
+        with exclusive_file_lock(lock_path):
             yield
-        finally:
-            fcntl.flock(handle.fileno(), fcntl.LOCK_UN)
+    except FileLockBusy as exc:
+        raise PlanPatchStop("ANOTHER_PLAN_BATCH_RUNNING") from exc
 
 
 async def run_batch(
@@ -274,4 +278,4 @@ async def run_batch(
 
 
 __all__ = ["PlanPatchStop", "PlanGateway", "validate_manifest", "sha256",
-           "run_batch", "intended_payload"]
+           "run_batch", "intended_payload", "validate_patch_fields"]

@@ -10,15 +10,18 @@ import asyncio
 import copy
 import json
 import re
+import ssl
 from collections.abc import Callable
 from datetime import datetime, timezone
 from types import SimpleNamespace
 from typing import Any
 from urllib.error import HTTPError, URLError
-from urllib.request import HTTPRedirectHandler, ProxyHandler, Request, build_opener
+from urllib.request import Request
+
+from tp_mcp.bridge_tls import bridge_client_opener
 
 SCHEMA = "IRONMAN_SWIM_BRIDGE_INPUT_V1"
-BRIDGE_URL = "http://10.114.0.2:8787/v1/swim-audit-input"
+BRIDGE_URL = "https://10.114.0.2:8787/v1/swim-audit-input"
 MAX_BYTES = 2 * 1024 * 1024
 TARGET_KEYS = {"provider", "owner_id", "resource_kind", "container_id", "workout_id"}
 ITEM_KEYS = {"exerciseLibraryId", "exerciseLibraryItemId", "exerciseLibraryItemType",
@@ -121,18 +124,13 @@ async def build_swim_input(payload: Any, allowed_targets: Any, *, client: Any,
     return copy.deepcopy(result)
 
 
-class _NoRedirect(HTTPRedirectHandler):
-    def redirect_request(self, req, fp, code, msg, headers, newurl):
-        return None
-
-
 def _http_read(payload: dict) -> dict:
     raw = json.dumps(payload, allow_nan=False, separators=(",", ":")).encode("utf-8")
     _need(len(raw) <= 4096, "SWIM_REQUEST_TOO_LARGE")
     request = Request(BRIDGE_URL, data=raw, method="POST",
                       headers={"Content-Type": "application/json"})
     # Preserve the existing VPC route; never forward through environment proxies.
-    opener = build_opener(ProxyHandler({}), _NoRedirect())
+    opener = bridge_client_opener()
     try:
         with opener.open(request, timeout=30) as response:
             _need(response.status == 200, "SWIM_BRIDGE_HTTP_STATUS")
@@ -143,7 +141,13 @@ def _http_read(payload: dict) -> dict:
         if exc.code == 503:
             raise ConnectionError("SWIM_BRIDGE_TEMPORARILY_UNAVAILABLE") from None
         raise RuntimeError("SWIM_BRIDGE_HTTP_REJECTED") from None
-    except (URLError, TimeoutError, ConnectionError):
+    except ssl.SSLError:
+        raise PermissionError("SWIM_BRIDGE_PEER_AUTH_FAILED") from None
+    except URLError as error:
+        if isinstance(error.reason, ssl.SSLError):
+            raise PermissionError("SWIM_BRIDGE_PEER_AUTH_FAILED") from None
+        raise ConnectionError("SWIM_BRIDGE_TRANSPORT_UNAVAILABLE") from None
+    except (TimeoutError, ConnectionError):
         raise ConnectionError("SWIM_BRIDGE_TRANSPORT_UNAVAILABLE") from None
     _need(len(data) <= MAX_BYTES, "SWIM_BRIDGE_RESPONSE_TOO_LARGE")
     return json.loads(data.decode("utf-8"))

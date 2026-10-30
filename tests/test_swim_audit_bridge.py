@@ -10,8 +10,11 @@ import types
 from contextlib import contextmanager
 from contextvars import ContextVar
 from datetime import datetime, timedelta, timezone
-from http.client import HTTPConnection
+from http.client import HTTPSConnection
 from http.server import ThreadingHTTPServer
+from bridge_tls_fixture import secure_bridge_server, tls_metadata
+from pathlib import Path
+import tempfile
 from pathlib import Path
 from types import SimpleNamespace
 from urllib.error import HTTPError
@@ -191,7 +194,7 @@ def test_http_boundary_does_not_retry_or_follow_redirect(monkeypatch, code, exce
         def open(self, request, timeout):
             calls.append((request.full_url, timeout))
             raise HTTPError(request.full_url, code, "private error", {}, io.BytesIO())
-    monkeypatch.setattr(transport, "build_opener", lambda *_: Opener())
+    monkeypatch.setattr(transport, "bridge_client_opener", lambda: Opener())
     with pytest.raises(exception) as failure:
         _http_read({"target": TARGET})
     assert "private error" not in str(failure.value)
@@ -231,18 +234,24 @@ def config():
 @contextmanager
 def server(bridge, cfg):
     httpd = ThreadingHTTPServer(("127.0.0.1", 0), bridge._handler_factory(cfg))
+    temporary = tempfile.TemporaryDirectory()
+    tls = secure_bridge_server(httpd, cfg, Path(temporary.name))
+    if cfg.get("result_writer_sources"):
+        next(iter(cfg["tls"]["peers"].values()))["result_writer"] = True
     thread = threading.Thread(target=httpd.serve_forever, daemon=True)
     thread.start()
     try:
-        yield httpd.server_port
+        yield httpd.server_port, tls.context
     finally:
         httpd.shutdown()
         httpd.server_close()
         thread.join(timeout=2)
+        temporary.cleanup()
 
 
 def request(port, method="POST", path="/v1/swim-audit-input", payload=None):
-    connection = HTTPConnection("127.0.0.1", port, timeout=3)
+    port, context = port
+    connection = HTTPSConnection("127.0.0.1", port, context=context, timeout=3)
     body = json.dumps({"target": TARGET} if payload is None else payload)
     try:
         connection.request(method, path, body=body, headers={"Content-Type": "application/json"})
@@ -302,10 +311,12 @@ def test_config_default_off_and_invalid_allowlist_fails(bridge, tmp_path):
     cfg["allowed_sources"] = cfg["result_writer_sources"] = ["10.0.0.2"]
     cfg.pop("allowed_swim_templates")
     path = tmp_path / "config.json"
-    path.write_text(json.dumps(cfg))
+    cfg["tls"]=tls_metadata()
+    path.write_text(json.dumps(cfg)); path.chmod(0o600)
     assert module._load_config(path)["allowed_swim_templates"] == []
     cfg["allowed_swim_templates"] = [dict(TARGET, workout_id="../x")]
-    path.write_text(json.dumps(cfg))
+    cfg["tls"]=tls_metadata()
+    path.write_text(json.dumps(cfg)); path.chmod(0o600)
     with pytest.raises(module.BridgeConfigError):
         module._load_config(path)
 
@@ -322,7 +333,8 @@ def test_unknown_provider_rejection_http_is_not_retryable(bridge):
 def test_existing_no_store_header_is_preserved(bridge):
     module, _ = bridge
     with server(module, config()) as port:
-        connection = HTTPConnection("127.0.0.1", port, timeout=3)
+        port, context = port
+        connection = HTTPSConnection("127.0.0.1", port, context=context, timeout=3)
         connection.request("GET", "/health")
         response = connection.getresponse()
         assert response.getheader("Cache-Control") == "no-store"

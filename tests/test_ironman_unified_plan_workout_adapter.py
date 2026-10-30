@@ -12,6 +12,54 @@ from scripts.ironman_jobs.ironman_unified_plan_workout_adapter import (
     ReviewedClassicPlanPatchAdapter,
 )
 
+
+@pytest.mark.parametrize("field,value,expected", [
+    ("title", "", "EMPTY_TEXT"),
+    ("title", "x" * 256, "TITLE_TOO_LONG"),
+    ("description", r"literal\nnewline", "LITERAL_NEWLINE_ESCAPE"),
+    ("totalTimePlanned", 0, "BAD_POSITIVE_PLANNED_VALUE"),
+    ("distancePlanned", True, "BAD_POSITIVE_PLANNED_VALUE"),
+    ("structure", {"structure": [], "polyline": "x"}, "BUILDER_STRUCTURE_REQUIRED"),
+    ("structure", {"structure": [{}]}, "BUILDER_POLYLINE_REQUIRED"),
+])
+def test_field_validation_parity_without_synthetic_plan_metadata(field, value, expected):
+    from scripts.ironman_jobs.plan_patch_batch_core import PlanPatchStop, validate_manifest, validate_patch_fields
+    from scripts.ironman_jobs.ironman_unified_plan_workout_adapter import validate_classic_patch
+    from scripts.ironman_jobs.ironman_unified_changeset_engine import ChangeStop
+    original = workout(101)
+    change = entry("patch01", 501, original, "changed")
+    change["payload"] = {"fields": [field], "desired": {**original, field: value}}
+    change["after_sha256"] = digest(change["payload"]["desired"])
+    before, after = {field: original.get(field)}, {field: value}
+    batch = {"schema": "IRONMAN_PLAN_PATCH_V1", "owner_id": OWNER,
+             "plan_id": 501, "expected_title": "Actual reviewed title",
+             "expected_is_public": False, "expected_workout_count": 1,
+             "scope": "approved:actual-reviewed-batch",
+             "items": [{"workout_id": 101, "before": before, "after": after}]}
+    saved = deepcopy((original, before, after, batch, change))
+    for check in (lambda: validate_patch_fields(before, after), lambda: validate_manifest(batch)):
+        with pytest.raises(PlanPatchStop, match=expected):
+            check()
+    with pytest.raises(ChangeStop, match="CLASSIC_FIELDS_INVALID:" + expected):
+        validate_classic_patch(change, original)
+    assert (original, before, after, batch, change) == saved
+
+
+@pytest.mark.parametrize("field,value", [
+    ("title", "New title"), ("description", "Real\nnewline"),
+    ("totalTimePlanned", 2.0), ("distancePlanned", 55.0),
+    ("structure", {"structure": [{"type": "step"}], "polyline": "native"}),
+])
+def test_shared_field_validator_accepts_same_values_in_both_paths(field, value):
+    from scripts.ironman_jobs.plan_patch_batch_core import validate_patch_fields
+    from scripts.ironman_jobs.ironman_unified_plan_workout_adapter import validate_classic_patch
+    original = workout(101)
+    change = entry("patch01", 501, original, "changed")
+    change["payload"] = {"fields": [field], "desired": {**original, field: value}}
+    change["after_sha256"] = digest(change["payload"]["desired"])
+    validate_patch_fields({field: original.get(field)}, {field: value})
+    assert validate_classic_patch(change, original) == (501, 101)
+
 OWNER = 2116886
 REV = "b" * 40
 SCOPE = "approved:offline-multi-plan"
@@ -66,6 +114,7 @@ def run(manifest_value, provider, path, *, execute=False, with_writer=True):
             execute=execute,
             reviewed_revision=REV if execute else None,
             approval_scope=SCOPE if execute else None,
+            authorize_execution=lambda *_: True,  # Synthetic authority; no live provider.
         )
     finally:
         journal.close()

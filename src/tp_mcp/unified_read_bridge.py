@@ -11,13 +11,16 @@ from __future__ import annotations
 
 import json
 import re
+import ssl
 from typing import Any
 from urllib.error import HTTPError, URLError
-from urllib.request import HTTPRedirectHandler, ProxyHandler, Request, build_opener
+from urllib.request import Request
+
+from tp_mcp.bridge_tls import BridgeTLSError, bridge_client_opener
 
 SCHEMA = "IRONMAN_UNIFIED_PRIVATE_READ_V1"
 READ_PATH = "/v1/unified-resource-read"
-READ_URL = "http://10.114.0.2:8787" + READ_PATH
+READ_URL = "https://10.114.0.2:8787" + READ_PATH
 REQUEST_MAX_BYTES = 4096
 RESPONSE_MAX_BYTES = 2 * 1024 * 1024
 OWNER = 2116886
@@ -208,11 +211,6 @@ async def build_private_read(payload: Any, policy: Any, read_item=None) -> dict:
     return result
 
 
-class NoRedirect(HTTPRedirectHandler):
-    def redirect_request(self, req, fp, code, msg, headers, newurl):
-        return None
-
-
 def _remote_read(spec: dict) -> dict:
     from scripts.ironman_jobs.ironman_unified_changeset_engine import ChangeStop, SecurityDenied
     validated = validate_spec(spec)
@@ -221,7 +219,10 @@ def _remote_read(spec: dict) -> dict:
     req = Request(READ_URL, data=raw, method="POST",
                   headers={"Content-Type": "application/json"})
     # No redirects and no environment proxy: restricted private VPC destination.
-    opener = build_opener(ProxyHandler({}), NoRedirect())
+    try:
+        opener = bridge_client_opener()
+    except (BridgeTLSError, OSError, ValueError):
+        raise SecurityDenied("UNIFIED_BRIDGE_MTLS_REQUIRED") from None
     try:
         with opener.open(req, timeout=30) as response:
             need(response.status == 200, "UNIFIED_READ_HTTP_STATUS")
@@ -232,7 +233,13 @@ def _remote_read(spec: dict) -> dict:
         if error.code in (408, 429, 502, 503, 504):
             raise ConnectionError("UNIFIED_BRIDGE_TEMPORARILY_UNAVAILABLE") from None
         raise ChangeStop("UNIFIED_BRIDGE_REJECTED") from None
-    except (URLError, TimeoutError, ConnectionError):
+    except ssl.SSLError:
+        raise SecurityDenied("UNIFIED_BRIDGE_PEER_AUTH_FAILED") from None
+    except URLError as error:
+        if isinstance(error.reason, ssl.SSLError):
+            raise SecurityDenied("UNIFIED_BRIDGE_PEER_AUTH_FAILED") from None
+        raise ConnectionError("UNIFIED_BRIDGE_TRANSPORT_UNAVAILABLE") from None
+    except (TimeoutError, ConnectionError):
         raise ConnectionError("UNIFIED_BRIDGE_TRANSPORT_UNAVAILABLE") from None
     need(len(result_bytes) <= RESPONSE_MAX_BYTES, "UNIFIED_READ_RESPONSE_TOO_LARGE")
     try:

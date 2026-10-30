@@ -2,6 +2,485 @@
 
 Status: ARCHITECTURE CONTRACT / NOT DEPLOYED. This is not an authorization to retry a denied operation. Source of truth is Google Drive IRONMAN KNOWLEDGE BASE (00 Core, 00B Emergency, 00C Proven Paths, 11 Agent Orchestration Roadmap).
 
+
+## Current release assessment — 2026-10-27
+
+### 2026-10-30: shared roster freshness and group reconciliation
+
+The existing TPClient no longer retains process-lifetime user data or a default
+athlete ID as authority. `_get_user_data()` performs the existing authenticated
+`GET /users/v3/user` on each call; every target lookup re-resolves against that
+response and clears its previous ID before failure/absence. Only the existing
+transport token cache remains shared. No new endpoint, service, configuration,
+manual refresh flag, athlete whitelist or per-person job is introduced.
+
+Roster listing, profiles, groups and the existing dynamic resolver reuse this
+common path. If a live tag contains IDs missing/nameless in the account roster,
+the group reader takes one more current account read and verifies the same coach.
+It rejects a different coach or failed reconciliation, and exposes unresolved IDs
+with `roster_consistent=false` if the provider still supplies no name. Group
+membership never becomes permission to target an otherwise absent roster ID.
+Provider names are joined without turning null fields into a name such as None.
+
+This deliberately replaces unbounded local identity caching with provider reads,
+adding HTTP traffic rather than a new cache-invalidation protocol. Each actual
+athlete resource operation remains subject to provider permissions. This does not
+claim that the previously issued access token's existence proves a current grant.
+
+New live read-only evidence: account roster 24, selected group 12, one group-only
+ID still has no provider-supplied name in the tool output. A direct profile read
+attests the authenticated coach but projects away the raw roster. Existing live
+tools do not expose a fresh raw roster bypassing the deployed cache, and this
+work does not deploy/reload that runtime. Therefore stale cache is a reproduced
+SOURCE defect and a plausible explanation of the live mismatch, **not a confirmed
+root cause of that individual's case**. No identity is inferred from group order,
+count, UI association or the fact that only one member has no name. If a truly
+fresh provider roster still lacks the ID, provider reconciliation remains open;
+no speculative endpoint or authorization fallback is added to conceal it.
+
+Scoped Linux QA: **724 PASS, 12.91 s**, covering HTTP client/auth/tools, coach
+targeting, profile/group, existing dynamic resolver and private/swim bridges.
+New regressions cover arbitrary new IDs, links and withdrawal on the same client,
+changed default account, missing/invalid/denied reads, unresolved group-only IDs,
+bounded reconciliation and wrong-coach rejection. One integration uses the actual
+roster tools and dynamic resolver with a synthetic GET transport: new name becomes
+resolvable, duplicate names deny, and a withdrawn ID becomes unavailable. A
+baseline differential on 416bf31 makes one GET and returns the old roster twice;
+the corrected source makes two GETs and sees the new row. All provider data in
+tests is synthetic. Ruff source/changed tests and mypy 59 source files PASS.
+
+The previous 1923-test locked full-suite checkpoint is not rerun or represented
+as QA of this new revision. This change belongs to the same development PR19 for
+a future coherent stable release under the canonical governance. PR20 is untouched.
+No merge, deploy, app Refresh, TrainingPeaks write or publisher activation. Official
+exact-head CI, independent review, production identity/revocations/runtime/TLS and
+state-preserving rollback remain distinct release gates. The next live diagnostic
+boundary is a permitted fresh raw account-roster read, not re-inviting the athlete
+or assigning a guessed identity. No extra paid resource or broad shell/HTTP job is
+created to obtain that read.
+
+### 2026-10-28: separate AI review reconciliation (base 3874fd5)
+
+See [the finding-by-finding remediation and verification record](IRONMAN_PR19_REVIEW_RECONCILIATION.md).
+A-01 peer authentication, A-03 held-flow recovery for already delivered assertions,
+and A-02 missing/empty execution-ledger initialization were confirmed and corrected.
+A-04 exact approval/grant binding is already present; B-01 is a false positive on
+integrated PR19. Full valid-snapshot rollback, real IdP/feed/PKI/runtime installation,
+official CI and independent review remain release gates. This supersedes earlier
+release assessments below; historical lab results remain valid within their scope.
+
+The bridge now requires coordinated mTLS migration of all existing clients before
+deployment. It has no plaintext fallback. Held-run reconciliation requires a
+host-installed authoritative verification port and one protected producer lock;
+it cannot mint authority or replace missing assertions. Execution/recovery opens
+an existing ledger only; trusted first provisioning is distinct from restoration.
+No current runtime, protected workflow, denied diagnostic or provider data changed.
+
+### 2026-10-28: combined HTTP/process-worker release proof
+
+`test_ironman_http_worker_release.py` contains ONE combined release scenario:
+verified local TLS HTTP/OAuth -> the existing MCP SDK server/handler -> native
+PrefectProcessLauncher -> real isolated Prefect API -> existing process pool and
+separate flow processes -> DraftStore/preview/approval/binding -> reviewed adapter
+and disposable provider -> independent readback -> persistent ledger/API receipt.
+It reuses the previous worker-lab startup, issuer and adapter fixtures; the old
+18 multiprocess assertions are preserved, and its 12-run scenario is not replayed.
+No production source, workflow, job, manifest, service or infrastructure changes.
+
+Final result: **1 PASS, 155.38 s**. Five completed invocations of the one flow,
+five issuer deliveries, one synthetic provider write and one matching execution
+receipt. HTTP returned uncertainty in **90.25 s**; recovered completion arrived at
+**127.55 s**, after a new MCP producer process and renewed token. Independent
+ledger read is DONE_VERIFIED; producer/worker/flow PIDs are distinct. New-test and
+shared-bootstrap Ruff, affected compile and diff checks PASS. The test query uses
+the existing explicit FlowRunSort.ID_DESC contract; no SDK/server patch was added.
+
+The new provider deliberately commits one synthetic PUT then delays completion
+125 real seconds. The native 90-second launcher budget returns DISPATCH_UNCERTAIN
+with its run handle rather than attempting another write. The caller restarts
+its actual HTTP MCP process and reconnects with a renewed bearer and the SAME
+issuer-attested operation intent. Reconciliation observes the existing flow and
+recovers its command-bound persistent receipt as historical DISPATCH_RESULT_REUSED.
+No second flow, issuer handoff, approval or provider mutation is admitted for the
+retransmitted execution. Actual provider state and DONE_VERIFIED ledger state are
+read separately from the receipt. The original response's flow ID is used only
+for assertions, never as an authorization or manual input into recovery.
+
+This is a local release proof with a real loopback TLS listener and separate MCP,
+process-worker and flow PIDs. The IdP/key/intent contract and provider are test-only.
+It does not test OpenAI's hosted tunnel queue, production identity/feed or DO TLS.
+The hosted 120-second absolute budget includes queue time; the launcher's observe
+budget starts after allocation/handoff. A local response under 120 seconds is
+not an end-to-end hosted latency guarantee. Stable intent reconciliation remains
+necessary even if the initial HTTP result is lost. No worker-crash/DR restore
+scenario is added: their previous evidence remains attached to its revisions.
+
+### 2026-10-28: local OAuth HTTP transport implemented, not activated
+
+Canonical UI checkpoint `IRONMAN_TP_MCP_APP_AUTH_NONE_UI_20261028_V1` confirms
+the existing dev app advertises/uses no authorization. It is not already OAuth.
+`tp_mcp.server.create_operator_http_app` now composes an opt-in ASGI ingress using
+the SAME SDK server/handlers, with its native Streamable HTTP manager. Existing
+stdio startup functions are unchanged; no HTTP app/listener is created by serve.
+No new MCP server, service, issuer, deployment or per-request manifest.
+
+HTTP requires a host-configured verifier with current revocation policy and a
+per-human runtime binding factory. Loopback/TLS scheme, exact Host/Origin,
+unambiguous bearer, resource/issuer/subject/scope/expiry and bounded bodies are
+enforced. The SDK resource metadata/challenge path and OAuth tool metadata are
+implemented; the configured issuer is preserved exactly. Only the universal
+operator is advertised/allowed through HTTP. Legacy tools/resources cannot be
+invoked through this new route, including by directly naming them. Stdio's tool
+registry is unchanged. Missing runtime never inherits ambient stdio privileges.
+
+Native stateless exchanges deliberately avoid a transport-session identity cache:
+the existing DraftStore/ledger/Prefect records own durable operation state. Each
+request has its own verified context, copied through the existing thread launcher
+and reset afterwards; operation admission revalidates current identity/revocation
+after SDK dispatch waiting. No identity or callback comes from tool arguments.
+Expired/revoked admission can return OAuth linking metadata, not a write retry.
+The real issuer/delegation/stable-intent/feed/runtime ports remain unconnected.
+
+New tests: **16 PASS**, real SDK/ASGI + signed synthetic IdP and synthetic current
+revocation policy. Protocols 2025-11-25 and 2026-07-28 cover discovery and concurrent
+human calls/token renewal; the latter uses native single-exchange envelopes.
+Tests cover 401/discovery, denied methods/identity injection, revocation between
+admission and execution, missing host runtime, edge/body limits and stdio policy
+passthrough. The launcher is a test stub: no Prefect/provider execution, actual
+network TLS handshake or live ChatGPT authentication is claimed. Ruff src/new
+tests, mypy (58 source files), compilation and diff checks PASS. Previous suites
+were not replayed. Independent review and exact-head CI remain release gates.
+
+Official direct-custom-connection update path: deploy the verified server under
+the SAME tunnel after runtime gates, then Refresh the SAME connection and verify
+changed authentication metadata. This is documented for authentication changes;
+recreation is not the prescribed default. Actual UI execution remains pending.
+Published/package submission authentication has separate mcp.json/version/client
+registration restrictions; those must not be applied speculatively to this dev
+app. See the runbook for evidence, cutover/rollback and the one future UI action.
+
+### Human identity boundary: OAuth source preparation, not a live connection
+
+Canonical input `IRONMAN_TUNNEL_STDIO_IDENTITY_LIMIT_20261027_V1` identifies a
+transport limit: tunnel control-plane authentication does not identify the human
+to a stdio child. The selected design retains the private tunnel and existing
+droplets, changing its local main binding to SDK Streamable HTTP in the existing
+TP application only after the real IdP/resource/runtime contract is attested.
+Detailed identity/delegation/revocation boundaries and the one owner UI inspection
+are in the existing private-bridge runbook. No HTTP listener is installed here.
+
+`OAuthHumanIdentityVerifier` now reuses shared pinned JWT validation for an
+opt-in RFC 9068 profile. It checks exact issuer/audience/scope/time and host-attested
+human subjects/OAuth clients, producing a distinct identity without worker origin
+or approval authority. The SDK `OAuthMCPTokenVerifier` port requires a separate
+current-revocation policy, rechecks expiry after waiting and preserves issuer and
+human subject so session ownership does not collapse to ChatGPT's shared client
+ID. Missing policy, rejected current state or feed failure cannot authenticate.
+No automatic runtime binding, network discovery, new issuer or token passthrough.
+Opaque/non-profile tokens remain unsupported until an actual provider is selected.
+
+Focused QA: **43 PASS, 62 deselected, 0.85 s**: 25 new identity/SDK-boundary cases
+and 18 existing signature/invocation regressions selected because their shared
+verifier changed. No retransmission tests, six old in-process scenarios or 12
+multiprocess runs replayed. Tests use synthetic signing only; no HTTP or live
+authentication is claimed. New-test Ruff, affected compile and diff checks PASS;
+the existing authority module retains five of six baseline lint findings, with
+zero new findings (not presented as a clean lint result). Full QA/CI/independent review
+remain scoped to their actual revisions and separate release gates.
+
+### Release review: transport retransmission
+
+The random per-call dispatch key could allocate a second flow for the same
+admitted operation. A red API-only regression reproduced distinct flow IDs.
+The launcher now requires a host-resolved `DispatchIdentity(issuer, subject,
+intent_id)`. Its key binds the deployment and that identity; an intent survives
+reconnection/token rotation. Changed command content under the same intent
+denies, while a separately admitted operation uses a new intent. Domain request
+IDs, bearer JTIs and flow IDs are not substitutes for this ingress contract.
+
+The native atomic Prefect insert persists a creation-owner nonce as metadata.
+Only that owner provisions once and releases the initial, non-scheduled
+`Pending/AwaitingTrustedInvocation` state. Retransmissions only observe; they
+never issue again, reset scheduling or cancel existing work. Delivery failure
+leaves the run held with no timed release. Allocation/release/read uncertainty
+preserves the known flow ID (or stable dispatch key if creation is unconfirmed)
+and prohibits provider retry. A completed retransmission returns an explicitly
+historical `DISPATCH_RESULT_REUSED`, not a fresh provider readback.
+
+New focused QA: **9 PASS, 12.98 s**, one real ephemeral Prefect API regression
+plus fault/identity tests; no ProcessWorker, provider or flow execution. Native
+queue polling excludes the held run. Concurrent/reconnected dispatch creates one
+flow and issues once; body conflicts and cross-subject isolation are checked.
+State/receipt/allocation/release failures preserve uncertainty, and an advanced
+run cannot be provisioned/reset. Prior 12-run multiprocess and six in-process
+evidence is retained at its original revisions; neither was repeated here.
+Ruff, mypy (57 source files), affected compilation and diff checks PASS.
+
+This is a structural correction in the existing launcher, without another
+deduplication store/service. It requires retention/integrity of the existing
+Prefect run records and metadata for the operation's retry lifetime. Deleting
+or restoring those records is a fenced recovery event, never proof that an
+operation did not execute. Independent review and exact-head CI remain gates.
+
+### Separate-process worker integration — laboratory PASS
+
+`PrefectProcessLauncher` now connects the existing MCP ingress to the SAME flow
+and `ironman-prefect-staging-process` pool. Only mode, manifest and requested
+targets cross the API. Creation uses an idempotency key; scheduling is released
+only after a trusted issuer port provisions the real invocation. No callback,
+credential, principal, host path or job-variable override is transmitted.
+Failed/uncertain dispatches expose the flow ID and forbid blind provider retry.
+
+Deployed execution requires worker-local protected configuration. It pins the
+deployment and actual entrypoint SHA, verifies existing host environment paths,
+and authenticates a signed assertion binding the real flow ID to the exact
+command digest. The worker reconstructs its own bindings; MCP ContextVars are
+not transported. Reviewed adapter bootstrap is code-only and separately gated by
+host capability policy. No production bootstrap/writer/issuer is installed.
+
+The existing DraftStore holds an administrator-audited monotonic revocation
+sync checkpoint. Workers require an age limit of 1–300 seconds; missing, stale,
+future-dated or invalidated checkpoints deny. Revocations invalidate freshness
+until a confirmed sync. Every business decision rechecks freshness; invocation
+identity/expiry/current revocation and allowed/denied audit share one transaction.
+`refresh_revocations` confirms trusted upstream synchronization; it neither
+fetches a feed nor guarantees rollback protection of historical database copies.
+
+Bounded flow/command receipts travel through existing Prefect API artifacts.
+MCP needs no worker SQLite mount or result-file path. The artifact lookup uses
+one explicit authenticated API body: the pinned SDK's default null filters were
+observed rejected by its server schema. There is no fallback, monkeypatch or
+automatic resubmission.
+
+New tests: **6 PASS, 76 deselected, 58.23 s**, comprising one multiprocess test
+and five targeted admission tests. The previous six in-process scenarios were
+not replayed. In an ephemeral local API, one deployment reuses the existing
+entrypoint/pool name and working-directory pull step. MCP stdio, process worker
+and flow have distinct PIDs. Twelve runs produce six completed stages, a single
+synthetic PUT including execution retry, and six failed admissions: wrong
+command, wrong origin, missing assertion, stale revocations, missing protected
+config and injected ledger path. API metadata verifies domain-only parameters.
+Issuer/provider bootstrap is test-only. Logs/JUnit: `pr19-worker-boundary-final.*`.
+
+Status: **MCP_PREFECT_MULTIPROCESS_LAB_PASS**, not LIVE_VERIFIED. Remaining gates
+are real issuer delivery/feed freshness, authenticated MCP access to the existing
+Prefect API (historically loopback-only), protected worker configuration and
+dependency/bootstrap attestation on existing hosts, exact-head CI/review and
+provider canaries. No live deployment or host change. The existing YAML removes
+privileged parameter defaults; one host process configuration supplies them.
+No new service, per-request job or operation manifest. Publication remains gated.
+
+### Current isolated integration (supersedes earlier source-only facade gap)
+
+The repository now connects one `tp_ironman_request` MCP entrypoint to the
+existing `ironman-unified-changeset-v1` flow. `compose_operator_runtime` is the
+single host composition root. Its request-scoped bindings carry admission policy,
+the local flow launcher and independently gated writer adapters. They are never
+accepted as serialized MCP/flow parameters. No binding is installed in the live
+server; missing admission/runtime, athlete override and injected principals deny.
+The old fixed-job `tp_ironman_operator` remains unchanged for compatibility.
+
+Actual isolated path:
+
+`MCP Client -> SDK JSON-RPC dispatcher -> signed synthetic ingress admission ->
+real local Prefect flow/tasks -> DraftStore prepare/preview -> signed real-flow-ID
+assertion + exact grants -> Approval -> immutable execution binding ->
+execute_bound -> existing changeset engine/SQLite worker slot -> reviewed classic
+adapter -> native TP read gateway -> synthetic HTTP/PUT -> independent readback
+-> persistent receipt -> idempotent retry / authorized read-only recovery`.
+
+Execution and recovery share one reservation/authority inspector. Existing
+dependency scheduling, locks, claims, uncertainty and denial policies are reused.
+Read adapters still come from the existing registry, with no alternate reader
+factory. The test replaces only provider transport, not ownership/membership
+checks, the native reader or the reviewed field validator. Synthetic signing and
+ingress/launcher policy exist only in tests. The host must install BOTH a writer
+and its kind capability; an installed adapter alone cannot enable execution.
+`mode=publish` stays denied. `publication_enabled=false` is the universal-release
+gate, not a claim that an explicitly gated synthetic execution performed no PUT.
+
+Verified checklist:
+
+- [x] Real MCP SDK client/server protocol and registered handler; 116 local tools.
+- [x] One real local Prefect flow/task runtime, real flow origin assertions,
+  immutable drafts/previews, approval, binding and per-item authority checks.
+- [x] Existing SQLite worker lock/claims, native TP owner/container discovery,
+  reviewed classic adapter validation, execution and independent readback.
+- [x] Complete success, lost response after synthetic commit, retry without a
+  duplicate PUT, persisted DONE_VERIFIED, child-process orphan recovery through
+  MCP, idempotent recovery receipt and refusal after consent revocation.
+- [x] Default deny, injected principal refusal, exact-command admission binding,
+  installed-writer-without-gate and gate-without-writer refusal before ledger IO.
+- [x] Targeted regression: 209 PASS, 1 existing warning, 111.18 s. After removing
+  the unnecessary reader override and wiring the native gateway, 38 final
+  integration/reader tests PASS, 53.83 s (includes six end-to-end scenarios).
+  Ruff PASS; mypy PASS, 57 source files. Real legacy MCP 1.26.0 client against
+  SDK 2.0.0 stdio server PASS: 116 tools, handshake and INVALID_ARGS. Full repository
+  QA was not repeated; historical totals remain attached to original revisions.
+
+Remaining release checklist:
+
+- [ ] Real trusted MCP admission identity/issuer mapping and upstream revocation
+  freshness/delivery; the synthetic test policy is not a production identity.
+- [ ] Host launcher and binding inside the existing deployed Prefect process
+  work-pool runtime. The tested launcher is local/in-process; the engine worker
+  lock and real child crash are not a remote process-worker deployment proof.
+- [ ] Live canonical state paths, backup coverage, restore fencing and safe
+  management/rollback on existing hosts; no SSH/Mac work performed in this cycle.
+- [ ] Exact-head GitHub CI and independent review before merge/deploy. No denied
+  workflow edit, artificial event or trusted-branch retargeting.
+- [ ] Request-scoped private bridge authorization and independent per-capability
+  disposable canaries, followed by limited activation and fresh-chat readback.
+
+Classification: STRUCTURAL_INTEGRATION, no temporary bypass/new service/job or
+per-request manifest. This passes the isolated integration milestone, **not**
+LIVE_VERIFIED authentication, TrainingPeaks publication or operational release.
+
+Latest continuation: canonical KB marker
+`IRONMAN_GITHUB_ACTIONS_ENABLED_UI_20261027_V1` records the coach's official
+Actions re-enablement. It does not replay old events or certify current HEADs.
+Both PRs still have zero all-event runs/checks at the 7fe73c2/8cc9cea checkpoint.
+PR19's filters remain a separate gate; no source is moved into PR18 merely to
+generate CI. The structural follow-up below replaces shared identity-file
+handoff with invocation-isolated files and adds atomic revocation ingestion.
+It does not deploy an issuer or authenticate a human MCP transport.
+
+STRUCTURAL_REFACTOR follow-up validation: 155 affected tests PASS, one existing
+Prefect logging warning, 61.73 s. Actual local Prefect concurrent flows install
+both synthetic issuer assertions before either authority factory returns; each
+reads its own identity and concurrent bindings reuse one durable reservation.
+Previous-invocation/missing assertions still deny. Batch tests verify persistent
+monotonic replay, invalid-input refusal, administrator enforcement and rollback
+of tombstones plus audit on interrupted delivery. Existing approval, recovery
+and flow refusal suites also pass. Full repository QA was not repeated; its
+previous totals remain scoped to their recorded revisions. Compile/diff checks
+pass. No schema migration, public MCP tool, provider writer or new service was
+added. Production issuer/launcher, feed freshness, authenticated MCP facade and
+runtime management/rollback remain separate OPEN gates.
+
+The coach now authorizes conditional merge/deploy, disposable-lab provider
+canaries and scoped publisher activation after the applicable checks pass.
+This supersedes historical blanket no-release instructions below. Explicit
+security denials remain binding: do not edit the denied Actions workflow or
+plan_mutation_gates.py, force CI by moving/retargeting the trusted branch, retry
+the denied plan.create canary, or reuse Social-only deployment credentials.
+
+Reviewed source: independent PR18 7fe73c25bc6a10940efcafd5d8eb726cf84524b7;
+stacked PR19 b8123330461cef2bd2d41caf04160163f4972143 includes that parent.
+Both remain draft; no submitted review has been attested. This internal audit is
+not a GitHub approval. Independent parent QA is now recorded separately from
+composed lifecycle QA. The trusted feat branch remains 4b45d9a.
+
+| Gate | Evidence / actual state | Release consequence |
+| --- | --- | --- |
+| Integrated local tests | Independent PR18 7fe73c2: 1,594 PASS, 3 warnings, 20.23 s. Reconciled PR19 b812333: 1,796 PASS, 3 warnings, 58.57 s. Actual local Prefect, MCP, SQLite and child processes; synthetic issuer/provider | LOCAL_VERIFIED for both code revisions, not production proof |
+| Static contracts | Ruff src/ PASS; mypy src/ --no-incremental PASS, 56 files | LOCAL_VERIFIED |
+| MCP legacy protocol | Real mcp 1.26.0 client against separate SDK 2.0.0 server: initialize 2025-11-25, 115 tools, INVALID_ARGS call PASS | Offline protocol compatibility; not live auth or fresh ChatGPT session |
+| Exact-head GitHub CI/review | Approved GET actions/runs filtered by each exact SHA, without event restriction, and commits/SHA/check-runs return zero on 7fe73c2 and b812333. The latest listed repository runs are historical, including queued 39855028161 on another SHA. No current green CI or review attested | BLOCKED; no merge or replay of old jobs to manufacture CI evidence |
+| Existing live infrastructure | Both documented DO hosts active. Existing TP MCP and publisher status readable; live_writer_verified=false. Trusted read-only prefect_ssh_inventory job 4b45d9a passed: private TCP 22 reachable, no private key in TP host SSH inventory | Live existing path only; not new operator deployment |
+| Runtime management / rollback | No DO shell tool, no runtime credential/identity binding in Codex, no discovered authorized TP-to-Prefect private key. Social forced SSH is scoped to Social and must not be repurposed | Cannot attest/apply TP/Prefect configuration or rollback through current access |
+| Trusted issuer/revocation feed | Concrete verifier/grants/audit tested; no existing production issuer/launcher identity contract, pinned trust or upstream revocation delivery attested | MISSING integration; never mint an assistant-controlled production identity |
+| Canonical worker persistence | Local same-ledger/inode/lock, restart/recovery and migration tests PASS; actual service paths, UID/modes, preserved ledger history and upgrade/rollback not inspected | Runtime rehearsal required; no multi-host/NFS safety claim |
+| Universal MCP/control surface | Existing live tool is revision-pinned fixed-job runner; no generic draft/review/execution facade calling the one flow with authenticated handoff is deployed/attested | MISSING integration; do not create one job per request |
+| Writer capabilities | create_read_registry installs read-only adapters; classic/PDF callback writers default None. Flow rejects publish. Static VPC allowlists remain staging-only | Source does not become an operational publisher by changing a flag |
+| Disposable-lab canary | Canonical 684484 independently read: exact lab title, private, price null, zero workouts. No write canary performed | LAB_IDENTITY_READ_VERIFIED only; denied plan.create excluded |
+| New ChatGPT session | Current connected tool calls and offline MCP reconnect verified; no tool creates/attests a new ChatGPT project conversation | NOT VERIFIED; requires installed/refreshed final surface first |
+
+Independent-parent repair: PR18 could not collect its suite because of an invalid
+literal; stale module paths, frozen tool counts, owner/inventory mocks and local
+validation-call counts also failed. Already verified PR19 fixes were backported
+into the parent, including shared redaction/HTTP error contracts and type checks,
+without relaxing a scope or copying lifecycle/authority features into the base.
+Its clean suite now runs independently. Required Prefect imports were absent
+from dev dependency metadata; the dev extra now declares prefect==3.8.8 and
+fastapi<0.155, the exact existing workflow/QA constraints. Wheel build and METADATA
+checks PASS; production dependency scope is unchanged. Parent legacy SDK 1.26.0
+client/2.0.0 server check also PASS.
+
+PR19 was reconciled with that verified dependency using a normal branch merge;
+the sole conflict was typing-import order. Compared with a1e9b18, its executable
+src/scripts/tests/prefect tree is byte-identical; only dev metadata is added. The
+remaining PR19 delta is 21 files focused on lifecycle contracts, tests and docs.
+Both source pushes were genuine regression repairs; no workflow/trigger edit,
+no-op trigger commit, trusted-branch movement, new job or deployment was used.
+The normally matching parent push has no observed Actions run; the cause is not
+established and is not inferred to be a provider denial or fixed by a retry.
+
+Architecture audit: immutable request/preview/revision hashes, separate binding
+permission, atomic grant/revocation/audit, monotonic consent denial, per-item
+execution checks and persistent uncertain claims are shared contracts, not per-plan
+exceptions. One dependency scheduler and one private SQLite opener replace the
+repeated implementations. Worker ownership is an invocation nonce, never a replayed
+request ID. Recovery is read-only and cannot authorize a replay or clear a denial.
+Real-runtime identity tests still synthesize the issuer handoff; they do not prove
+that the live stdio/tunnel authenticates an approving human or delivers revocation.
+
+Before a limited operational release, the Operator maintainer/security reviewer
+must close the existing gates in order: legitimate exact-head CI and review;
+authorized management/rollback of TP and Prefect services; identify/configure the
+existing issuer/launcher and revocation feed; attest one canonical ledger and
+rehearse state/rollback; wire a single MCP facade to the existing flow; install
+reviewed writer callbacks once per eligible capability with exact scoped authority;
+then independently read back disposable canaries, enable only that validated scope
+and verify catalog refresh/new-session operation. No per-plan job/manifest or new
+infrastructure is proposed as a substitute.
+
+Existing plan-specific helpers remain compatibility debt. Owner: Operator
+maintainer. Remove each only after its callers use the common typed capability,
+semantic/scope parity tests pass and an authorized capability canary succeeds;
+retire callers/helper together. Do not strip hardcoded pilot guards as a shortcut.
+No temporary bypass is introduced by this audit. Production release remains
+NOT_COMPLETED; only the independent checks above have been completed.
+
+### Checkpoint continuation: CI diagnosis and trusted host inputs
+
+The 7fe73c2 / 4821be5 checkpoint was re-read without repeating full QA. Approved
+GitHub GETs again return zero all-event runs and zero check-runs on both exact
+HEADs. Repository metadata reports archived=false, disabled=false and user
+permissions admin/maintain/push=true; these flags do not establish the GitHub
+App's Actions permissions or the current workflow enablement/settings.
+
+Trigger diagnosis is specific: PR19's base is the fix branch, which fails the
+dedicated workflow's pull_request base filter; its own branch also fails that
+workflow's push branch filter. PR18's target/source and changed paths match the
+dedicated filters. Draft status alone does not exclude synchronize events in
+this workflow, and its same-repository job condition matches. The general CI
+targets other branches. The old operator run 39855028161 still reports queued,
+attempt=1, head=d0468ea, with no jobs returned; it does not certify either HEAD.
+The workflow-state/settings endpoint is unsupported by the available connector;
+there is no evidence to label Actions disabled or denied. No trigger, workflow,
+base/trusted branch, rerun or dispatch was changed. A legitimate current run and
+independent review remain indispensable; a repository administrator must inspect
+the unavailable Actions settings/event-delivery state through the official UI.
+The existing dedicated job also selects only ten test files, omitting the new
+authority/store/worker suites: even a future green run is not full lifecycle QA.
+
+STRUCTURAL_REFACTOR: trusted-file reads now reuse the same private ancestor-path
+policy as DraftStore/Ledger. The old reader accepted group/world-writable parent
+directories and could block indefinitely opening a FIFO. Three failing tests
+reproduced both defects before the fix. O_NOFOLLOW/O_NONBLOCK, regular/private
+file checks, bounded short-read handling and end-of-read identity/version checks
+now refuse malformed or concurrently replaced/rewritten inputs. Completed atomic
+rotation remains allowed on the next read. No chmod/repair, token exposure,
+issuer creation, new service or temporary compatibility exception is introduced.
+
+New regression verification: 265 tests PASS, 1 existing Prefect logging warning,
+58.56 s, on the affected authority/local-state/store/engine/worker/review/flow
+suites, including actual local Prefect. Seven new cases cover unsafe ancestors,
+FIFO refusal, rotation/permission changes and completed bounded short reads.
+This is affected-suite QA; the previous 1,594/1,796 full results remain attributed
+to their original revisions. Provider and issuer remain synthetic.
+
+The existing private-bridge runbook now specifies management prerequisites,
+request identity boundaries and a state-preserving upgrade/rollback rehearsal.
+It is prepared, not executed on production. Current environment observations
+again show no runtime identity/secret bindings or private TCP/VPN access. No
+production issuer/launcher, upstream revocation feed or authenticated MCP-to-flow
+handoff is available to attest/configure. A permissive facade, assistant-minted
+issuer or Social SSH reuse would not close those gates. These integrations,
+canonical live state/rollback and per-capability writer canaries remain OPEN;
+publish stays denied and all existing writer callbacks stay independently gated.
+
 ## Objective
 
 One coach request -> one durable Prefect flow -> typed, plan-scoped operations -> provider readback -> one verified report. The same operations must handle every Training Plan ID. Stop creating one-off Python scripts or registry entries for individual workout IDs, weeks, notes or PDF filenames.
@@ -118,7 +597,10 @@ Prefect's local SQLite resource claim is not a distributed lock. Before any real
 
 ## Verified and pending
 
-CI now runs the existing operator suite, the generic change-set/idempotency suite, synthetic TrainingPeaks read tests for all resource kinds, and a live local Prefect flow over a synthetic provider. This demonstrates code integration, not an authenticated end-to-end TP operation.
+The existing workflow defines operator, change-set, synthetic reader and local
+Prefect checks. Its presence is not evidence of a successful run on the current
+HEAD; verify per-commit GitHub status independently. Local full-checkout results
+are documented below and are not a TrainingPeaks/issuer production canary.
 
 CI uses prefect==3.8.8 and fastapi<0.155 to avoid a backward-incompatible FastAPI Body(min_items) removal. This is dependency pinning, not a TP failure.
 
@@ -262,3 +744,462 @@ flow source blob `0dbb72d41c41609ed97185c45296ad1737ca0807`
 with a stubbed private store/Prefect/provider. This is NOT full repository CI,
 not a test of the real DraftStore, not a deployment and not a TrainingPeaks
 writer canary. Remain DRAFT/preview-only until gates are satisfied.
+
+## Draft / preview / approval / execution lifecycle — source integrated, not released
+
+Canonical policy: Drive 02_DECISION_LOG, architectural anti-patch decision of
+2026-10-26, and 21_TRAININGPEAKS_MCP_INTEGRATION_STATE. Reuse the existing host,
+Prefect entrypoint, typed adapters, SQLite stores and Proven Paths. No new job,
+per-plan manifest, infrastructure, provider write or deployment in this segment.
+
+### Common contracts
+
+`ironman_operation_contracts.require_target_binding` is the selector contract
+for both flow and Approval: exactly one selector per kind/resource, independent
+of order. Two ordered edits of the same kind/resource use one selector, not two.
+Operation identity and ordering remain explicit in ChangeSet item IDs/dependencies.
+DraftStore ingress and resume now use shared receipt and draft-binding validators;
+validation still runs at both trust boundaries. The immutable draft, preview hashes
+and execution manifest format are preserved.
+
+The reviewed batch publisher and the typed classic workout adapter share the pure
+`plan_patch_batch_core.validate_patch_fields(before, after)` function. Plan title,
+visibility, counts, owner and reviewed scope remain actual publisher metadata;
+no synthetic FIELD_VALIDATION_ONLY manifest is constructed by the adapter.
+Field validation does not select a target, mutate input or grant authorization.
+
+### Versioned ledger migration
+
+Ledger schema version 1 replaces the legacy SKIPPED_DEPENDENCY execution branch.
+After independent execution authorization and worker acquisition, request identity
+verification, migration and registration occur in the SAME SQLite transaction.
+Every converted legacy event is copied in full to ledger_event_migration_backup;
+only its live state changes to PENDING. Provider hashes, reasons, timestamps,
+request digests, claims, DONE_VERIFIED, BLOCKED_SECURITY and uncertain states are
+preserved. The normal dependency/preimage/readback checks then apply unchanged.
+
+Preview and denied execution do not migrate. Rollback preserves both schema and
+events; a mismatched manifest cannot migrate other requests. Version 1 is applied
+once. Future/unrecognized versions, unknown states or legacy rows reintroduced
+after migration are refused, not repaired ad hoc. New set_state calls cannot
+persist SKIPPED_DEPENDENCY; that name remains a non-durable dependency-deferral
+result. Explicit maintenance uses the same migration helper on a trusted,
+quiescent host; no maintenance endpoint/job or live database migration is enabled
+by the code change. Old and new worker versions must not share a ledger during
+upgrade. Runtime migration/rollback must be rehearsed on an authorized ledger
+snapshot before release; no production SQLite data was migrated during QA.
+
+### Control operations in the existing flow
+
+`ironman-unified-changeset-v1` supports `approve_preview`, `revoke_approval` and
+`bind_execution`, alongside prepare/preview/resume. Input is
+`schema=IRONMAN_REVIEW_INPUT_V1`, request_id, preview_sha256, reviewed_revision,
+approval_scope; revoke/bind also require approval_sha256. Independently resolved
+requested_targets remain separate. No caller-supplied principal, authorizer,
+module path or callback is accepted in this serialized input.
+
+The flow resolves and validates the stored preview and exact selectors, then
+uses `get_review_authorizer().run_control(command, store)`. Identity verification,
+current grant/revocation checks, the control mutation and actor audit share one
+SQLite writer transaction. Nested DraftStore writes use savepoints, so an inner
+commit cannot outrun a concurrent grant revocation. Failed mutations roll back.
+
+The concrete `HostReviewAuthority` uses the existing cryptography dependency to
+verify compact JWT assertions with host-pinned RS256 or EdDSA public keys. It
+checks signature, pinned algorithm/key type, issuer, audience, subject, token ID,
+required scope, iat/nbf/exp and an issuer-signed `run_id` against
+the trusted Prefect context: FlowRunContext.flow_run.id for a flow, or
+TaskRunContext.task_run.flow_run_id for a child task. Standalone tasks and missing
+or ambiguous parent references are denied; task_run.id is never an origin substitute.
+A valid assertion for another
+invocation is denied; caller-supplied principal/context is never trusted. No
+remote JWT key URLs, unsigned tokens, HMAC fallback or provider cookies are used.
+The existing TrainingPeaks credential and VPC source IP do not authenticate a
+review caller and are not repurposed for this role.
+
+Host-only configuration is `IRONMAN_REVIEW_TRUST_CONFIG` (issuer, audience,
+required_scope, pinned keys and administrator subjects),
+`IRONMAN_REVIEW_ASSERTION_DIRECTORY` (private host directory of per-invocation assertions)
+and the existing `IRONMAN_OPERATION_DRAFT_STORE`. Paths are never serialized flow
+arguments. Files must be regular, private, owner/root-owned and not symlinks.
+Trust configuration is reloaded and identity verified on every operation/check.
+No signing key, issuer, account, listener or production credential is created.
+The existing identity issuer/launcher must supply the signed invocation-bound
+assertion; this upstream connection has NOT been configured or live-attested.
+Missing trust, assertion or scheduler context denies by default.
+The assertion filename is derived by the shared host utility
+`assertion_path_for_invocation(directory, actual_flow_run_id)` using the digest of
+the canonical JSON invocation ID and a `.jwt` suffix. Its ID comes from the real
+Prefect flow/task context, not a caller selector. Concurrent runs select different
+files; signature verification still binds `run_id` to that current context on
+every use. The issuer/launcher must install each private signed file atomically
+before admitting its run and own expiry cleanup. The verifier creates nothing.
+The old shared `IRONMAN_REVIEW_ASSERTION_FILE` variable is rejected rather than
+retained as a fallback. This undeployed contract has one supported handoff.
+Upstream token/account revocations must also reach the persistent token/principal
+revocation API through that trusted host integration: offline signature validation
+alone cannot discover an account disabled at the issuer. This live handoff is a
+release blocker, not an assumed capability of the JWT verifier.
+Host administration can deliver up to 256 `(kind, identity)` revocations using
+`HostReviewAuthority.revoke_many`. Single `revoke` delegates to that same path;
+validation, administrator identity/current revocation, tombstone inserts and
+actor audit commit atomically. Duplicates are coalesced; delivery is monotonic
+and idempotent. Invalid input or an interrupted audit cannot commit part of a
+batch. This reuses the existing store/issuer boundary without a new endpoint or
+service. It does not establish upstream feed availability/freshness or confer
+revocation powers on an ordinary MCP caller.
+
+Exact-preview grants, grant/token/principal revocations and actor audit live in
+new tables of the SAME DraftStore database, with indexed request bindings.
+Grant issuance/revocation is host administration only: it requires a current
+signed administrator identity pinned by host policy; no grant-creation tool or
+flow mode is exposed. Ordinary callers cannot grant themselves permissions.
+Grants are immutable, bounded by expiry and bind issuer/subject, request, preview,
+revision, scope and manifest digest plus allowed actions. Removing/revoking a
+principal's grant or its grantor is checked at every use. No live grant has been
+issued by this work. The audit stores actor IDs, decision codes and command
+hashes, not raw JWTs, private keys or command/provider payloads.
+
+Approval records remain immutable and are bound to request, exact preview
+(including its observation), reviewed revision and scope. Retrying reuses them.
+SQLite transactions serialize approval, revocation and execution binding.
+Revocation creates a monotonic tombstone: an old decision cannot be resurrected
+by approve or bind, including after reopening or after an earlier binding.
+This cancels future authorization, not an already in-flight provider request.
+
+bind_execution reserves exactly one approval/manifest per request; it never opens
+an execution ledger or invokes an adapter. New observations or code revisions do
+not inherit approval. Publish is still rejected unconditionally by this flow.
+
+### Enforcement at the execution engine boundary
+
+`run_changeset(execute=True)` now also REQUIRES a trusted `authorize_execution`
+callable. Matching scope/revision strings alone are insufficient. The engine
+checks authority at entry and before each write, passing defensive copies;
+denial or failure is fail-closed. Existing readback, uncertainty and explicit
+provider-denial behavior remain in the same engine. Test callbacks accepting
+synthetic execution are explicit; no production permissive implementation exists.
+
+`BoundExecutionAuthorization` is the shared reusable guard for a future reviewed
+writer: match the candidate manifest to the persisted preview, ask the trusted
+authority, then re-open/revalidate the existing persistent binding and revocation.
+The guard never creates a binding or substitutes an execute grant for the distinct
+bind_execution permission. The authority checks the exact approval/binding and
+current grants/revocations in the same SQLite writer transaction. Its
+constructor context must come from the trusted coordinator. The guard is tested
+with a revocation between two dependent synthetic writes; the second is blocked.
+The current flow never calls execute and never installs this guard on live writers.
+
+### Worker coordination and recovery
+
+The execution ledger owns a single persistent worker slot with an invocation UUID,
+not a request ID. One shared POSIX file-lock primitive is reused by this engine
+and the existing reviewed batch publisher. It protects the whole execution and
+records its inode/protocol with the worker slot. Normal exit releases only the
+acquiring invocation. Process death releases the kernel lock, but the durable
+slot remains blocked pending explicit authorized recovery. No timeout/PID guess,
+expiry, blind retry or automatic takeover is used.
+
+The SAME Prefect entrypoint now supports `mode=recover_worker`, input
+schema `IRONMAN_RECOVERY_INPUT_V1`, request_id, preview_sha256, approval_sha256,
+reviewed_revision, approval_scope and the exact worker_owner nonce. Current
+requested_targets remain independently checked. Recovery uses the host's
+`IRONMAN_OPERATION_EXECUTION_LEDGER`; a different caller ledger path is refused.
+Only the existing local/private_bridge read registry is used, after independent
+recover_worker permission is verified. Recovery is never an execution grant.
+A revoked approval can be inspected for recovery without being reactivated.
+
+Recovery acquires the SAME kernel lock, verifies the recorded owner and inode
+protocol, verifies the manifest, and reads provider state via the existing engine
+in preview mode. Active owners, replaced lock files, legacy slots without the
+protocol or externally changed ledger state are refused. Authorization is checked
+again after reads. A single transaction records a checksum-protected recovery
+receipt and clears the orphan slot. Verified uncertain items may become
+DONE_VERIFIED and release their resource claims; unresolved items remain
+UNKNOWN_NEEDS_READBACK with claims retained. BLOCKED_SECURITY stays blocked.
+There is no apply() call, automatic replay, approval resurrection or WORK_COMPLETE
+claim. Repeating the same recovery returns the original receipt only after fresh
+authorization. Transaction failure preserves slot, claims and states.
+
+All workers must use the same configured local service ledger and lock inode;
+independent local databases are independent coordination domains. Neither POSIX
+locking nor these tests attest cross-host/network-filesystem safety. No lock
+file may be unlinked/replaced while workers exist. Upgrades must drain old worker
+versions; a legacy slot without protocol evidence still requires an independently
+approved quiescent maintenance procedure, not a forced marker or alternate path.
+The production identity handoff, topology and recovery canary remain release gates.
+
+### Complete-checkout local verification at 52b0ee1
+
+The previous partial-source QA gate has been replaced with a complete git
+worktree of the pinned PR revision and actual Prefect 3.8.8, using the SAME
+prefect==3.8.8 / fastapi<0.155 constraints already defined by the operator workflow.
+Dependencies are isolated under the QA workspace; the original environment,
+published service and production configuration are unchanged. Temporary Prefect
+API/SQLite instances are local-only; real cloud API credentials are disabled.
+
+At commit `52b0ee12d62390e0f9add073afe6fcbb70010f0e`, the full repository
+suite passed: 1,694 tests on Python 3.12, including six new
+actual-runtime integration cases. Scheduling, context, signature verification,
+DraftStore, grant/audit transactions, binding and recovery are real. Only the
+upstream issuer handoff and TrainingPeaks provider are synthetic. Tests exercise
+flow/task origin, standalone-task refusal, control lifecycle, replay of an old
+invocation assertion and recovery without approval resurrection. This is NOT an
+attestation of the existing production issuer, VPC bridge or deployed worker.
+
+Complete testing also exposed inherited test defects (invalid literal preventing
+collection, moved host-module path, frozen tool count and note mocks missing
+coach/inventory preflight). These are corrected at their actual test contracts;
+production plan/owner guards are not relaxed and no alias module or skipped test
+is introduced. A real shared redaction defect was corrected: physical/escaped
+line boundaries are normalized before credential-line redaction, including
+quoted fields and spaced values. The existing admin receipt and operator output
+both use that same function; endpoints and source/target policy stay unchanged.
+
+Repository checks `ruff check src/` and `mypy src/` now pass (56 source files).
+The parent commit had 53 Ruff findings and 43 mypy errors, independently reproduced
+in a clean worktree. Repairs reuse the engine's existing Adapter protocol, narrow
+validated identities and provider shapes, distinguish APIResponse/httpx transports,
+and declare actual heterogeneous result types. Type casts only describe values
+already checked by runtime guards; none replace validation or authorize an action.
+Unknown plan objects/listing readbacks now return errors rather than reaching a
+mutation/retry. Exception names follow the Error convention with import-compatible
+aliases. Other lint repairs preserve tool schemas, endpoints and allowlists.
+No type/lint suppressions, dependency changes or workflow edits were added.
+
+The complete suite includes three additional regressions for unknown plan/listing
+payloads, plus signed Prefect runtime and shared-redaction cases. Full local tests
+and static checks do not imply a green GitHub Actions run: status/check runs must
+be observed separately on the published commit. The stacked PR base is unchanged;
+workflow trigger filters must not be bypassed to manufacture CI evidence.
+
+### Debt and release gates
+
+Owner below means the Operator component maintainer, not the coach/user.
+No feature is WORK_COMPLETE while an applicable gate remains open.
+
+| Classification | Item and reason | Target / removal condition | Verification |
+| --- | --- | --- | --- |
+| STRUCTURAL_REFACTOR — addressed | Divergent flow/Approval selectors and duplicate preview validators could drift | Shared selector and preview validators now used at both boundaries | Same-resource chain, corrupt records, existing regressions |
+| STRUCTURAL_REFACTOR — addressed | Execution checks could create a binding using execute-only permission; grant checks did not inspect the exact persisted approval/binding | Use the common inspector without mutation; inspect approval/binding plus current grants/revocations/audit in one authority transaction. Reservation remains a distinct control permission | Four reproduced failures fixed; execute-only and corrupt-binding refusal, real SQLite exclusion, read-only revoked recovery |
+| STRUCTURAL_REFACTOR — addressed | Explicit readback denials could become transient/uncertain states, including at orphan recovery and transport boundaries | Preserve the security category from local/native HTTP readers through the existing private bridge and common engine. Persist new recovery denials and retain uncertain claims; no automatic retry | Negative cases on prior receipts/postflight, private loopback transport, real Prefect recovery and restored-reader refusal |
+| STRUCTURAL_REFACTOR — addressed | Draft/ChangeSet cycle checks and scheduling implemented the same graph contract three times; valid maximum-depth changesets could overflow Python recursion | One non-recursive dependency contract using the standard library, preserving stable ready batches and immutable input identity. Keep existing 500/1,000 item limits | Maximum chains/cycles, malformed shape errors before I/O, stable execution order and exact prior request/manifest hashes |
+| STRUCTURAL_REFACTOR — addressed in source; runtime inventory required | Unsafe SQLite file aliases/permissions, first-open WAL race and volatile execution ledger | Shared private-file opening/identity checks for DraftStore and Ledger; bounded inode exclusion during initialization; execution requires persistence. Owner: Operator maintainer must inventory owner/modes/paths and preserve canonical history before release | Hardlinks/symlinks/FIFO/sidecars, first-open concurrency, private creation, changed inode, no-provider-write refusal, worker/recovery and publisher regressions |
+| STRUCTURAL_REFACTOR — addressed in one-ledger domain | Replaying request identity was not worker ownership | Invocation-owned persistent execution slot | Concurrent connections, resumed execution, dead process |
+| SOURCE/TEST COMPLETE — runtime blocker | Concrete signed identity, scoped grants, revocation and audit implemented; trust/assertion handoff not configured live | Owner: Operator maintainer. Connect the existing issuer/launcher to invocation-bound assertions and pinned public trust before enabling control operations; retain default deny | Real signature/algorithm/issuer/audience/time/run binding tests, current grants, admin refusal, revocation, atomic control, audit; actual local Prefect coverage passed; production issuer/launcher and upstream revocation canary still pending |
+| SOURCE/TEST COMPLETE — runtime blocker | Authorized local orphan recovery now uses kernel exclusion and preview readback in the same flow | Owner: Operator maintainer. Review/drain legacy workers and test on the canonical local runtime before release; no auto-takeover or legacy-marker workaround | Real child-process death, active owner refusal, inode mismatch, denial preservation, uncertain claims, rollback, idempotent receipt and revoked-approval recovery |
+| MISSING — release blocker | One-ledger topology is not deployment-attested | Enforce a single canonical service ledger for all workers before live execution; no arbitrary per-request ledger paths | Real-runtime multi-worker canary and readback |
+| STRUCTURAL_REFACTOR — addressed in source | Classic adapter constructed FIELD_VALIDATION_ONLY manifest to reuse validation | Pure field validator is now shared with the existing publisher; synthetic manifest removed | Identical acceptance/error parity and input immutability; publisher/adapter regressions |
+| STRUCTURAL_REFACTOR — source/test complete, runtime gate pending | SKIPPED_DEPENDENCY legacy branch in normal execution | Branch removed in favor of atomic version 1 migration and full event backup. Owner: Operator maintainer. Inventory/rehearse the actual ledger snapshot and rollback before release; no mixed worker versions | Concurrent/idempotent migration, rollback, manifest drift, preserved claims/denials and dependent execution |
+| RESOLVED — local QA | Partial-source snapshot and missing Prefect | Replaced by pinned complete worktree, actual Prefect runtime and full suite; production/CI attestations remain separate | 1,694 passed; local API/SQLite, signed invocation and orphan-recovery cases |
+| RESOLVED — local static QA | Parent lint/type findings | Corrected contracts and local lint defects without weakening runtime checks or adding suppressions | Ruff src/ PASS; mypy src/ PASS, 56 files; full suite PASS |
+| EXISTING_DEBT — before universal release | Plan-specific legacy helpers remain in plans.py, strength.py, beginner_strength_plan.py and native_note_library.py; their hardcoded pilot scopes are safety constraints, not universal interfaces | Owner: Operator maintainer. Keep isolated and unavailable to universal publication. Replace their callers with common typed capabilities only after semantic parity, scope review and an authorized capability canary; remove retired helpers/callers in the same review. Do not generalize by stripping IDs or allowlists | Inventory remaining callers; negative owner/scope and parity tests, then reviewed migration/removal; no new per-plan helpers introduced here |
+
+Existing staging VPC allowlists and capability guards remain in place. Their
+replacement requires request-scoped authorization review, negative scope tests
+and authorized canaries; no policy removal or widening is part of this change.
+Workflow edits and plan_mutation_gates changes previously denied remain excluded.
+The proven publisher keeps its existing endpoints and scope gates; field validation
+and local exclusion are shared components. No claim of live readiness.
+
+
+### Follow-up: permission checks cannot reserve execution
+
+Classification: STRUCTURAL_REFACTOR, with no temporary compatibility bypass.
+Review of the common execution guard found that it called bind_execution after
+checking execute_change. Thus an approved preview with an execute-only grant
+could create its own execution reservation, bypassing the distinct bind permission.
+The host authority also previously checked grants against preview/revision/scope
+without itself checking the exact existing approval and execution binding.
+Four negative cases reproduce these defects on 52b0ee1 before the fix.
+
+DraftStore.inspect_execution_binding is now the single inspector reused by the
+guard and concrete authority. It verifies the exact approval payload, binding and
+manifest; active consent is required by default. Only the explicitly identified
+read-only recovery action permits inspecting revoked consent, and recovery still
+needs a current grant. Neither check creates/refreshes a binding or resurrects
+consent. The serialized flow input exposes no allow_revoked switch.
+
+HostReviewAuthority performs this inspection inside the same BEGIN IMMEDIATE as
+current grants, token/principal/grant revocations and audit. Missing/corrupt binding,
+missing/incorrect approval SHA and withdrawn consent deny execution. A concurrent
+revocation cannot interleave between binding inspection and the grant decision.
+A decision already completed before revocation is an in-flight decision, not a
+promise to cancel a provider request already sent. Existing per-item checks remain.
+
+The sole reservation route remains the existing independently authorized
+bind_execution control operation. Publisher activation, adapter capabilities,
+endpoints and worker protocol are unchanged. No provider writes, deployment or
+production ledger migration were performed.
+
+Verification of this follow-up is recorded separately from the full-suite result
+above: 152 relevant tests passed across authorization, preview_approval,
+worker_recovery and dynamic_request_store (15 new cases; four failed before the
+fix). Cases include execute-only privilege refusal, exact/absent/corrupt bindings,
+recovery after consent revocation without reactivation, and real concurrent SQLite
+connections proving exclusion and subsequent revocation enforcement. An additional 53 tests passed
+(3 warnings) across actual Prefect runtime, unified flow, changeset engine, worker
+coordination and isolated flow contracts. Total for this follow-up: 205 relevant
+tests, including real local Prefect/SQLite and synthetic issuer/provider boundaries.
+Ruff src/ and changed-file F checks, mypy src/ (56 files), and diff checks pass.
+The unchanged parts of the prior 1,694-test suite were not rerun. Local pytest
+evidence must not be labelled GitHub Actions CI.
+
+
+### Follow-up: preserve explicit denials through readback and recovery
+
+Classification: STRUCTURAL_REFACTOR, reusing the existing read gateway, bridge,
+engine and ledger; no temporary workaround or new production infrastructure.
+Before this correction, generic exception handling could turn SecurityDenied
+while rechecking DONE_VERIFIED/RUNNING/UNKNOWN_NEEDS_READBACK into an uncertain
+read failure. Postwrite readback could similarly swallow the denial, and orphan
+recovery could persist UNKNOWN_NEEDS_READBACK instead of the newly observed
+security stop. Separately, the local reader treated final provider permission
+errors as ordinary read failures and the existing bridge converted SecurityDenied
+to HTTP 424, losing its category across the private transport.
+
+The shared provider-access classifier now preserves final AUTH_EXPIRED,
+AUTH_INVALID, FORBIDDEN_ENDPOINT and PREMIUM_REQUIRED responses from TPClient,
+and native HTTP 401/403, as bounded SecurityDenied without provider diagnostics.
+Plan, workout, note and library reads share the same checked GET helper. Native
+Strength authentication failure also stops as SecurityDenied. Existing endpoints,
+client token-refresh behavior, allowlists and transient-error handling are unchanged.
+The existing private read handler returns a bounded 403 for provider SecurityDenied;
+its existing remote reader already preserves 401/403 as SecurityDenied. Temporary
+503 and generic 424 retain their previous categories. No fallback is attempted.
+
+The engine uses one terminal-denial policy for initial/readback/reconciliation
+security failures. Normal previews report BLOCKED_SECURITY without mutating the
+ledger; execution persists it. Orphan recovery persists a newly observed denial
+atomically with its existing receipt/slot transaction, even for an originally
+verified or pending event. Existing denials retain their evidence. Uncertain
+claims stay held. A restored reader or repeated recovery cannot clear a persisted
+denial, claim completion or trigger another provider write. No security tombstone
+is removed by this change.
+
+Verification on this follow-up: 248 distinct relevant tests passed, including
+39 new cases. The core/authorization/approval/coordination/local-reader group
+passed 177 tests in 1.72 s; all 41 private/unified bridge cases passed within a
+70-test run (29 overlapping reader cases are not counted twice). Actual Prefect
+runtime, unified flow and isolated flow contracts passed 30 tests in 47.99 s
+(3 warnings), including a new signed-authority recovery case proving durable
+BLOCKED_SECURITY, retained claim and idempotent receipt after the reader recovers.
+Synthetic provider/issuer and loopback HTTP only; no TrainingPeaks credentials,
+cloud Prefect API or deployment. 27 engine/local-reader negative cases reproduced
+the defect on the preceding source. Ruff src/ and changed-file F, mypy src/
+(56 files), Python 3.10 syntax and diff checks pass. The full 1,694-test baseline
+remains attributed only to 52b0ee1; unrelated tests were not rerun for this segment.
+GitHub Actions CI and production issuer/topology/capability canaries remain
+separate release gates. No merge, deploy or universal publisher enablement.
+
+
+### Follow-up: one non-recursive dependency contract
+
+Classification: STRUCTURAL_REFACTOR. Draft preparation, ChangeSet validation
+and engine scheduling now reuse dependency_order in the existing operation
+contracts module. It uses Python's standard-library TopologicalSorter with
+explicit missing-node rejection and input ordering within each ready batch.
+No package, service, job, manifest format, recursion-limit override or batch
+splitting mechanism is introduced. Existing limits remain 500 items for drafts
+and 1,000 for direct ChangeSets; this change does not harmonize or increase them.
+
+A valid reversed chain of 1,000 existing resources previously caused
+RecursionError during manifest validation; a cycle of that depth could fail the
+same way instead of returning DEPENDENCY_CYCLE. Lists/dicts in depends_on or kind
+could also raise TypeError before the declared shape/domain error. Six negative
+cases reproduced these failures on the preceding source. Type/shape checks now
+precede hashed membership, and the common graph contract returns the existing
+DEPENDENCY_MISSING / DEPENDENCY_CYCLE codes in the caller's existing exception
+class. Invalid graphs stop before worker acquisition, ledger registration,
+resource claims or provider reads/writes.
+
+The stored draft and compiled preview keep their input order and serialization;
+only runtime execution follows dependency batches. A fixed regression records
+request_id, semantic_sha256 and manifest SHA captured from 0708daf and verifies
+exact equality after consolidation, plus input immutability. Maximum-depth
+preview executes 1,000 synthetic reads without recursion or provider writes.
+Existing same-resource direct-dependency requirements remain unchanged.
+
+The new import path exposed type ambiguities in adjacent trust contracts.
+Existing missing-preview rejection now uses an explicit narrowing branch;
+review dispatch declares its dictionary result; run_control separates successful
+return/audit from caught failure/audit while retaining transaction/savepoint
+semantics. JWT verification explicitly checks the already-pinned RSA/Ed25519
+key type at its algorithm branch. No algorithms, keys, grants or permissions
+are added. Existing rollback/audit tests now also assert the denied audit outcome.
+No casts, suppressions or workflow changes were introduced for these checks.
+
+Verification: 245 distinct relevant cases passed, including 16 new cases.
+Core/DraftStore/approval/authorization/worker/recovery/migration suites: 215 PASS.
+Actual Prefect runtime, unified flow and isolated contracts: 30 PASS (3 warnings);
+after the final authority type/control cleanup, the seven actual-runtime cases
+were revalidated (7 PASS, 2 warnings), not counted twice. Ruff src/, changed-file
+F checks, mypy src/ --no-incremental (56 files), Python 3.10 syntax and diff
+checks pass. Provider/issuer remain synthetic. The full 1,694-test baseline is
+still attributed only to 52b0ee1; unrelated suites were not repeated. No GitHub
+Actions success, live canary, deployment or publisher activation is inferred.
+
+
+### Follow-up: one private local SQLite boundary
+
+Classification: STRUCTURAL_REFACTOR, not a new service, database product, job,
+manifest or deployment. Both existing stores now use ironman_local_state for
+file creation, SQLite initialization and live connection identity checks.
+Four negative tests reproduced the original gaps: both stores accepted hardlink
+aliases, the ledger could be created non-private with a permissive umask, and
+execution could proceed with an in-memory ledger. A separate synthetic hardlink
+experiment also produced SQLite WAL disk-I/O failure; no claim is made that such
+aliases provide reliable independent databases or safe coordination domains.
+
+The shared opener creates the file with mode 0600 BEFORE SQLite opens it. Files
+must be regular, singly linked and owned by the effective service UID, with exact
+0600 permissions. Existing unsafe files are rejected without chmod, replacement,
+copying or automatic repair. Absolute paths without '..' are required; ancestor
+symlinks and directories writable by untrusted users are refused, with the normal
+sticky filesystem-root temporary directory exception. Filesystem-root ownership
+is derived from the actual root metadata to support mapped container UIDs; this
+does not grant caller identity or relax ownership of database/sidecar files.
+Existing WAL/SHM/journal aliases and unsafe metadata are checked before SQLite.
+No directory is created by this helper.
+
+The live connection pins device/inode. Store reads/transactions, authority table
+initialization and ledger state/worker/write boundaries verify it. Replacing or
+hardlinking the database invalidates the live handle. If identity changes during
+execution, cleanup retains the durable worker slot rather than writing through
+a stale handle; the kernel worker lock still releases normally. The request
+needs explicit quiescent maintenance/recovery, not automatic takeover. An
+in-memory ledger remains available for previews but cannot acquire an execution
+worker or reach provider I/O in execute mode.
+
+Simultaneous first-open testing exposed the existing SQLite journal-mode race:
+busy_timeout alone did not prevent an immediate 'database is locked'. The shared
+POSIX descriptor primitive now serializes SQLite initialization on the database
+inode itself, with a bounded eight-second wait. It creates no additional lock
+file and never expires an owner or retries provider actions. Existing worker and
+reviewed batch locks retain their non-blocking behavior. Invalid database startup
+closes the connection/descriptor without repairing contents.
+
+This is a local cooperating-host protocol, not cross-host/network-filesystem
+coordination or a defense against a compromised service UID/root. File identities
+are pinned for the lifetime of a connection, not permanently across service
+restarts. Host policy must preserve canonical ledger history and prohibit live
+replacement/unlink of database and worker-lock files; replacing/migrating state
+requires the already-pending authorized quiescent procedure. Before release the
+Operator maintainer must inventory actual paths, UID mapping, permissions and
+sidecars, drain old workers and rehearse on an authorized snapshot. Legacy
+0644/other unsafe files now fail closed; no production permissions or data were
+changed during development. No schema/content migration is introduced here.
+
+Verification: 320 distinct relevant cases passed, including 32 new cases.
+Core/DraftStore/approval/authority/ledger/worker/recovery/migration and existing
+reviewed batch publisher: 260 PASS (2.78 s). Actual local Prefect runtime/flow,
+isolated contracts and existing classic/PDF adapters: 60 PASS (45.09 s,
+3 warnings). Tests cover hardlinks before/after open, symlink ancestors/leaves,
+sidecars, FIFO refusal, private creation under permissive umask, no automatic
+permission repair, concurrent first open, bounded exclusion without takeover,
+invalid-file cleanup and inode replacement before/during execution. The latter
+verifies zero provider writes and retained worker evidence. Provider/issuer are
+synthetic. Ruff src/, changed-file F, mypy src/ --no-incremental (56 files), Python
+3.10 syntax and diff checks pass. The earlier full 1,694-test suite remains scoped
+to 52b0ee1; unrelated suites were not repeated. CI GitHub and live runtime gates
+remain distinct. Universal publication is still disabled; no merge or deploy.

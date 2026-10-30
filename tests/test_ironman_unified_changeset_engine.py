@@ -2,7 +2,6 @@
 from __future__ import annotations
 
 import json
-from pathlib import Path
 
 import pytest
 
@@ -67,7 +66,7 @@ def run(m, adapters, ledger, execute=True):
         m, adapters, ledger, execute=execute,
         reviewed_revision=REVISION if execute else None,
         approval_scope=SCOPE if execute else None,
-    )
+     authorize_execution=lambda *_: True)
 
 
 def test_one_engine_handles_different_plan_resources_and_provider_readback(ledger):
@@ -408,7 +407,9 @@ def test_legacy_persisted_skipped_dependency_is_migrated_safely(ledger):
                  dependent["kind"]: dependent_provider}
     run(manifest, providers, ledger, execute=False)  # initialize ledger
     ledger.set_state(manifest["request_id"], "predecessor", "DONE_VERIFIED")
-    ledger.set_state(manifest["request_id"], "dependent", "SKIPPED_DEPENDENCY")
+    # Fixture from an older ledger; new code must never persist this state.
+    ledger.db.execute("UPDATE change_events SET state='SKIPPED_DEPENDENCY' WHERE change_id='dependent'")
+    ledger.db.commit()
     recovered = run(manifest, providers, ledger)
     assert recovered["request_state"] == "WORK_COMPLETE"
     assert ledger.status(manifest["request_id"], "dependent") == "DONE_VERIFIED"
@@ -453,11 +454,11 @@ def test_generated_preview_scope_can_never_authorize_a_provider_write(ledger):
     manifest["approval_scope"] = "PREVIEW_ONLY:" + manifest["request_id"]
     fake = FakeAdapter(before)
     assert run_changeset(manifest, {change["kind"]: fake}, ledger,
-                         execute=False)["request_state"] == "PREVIEW_ONLY"
+                         execute=False, authorize_execution=lambda *_: True)["request_state"] == "PREVIEW_ONLY"
     with pytest.raises(ChangeStop, match="PREVIEW_DRAFT_NOT_APPROVED"):
         run_changeset(manifest, {change["kind"]: fake}, ledger, execute=True,
                       reviewed_revision=manifest["reviewed_revision"],
-                      approval_scope=manifest["approval_scope"])
+                      approval_scope=manifest["approval_scope"], authorize_execution=lambda *_: True)
     assert fake.writes == 0
 
 
@@ -501,3 +502,135 @@ def test_concurrent_registration_of_same_changeset_is_idempotent(tmp_path):
         assert ledger.db.execute("SELECT COUNT(*) FROM resource_claims").fetchone()[0] == 0
     finally:
         ledger.close()
+
+
+@pytest.mark.parametrize("prior_state", ["DONE_VERIFIED", "UNKNOWN_NEEDS_READBACK", "RUNNING"])
+@pytest.mark.parametrize("execute", [False, True])
+def test_explicit_readback_denial_is_terminal_and_never_retried(ledger, prior_state, execute):
+    before, after = {"value": 1}, {"value": 2}
+    change = item("denied-read", "plan.note.patch", 601, before, after)
+    m = make_manifest(change)
+    ledger.setup(m, validate_manifest(m))
+    ledger.set_state(m["request_id"], change["id"], prior_state)
+
+    class DeniedReader(FakeAdapter):
+        denied = True
+        reads = 0
+
+        def read(self, spec):
+            self.reads += 1
+            if self.denied:
+                raise SecurityDenied("SYNTHETIC_PROVIDER_ACCESS_DENIED")
+            return super().read(spec)
+
+    provider = DeniedReader(after)
+    result = run(m, {change["kind"]: provider}, ledger, execute=execute)
+    assert result["results"][0]["state"] == "BLOCKED_SECURITY"
+    assert ledger.status(m["request_id"], change["id"]) == ("BLOCKED_SECURITY" if execute else prior_state)
+    if execute:
+        provider.denied = False
+        reads = provider.reads
+        retried = run(m, {change["kind"]: provider}, ledger)
+        assert retried["results"][0]["state"] == "BLOCKED_SECURITY"
+        assert provider.reads == reads
+    assert provider.writes == 0
+
+
+@pytest.mark.parametrize("behavior", ["normal", "committed_then_timeout", "deny"])
+def test_postwrite_readback_denial_remains_security_stop_with_claim(ledger, behavior):
+    before, after = {"value": 1}, {"value": 2}
+    change = item("denied-postflight", "plan.workout.patch", 602, before, after)
+    m = make_manifest(change)
+
+    class PostflightDenied(FakeAdapter):
+        def read(self, spec):
+            if self.writes:
+                raise SecurityDenied("SYNTHETIC_READBACK_DENIED")
+            return super().read(spec)
+
+    provider = PostflightDenied(before, behavior=behavior)
+    result = run(m, {change["kind"]: provider}, ledger)
+    assert result["results"][0]["state"] == "BLOCKED_SECURITY"
+    assert ledger.status(m["request_id"], change["id"]) == "BLOCKED_SECURITY"
+    assert ledger.db.execute("SELECT count(*) FROM resource_claims").fetchone() == (1,)
+    assert run(m, {change["kind"]: provider}, ledger)["results"][0]["state"] == "BLOCKED_SECURITY"
+    assert provider.writes == 1
+
+
+def long_chain(count=1000, *, cycle=False):
+    before, after = {"value": 1}, {"value": 2}
+    changes = [item(f"change-{n:04d}", "plan.workout.patch", n + 1, before, after,
+                    depends=[f"change-{n - 1:04d}"] if n else [])
+               for n in range(count)]
+    if cycle:
+        changes[0]["depends_on"] = [changes[-1]["id"]]
+    return make_manifest(*reversed(changes))
+
+
+def test_supported_maximum_chain_does_not_depend_on_python_recursion_limit():
+    manifest = long_chain()
+    assert validate_manifest(manifest) == digest(manifest)
+
+
+def test_cycle_at_supported_maximum_is_reported_as_contract_error():
+    with pytest.raises(ChangeStop, match="DEPENDENCY_CYCLE"):
+        validate_manifest(long_chain(cycle=True))
+
+
+@pytest.mark.parametrize("dependencies", [[[]], [{}], [None], [True]])
+def test_malformed_dependency_shape_returns_contract_error(dependencies):
+    change = item("bad-dependency", "plan.workout.patch", 1, {"v": 1}, {"v": 2})
+    change["depends_on"] = dependencies
+    with pytest.raises(ChangeStop, match="DEPENDENCY_SHAPE"):
+        validate_manifest(make_manifest(change))
+
+
+def test_common_scheduler_preserves_ready_batch_input_order(ledger):
+    before, after = {"value": 1}, {"value": 2}
+    changes = [item("child", "plan.workout.patch", 1, before, after, depends=["parent"]),
+               item("independent", "plan.workout.patch", 2, before, after),
+               item("parent", "plan.workout.patch", 3, before, after),
+               item("tail", "plan.workout.patch", 4, before, after, depends=["child"])]
+    manifest = make_manifest(*changes)
+    provider = FakeAdapter(before)
+    result = run(manifest, {"plan.workout.patch": provider}, ledger, execute=False)
+    assert [r["id"] for r in result["results"]] == ["independent", "parent", "child", "tail"]
+    assert [x["id"] for x in manifest["changes"]] == ["child", "independent", "parent", "tail"]
+    assert all(r["state"] == "PREFLIGHT_PASS" for r in result["results"])
+    assert provider.writes == 0
+
+
+def test_preview_schedules_supported_maximum_chain_without_stack_workaround(ledger):
+    manifest = long_chain()
+    provider = FakeAdapter({"value": 1})
+    result = run(manifest, {"plan.workout.patch": provider}, ledger, execute=False)
+    assert [r["id"] for r in result["results"]] == [f"change-{n:04d}" for n in range(1000)]
+    assert all(r["state"] == "PREFLIGHT_PASS" for r in result["results"])
+    assert result["request_state"] == "PREVIEW_ONLY" and provider.writes == 0
+
+
+@pytest.mark.parametrize("problem,code", [("missing", "DEPENDENCY_MISSING"), ("cycle", "DEPENDENCY_CYCLE")])
+def test_invalid_graph_stops_before_worker_ledger_or_provider_io(ledger, problem, code):
+    before, after = {"value": 1}, {"value": 2}
+    first = item("first", "plan.workout.patch", 1, before, after, depends=["second"])
+    second = item("second", "plan.workout.patch", 2, before, after,
+                  depends=["first"] if problem == "cycle" else ["missing"])
+
+    class NoProviderIO(FakeAdapter):
+        def read(self, spec):
+            raise AssertionError("INVALID_GRAPH_MUST_NOT_READ_PROVIDER")
+
+    provider = NoProviderIO(before)
+    with pytest.raises(ChangeStop, match=code):
+        run(make_manifest(first, second), {"plan.workout.patch": provider}, ledger)
+    for table in ("requests", "change_events", "execution_workers", "resource_claims"):
+        assert ledger.db.execute(f"SELECT count(*) FROM {table}").fetchone() == (0,)
+    assert provider.writes == 0
+
+
+@pytest.mark.parametrize("kind", [[], {}, None])
+def test_malformed_kind_returns_domain_error_before_set_membership(kind):
+    change = item("bad-kind", "plan.workout.patch", 1, {"v": 1}, {"v": 2})
+    change["kind"] = kind
+    with pytest.raises(ChangeStop, match="UNKNOWN_ADAPTER"):
+        validate_manifest(make_manifest(change))

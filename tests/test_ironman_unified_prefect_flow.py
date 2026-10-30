@@ -103,8 +103,7 @@ def test_deployment_is_unscheduled_private_preview_only():
     cfg = yaml.safe_load((Path(__file__).resolve().parents[1] /
                           "prefect/ironman-unified-changeset-v1.yaml").read_text())
     dep = cfg["deployments"][0]
-    assert dep["parameters"]["mode"] == "preview"
-    assert dep["parameters"]["read_transport"] == "private_bridge"
+    assert dep["parameters"] == {"mode": "preview"}
     assert dep["schedules"] == []
     assert "readonly" in dep["tags"]
 

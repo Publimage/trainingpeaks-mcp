@@ -35,6 +35,7 @@ import logging
 from typing import Any
 
 from tp_mcp.client import TPClient
+from tp_mcp.tools.profile import _athlete_name
 
 logger = logging.getLogger("tp-mcp")
 
@@ -143,16 +144,31 @@ async def tp_list_athletes_in_group(group_id: str) -> dict[str, Any]:
                 "error_code": "NOT_FOUND",
                 "message": f"No athlete group with id {gid}. Use tp_list_groups.",
             }
+        if tag.get("coachId") != coach_id:
+            return {"isError": True, "error_code": "PROVIDER_IDENTITY_MISMATCH",
+                    "message": "The provider group does not belong to the authenticated coach."}
 
         # Join athleteIds against the coach's roster (from /users/v3/user, the
         # same source tp_list_athletes uses) to attach names.
         roster = {a.get("athleteId"): a for a in user_data.get("athletes", [])}
+        member_ids = tag.get("athleteIds") or []
+        if any(aid not in roster or not _athlete_name(roster[aid]) for aid in member_ids):
+            # The tag may have changed after the account read. Re-read ONCE,
+            # not a retry of a denied operation and never an inferred identity.
+            refreshed = await client._get_user_data()
+            if not refreshed:
+                return {"isError": True, "error_code": "ROSTER_RECONCILIATION_UNAVAILABLE",
+                        "message": "Could not verify current roster identities."}
+            if refreshed.get("personId") != coach_id:
+                return {"isError": True, "error_code": "PROVIDER_IDENTITY_MISMATCH",
+                        "message": "The authenticated account changed during the group read."}
+            roster = {a.get("athleteId"): a for a in refreshed.get("athletes", [])}
         athletes = []
-        for aid in (tag.get("athleteIds") or []):
+        for aid in member_ids:
             a = roster.get(aid)
             # name is None when the athlete is in the group but not in this
             # account's roster
-            name = f"{a.get('firstName', '')} {a.get('lastName', '')}".strip() if a is not None else None
+            name = _athlete_name(a) if a is not None else None
             athletes.append({"athlete_id": aid, "name": name})
         athletes.sort(key=lambda x: (x["name"] or "").lower())
 
@@ -161,6 +177,8 @@ async def tp_list_athletes_in_group(group_id: str) -> dict[str, Any]:
             "name": tag.get("name", ""),
             "athletes": athletes,
             "count": len(athletes),
+            "unresolved_athlete_ids": [a["athlete_id"] for a in athletes if a["name"] is None],
+            "roster_consistent": all(a["name"] is not None for a in athletes),
         }
 
 

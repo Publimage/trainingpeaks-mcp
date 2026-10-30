@@ -10,6 +10,12 @@ from tp_mcp.client.context import athlete_override
 logger = logging.getLogger("tp-mcp")
 
 
+def _athlete_name(entry: dict[str, Any]) -> str | None:
+    """Provider-supplied name only; missing names are never inferred from groups."""
+    parts = [entry.get("firstName"), entry.get("lastName")]
+    return " ".join(p.strip() for p in parts if isinstance(p, str) and p.strip()) or None
+
+
 def _derive_tier(*, expired: bool | None, user_type: int | None,
                  trial_days: int | None) -> str | None:
     """Map raw account fields → TP-UI label («Account Type»). Verified against
@@ -107,11 +113,9 @@ async def _targeted_athlete_profile(client: TPClient) -> dict[str, Any]:
             "message": "That athlete is not in your roster.",
         }
 
-    first = entry.get("firstName", "")
-    last = entry.get("lastName", "")
     return {
         "athlete_id": athlete_id,
-        "name": f"{first} {last}".strip(),
+        "name": _athlete_name(entry),
         "email": entry.get("email"),
         # A clean «premium / basic» label isn't exposed for a coached athlete by
         # /users/v3/user. Raw account-related fields ARE present on the roster
@@ -221,8 +225,6 @@ async def tp_list_athletes() -> dict[str, Any]:
 
         result = []
         for a in athletes:
-            first = a.get("firstName", "")
-            last = a.get("lastName", "")
             athlete_email = (a.get("email") or "").lower()
             is_self = (
                 a.get("coachedBy") == person_id
@@ -230,7 +232,7 @@ async def tp_list_athletes() -> dict[str, Any]:
             )
             result.append({
                 "athlete_id": a.get("athleteId"),
-                "name": f"{first} {last}".strip(),
+                "name": _athlete_name(a),
                 "is_self": is_self,
                 "account": _account_fields(a),
             })

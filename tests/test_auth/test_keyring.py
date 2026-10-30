@@ -1,6 +1,11 @@
 """Tests for keyring credential storage."""
 
-from unittest.mock import MagicMock, patch
+from types import SimpleNamespace
+from unittest.mock import patch
+
+import pytest
+from keyring.backends.fail import Keyring as FailKeyring
+from keyring.backends.null import Keyring as NullKeyring
 
 from tp_mcp.auth.keyring import (
     clear_credential,
@@ -16,16 +21,23 @@ class TestIsKeyringAvailable:
     def test_available_with_real_backend(self):
         """Test returns True when a real keyring backend is available."""
         with patch("tp_mcp.auth.keyring.keyring") as mock:
-            mock.get_keyring.return_value = MagicMock(__class__=type("RealKeyring", (), {}))
+            mock.get_keyring.return_value = SimpleNamespace(priority=1)
             assert is_keyring_available() is True
 
-    def test_unavailable_with_fail_backend(self):
-        """Test returns False when only fail backend is available."""
+    @pytest.mark.parametrize("backend", [FailKeyring(), NullKeyring()])
+    def test_unavailable_with_fail_backend(self, backend):
+        """Real unusable backend classes are both named Keyring."""
         with patch("tp_mcp.auth.keyring.keyring") as mock:
-            # Create a mock that reports as a Fail backend
-            fail_backend = MagicMock()
-            fail_backend.__class__.__name__ = "FailKeyring"
-            mock.get_keyring.return_value = fail_backend
+            mock.get_keyring.return_value = backend
+            assert is_keyring_available() is False
+
+    def test_unavailable_backend_priority_failure(self):
+        class Unavailable:
+            @property
+            def priority(self):
+                raise RuntimeError("No usable backend in this environment")
+
+        with patch("tp_mcp.auth.keyring.keyring.get_keyring", return_value=Unavailable()):
             assert is_keyring_available() is False
 
 

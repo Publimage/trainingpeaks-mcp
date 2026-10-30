@@ -7,6 +7,7 @@ import json
 import threading
 from http.client import HTTPConnection
 from http.server import ThreadingHTTPServer
+from bridge_tls_fixture import secure_bridge_server, tls_metadata
 
 import pytest
 
@@ -46,6 +47,7 @@ def test_default_absent_config_is_deny_by_default(tmp_path):
         "result_writer_sources": ["10.114.0.3"],
         "max_window_days": 21,
     }))
+    raw=json.loads(p.read_text()); raw["tls"]=tls_metadata(); p.write_text(json.dumps(raw)); p.chmod(0o600)
     cfg=_load_config(p)
     assert cfg["allowed_unified_reads"] == []
 
@@ -65,6 +67,7 @@ def test_invalid_unified_allowlist_reports_specific_config_error(tmp_path):
             "resource_ids": [3996858792],
         }],
     }))
+    p.chmod(0o600)
     with pytest.raises(BridgeConfigError, match="INVALID_UNIFIED_READ_ALLOWLIST"):
         _load_config(p)
 
@@ -208,7 +211,7 @@ def test_policy_opt_in_never_enables_url_or_command_input():
         asyncio.run(build_private_read({"spec":spec(),"shell":"id"},policy()))
 
 
-def test_http_endpoint_requires_existing_vpc_source_and_explicit_plan(monkeypatch):
+def test_http_endpoint_requires_existing_vpc_source_and_explicit_plan(monkeypatch, tmp_path):
     import tp_mcp.private_bridge as bridge
     read_calls=[]
     async def read(payload, cfg):
@@ -224,10 +227,11 @@ def test_http_endpoint_requires_existing_vpc_source_and_explicit_plan(monkeypatc
         "max_window_days":21,
     }
     server=ThreadingHTTPServer(("127.0.0.1",0), _handler_factory(cfg))
+    tls = secure_bridge_server(server, cfg, tmp_path / "tls")
     thread=threading.Thread(target=server.serve_forever,daemon=True)
     thread.start()
     try:
-        conn=HTTPConnection("127.0.0.1",server.server_address[1],timeout=5)
+        conn=tls.connection()
         conn.request("POST",READ_PATH,json.dumps({"spec":spec()}),
                      {"Content-Type":"application/json"})
         response=conn.getresponse()
@@ -237,7 +241,7 @@ def test_http_endpoint_requires_existing_vpc_source_and_explicit_plan(monkeypatc
         assert body["trainingpeaks_writes"]==0
         assert len(read_calls)==1
         conn.close()
-        conn=HTTPConnection("127.0.0.1",server.server_address[1],timeout=5)
+        conn=tls.connection()
         conn.request("POST",READ_PATH,json.dumps({"spec":spec(container=999999)}),
                      {"Content-Type":"application/json"})
         response=conn.getresponse()
@@ -287,7 +291,7 @@ def test_prefect_private_client_rejects_wrong_scope_returned_by_bridge(monkeypat
         def read(self,size): return json.dumps(bad).encode()
     class Opener:
         def open(self,request,timeout): return Response()
-    monkeypatch.setattr(transport, "build_opener",lambda *args:Opener())
+    monkeypatch.setattr(transport, "bridge_client_opener",lambda:Opener())
     with pytest.raises(ValueError,match="UNIFIED_BRIDGE_RESPONSE_MISMATCH"):
         transport._remote_read(original)
 
@@ -327,7 +331,7 @@ def test_existing_bridge_ip_boundary_rejects_vpc_unauthorized_source(monkeypatch
 
 
 @pytest.mark.parametrize("category", ["security", "temporary", "other"])
-def test_private_bridge_preserves_provider_failure_category_without_details(monkeypatch, category):
+def test_private_bridge_preserves_provider_failure_category_without_details(monkeypatch, category, tmp_path):
     import tp_mcp.private_bridge as bridge
     import tp_mcp.unified_read_bridge as transport
     from scripts.ironman_jobs.ironman_unified_changeset_engine import ChangeStop, SecurityDenied
@@ -341,10 +345,12 @@ def test_private_bridge_preserves_provider_failure_category_without_details(monk
     cfg = {"allowed_sources": {"127.0.0.1"}, "allowed_unified_reads": policy(),
            "allowed_athletes": set(), "result_writer_sources": set(), "max_window_days": 21}
     server = ThreadingHTTPServer(("127.0.0.1", 0), _handler_factory(cfg))
+    tls = secure_bridge_server(server, cfg, tmp_path / "tls")
+    monkeypatch.setenv("IRONMAN_PRIVATE_BRIDGE_TLS_CONFIG", tls.client_path)
     thread = threading.Thread(target=server.serve_forever, daemon=True)
     thread.start()
     # Synthetic loopback server only; production URL and VPC policy stay fixed.
-    monkeypatch.setattr(transport, "READ_URL", f"http://127.0.0.1:{server.server_address[1]}{READ_PATH}")
+    monkeypatch.setattr(transport, "READ_URL", f"https://127.0.0.1:{server.server_address[1]}{READ_PATH}")
     try:
         with pytest.raises(exception) as failure:
             PrivateBridgeReadAdapter().read(spec())

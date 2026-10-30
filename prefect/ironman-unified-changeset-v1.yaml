@@ -17,8 +17,6 @@ deployments:
     entrypoint: "scripts/ironman_jobs/ironman_unified_prefect_flow.py:unified_changeset_flow"
     parameters:
       mode: "preview"
-      read_transport: "private_bridge"
-      ledger_path: "/var/lib/ironman-prefect/unified-changesets/ledger.sqlite3"
     schedules: []
     work_pool:
       name: "ironman-prefect-staging-process"

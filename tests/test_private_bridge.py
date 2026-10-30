@@ -4,6 +4,7 @@ import json
 from pathlib import Path
 
 import pytest
+from bridge_tls_fixture import tls_metadata
 
 from tp_mcp.private_bridge import _load_config, _persist_admin_result, _validate_window
 
@@ -18,6 +19,7 @@ def test_config_requires_private_bind(tmp_path: Path):
         "result_writer_sources": ["10.114.0.3"],
         "max_window_days": 21,
     }))
+    p.chmod(0o600)
     with pytest.raises(RuntimeError, match="PRIVATE_BIND_REQUIRED"):
         _load_config(p)
 
@@ -32,6 +34,7 @@ def test_config_accepts_exact_staging_shape(tmp_path: Path):
         "result_writer_sources": ["10.114.0.3"],
         "max_window_days": 21,
     }))
+    raw=json.loads(p.read_text()); raw["tls"]=tls_metadata(); p.write_text(json.dumps(raw)); p.chmod(0o600)
     cfg = _load_config(p)
     assert cfg["host"] == "10.114.0.2"
     assert cfg["port"] == 8787

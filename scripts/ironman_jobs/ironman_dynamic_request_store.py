@@ -8,10 +8,10 @@ The draft database is hosted in the EXISTING Prefect service, never GitHub.
 from __future__ import annotations
 
 import hashlib
+from contextlib import contextmanager
+from uuid import uuid4
 import json
-import os
 import re
-import sqlite3
 from pathlib import Path
 from typing import Any
 
@@ -221,23 +221,11 @@ def prepare_draft(items: list[dict[str, Any]], *, owner_id: int = OWNER,
                     resource_producer_id in child["depends_on"],
                     "RESOURCE_REF_MUST_MATCH_PARENT_CREATOR")
     graph = {item["id"]: item["depends_on"] for item in normalized}
-    require(all(ref in graph for refs in graph.values() for ref in refs),
-            "DEPENDENCY_MISSING")
-    seen: set[str] = set()
-    active: set[str] = set()
-
-    def visit(node: str) -> None:
-        require(node not in active, "DEPENDENCY_CYCLE")
-        if node in seen:
-            return
-        active.add(node)
-        for dep in graph[node]:
-            visit(dep)
-        active.remove(node)
-        seen.add(node)
-
-    for node in graph:
-        visit(node)
+    from scripts.ironman_jobs.ironman_operation_contracts import DependencyGraphError, dependency_order
+    try:
+        dependency_order(graph)
+    except DependencyGraphError as exc:
+        raise DraftStop(str(exc)) from exc
     semantic = {"schema": SCHEMA, "owner_id": OWNER, "items": normalized}
     semantic_sha = hashlib.sha256(canonical(semantic).encode()).hexdigest()
     key = request_key or "auto-" + semantic_sha[:36]
@@ -275,6 +263,50 @@ def verify_draft_integrity(draft: dict[str, Any]) -> None:
     require(draft == reconstructed, "DRAFT_TAMPERED")
 
 
+def _validate_preview_receipt(manifest: dict, receipt: dict, manifest_sha: str,
+                              receipt_code: str, outcomes_code: str) -> None:
+    require(type(receipt) is dict and
+            receipt.get("request_id") == manifest["request_id"] and
+            receipt.get("manifest_sha256") == manifest_sha and
+            receipt.get("mode") == "preview" and
+            receipt.get("request_state") == "PREVIEW_ONLY" and
+            receipt.get("provider_writes") == 0 and
+            receipt.get("provider_writes_claimed") == 0 and
+            receipt.get("publication_enabled") is False,
+            receipt_code)
+    outcomes = receipt.get("results")
+    require(type(outcomes) is list and len(outcomes) == len(manifest["changes"])
+            and all(type(row) is dict and row.get("state") in (
+                "PREFLIGHT_PASS", "DONE_VERIFIED",
+            ) for row in outcomes) and
+            {row.get("id") for row in outcomes} ==
+            {item["id"] for item in manifest["changes"]},
+            outcomes_code)
+
+
+def _require_preview_draft_binding(stored_draft: dict, manifest: dict, code: str) -> None:
+    source_items = stored_draft["items"]
+    proposed_items = manifest["changes"]
+    require(len(source_items) == len(proposed_items),
+            code)
+    for draft_item, proposed in zip(source_items, proposed_items):
+        target = draft_item["target"]
+        require(
+            proposed["id"] == draft_item["id"] and
+            proposed["kind"] == draft_item["kind"] and
+            proposed["before_sha256"] == draft_item["before_sha256"] and
+            proposed["depends_on"] == draft_item["depends_on"] and
+            proposed["payload"] == draft_item["payload"] and
+            proposed["target"] == {
+                key: target[key] for key in (
+                    "provider", "owner_id", "container_kind",
+                    "container_id", "resource_id",
+                )
+            },
+            code,
+        )
+
+
 class DraftStore:
     """Atomic, 0600 SQLite request persistence on existing Prefect host.
 
@@ -283,14 +315,8 @@ class DraftStore:
     """
     def __init__(self, path: Path):
         self.path = Path(path)
-        require(self.path.is_absolute() and not self.path.is_symlink() and
-                self.path.parent.is_dir() and not self.path.parent.is_symlink(),
-                "DRAFT_STORE_PATH_INVALID")
-        self.db = sqlite3.connect(str(self.path), timeout=8)
-        if os.name == "posix":
-            os.chmod(self.path, 0o600)
-        self.db.execute("PRAGMA busy_timeout=8000")
-        self.db.execute("PRAGMA journal_mode=WAL")
+        from scripts.ironman_jobs.ironman_local_state import connect_private_sqlite
+        self.db, self._state_file = connect_private_sqlite(self.path)
         self.db.execute("""CREATE TABLE IF NOT EXISTS drafts (
             request_id TEXT PRIMARY KEY, semantic_sha TEXT NOT NULL,
             payload TEXT NOT NULL, created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
@@ -302,15 +328,53 @@ class DraftStore:
                 DEFAULT CURRENT_TIMESTAMP,
             PRIMARY KEY(request_id, preview_sha)
         )""")
+        self.db.execute("""CREATE TABLE IF NOT EXISTS preview_approvals (
+            request_id TEXT NOT NULL, approval_sha TEXT NOT NULL,
+            payload TEXT NOT NULL, PRIMARY KEY(request_id, approval_sha)
+        )""")
+        self.db.execute("""CREATE TABLE IF NOT EXISTS execution_bindings (
+            request_id TEXT PRIMARY KEY, approval_sha TEXT NOT NULL,
+            manifest_sha TEXT NOT NULL
+        )""")
+        self.db.execute("""CREATE TABLE IF NOT EXISTS approval_revocations (
+            request_id TEXT NOT NULL, approval_sha TEXT NOT NULL,
+            PRIMARY KEY(request_id, approval_sha)
+        )""")
         self.db.commit()
+
+    def verify_storage(self) -> None:
+        self._state_file.verify()
 
     def close(self) -> None:
         self.db.close()
+
+    @contextmanager
+    def write_transaction(self):
+        """Nest safely inside a trusted authority's atomic control transaction."""
+        self.verify_storage()
+        nested = self.db.in_transaction
+        savepoint = "review_" + uuid4().hex
+        self.db.execute("SAVEPOINT " + savepoint if nested else "BEGIN IMMEDIATE")
+        try:
+            yield
+        except Exception:
+            if nested:
+                self.db.execute("ROLLBACK TO " + savepoint)
+                self.db.execute("RELEASE " + savepoint)
+            else:
+                self.db.rollback()
+            raise
+        else:
+            if nested:
+                self.db.execute("RELEASE " + savepoint)
+            else:
+                self.db.commit()
 
     def store(self, draft: dict[str, Any]) -> dict[str, Any]:
         verify_draft_integrity(draft)
         body = canonical(draft)
         require(len(body.encode()) <= MAX_BYTES, "DRAFT_TOO_LARGE")
+        self.verify_storage()
         try:
             self.db.execute("BEGIN IMMEDIATE")
             row = self.db.execute("SELECT semantic_sha, payload FROM drafts WHERE request_id=?",
@@ -333,6 +397,7 @@ class DraftStore:
     def get(self, request_id: str) -> dict[str, Any] | None:
         require(type(request_id) is str and TOKEN.fullmatch(request_id) is not None,
                 "REQUEST_ID_INVALID")
+        self.verify_storage()
         row = self.db.execute("SELECT semantic_sha, payload FROM drafts WHERE request_id=?",
                               (request_id,)).fetchone()
         if not row:
@@ -355,29 +420,14 @@ class DraftStore:
         observation gets its own SHA. This is never a publish approval.
         """
         from scripts.ironman_jobs.ironman_unified_changeset_engine import (
-            digest, validate_manifest,
+            validate_manifest,
         )
         manifest_sha = validate_manifest(manifest)
         request_id = manifest["request_id"]
         require(manifest["approval_scope"] == "PREVIEW_ONLY:" + request_id,
                 "PREVIEW_SCOPE_REQUIRED")
-        require(type(receipt) is dict and
-                receipt.get("request_id") == request_id and
-                receipt.get("manifest_sha256") == manifest_sha and
-                receipt.get("mode") == "preview" and
-                receipt.get("request_state") == "PREVIEW_ONLY" and
-                receipt.get("provider_writes") == 0 and
-                receipt.get("provider_writes_claimed") == 0 and
-                receipt.get("publication_enabled") is False,
-                "PREVIEW_RECEIPT_NOT_READ_ONLY")
-        outcomes = receipt.get("results")
-        require(type(outcomes) is list and len(outcomes) == len(manifest["changes"])
-                and all(type(row) is dict and row.get("state") in (
-                    "PREFLIGHT_PASS", "DONE_VERIFIED",
-                ) for row in outcomes) and
-                {row.get("id") for row in outcomes} ==
-                {item["id"] for item in manifest["changes"]},
-                "PREVIEW_NOT_PASSED")
+        _validate_preview_receipt(manifest, receipt, manifest_sha,
+                                  "PREVIEW_RECEIPT_NOT_READ_ONLY", "PREVIEW_NOT_PASSED")
         manifest_json, result_json = canonical(manifest), canonical(receipt)
         preview_sha = hashlib.sha256(
             (manifest_sha + ":" + hashlib.sha256(
@@ -386,6 +436,7 @@ class DraftStore:
         # Match store(): claim the SQLite writer slot BEFORE checking for an
         # existing immutable preview. Two concurrent chats must not race on
         # SELECT-then-INSERT and mistake a duplicate for a new operation.
+        self.verify_storage()
         self.db.execute("BEGIN IMMEDIATE")
         try:
             row = self.db.execute(
@@ -400,26 +451,7 @@ class DraftStore:
                     "PERSISTED_DRAFT_CORRUPT")
             # A forged preview must not inherit a different stored request's
             # identifier. This check is independent of provider readback.
-            source_items = stored_draft["items"]
-            proposed_items = manifest["changes"]
-            require(len(source_items) == len(proposed_items),
-                    "PREVIEW_DRAFT_BINDING_MISMATCH")
-            for draft_item, proposed in zip(source_items, proposed_items):
-                target = draft_item["target"]
-                require(
-                    proposed["id"] == draft_item["id"] and
-                    proposed["kind"] == draft_item["kind"] and
-                    proposed["before_sha256"] == draft_item["before_sha256"] and
-                    proposed["depends_on"] == draft_item["depends_on"] and
-                    proposed["payload"] == draft_item["payload"] and
-                    proposed["target"] == {
-                        key: target[key] for key in (
-                            "provider", "owner_id", "container_kind",
-                            "container_id", "resource_id",
-                        )
-                    },
-                    "PREVIEW_DRAFT_BINDING_MISMATCH",
-                )
+            _require_preview_draft_binding(stored_draft, manifest, "PREVIEW_DRAFT_BINDING_MISMATCH")
             existing = self.db.execute(
                 """SELECT manifest_sha,manifest_json,result_json FROM previews
                    WHERE request_id=? AND preview_sha=?""",
@@ -450,6 +482,7 @@ class DraftStore:
         require(type(request_id) is str and TOKEN.fullmatch(request_id) is not None
                 and type(preview_sha) is str and SHA.fullmatch(preview_sha) is not None,
                 "PREVIEW_LOOKUP_INVALID")
+        self.verify_storage()
         row = self.db.execute(
             """SELECT manifest_sha,manifest_json,result_json FROM previews
                WHERE request_id=? AND preview_sha=?""",
@@ -459,7 +492,7 @@ class DraftStore:
             return None
         manifest_sha, manifest_json, result_json = row
         from scripts.ironman_jobs.ironman_unified_changeset_engine import (
-            ChangeStop, digest, validate_manifest,
+            ChangeStop, validate_manifest,
         )
         try:
             manifest, receipt = json.loads(manifest_json), json.loads(result_json)
@@ -472,48 +505,189 @@ class DraftStore:
                         result_json.encode("utf-8")).hexdigest()).encode("ascii")
                 ).hexdigest() == preview_sha and
                 manifest["request_id"] == request_id and
-                manifest["approval_scope"] == "PREVIEW_ONLY:" + request_id and
-                type(receipt) is dict and
-                receipt.get("request_id") == request_id and
-                receipt.get("manifest_sha256") == manifest_sha and
-                receipt.get("mode") == "preview" and
-                receipt.get("request_state") == "PREVIEW_ONLY" and
-                receipt.get("provider_writes") == 0 and
-                receipt.get("provider_writes_claimed") == 0 and
-                receipt.get("publication_enabled") is False,
-                "PREVIEW_RECORD_CORRUPT")
+                manifest["approval_scope"] == "PREVIEW_ONLY:" + request_id, "PREVIEW_RECORD_CORRUPT")
+        _validate_preview_receipt(manifest, receipt, manifest_sha,
+                                  "PREVIEW_RECORD_CORRUPT", "PREVIEW_RECORD_CORRUPT")
         saved_draft = self.get(request_id)
         require(saved_draft is not None, "PREVIEW_ORPHAN_REQUEST")
-        source_items, preview_items = saved_draft["items"], manifest["changes"]
-        require(len(source_items) == len(preview_items),
-                "PREVIEW_RECORD_DRAFT_MISMATCH")
-        for source, observed in zip(source_items, preview_items):
-            required_target = {
-                key: source["target"][key] for key in (
-                    "provider", "owner_id", "container_kind",
-                    "container_id", "resource_id",
-                )
-            }
-            require(
-                observed["id"] == source["id"] and
-                observed["kind"] == source["kind"] and
-                observed["target"] == required_target and
-                observed["payload"] == source["payload"] and
-                observed["before_sha256"] == source["before_sha256"] and
-                observed["depends_on"] == source["depends_on"],
-                "PREVIEW_RECORD_DRAFT_MISMATCH",
-            )
-        outcomes = receipt.get("results")
-        require(type(outcomes) is list and
-                len(outcomes) == len(preview_items) and
-                all(type(row) is dict and row.get("state") in (
-                    "PREFLIGHT_PASS", "DONE_VERIFIED",
-                ) for row in outcomes) and
-                {row.get("id") for row in outcomes} ==
-                {item["id"] for item in preview_items},
-                "PREVIEW_RECORD_CORRUPT")
+        _require_preview_draft_binding(saved_draft, manifest, "PREVIEW_RECORD_DRAFT_MISMATCH")
         return {"manifest": manifest, "receipt": receipt,
                 "preview_sha256": preview_sha, "publication_authorized": False}
+
+
+    def _approval_record(self, request_id: str, preview_sha: str, *,
+                         approved_revision: str, approval_scope: str,
+                         requested_targets: list[dict[str, Any]]) -> tuple[dict, dict]:
+        """Validate independent review context against the saved snapshot.
+
+        This is an internal persistence boundary, not an authentication API.
+        Only a trusted authorization service may supply the review context.
+        Provider permission/readiness checks still belong to typed adapters.
+        """
+        from scripts.ironman_jobs.ironman_unified_changeset_engine import digest
+        snapshot = self.get_preview(request_id, preview_sha)
+        if snapshot is None:
+            raise DraftStop("PREVIEW_VERSION_NOT_FOUND")
+        manifest = snapshot["manifest"]
+        require(approved_revision == manifest["reviewed_revision"],
+                "REVISION_NOT_APPROVED")
+        require(type(approval_scope) is str and
+                TOKEN.fullmatch(approval_scope) is not None and
+                not approval_scope.startswith("PREVIEW_ONLY:"),
+                "APPROVAL_SCOPE_REQUIRED")
+        from scripts.ironman_jobs.ironman_operation_contracts import (
+            TargetBindingError, require_target_binding,
+        )
+        try:
+            require_target_binding(manifest, requested_targets)
+        except TargetBindingError as exc:
+            raise DraftStop("APPROVAL_TARGET_MISMATCH") from exc
+        record = {
+            "schema": "IRONMAN_PREVIEW_APPROVAL_V1",
+            "request_id": request_id, "preview_sha256": preview_sha,
+            "manifest_sha256": digest(manifest),
+            "reviewed_revision": approved_revision,
+            "approval_scope": approval_scope,
+        }
+        return record, manifest
+
+    def record_approval(self, request_id: str, preview_sha: str, *,
+                        approved_revision: str, approval_scope: str,
+                        requested_targets: list[dict[str, Any]]) -> dict[str, Any]:
+        """Record a trusted review decision for exactly one preview version.
+
+        The flow must authorize before calling. A checksum identifies the decision;
+        it is NOT a bearer credential or independent provider authorization.
+        Multiple reviewed previews may coexist until execution is bound.
+        """
+        from scripts.ironman_jobs.ironman_unified_changeset_engine import digest
+        with self.write_transaction():
+            record, _ = self._approval_record(
+                request_id, preview_sha, approved_revision=approved_revision,
+                approval_scope=approval_scope, requested_targets=requested_targets)
+            approval_sha = digest(record)
+            self._require_active_approval(request_id, approval_sha)
+            bound = self.db.execute(
+                "SELECT approval_sha FROM execution_bindings WHERE request_id=?",
+                (request_id,),
+            ).fetchone()
+            require(bound is None or bound[0] == approval_sha,
+                    "REQUEST_EXECUTION_ALREADY_BOUND")
+            body = canonical(record)
+            row = self.db.execute(
+                "SELECT payload FROM preview_approvals WHERE request_id=? AND approval_sha=?",
+                (request_id, approval_sha),
+            ).fetchone()
+            if row is None:
+                self.db.execute("INSERT INTO preview_approvals VALUES (?,?,?)",
+                                (request_id, approval_sha, body))
+            else:
+                require(row[0] == body, "APPROVAL_RECORD_CORRUPT")
+        return {**record, "approval_sha256": approval_sha, "reused": row is not None,
+                "state": "APPROVAL_RECORDED", "provider_writes": 0,
+                "publication_enabled": False}
+
+    def _require_active_approval(self, request_id: str, approval_sha: str) -> None:
+        require(self.db.execute(
+            "SELECT 1 FROM approval_revocations WHERE request_id=? AND approval_sha=?",
+            (request_id, approval_sha),
+        ).fetchone() is None, "APPROVAL_REVOKED")
+
+    def inspect_execution_binding(self, request_id: str, preview_sha: str, approval_sha: str, *,
+                                  approved_revision: str, approval_scope: str,
+                                  requested_targets: list[dict[str, Any]],
+                                  allow_revoked: bool = False) -> dict[str, Any]:
+        """Verify an existing binding without creating or refreshing it.
+
+        Execution requires active approval. Only independently authorized
+        read-only recovery may explicitly inspect a revoked approval.
+        The authority holds its transaction across this check and grant checks.
+        This method alone never authorizes a write.
+        """
+        from scripts.ironman_jobs.ironman_unified_changeset_engine import digest
+        record, preview = self._approval_record(
+            request_id, preview_sha, approved_revision=approved_revision,
+            approval_scope=approval_scope, requested_targets=requested_targets)
+        require(digest(record) == approval_sha, "APPROVAL_BINDING_MISMATCH")
+        approval = self.db.execute("SELECT payload FROM preview_approvals WHERE request_id=? AND approval_sha=?",
+                                    (request_id, approval_sha)).fetchone()
+        require(approval is not None and approval[0] == canonical(record), "APPROVAL_RECORD_CORRUPT")
+        if not allow_revoked:
+            self._require_active_approval(request_id, approval_sha)
+        manifest = {**preview, "approval_scope": approval_scope}
+        binding = self.db.execute("SELECT approval_sha,manifest_sha FROM execution_bindings WHERE request_id=?",
+                                   (request_id,)).fetchone()
+        require(binding == (approval_sha, digest(manifest)), "EXECUTION_BINDING_NOT_FOUND")
+        return {"manifest": manifest, "manifest_sha256": digest(manifest)}
+
+    def revoke_approval(self, request_id: str, preview_sha: str, approval_sha: str, *,
+                        approved_revision: str, approval_scope: str,
+                        requested_targets: list[dict[str, Any]]) -> dict[str, Any]:
+        """Monotonic tombstone. Reapproval never resurrects this decision."""
+        from scripts.ironman_jobs.ironman_unified_changeset_engine import digest
+        with self.write_transaction():
+            record, _ = self._approval_record(
+                request_id, preview_sha, approved_revision=approved_revision,
+                approval_scope=approval_scope, requested_targets=requested_targets)
+            require(digest(record) == approval_sha, "APPROVAL_BINDING_MISMATCH")
+            row = self.db.execute(
+                "SELECT payload FROM preview_approvals WHERE request_id=? AND approval_sha=?",
+                (request_id, approval_sha),
+            ).fetchone()
+            require(row is not None, "APPROVAL_NOT_FOUND")
+            require(row[0] == canonical(record), "APPROVAL_RECORD_CORRUPT")
+            inserted = self.db.execute(
+                "INSERT OR IGNORE INTO approval_revocations VALUES (?,?)", (request_id, approval_sha))
+            reused = inserted.rowcount == 0
+        return {"request_id": request_id, "approval_sha256": approval_sha,
+                "state": "APPROVAL_REVOKED", "reused": reused,
+                "provider_writes": 0, "publication_enabled": False}
+
+    def bind_execution(self, request_id: str, preview_sha: str, approval_sha: str, *,
+                       approved_revision: str, approval_scope: str,
+                       requested_targets: list[dict[str, Any]]) -> dict[str, Any]:
+        """Reserve one immutable execution manifest per request, without I/O.
+
+        Recheck current trusted authorization context on EVERY resume. Never
+        accept a persisted approval hash alone as authority. Commit the binding
+        before a future writer opens its execution ledger; a crash in between
+        safely resumes the same manifest. This does not claim a provider write
+        or replace execution worker locks, revocation checks or provider gates.
+        """
+        from scripts.ironman_jobs.ironman_unified_changeset_engine import (
+            digest, validate_manifest,
+        )
+        require(type(approval_sha) is str and SHA.fullmatch(approval_sha) is not None,
+                "APPROVAL_LOOKUP_INVALID")
+        with self.write_transaction():
+            record, preview = self._approval_record(
+                request_id, preview_sha, approved_revision=approved_revision,
+                approval_scope=approval_scope, requested_targets=requested_targets)
+            require(digest(record) == approval_sha, "APPROVAL_BINDING_MISMATCH")
+            self._require_active_approval(request_id, approval_sha)
+            row = self.db.execute(
+                "SELECT payload FROM preview_approvals WHERE request_id=? AND approval_sha=?",
+                (request_id, approval_sha),
+            ).fetchone()
+            require(row is not None, "APPROVAL_NOT_FOUND")
+            require(row[0] == canonical(record), "APPROVAL_RECORD_CORRUPT")
+            # Approval metadata is kept outside the preview. Neither its SHA
+            # nor the immutable draft is rewritten when review is recorded.
+            execution = {**preview, "approval_scope": approval_scope}
+            manifest_sha = validate_manifest(execution)
+            existing = self.db.execute(
+                "SELECT approval_sha,manifest_sha FROM execution_bindings WHERE request_id=?",
+                (request_id,),
+            ).fetchone()
+            require(existing is None or existing == (approval_sha, manifest_sha),
+                    "REQUEST_EXECUTION_ALREADY_BOUND")
+            if existing is None:
+                self.db.execute("INSERT INTO execution_bindings VALUES (?,?,?)",
+                                (request_id, approval_sha, manifest_sha))
+        return {"manifest": execution, "manifest_sha256": manifest_sha,
+                "preview_sha256": preview_sha, "approval_sha256": approval_sha,
+                "state": "EXECUTION_BOUND", "reused": existing is not None,
+                "provider_writes": 0, "publication_enabled": False}
 
 
 # This is the subset of the EXISTING universal engine that has read-only

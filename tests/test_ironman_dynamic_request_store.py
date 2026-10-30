@@ -643,3 +643,39 @@ def test_preview_refuses_draft_row_digest_corruption(tmp_path):
             store.store_preview(manifest, receipt)
     finally:
         store.close()
+
+
+@pytest.mark.parametrize("cycle", [False, True])
+def test_draft_maximum_chain_uses_common_dependency_contract(cycle):
+    from scripts.ironman_jobs.ironman_dynamic_request_store import MAX_ITEMS
+
+    items = [item("plan.workout.patch", id=f"change-{n:04d}", resource_id=n + 1,
+                  depends_on=[f"change-{n - 1:04d}"] if n else []) for n in range(MAX_ITEMS)]
+    if cycle:
+        items[0]["depends_on"] = [items[-1]["id"]]
+        with pytest.raises(DraftStop, match="DEPENDENCY_CYCLE"):
+            prepare_draft(list(reversed(items)))
+    else:
+        draft = prepare_draft(list(reversed(items)))
+        assert [x["id"] for x in draft["items"]] == [x["id"] for x in reversed(items)]
+        assert draft["provider_writes"] == 0 and draft["publication_authorized"] is False
+
+
+def test_dependency_refactor_preserves_existing_request_preview_identity():
+    from copy import deepcopy
+    from scripts.ironman_jobs.ironman_dynamic_request_store import compile_preview_changeset
+    from scripts.ironman_jobs.ironman_unified_changeset_engine import digest
+
+    items = [item("plan.workout.patch", id="beta", resource_id=2, depends_on=["alpha"],
+                  payload={"desired": {"value": 2}}),
+             item("plan.workout.patch", id="gamma", resource_id=3, payload={"desired": {"value": 2}}),
+             item("plan.workout.patch", id="alpha", resource_id=1, payload={"desired": {"value": 2}})]
+    original = deepcopy(items)
+    draft = prepare_draft(items, request_key="graph-stability-regression")
+    # Exact values captured from 0708daf before consolidating the graph code.
+    assert draft["request_id"] == "ironman-05bcce2fbe77a2a7d9f005b9a492a54fef427ae5"
+    assert draft["semantic_sha256"] == "c2d12be36229d75d49101af01c7453c8a21d4f761d141cb6b001853e460c6007"
+    manifest = compile_preview_changeset(draft, {x["id"]: {"value": 2} for x in items},
+                                         pinned_revision="a" * 40)["manifest"]
+    assert digest(manifest) == "356423464f6a18baff0f86ec5231b2d145b0dd5d4f34692708ef78bc7b453d22"
+    assert items == original

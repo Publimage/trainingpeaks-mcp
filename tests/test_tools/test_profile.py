@@ -234,3 +234,29 @@ class TestListAthletesShape:
         assert charlotte["account"]["athlete_type"] == 4
         assert charlotte["account"]["expired"] is True   # 2017
         assert charlotte["account"]["tier"] == "basic"
+
+
+@pytest.mark.asyncio
+async def test_dynamic_resolver_uses_fresh_provider_roster_for_new_and_removed_athletes(monkeypatch):
+    from tp_mcp.client import TPClient
+    from tp_mcp.tools.ironman_dynamic_targets import tp_ironman_resolve_target
+
+    rows = []
+    reads = []
+
+    async def provider_read(self, endpoint, **kwargs):
+        assert endpoint == "/users/v3/user"
+        reads.append(endpoint)
+        return APIResponse(success=True, data={"user": {"personId": 2116886, "athletes": list(rows)}})
+
+    monkeypatch.setattr(TPClient, "get", provider_read)
+    assert (await tp_ironman_resolve_target("athlete", "New Runner"))["error_code"] == "TARGET_NOT_FOUND"
+    rows.append({"athleteId": 901, "firstName": "New", "lastName": "Runner"})
+    discovered = await tp_list_athletes()
+    assert discovered["athletes"][0]["name"] == "New Runner"
+    assert (await tp_ironman_resolve_target("athlete", "New Runner"))["target"]["athlete_id"] == 901
+    rows.append({"athleteId": 902, "firstName": "New", "lastName": "Runner"})
+    assert (await tp_ironman_resolve_target("athlete", "New Runner"))["error_code"] == "TARGET_AMBIGUOUS"
+    rows.clear()
+    assert (await tp_ironman_resolve_target("athlete", "901"))["error_code"] == "TARGET_NOT_FOUND"
+    assert len(reads) == 9  # Each resolver reads its account and current roster; list reads once.
