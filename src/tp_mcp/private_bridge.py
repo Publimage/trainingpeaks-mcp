@@ -19,7 +19,7 @@ from pathlib import Path
 from typing import Any
 from urllib.parse import urlparse
 
-from tp_mcp.bridge_tls import BridgeTLSError, authenticated_peer, tls_context, validate_tls_config
+from tp_mcp.bridge_tls import BridgeHTTPServer, BridgeTLSError, authenticated_peer, tls_context, validate_tls_config
 from tp_mcp.client.context import athlete_override
 from tp_mcp.swim_audit_bridge import authorize_request, build_swim_input, validate_allowlist
 from tp_mcp.tools.metrics import tp_get_metrics
@@ -411,11 +411,11 @@ def maybe_start_private_bridge(path: Path | None = None) -> PrivateBridge | None
     if config is None:
         return None
     context = tls_context(config["tls"], server=True)
-    server = ThreadingHTTPServer(
+    server = BridgeHTTPServer(
         (config["host"], config["port"]),
         _handler_factory(config),
+        context,
     )
-    server.socket = context.wrap_socket(server.socket, server_side=True)
     thread = threading.Thread(
         target=server.serve_forever,
         name="ironman-private-bridge",

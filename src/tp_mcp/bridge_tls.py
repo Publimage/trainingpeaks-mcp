@@ -7,15 +7,115 @@ from __future__ import annotations
 
 import hashlib
 import json
+import math
 import os
 import re
+import socket
 import ssl
+import threading
+from contextlib import suppress
+from http.server import ThreadingHTTPServer
 from pathlib import Path
 from urllib.request import HTTPRedirectHandler, HTTPSHandler, ProxyHandler, build_opener
 
 
 class BridgeTLSError(PermissionError):
     pass
+
+
+class BridgeHTTPServer(ThreadingHTTPServer):
+    """Bounded per-connection TLS on the existing HTTP server.
+
+    The listener stays TCP, but no request reaches an HTTP handler before mTLS.
+    Admission never waits for a slot. All connections, including keep-alives,
+    occupy a slot until closed. This bounds resources, not hostile-network load.
+    """
+
+    def __init__(self, address, handler, context: ssl.SSLContext, *,
+                 handshake_timeout: float = 5, request_timeout: float = 30,
+                 max_connections: int = 32):
+        if context.verify_mode != ssl.CERT_REQUIRED:
+            raise BridgeTLSError("BRIDGE_MTLS_REQUIRED")
+        if (type(max_connections) is not int or max_connections < 1
+                or any(type(t) not in (int, float) or not math.isfinite(t) or t <= 0
+                       for t in (handshake_timeout, request_timeout))):
+            raise ValueError("BRIDGE_CONNECTION_LIMITS_INVALID")
+        self._tls_context = context
+        self._handshake_timeout = handshake_timeout
+        self._request_timeout = request_timeout
+        self._slots = threading.BoundedSemaphore(max_connections)
+        self._connections: set[socket.socket] = set()
+        self._connection_lock = threading.Lock()
+        self._closing = False
+        super().__init__(address, handler)
+
+    def process_request(self, request, client_address):
+        if not self._slots.acquire(blocking=False):
+            self.shutdown_request(request)
+            return
+        try:
+            with self._connection_lock:
+                if self._closing:
+                    self.shutdown_request(request)
+                    self._slots.release()
+                    return
+                self._connections.add(request)
+            super().process_request(request, client_address)
+        except Exception:
+            self.shutdown_request(request)
+            with self._connection_lock:
+                self._slots.release()
+                self._connections.discard(request)
+            raise
+
+    def process_request_thread(self, request, client_address):
+        connection = request
+        try:
+            # Serialize only the ownership transfer with server_close(). No
+            # network I/O or handshake takes place while this lock is held.
+            with self._connection_lock:
+                if self._closing:
+                    return
+                connection = self._tls_context.wrap_socket(
+                    request, server_side=True, do_handshake_on_connect=False,
+                )
+                self._connections.discard(request)
+                self._connections.add(connection)
+            connection.settimeout(self._handshake_timeout)
+            connection.do_handshake()
+            with self._connection_lock:
+                if self._closing:
+                    return
+            connection.settimeout(self._request_timeout)
+            self.finish_request(connection, client_address)
+        except (OSError, ValueError):
+            # Invalid/absent client certificates, handshake deadlines and
+            # sockets interrupted by shutdown all close without an HTTP reply.
+            pass
+        except Exception:
+            self.handle_error(connection, client_address)
+        finally:
+            try:
+                self.shutdown_request(connection)
+            finally:
+                with self._connection_lock:
+                    self._slots.release()
+                    self._connections.discard(connection)
+                    self._connections.discard(request)
+
+    def server_close(self):
+        with self._connection_lock:
+            self._closing = True
+            connections = tuple(self._connections)
+        super().server_close()
+        # Signal TCP closure without waiting for the peer. Pending reads still
+        # have finite deadlines; provider work is not cancelled by socket IO.
+        for connection in connections:
+            with suppress(OSError):
+                # Do not clear SSLSocket._sslobj while another thread is using
+                # it. Interrupt TCP IO; the owning worker closes its TLS socket.
+                socket.socket.shutdown(connection, socket.SHUT_RDWR)
+            connection.close()
 
 
 def validate_tls_config(value: object, *, server: bool = False) -> dict:

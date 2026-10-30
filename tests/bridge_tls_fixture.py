@@ -25,7 +25,7 @@ def tls_metadata():
     }
 
 
-def secure_bridge_server(server, config, directory):
+def bridge_tls_material(config, directory):
     directory.mkdir(mode=0o700, parents=True, exist_ok=True)
     now = datetime.datetime.now(datetime.timezone.utc)
 
@@ -87,16 +87,23 @@ def secure_bridge_server(server, config, directory):
         },
     }
     config["tls"] = server_tls
-    server.socket = tls_context(server_tls, server=True).wrap_socket(server.socket, server_side=True)
+    server_context = tls_context(server_tls, server=True)
     client_tls = {"ca_file": ca_paths[0], "cert_file": client_paths[0], "key_file": client_paths[1]}
     client_path = write("client.json", json.dumps(client_tls).encode())
     context = tls_context(client_tls)
     other_context = tls_context({**client_tls, "cert_file": other_paths[0], "key_file": other_paths[1]})
     anonymous = ssl.create_default_context(cafile=ca_paths[0])
     return SimpleNamespace(
+        server_context=server_context,
         context=context,
         other=other_context,
         anonymous=anonymous,
         client_path=client_path,
-        connection=lambda: HTTPSConnection("127.0.0.1", server.server_port, context=context, timeout=5),
     )
+
+
+def secure_bridge_server(server, config, directory):
+    tls = bridge_tls_material(config, directory)
+    server.socket = tls.server_context.wrap_socket(server.socket, server_side=True)
+    tls.connection = lambda: HTTPSConnection("127.0.0.1", server.server_port, context=tls.context, timeout=5)
+    return tls

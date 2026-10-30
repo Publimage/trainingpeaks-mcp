@@ -8,15 +8,20 @@ from http.client import HTTPConnection, HTTPSConnection
 from http.server import ThreadingHTTPServer
 
 import pytest
-from bridge_tls_fixture import secure_bridge_server
+from bridge_tls_fixture import bridge_tls_material
 
+from tp_mcp.bridge_tls import BridgeHTTPServer
 from tp_mcp.private_bridge import _handler_factory
 
 
 @contextmanager
 def listener(config, tmp_path, *, secure=True):
-    server = ThreadingHTTPServer(("127.0.0.1", 0), _handler_factory(config))
-    tls = secure_bridge_server(server, config, tmp_path) if secure else None
+    tls = bridge_tls_material(config, tmp_path) if secure else None
+    if secure:
+        server = BridgeHTTPServer(("127.0.0.1", 0), _handler_factory(config), tls.server_context)
+        tls.connection = lambda: HTTPSConnection("127.0.0.1", server.server_port, context=tls.context, timeout=5)
+    else:
+        server = ThreadingHTTPServer(("127.0.0.1", 0), _handler_factory(config))
     thread = threading.Thread(target=server.serve_forever, daemon=True)
     thread.start()
     try:
