@@ -43,9 +43,9 @@ def test_missing_proc_does_not_claim_bridge_down(tmp_path: Path, monkeypatch):
     assert out["provider_writes"] == 0
 
 
-def test_unrelated_listener_is_not_proof_of_bridge(tmp_path: Path, monkeypatch):
+def test_another_private_interface_is_not_proof_of_bridge(tmp_path: Path, monkeypatch):
     fixture = tmp_path / "tcp"
-    fixture.write_text("sl local_address rem_address st\n0: 0100007F:2253 00000000:0000 0A\n", encoding="ascii")
+    fixture.write_text("sl local_address rem_address st\n0: 0500130A:2253 00000000:0000 0A\n", encoding="ascii")
     original = status._listening_ipv4
     monkeypatch.setattr(status, "_listening_ipv4", lambda: original(fixture))
     out = status.tp_get_ironman_runtime_status()
