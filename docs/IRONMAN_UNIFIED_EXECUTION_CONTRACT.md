@@ -5,6 +5,60 @@ Status: ARCHITECTURE CONTRACT / NOT DEPLOYED. This is not an authorization to re
 
 ## Current release assessment — 2026-10-27
 
+### 2026-10-30: shared roster freshness and group reconciliation
+
+The existing TPClient no longer retains process-lifetime user data or a default
+athlete ID as authority. `_get_user_data()` performs the existing authenticated
+`GET /users/v3/user` on each call; every target lookup re-resolves against that
+response and clears its previous ID before failure/absence. Only the existing
+transport token cache remains shared. No new endpoint, service, configuration,
+manual refresh flag, athlete whitelist or per-person job is introduced.
+
+Roster listing, profiles, groups and the existing dynamic resolver reuse this
+common path. If a live tag contains IDs missing/nameless in the account roster,
+the group reader takes one more current account read and verifies the same coach.
+It rejects a different coach or failed reconciliation, and exposes unresolved IDs
+with `roster_consistent=false` if the provider still supplies no name. Group
+membership never becomes permission to target an otherwise absent roster ID.
+Provider names are joined without turning null fields into a name such as None.
+
+This deliberately replaces unbounded local identity caching with provider reads,
+adding HTTP traffic rather than a new cache-invalidation protocol. Each actual
+athlete resource operation remains subject to provider permissions. This does not
+claim that the previously issued access token's existence proves a current grant.
+
+New live read-only evidence: account roster 24, selected group 12, one group-only
+ID still has no provider-supplied name in the tool output. A direct profile read
+attests the authenticated coach but projects away the raw roster. Existing live
+tools do not expose a fresh raw roster bypassing the deployed cache, and this
+work does not deploy/reload that runtime. Therefore stale cache is a reproduced
+SOURCE defect and a plausible explanation of the live mismatch, **not a confirmed
+root cause of that individual's case**. No identity is inferred from group order,
+count, UI association or the fact that only one member has no name. If a truly
+fresh provider roster still lacks the ID, provider reconciliation remains open;
+no speculative endpoint or authorization fallback is added to conceal it.
+
+Scoped Linux QA: **724 PASS, 12.91 s**, covering HTTP client/auth/tools, coach
+targeting, profile/group, existing dynamic resolver and private/swim bridges.
+New regressions cover arbitrary new IDs, links and withdrawal on the same client,
+changed default account, missing/invalid/denied reads, unresolved group-only IDs,
+bounded reconciliation and wrong-coach rejection. One integration uses the actual
+roster tools and dynamic resolver with a synthetic GET transport: new name becomes
+resolvable, duplicate names deny, and a withdrawn ID becomes unavailable. A
+baseline differential on 416bf31 makes one GET and returns the old roster twice;
+the corrected source makes two GETs and sees the new row. All provider data in
+tests is synthetic. Ruff source/changed tests and mypy 59 source files PASS.
+
+The previous 1923-test locked full-suite checkpoint is not rerun or represented
+as QA of this new revision. This change belongs to the same development PR19 for
+a future coherent stable release under the canonical governance. PR20 is untouched.
+No merge, deploy, app Refresh, TrainingPeaks write or publisher activation. Official
+exact-head CI, independent review, production identity/revocations/runtime/TLS and
+state-preserving rollback remain distinct release gates. The next live diagnostic
+boundary is a permitted fresh raw account-roster read, not re-inviting the athlete
+or assigning a guessed identity. No extra paid resource or broad shell/HTTP job is
+created to obtain that read.
+
 ### 2026-10-28: separate AI review reconciliation (base 3874fd5)
 
 See [the finding-by-finding remediation and verification record](IRONMAN_PR19_REVIEW_RECONCILIATION.md).

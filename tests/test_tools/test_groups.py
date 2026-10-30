@@ -5,7 +5,15 @@ from unittest.mock import AsyncMock, patch
 import pytest
 
 from tp_mcp.client.http import APIResponse
-from tp_mcp.tools.groups import tp_list_athletes_in_group, tp_list_groups
+from tp_mcp.tools.groups import (
+    tp_add_athletes_to_group,
+    tp_create_group,
+    tp_delete_group,
+    tp_list_athletes_in_group,
+    tp_list_groups,
+    tp_remove_athletes_from_group,
+    tp_rename_group,
+)
 
 USER = {
     "personId": 1135463,
@@ -134,12 +142,61 @@ async def test_list_athletes_in_group_athlete_not_in_roster():
     # ids preserved, names None (still useful to the caller)
     assert {a["athlete_id"] for a in out["athletes"]} == {201, 202}
     assert all(a["name"] is None for a in out["athletes"])
+    assert out["unresolved_athlete_ids"] == [202, 201]
+    assert out["roster_consistent"] is False
+    assert inst._get_user_data.await_count == 2
+
+
+@pytest.mark.asyncio
+async def test_membership_change_reconciles_one_fresh_roster_read():
+    inst = _client(get=APIResponse(success=True, data=TAGS))
+    inst._get_user_data = AsyncMock(side_effect=[{"personId": 1135463, "athletes": []}, USER])
+    with patch("tp_mcp.tools.groups.TPClient") as mc:
+        mc.return_value.__aenter__.return_value = inst
+        out = await tp_list_athletes_in_group("11")
+    assert out["roster_consistent"] is True
+    assert out["unresolved_athlete_ids"] == []
+    assert {a["name"] for a in out["athletes"]} == {"Charlotte Horton", "Ivan Petrov"}
+    assert inst._get_user_data.await_count == 2
+    inst.get.assert_awaited_once_with("/coaches/v2/coaches/1135463/tags")
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize("refreshed,code", [
+    (None, "ROSTER_RECONCILIATION_UNAVAILABLE"),
+    ({"personId": 999, "athletes": USER["athletes"]}, "PROVIDER_IDENTITY_MISMATCH"),
+])
+async def test_reconciliation_cannot_use_a_failed_read_or_another_coach(refreshed, code):
+    inst = _client(get=APIResponse(success=True, data=TAGS))
+    inst._get_user_data = AsyncMock(side_effect=[{"personId": 1135463, "athletes": []}, refreshed])
+    with patch("tp_mcp.tools.groups.TPClient") as mc:
+        mc.return_value.__aenter__.return_value = inst
+        out = await tp_list_athletes_in_group("11")
+    assert out["isError"] and out["error_code"] == code
+    assert "athletes" not in out
+
+
+@pytest.mark.asyncio
+async def test_group_from_another_coach_is_never_joined_to_current_names():
+    inst = _client(_get_user_data=USER, get=APIResponse(success=True, data=[{**TAGS[0], "coachId": 999}]))
+    with patch("tp_mcp.tools.groups.TPClient") as mc:
+        mc.return_value.__aenter__.return_value = inst
+        out = await tp_list_athletes_in_group("11")
+    assert out["isError"] and out["error_code"] == "PROVIDER_IDENTITY_MISMATCH"
+
+
+@pytest.mark.asyncio
+async def test_null_provider_name_remains_unresolved_after_refresh():
+    user = {"personId": 1135463, "athletes": [{"athleteId": 201, "firstName": None, "lastName": None}]}
+    inst = _client(_get_user_data=user, get=APIResponse(success=True, data=TAGS))
+    with patch("tp_mcp.tools.groups.TPClient") as mc:
+        mc.return_value.__aenter__.return_value = inst
+        out = await tp_list_athletes_in_group("11")
+    assert all(a["name"] is None for a in out["athletes"])
+    assert out["roster_consistent"] is False
 
 
 # ── write tools (create / rename / delete) — verified signatures ─────────────
-from tp_mcp.tools.groups import (
-    tp_create_group, tp_delete_group, tp_rename_group,
-)
 
 CREATED = {"id": 337680, "coachId": 1135463, "name": "New", "athleteIds": [], "isDefault": False}
 
@@ -222,9 +279,6 @@ async def test_delete_unknown_group_not_found():
 
 
 # ── membership (add / remove athletes) — verified signatures ─────────────────
-from tp_mcp.tools.groups import (
-    tp_add_athletes_to_group, tp_remove_athletes_from_group,
-)
 
 
 @pytest.mark.asyncio
