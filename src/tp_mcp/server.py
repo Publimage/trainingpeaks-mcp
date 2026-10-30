@@ -80,6 +80,7 @@ from tp_mcp.tools import (
     tp_get_library_items,
     tp_ironman_operator,
     tp_get_ironman_publisher_status,
+    tp_get_ironman_runtime_status,
     tp_list_plan_folders,
     tp_copy_training_plan,
     tp_create_plan_folder,
@@ -1452,18 +1453,25 @@ TOOLS = [
         ),
         input_schema={"type": "object", "properties": {}, "required": []},
     ),
+    # --- Read-only Linux listener inventory, without job execution ---
+    Tool(
+        name="tp_get_ironman_runtime_status",
+        description=(
+            "Inspect local Linux TCP listener state for the private IRONMAN "
+            "TrainingPeaks bridge and localhost tunnel. Returns listener "
+            "observations only, not application health or firewall policy."
+        ),
+        input_schema={"type": "object", "properties": {}, "required": []},
+    ),
     # --- IRONMAN Cloud Operator ---
     Tool(
         name="tp_ironman_operator",
         description=(
-            "Execute a revision-pinned, GitHub-reviewed IRONMAN job using the existing "
-            "DigitalOcean TrainingPeaks cloud runtime. Does not accept arbitrary "
-            "commands or paths. Defaults to read-only preview; execute verifies "
-            "authenticated coach owner 2116886, trusted repo and exact commit, "
-            "runs approved tests then executes registered task. Native Strength "
-            "Library audit job: native_strength_library_audit. A guarded-write "
-            "job requires explicit exact scope acknowledgement. The job may "
-            "alter the repo checkout, but does not restart the MCP tunnel."
+            "Run a named IRONMAN server job at a pinned Git commit. Preview "
+            "fetches and checks the requested revision. Execute checks out "
+            "the revision, runs tests and invokes registered job code. Some "
+            "jobs modify server state or TrainingPeaks; others are diagnostics. "
+            "This operation may update the server repository checkout."
         ),
         input_schema={
             "type": "object",
@@ -2774,6 +2782,11 @@ async def _h_get_lib_items(args): return await tp_get_library_items(library_id=a
 @_handler("tp_get_ironman_publisher_status")
 async def _h_ironman_publisher_status(args):
     return await tp_get_ironman_publisher_status()
+
+
+@_handler("tp_get_ironman_runtime_status")
+async def _h_ironman_runtime_status(args):
+    return tp_get_ironman_runtime_status()
 
 
 @_handler("tp_ironman_operator")
