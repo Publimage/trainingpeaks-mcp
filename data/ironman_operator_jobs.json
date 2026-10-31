@@ -2354,6 +2354,14 @@
       "scope": "trainingpeaks:plan:689369:start-note:2685704:pdf-105393:source-GET-probe",
       "script": "scripts/ironman_jobs/winter_pdf_source_probe_20261031.py",
       "test": "tests/test_winter_pdf_source_probe_20261031.py"
+    },
+    {
+      "name": "winter_start_library_pdf_lab_20261031",
+      "mode": "GUARDED_WRITE",
+      "owner_id": 2116886,
+      "scope": "trainingpeaks:lab-library:3924002:create-one-disposable-native-note-template-from-winter-plan-pdf",
+      "script": "scripts/ironman_jobs/winter_start_library_pdf_lab_20261031.py",
+      "test": "tests/test_winter_start_library_pdf_lab_20261031.py"
     }
   ]
 }
