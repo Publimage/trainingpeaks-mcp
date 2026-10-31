@@ -49,10 +49,21 @@ def must(v,msg):
     if not v: raise RuntimeError(msg)
 
 def stable(w):
-    z=copy.deepcopy(w)
-    for k in ("lastUpdatedAt","prescribedDurationInSeconds","isHidden"):
-        z.pop(k,None)
-    return z
+    # Compare prescription semantics only. Provider is allowed to recompute
+    # compliance/derived fields after duration or visibility changes.
+    return {
+      "id": str(w.get("id") or ""),
+      "workoutType": w.get("workoutType"),
+      "calendarId": w.get("calendarId"),
+      "title": w.get("title"),
+      "prescribedDate": str(w.get("prescribedDate") or "")[:10],
+      "instructions": w.get("instructions"),
+      "blocks": w.get("blocks") or [],
+      "snapshot": {
+        "totalBlocks": (w.get("snapshot") or {}).get("totalBlocks"),
+        "totalSets": (w.get("snapshot") or {}).get("totalSets"),
+      },
+    }
 
 async def main():
   try:
