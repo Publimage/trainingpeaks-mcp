@@ -97,6 +97,56 @@ async def main():
             s=rr.json().get("data") or {}
             emit(stage="STRENGTH_RAW_KEYS",keys=sorted(s.keys()),
                  selected={k:s.get(k) for k in ("id","calendarId","title","prescribedDate","prescribedDurationInSeconds","isHidden","hidden","visibility") if k in s})
+        # Final visibility/integrity audit after guarded finalization.
+        wr=await c.get(f"/fitness/v6/athletes/{ATHLETE}/workouts/2026-11-02/2026-12-27")
+        if wr.is_error or not isinstance(wr.data,list) or len(wr.data)!=58:
+            emit(stage="STOP_CLASSIC_FINAL",count=len(wr.data) if isinstance(wr.data,list) else None); return 2
+        visible=[x for x in wr.data if str(x.get("workoutDay") or "")[:10] <= "2026-11-15"]
+        hidden=[x for x in wr.data if str(x.get("workoutDay") or "")[:10] >= "2026-11-16"]
+        if len(visible)!=12 or len(hidden)!=46 or any(x.get("isHidden") is True for x in visible) or any(x.get("isHidden") is not True for x in hidden):
+            emit(stage="STOP_CLASSIC_VISIBILITY",visible=len(visible),hidden=len(hidden),
+                 visible_hidden=sum(1 for x in visible if x.get("isHidden") is True),
+                 later_not_hidden=sum(1 for x in hidden if x.get("isHidden") is not True)); return 2
+        if any(not x.get("structure") for x in wr.data):
+            emit(stage="STOP_CLASSIC_STRUCTURE",missing=sum(1 for x in wr.data if not x.get("structure"))); return 2
+
+        nn=await c.get(f"/fitness/v2/athletes/{ATHLETE}/calendarNote/2026-11-02/2026-12-27")
+        if nn.is_error or not isinstance(nn.data,list) or len(nn.data)!=9:
+            emit(stage="STOP_NOTES_FINAL"); return 2
+        note_visible=[x for x in nn.data if str(x.get("noteDate") or "")[:10] <= "2026-11-15"]
+        note_hidden=[x for x in nn.data if str(x.get("noteDate") or "")[:10] >= "2026-11-16"]
+        if len(note_visible)!=3 or len(note_hidden)!=6 or any(x.get("isHidden") is True for x in note_visible) or any(x.get("isHidden") is not True for x in note_hidden):
+            emit(stage="STOP_NOTE_VISIBILITY"); return 2
+        sn=next((x for x in nn.data if (x.get("id") or x.get("calendarNoteId"))==TARGET_NOTE),None)
+        aa=(sn or {}).get("attachments") or []
+        if len([a for a in aa if a.get("fileName")=="Guida_lettura_allenamenti_Alberto_Fazi_Endurance_TEMPLATE_v1.pdf" and int(a.get("contentLength") or -1)==407035])!=1:
+            emit(stage="STOP_NOTE_PDF_FINAL"); return 2
+
+        async with httpx.AsyncClient(timeout=25,follow_redirects=False) as h:
+            sr=await h.get(STRENGTH_API_BASE+f"/rx/activity/v1/workouts/calendar/{ATHLETE}/2026-11-02/2026-12-28",headers=_headers(token))
+            data=sr.json() if sr.status_code==200 else None
+            data=data.get("data") if isinstance(data,dict) else data
+            if not isinstance(data,list) or len(data)!=16:
+                emit(stage="STOP_STRENGTH_FINAL_COUNT",count=len(data) if isinstance(data,list) else None); return 2
+            expected_minutes={
+              "37293975":50,"37293980":45,"37293987":55,"37293988":50,
+              "37293991":60,"37294000":50,"37294008":45,"37294013":40,
+              "37294019":60,"37294024":55,"37294031":65,"37294044":55,
+              "37294049":65,"37294054":55,"37294060":50,"37294065":45,
+            }
+            for x in data:
+                wid=str(x.get("id") or x.get("workoutId") or "")
+                dd=await h.get(STRENGTH_API_BASE+f"/rx/activity/v1/workouts/{wid}",headers=_headers(token))
+                z=dd.json().get("data") if dd.status_code==200 else None
+                if not isinstance(z,dict) or expected_minutes.get(wid)*60!=z.get("prescribedDurationInSeconds"):
+                    emit(stage="STOP_STRENGTH_FINAL_DURATION",id=wid); return 2
+                should_hide=str(z.get("prescribedDate") or "")[:10] >= "2026-11-16"
+                if z.get("isHidden") is not should_hide:
+                    emit(stage="STOP_STRENGTH_FINAL_VISIBILITY",id=wid,expected=should_hide,actual=z.get("isHidden")); return 2
+
+        emit(stage="FINAL_VISIBILITY_AUDIT_PASS",classic=58,classic_visible=12,classic_hidden=46,
+             notes=9,notes_visible=3,notes_hidden=6,native_strength=16,
+             strength_visible=4,strength_hidden=12,pdf_verified=True,writes=0)
         emit(stage="READ_ONLY_PASS",writes=0)
         return 0
 
