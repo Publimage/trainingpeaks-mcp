@@ -2330,6 +2330,14 @@
       "scope": "trainingpeaks:athlete:5590716:winter-foundation-finalize-probe:read",
       "script": "scripts/ironman_jobs/francesco_winter_finalize_probe.py",
       "test": "tests/test_francesco_winter_finalize_probe.py"
+    },
+    {
+      "name": "francesco_winter_finalize",
+      "mode": "GUARDED_WRITE",
+      "owner_id": 2116886,
+      "scope": "trainingpeaks:athlete:5590716:winter-foundation-20261102-20261227:strength-duration-visibility-and-start-pdf-only",
+      "script": "scripts/ironman_jobs/francesco_winter_finalize.py",
+      "test": "tests/test_francesco_winter_finalize.py"
     }
   ]
 }
