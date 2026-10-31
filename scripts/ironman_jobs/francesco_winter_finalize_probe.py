@@ -59,7 +59,7 @@ async def main():
         emit(stage="GET_PROBE",path=path,status=rr.status_code,
              content_type=rr.headers.get("content-type"),length=len(body),
              pdf=body.startswith(b"%PDF-"),
-             sha256=hashlib.sha256(body).hexdigest() if body.startswith(b"%PDF-") else None)
+             sha256=hashlib.sha256(body).hexdigest() if body.startswith(b"%PDF-") else None,\n             json_keys=json_keys,json_safe=json_safe)
       except Exception as ex:
         emit(stage="GET_PROBE_ERROR",path=path,kind=type(ex).__name__)
     # Read native strength raw fields. No mutation.
