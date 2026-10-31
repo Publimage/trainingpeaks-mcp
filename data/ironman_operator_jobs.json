@@ -2322,6 +2322,14 @@
       "scope": "trainingpeaks:coach:2116886:library:3891875-and-private-plan:689369:warmup4-italian16-inplace-only",
       "script": "scripts/ironman_jobs/winter8_strength_warmup_italian_20261025.py",
       "test": "tests/test_winter8_strength_warmup_italian_20261025.py"
+    },
+    {
+      "name": "francesco_winter_finalize_probe",
+      "mode": "READ_ONLY",
+      "owner_id": 2116886,
+      "scope": "trainingpeaks:athlete:5590716:winter-foundation-finalize-probe:read",
+      "script": "scripts/ironman_jobs/francesco_winter_finalize_probe.py",
+      "test": "tests/test_francesco_winter_finalize_probe.py"
     }
   ]
 }
