@@ -2338,6 +2338,14 @@
       "scope": "trainingpeaks:athlete:5590716:winter-foundation-20261102-20261227:strength-duration-visibility-and-start-pdf-only",
       "script": "scripts/ironman_jobs/francesco_winter_finalize.py",
       "test": "tests/test_francesco_winter_finalize.py"
+    },
+    {
+      "name": "winter_start_pdf_lab_20261031",
+      "mode": "GUARDED_WRITE",
+      "owner_id": 2116886,
+      "scope": "trainingpeaks:lab-athlete:941614:2028-12-11:temporary-native-calendar-note-pdf-attachment-probe",
+      "script": "scripts/ironman_jobs/winter_start_pdf_lab_20261031.py",
+      "test": "tests/test_winter_start_pdf_lab_20261031.py"
     }
   ]
 }
