@@ -1,0 +1,1 @@
+For weeks 3, 7, 9, 11, 13 and 19, preserve the original Wednesday long run. Instead of moving it to Sunday after Saturday long cycling, move the short easy Thursday run to Sunday. The earlier candidate JSON is not approved for TrainingPeaks publication until this correction and test/swim checks are integrated. Keep four-week readback checkpoints.

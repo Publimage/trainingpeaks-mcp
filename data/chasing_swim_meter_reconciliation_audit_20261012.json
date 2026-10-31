@@ -1,0 +1,750 @@
+{
+  "schema": "CHASING_SWIM_METRES_RECONCILIATION_AUDIT_V1",
+  "date": "2026-10-12",
+  "source": "27_CHASING_THE_SLOT_24W_PRODUCT_MASTER historical W01-W24 prescriptions (GitHub four original JSON excerpts)",
+  "provider": "TrainingPeaks private Training Plan 685173",
+  "status": "TECHNICAL_DIFF_ONLY_NOT_APPROVED_FOR_AUTOMATIC_REPLACEMENT",
+  "source_count": 71,
+  "provider_count": 71,
+  "matching_count": 21,
+  "mismatch_count": 50,
+  "original_total_m": 186800,
+  "provider_total_m": 201000,
+  "net_delta_m": 14200,
+  "invariants": [
+    "Do not change provider plan on basis of this ledger alone",
+    "First verify original interval sum and technique/recuperi/fueling",
+    "Use native plan-scoped writer tested on disposable LAB",
+    "Workout Library edit does not propagate existing plan instances"
+  ],
+  "mismatches": [
+    {
+      "week": 5,
+      "day": "MAR",
+      "workout_id": 4000954198,
+      "source_metres": 2700,
+      "provider_metres": 3000,
+      "delta_metres": 300,
+      "has_structure": true,
+      "source_line": "SW | SW A | 2700m",
+      "provider_title": "Aerobico | Endurance 3x700 - 3000 m",
+      "action": "VERIFY_SOURCE_INTERVALS_AND_NATIVE_BUILDER_BEFORE_PLAN_SCOPED_REPLACE"
+    },
+    {
+      "week": 5,
+      "day": "MER",
+      "workout_id": 4000954221,
+      "source_metres": 2700,
+      "provider_metres": 2500,
+      "delta_metres": -200,
+      "has_structure": true,
+      "source_line": "SW | SW B | 2700m",
+      "provider_title": "Test | T1500 iniziale - 2500 m",
+      "action": "VERIFY_SOURCE_INTERVALS_AND_NATIVE_BUILDER_BEFORE_PLAN_SCOPED_REPLACE"
+    },
+    {
+      "week": 5,
+      "day": "VEN",
+      "workout_id": 4000954283,
+      "source_metres": 2700,
+      "provider_metres": 3200,
+      "delta_metres": 500,
+      "has_structure": true,
+      "source_line": "SW | SW C | 2700m",
+      "provider_title": "Tecnica | Facile + tecnica - 3200 m",
+      "action": "VERIFY_SOURCE_INTERVALS_AND_NATIVE_BUILDER_BEFORE_PLAN_SCOPED_REPLACE"
+    },
+    {
+      "week": 6,
+      "day": "MAR",
+      "workout_id": 4000966381,
+      "source_metres": 2700,
+      "provider_metres": 3000,
+      "delta_metres": 300,
+      "has_structure": true,
+      "source_line": "SW | SW A | 2700m",
+      "provider_title": "Aerobico | Endurance 3x700 - 3000 m",
+      "action": "VERIFY_SOURCE_INTERVALS_AND_NATIVE_BUILDER_BEFORE_PLAN_SCOPED_REPLACE"
+    },
+    {
+      "week": 6,
+      "day": "MER",
+      "workout_id": 4000966419,
+      "source_metres": 2700,
+      "provider_metres": 3000,
+      "delta_metres": 300,
+      "has_structure": true,
+      "source_line": "SW | SW B | 2700m",
+      "provider_title": "Aerobico | Endurance 3x700 - 3000 m",
+      "action": "VERIFY_SOURCE_INTERVALS_AND_NATIVE_BUILDER_BEFORE_PLAN_SCOPED_REPLACE"
+    },
+    {
+      "week": 6,
+      "day": "VEN",
+      "workout_id": 4000966552,
+      "source_metres": 2700,
+      "provider_metres": 3200,
+      "delta_metres": 500,
+      "has_structure": true,
+      "source_line": "SW | SW C | 2700m",
+      "provider_title": "Tecnica | Facile + tecnica - 3200 m",
+      "action": "VERIFY_SOURCE_INTERVALS_AND_NATIVE_BUILDER_BEFORE_PLAN_SCOPED_REPLACE"
+    },
+    {
+      "week": 7,
+      "day": "MAR",
+      "workout_id": 4000972865,
+      "source_metres": 2700,
+      "provider_metres": 3000,
+      "delta_metres": 300,
+      "has_structure": true,
+      "source_line": "SW | SW A | 2700m",
+      "provider_title": "Aerobico | Endurance 3x700 - 3000 m",
+      "action": "VERIFY_SOURCE_INTERVALS_AND_NATIVE_BUILDER_BEFORE_PLAN_SCOPED_REPLACE"
+    },
+    {
+      "week": 7,
+      "day": "MER",
+      "workout_id": 4000972939,
+      "source_metres": 2700,
+      "provider_metres": 3000,
+      "delta_metres": 300,
+      "has_structure": true,
+      "source_line": "SW | SW B | 2700m",
+      "provider_title": "Aerobico | Endurance 3x700 - 3000 m",
+      "action": "VERIFY_SOURCE_INTERVALS_AND_NATIVE_BUILDER_BEFORE_PLAN_SCOPED_REPLACE"
+    },
+    {
+      "week": 7,
+      "day": "VEN",
+      "workout_id": 4000973018,
+      "source_metres": 2700,
+      "provider_metres": 3200,
+      "delta_metres": 500,
+      "has_structure": true,
+      "source_line": "SW | SW C | 2700m",
+      "provider_title": "Tecnica | Facile + tecnica - 3200 m",
+      "action": "VERIFY_SOURCE_INTERVALS_AND_NATIVE_BUILDER_BEFORE_PLAN_SCOPED_REPLACE"
+    },
+    {
+      "week": 8,
+      "day": "MAR",
+      "workout_id": 4001046288,
+      "source_metres": 2300,
+      "provider_metres": 2500,
+      "delta_metres": 200,
+      "has_structure": true,
+      "source_line": "SW | SW A | 2300m",
+      "provider_title": "Aerobico | Endurance facile 2500 m - 3x500",
+      "action": "VERIFY_SOURCE_INTERVALS_AND_NATIVE_BUILDER_BEFORE_PLAN_SCOPED_REPLACE"
+    },
+    {
+      "week": 8,
+      "day": "MER",
+      "workout_id": 4001046327,
+      "source_metres": 2300,
+      "provider_metres": 2500,
+      "delta_metres": 200,
+      "has_structure": true,
+      "source_line": "SW | SW B | 2300m",
+      "provider_title": "Tecnica | Endurance - 2500 m",
+      "action": "VERIFY_SOURCE_INTERVALS_AND_NATIVE_BUILDER_BEFORE_PLAN_SCOPED_REPLACE"
+    },
+    {
+      "week": 8,
+      "day": "VEN",
+      "workout_id": 4001046400,
+      "source_metres": 2300,
+      "provider_metres": 2500,
+      "delta_metres": 200,
+      "has_structure": true,
+      "source_line": "SW | SW C | 2300m",
+      "provider_title": "Aerobico | Endurance facile - 2500 m",
+      "action": "VERIFY_SOURCE_INTERVALS_AND_NATIVE_BUILDER_BEFORE_PLAN_SCOPED_REPLACE"
+    },
+    {
+      "week": 9,
+      "day": "MAR",
+      "workout_id": 4001048374,
+      "source_metres": 2700,
+      "provider_metres": 3000,
+      "delta_metres": 300,
+      "has_structure": true,
+      "source_line": "SW | SW A | 2700m",
+      "provider_title": "Aerobico | Endurance 3x700 - 3000 m",
+      "action": "VERIFY_SOURCE_INTERVALS_AND_NATIVE_BUILDER_BEFORE_PLAN_SCOPED_REPLACE"
+    },
+    {
+      "week": 9,
+      "day": "MER",
+      "workout_id": 4001048397,
+      "source_metres": 2700,
+      "provider_metres": 2500,
+      "delta_metres": -200,
+      "has_structure": true,
+      "source_line": "SW | SW B | 2700m",
+      "provider_title": "Test | T1500 iniziale - 2500 m",
+      "action": "VERIFY_SOURCE_INTERVALS_AND_NATIVE_BUILDER_BEFORE_PLAN_SCOPED_REPLACE"
+    },
+    {
+      "week": 9,
+      "day": "VEN",
+      "workout_id": 4001048469,
+      "source_metres": 2700,
+      "provider_metres": 3200,
+      "delta_metres": 500,
+      "has_structure": true,
+      "source_line": "SW | SW C | 2700m",
+      "provider_title": "Tecnica | Facile + tecnica - 3200 m",
+      "action": "VERIFY_SOURCE_INTERVALS_AND_NATIVE_BUILDER_BEFORE_PLAN_SCOPED_REPLACE"
+    },
+    {
+      "week": 10,
+      "day": "MAR",
+      "workout_id": 4001050241,
+      "source_metres": 2700,
+      "provider_metres": 3000,
+      "delta_metres": 300,
+      "has_structure": true,
+      "source_line": "SW | SW A | 2700m",
+      "provider_title": "Aerobico | Endurance 3x700 - 3000 m",
+      "action": "VERIFY_SOURCE_INTERVALS_AND_NATIVE_BUILDER_BEFORE_PLAN_SCOPED_REPLACE"
+    },
+    {
+      "week": 10,
+      "day": "MER",
+      "workout_id": 4001050262,
+      "source_metres": 2700,
+      "provider_metres": 3100,
+      "delta_metres": 400,
+      "has_structure": true,
+      "source_line": "SW | SW B | 2700m",
+      "provider_title": "Aerobico | Endurance 4x550 - 3100 m",
+      "action": "VERIFY_SOURCE_INTERVALS_AND_NATIVE_BUILDER_BEFORE_PLAN_SCOPED_REPLACE"
+    },
+    {
+      "week": 10,
+      "day": "VEN",
+      "workout_id": 4001050317,
+      "source_metres": 2700,
+      "provider_metres": 3200,
+      "delta_metres": 500,
+      "has_structure": true,
+      "source_line": "SW | SW C | 2700m",
+      "provider_title": "Tecnica | Facile + tecnica - 3200 m",
+      "action": "VERIFY_SOURCE_INTERVALS_AND_NATIVE_BUILDER_BEFORE_PLAN_SCOPED_REPLACE"
+    },
+    {
+      "week": 11,
+      "day": "MAR",
+      "workout_id": 4001052931,
+      "source_metres": 2700,
+      "provider_metres": 3000,
+      "delta_metres": 300,
+      "has_structure": true,
+      "source_line": "SW | SW A | 2700m",
+      "provider_title": "Aerobico | Endurance 3x700 - 3000 m",
+      "action": "VERIFY_SOURCE_INTERVALS_AND_NATIVE_BUILDER_BEFORE_PLAN_SCOPED_REPLACE"
+    },
+    {
+      "week": 11,
+      "day": "MER",
+      "workout_id": 4001052958,
+      "source_metres": 2700,
+      "provider_metres": 3100,
+      "delta_metres": 400,
+      "has_structure": true,
+      "source_line": "SW | SW B | 2700m",
+      "provider_title": "Aerobico | Endurance 4x550 - 3100 m",
+      "action": "VERIFY_SOURCE_INTERVALS_AND_NATIVE_BUILDER_BEFORE_PLAN_SCOPED_REPLACE"
+    },
+    {
+      "week": 11,
+      "day": "VEN",
+      "workout_id": 4001053036,
+      "source_metres": 2700,
+      "provider_metres": 3200,
+      "delta_metres": 500,
+      "has_structure": true,
+      "source_line": "SW | SW C | 2700m",
+      "provider_title": "Tecnica | Facile + tecnica - 3200 m",
+      "action": "VERIFY_SOURCE_INTERVALS_AND_NATIVE_BUILDER_BEFORE_PLAN_SCOPED_REPLACE"
+    },
+    {
+      "week": 12,
+      "day": "MAR",
+      "workout_id": 4001055493,
+      "source_metres": 2300,
+      "provider_metres": 2500,
+      "delta_metres": 200,
+      "has_structure": true,
+      "source_line": "SW | SW A | 2300m",
+      "provider_title": "Aerobico | Endurance facile 2500 m - 3x500",
+      "action": "VERIFY_SOURCE_INTERVALS_AND_NATIVE_BUILDER_BEFORE_PLAN_SCOPED_REPLACE"
+    },
+    {
+      "week": 12,
+      "day": "MER",
+      "workout_id": 4001055532,
+      "source_metres": 2300,
+      "provider_metres": 2500,
+      "delta_metres": 200,
+      "has_structure": true,
+      "source_line": "SW | SW B | 2300m",
+      "provider_title": "Tecnica | Endurance - 2500 m",
+      "action": "VERIFY_SOURCE_INTERVALS_AND_NATIVE_BUILDER_BEFORE_PLAN_SCOPED_REPLACE"
+    },
+    {
+      "week": 12,
+      "day": "VEN",
+      "workout_id": 4001055602,
+      "source_metres": 2300,
+      "provider_metres": 2500,
+      "delta_metres": 200,
+      "has_structure": true,
+      "source_line": "SW | SW C | 2300m",
+      "provider_title": "Aerobico | Endurance facile - 2500 m",
+      "action": "VERIFY_SOURCE_INTERVALS_AND_NATIVE_BUILDER_BEFORE_PLAN_SCOPED_REPLACE"
+    },
+    {
+      "week": 13,
+      "day": "MAR",
+      "workout_id": 4001058868,
+      "source_metres": 2900,
+      "provider_metres": 3000,
+      "delta_metres": 100,
+      "has_structure": true,
+      "source_line": "SW | Tecnica/economia, presa e assetto | 2900m",
+      "provider_title": "Aerobico | Endurance 3x700 - 3000 m",
+      "action": "VERIFY_SOURCE_INTERVALS_AND_NATIVE_BUILDER_BEFORE_PLAN_SCOPED_REPLACE"
+    },
+    {
+      "week": 13,
+      "day": "MER",
+      "workout_id": 4001058996,
+      "source_metres": 2900,
+      "provider_metres": 3100,
+      "delta_metres": 200,
+      "has_structure": true,
+      "source_line": "SW | Ritmo nuoto controllato e tecnica sotto fatica | 2900m",
+      "provider_title": "Aerobico | Endurance 4x550 - 3100 m",
+      "action": "VERIFY_SOURCE_INTERVALS_AND_NATIVE_BUILDER_BEFORE_PLAN_SCOPED_REPLACE"
+    },
+    {
+      "week": 13,
+      "day": "VEN",
+      "workout_id": 4001059157,
+      "source_metres": 2800,
+      "provider_metres": 3200,
+      "delta_metres": 400,
+      "has_structure": true,
+      "source_line": "SW | Endurance tecnica, durata della bracciata | 2800m",
+      "provider_title": "Tecnica | Facile + tecnica - 3200 m",
+      "action": "VERIFY_SOURCE_INTERVALS_AND_NATIVE_BUILDER_BEFORE_PLAN_SCOPED_REPLACE"
+    },
+    {
+      "week": 14,
+      "day": "MER",
+      "workout_id": 4001062141,
+      "source_metres": 2900,
+      "provider_metres": 3100,
+      "delta_metres": 200,
+      "has_structure": true,
+      "source_line": "SW | Ritmo nuoto controllato e tecnica sotto fatica | 2900m",
+      "provider_title": "Aerobico | Endurance 4x550 - 3100 m",
+      "action": "VERIFY_SOURCE_INTERVALS_AND_NATIVE_BUILDER_BEFORE_PLAN_SCOPED_REPLACE"
+    },
+    {
+      "week": 14,
+      "day": "VEN",
+      "workout_id": 4001062246,
+      "source_metres": 3100,
+      "provider_metres": 3200,
+      "delta_metres": 100,
+      "has_structure": true,
+      "source_line": "SW | Endurance tecnica, durata della bracciata | 3100m",
+      "provider_title": "Tecnica | Facile + tecnica - 3200 m",
+      "action": "VERIFY_SOURCE_INTERVALS_AND_NATIVE_BUILDER_BEFORE_PLAN_SCOPED_REPLACE"
+    },
+    {
+      "week": 15,
+      "day": "VEN",
+      "workout_id": 4001065380,
+      "source_metres": 3100,
+      "provider_metres": 3200,
+      "delta_metres": 100,
+      "has_structure": true,
+      "source_line": "SW | Endurance tecnica, durata della bracciata | 3100m",
+      "provider_title": "Tecnica | Facile + tecnica - 3200 m",
+      "action": "VERIFY_SOURCE_INTERVALS_AND_NATIVE_BUILDER_BEFORE_PLAN_SCOPED_REPLACE"
+    },
+    {
+      "week": 16,
+      "day": "MAR",
+      "workout_id": 4001068996,
+      "source_metres": 2600,
+      "provider_metres": 2800,
+      "delta_metres": 200,
+      "has_structure": true,
+      "source_line": "SW | Tecnica/economia, presa e assetto | 2600m",
+      "provider_title": "Aerobico | Endurance 4x500 - 2800 m",
+      "action": "VERIFY_SOURCE_INTERVALS_AND_NATIVE_BUILDER_BEFORE_PLAN_SCOPED_REPLACE"
+    },
+    {
+      "week": 16,
+      "day": "MER",
+      "workout_id": 4001069057,
+      "source_metres": 2400,
+      "provider_metres": 2800,
+      "delta_metres": 400,
+      "has_structure": true,
+      "source_line": "SW | Richiamo B1/CSS condizionato nello scarico | 2400m",
+      "provider_title": "Aerobico | Endurance 4x500 - 2800 m",
+      "action": "VERIFY_SOURCE_INTERVALS_AND_NATIVE_BUILDER_BEFORE_PLAN_SCOPED_REPLACE"
+    },
+    {
+      "week": 16,
+      "day": "VEN",
+      "workout_id": 4001069153,
+      "source_metres": 2500,
+      "provider_metres": 2800,
+      "delta_metres": 300,
+      "has_structure": true,
+      "source_line": "SW | Endurance tecnica, durata della bracciata | 2500m",
+      "provider_title": "Aerobico | Endurance 4x500 - 2800 m",
+      "action": "VERIFY_SOURCE_INTERVALS_AND_NATIVE_BUILDER_BEFORE_PLAN_SCOPED_REPLACE"
+    },
+    {
+      "week": 17,
+      "day": "VEN",
+      "workout_id": 4001072040,
+      "source_metres": 3100,
+      "provider_metres": 3200,
+      "delta_metres": 100,
+      "has_structure": true,
+      "source_line": "SW | Endurance tecnica, durata della bracciata | 3100m",
+      "provider_title": "Tecnica | Facile + tecnica - 3200 m",
+      "action": "VERIFY_SOURCE_INTERVALS_AND_NATIVE_BUILDER_BEFORE_PLAN_SCOPED_REPLACE"
+    },
+    {
+      "week": 18,
+      "day": "MER",
+      "workout_id": 4001074478,
+      "source_metres": 2900,
+      "provider_metres": 3100,
+      "delta_metres": 200,
+      "has_structure": true,
+      "source_line": "SW | Ritmo nuoto controllato e tecnica sotto fatica | 2900m",
+      "provider_title": "Aerobico | Endurance 4x550 - 3100 m",
+      "action": "VERIFY_SOURCE_INTERVALS_AND_NATIVE_BUILDER_BEFORE_PLAN_SCOPED_REPLACE"
+    },
+    {
+      "week": 18,
+      "day": "VEN",
+      "workout_id": 4001074531,
+      "source_metres": 3100,
+      "provider_metres": 3200,
+      "delta_metres": 100,
+      "has_structure": true,
+      "source_line": "SW | Endurance tecnica, durata della bracciata | 3100m",
+      "provider_title": "Tecnica | Facile + tecnica - 3200 m",
+      "action": "VERIFY_SOURCE_INTERVALS_AND_NATIVE_BUILDER_BEFORE_PLAN_SCOPED_REPLACE"
+    },
+    {
+      "week": 19,
+      "day": "MAR",
+      "workout_id": 4001076744,
+      "source_metres": 2900,
+      "provider_metres": 3000,
+      "delta_metres": 100,
+      "has_structure": true,
+      "source_line": "SWA | 65' planned | 2900 m",
+      "provider_title": "Aerobico | Endurance 3x700 - 3000 m",
+      "action": "VERIFY_SOURCE_INTERVALS_AND_NATIVE_BUILDER_BEFORE_PLAN_SCOPED_REPLACE"
+    },
+    {
+      "week": 19,
+      "day": "MER",
+      "workout_id": 4001076798,
+      "source_metres": 2900,
+      "provider_metres": 3100,
+      "delta_metres": 200,
+      "has_structure": true,
+      "source_line": "SWB | 65' planned | 2900 m",
+      "provider_title": "Aerobico | Endurance 4x550 - 3100 m",
+      "action": "VERIFY_SOURCE_INTERVALS_AND_NATIVE_BUILDER_BEFORE_PLAN_SCOPED_REPLACE"
+    },
+    {
+      "week": 19,
+      "day": "VEN",
+      "workout_id": 4001076910,
+      "source_metres": 2900,
+      "provider_metres": 3200,
+      "delta_metres": 300,
+      "has_structure": true,
+      "source_line": "SWC | 65' planned | 2900 m",
+      "provider_title": "Tecnica | Facile + tecnica - 3200 m",
+      "action": "VERIFY_SOURCE_INTERVALS_AND_NATIVE_BUILDER_BEFORE_PLAN_SCOPED_REPLACE"
+    },
+    {
+      "week": 20,
+      "day": "MAR",
+      "workout_id": 4001078695,
+      "source_metres": 2600,
+      "provider_metres": 3000,
+      "delta_metres": 400,
+      "has_structure": true,
+      "source_line": "SWA | 60' planned | 2600 m",
+      "provider_title": "Aerobico | Endurance 3x700 - 3000 m",
+      "action": "VERIFY_SOURCE_INTERVALS_AND_NATIVE_BUILDER_BEFORE_PLAN_SCOPED_REPLACE"
+    },
+    {
+      "week": 20,
+      "day": "MER",
+      "workout_id": 4001078749,
+      "source_metres": 2700,
+      "provider_metres": 3100,
+      "delta_metres": 400,
+      "has_structure": true,
+      "source_line": "SWB | 60' planned | 2700 m",
+      "provider_title": "Aerobico | Endurance 4x550 - 3100 m",
+      "action": "VERIFY_SOURCE_INTERVALS_AND_NATIVE_BUILDER_BEFORE_PLAN_SCOPED_REPLACE"
+    },
+    {
+      "week": 20,
+      "day": "VEN",
+      "workout_id": 4001078837,
+      "source_metres": 2600,
+      "provider_metres": 3200,
+      "delta_metres": 600,
+      "has_structure": true,
+      "source_line": "SWC | 60' planned | 2600 m",
+      "provider_title": "Tecnica | Facile + tecnica - 3200 m",
+      "action": "VERIFY_SOURCE_INTERVALS_AND_NATIVE_BUILDER_BEFORE_PLAN_SCOPED_REPLACE"
+    },
+    {
+      "week": 21,
+      "day": "MAR",
+      "workout_id": 4001080942,
+      "source_metres": 2900,
+      "provider_metres": 3000,
+      "delta_metres": 100,
+      "has_structure": true,
+      "source_line": "SWA | 65' planned | 2900 m",
+      "provider_title": "Aerobico | Endurance 3x700 - 3000 m",
+      "action": "VERIFY_SOURCE_INTERVALS_AND_NATIVE_BUILDER_BEFORE_PLAN_SCOPED_REPLACE"
+    },
+    {
+      "week": 21,
+      "day": "MER",
+      "workout_id": 4001080978,
+      "source_metres": 2900,
+      "provider_metres": 3100,
+      "delta_metres": 200,
+      "has_structure": true,
+      "source_line": "SWB | 65' planned | 2900 m",
+      "provider_title": "Aerobico | Endurance 4x550 - 3100 m",
+      "action": "VERIFY_SOURCE_INTERVALS_AND_NATIVE_BUILDER_BEFORE_PLAN_SCOPED_REPLACE"
+    },
+    {
+      "week": 21,
+      "day": "VEN",
+      "workout_id": 4001081142,
+      "source_metres": 2900,
+      "provider_metres": 3200,
+      "delta_metres": 300,
+      "has_structure": true,
+      "source_line": "SWC | 65' planned | 2900 m",
+      "provider_title": "Tecnica | Facile + tecnica - 3200 m",
+      "action": "VERIFY_SOURCE_INTERVALS_AND_NATIVE_BUILDER_BEFORE_PLAN_SCOPED_REPLACE"
+    },
+    {
+      "week": 22,
+      "day": "MAR",
+      "workout_id": 4001083421,
+      "source_metres": 2600,
+      "provider_metres": 3000,
+      "delta_metres": 400,
+      "has_structure": true,
+      "source_line": "SW | 60' planned | 2600 m",
+      "provider_title": "Aerobico | Endurance 3x700 - 3000 m",
+      "action": "VERIFY_SOURCE_INTERVALS_AND_NATIVE_BUILDER_BEFORE_PLAN_SCOPED_REPLACE"
+    },
+    {
+      "week": 22,
+      "day": "MER",
+      "workout_id": 4001083483,
+      "source_metres": 2700,
+      "provider_metres": 3100,
+      "delta_metres": 400,
+      "has_structure": true,
+      "source_line": "SW | 60' planned | 2700 m",
+      "provider_title": "Aerobico | Endurance 4x550 - 3100 m",
+      "action": "VERIFY_SOURCE_INTERVALS_AND_NATIVE_BUILDER_BEFORE_PLAN_SCOPED_REPLACE"
+    },
+    {
+      "week": 22,
+      "day": "VEN",
+      "workout_id": 4001083654,
+      "source_metres": 2600,
+      "provider_metres": 3200,
+      "delta_metres": 600,
+      "has_structure": true,
+      "source_line": "SW | 60' planned | 2600 m",
+      "provider_title": "Tecnica | Facile + tecnica - 3200 m",
+      "action": "VERIFY_SOURCE_INTERVALS_AND_NATIVE_BUILDER_BEFORE_PLAN_SCOPED_REPLACE"
+    },
+    {
+      "week": 23,
+      "day": "MAR",
+      "workout_id": 4001086333,
+      "source_metres": 1900,
+      "provider_metres": 2300,
+      "delta_metres": 400,
+      "has_structure": true,
+      "source_line": "SW | 45' planned | 1900 m",
+      "provider_title": "Tecnica | Facile + tecnica - 2300 m — 6×50 m",
+      "action": "VERIFY_SOURCE_INTERVALS_AND_NATIVE_BUILDER_BEFORE_PLAN_SCOPED_REPLACE"
+    },
+    {
+      "week": 23,
+      "day": "MER",
+      "workout_id": 4001086460,
+      "source_metres": 2000,
+      "provider_metres": 2400,
+      "delta_metres": 400,
+      "has_structure": true,
+      "source_line": "SW | 45' planned | 2000 m",
+      "provider_title": "Tecnica | Endurance - 2400 m",
+      "action": "VERIFY_SOURCE_INTERVALS_AND_NATIVE_BUILDER_BEFORE_PLAN_SCOPED_REPLACE"
+    }
+  ],
+  "match_slots": [
+    {
+      "week": 1,
+      "day": "MAR",
+      "workout_id": 4000486945,
+      "metres": 2500
+    },
+    {
+      "week": 1,
+      "day": "MER",
+      "workout_id": 4000490051,
+      "metres": 2500
+    },
+    {
+      "week": 1,
+      "day": "VEN",
+      "workout_id": 4000490159,
+      "metres": 2500
+    },
+    {
+      "week": 2,
+      "day": "MAR",
+      "workout_id": 4000490220,
+      "metres": 2700
+    },
+    {
+      "week": 2,
+      "day": "MER",
+      "workout_id": 4000490258,
+      "metres": 2500
+    },
+    {
+      "week": 2,
+      "day": "VEN",
+      "workout_id": 4000490371,
+      "metres": 2700
+    },
+    {
+      "week": 3,
+      "day": "MAR",
+      "workout_id": 4000591453,
+      "metres": 2700
+    },
+    {
+      "week": 3,
+      "day": "MER",
+      "workout_id": 4000591488,
+      "metres": 2700
+    },
+    {
+      "week": 3,
+      "day": "VEN",
+      "workout_id": 4000591562,
+      "metres": 2700
+    },
+    {
+      "week": 4,
+      "day": "MAR",
+      "workout_id": 4000591594,
+      "metres": 2300
+    },
+    {
+      "week": 4,
+      "day": "MER",
+      "workout_id": 4000591617,
+      "metres": 2300
+    },
+    {
+      "week": 4,
+      "day": "VEN",
+      "workout_id": 4000591658,
+      "metres": 2300
+    },
+    {
+      "week": 14,
+      "day": "MAR",
+      "workout_id": 4001062008,
+      "metres": 3000
+    },
+    {
+      "week": 15,
+      "day": "MAR",
+      "workout_id": 4001065266,
+      "metres": 3000
+    },
+    {
+      "week": 15,
+      "day": "MER",
+      "workout_id": 4001065316,
+      "metres": 3100
+    },
+    {
+      "week": 17,
+      "day": "MAR",
+      "workout_id": 4001071935,
+      "metres": 3000
+    },
+    {
+      "week": 17,
+      "day": "MER",
+      "workout_id": 4001071969,
+      "metres": 3100
+    },
+    {
+      "week": 18,
+      "day": "MAR",
+      "workout_id": 4001074454,
+      "metres": 3000
+    },
+    {
+      "week": 23,
+      "day": "VEN",
+      "workout_id": 4001086507,
+      "metres": 2000
+    },
+    {
+      "week": 24,
+      "day": "LUN",
+      "workout_id": 4001089818,
+      "metres": 1200
+    },
+    {
+      "week": 24,
+      "day": "MER",
+      "workout_id": 4001089870,
+      "metres": 1200
+    }
+  ]
+}

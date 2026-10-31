@@ -1,0 +1,14 @@
+{
+  "schema": "CHASING_SUNDAY_OVERRIDE_V1",
+  "weeks": [
+    3,
+    7,
+    9,
+    11,
+    13,
+    19
+  ],
+  "rule": "retain Wednesday long RU; shift Thursday short RU to otherwise empty Sunday",
+  "source_candidate": "data/chasing_24w_redistribution_candidate_20261012.json",
+  "status": "REQUIRED_BEFORE_EXECUTION"
+}

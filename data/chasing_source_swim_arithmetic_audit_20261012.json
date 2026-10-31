@@ -1,0 +1,2482 @@
+{
+  "schema": "CHASING_SOURCE_SWIM_ARITHMETIC_V1",
+  "date": "2026-10-12",
+  "source": "Four original Chasing W01-W24 weekly prescriptions in GitHub; canonical Product Master 27 historical sections 31–35",
+  "status": "PASS_DECLARED_METERS_EQUAL_INTERVAL_SUM_ONLY",
+  "total_swims": 71,
+  "matching_sum": 71,
+  "failed": [],
+  "purpose": "Integrity checksum only, NOT approval of targets, rests or builder equivalence; never publish automatically",
+  "source_swims": [
+    {
+      "week": 1,
+      "day": "MAR",
+      "declared_metres": 2500,
+      "interval_sum_m": 2500,
+      "checksum_ok": true,
+      "segments": [
+        {
+          "step": 1,
+          "metres": 300,
+          "prescription": "1. 300m — ingresso facile"
+        },
+        {
+          "step": 2,
+          "metres": 300,
+          "prescription": "2. 300m — 6×50 tecnica 25/25, rec 15s"
+        },
+        {
+          "step": 3,
+          "metres": 1400,
+          "prescription": "3. 1400m — 4×350 RPE3, rec 30s, respirazione equilibrata"
+        },
+        {
+          "step": 4,
+          "metres": 400,
+          "prescription": "4. 400m — 4×100 completi RPE3, rec 15s"
+        },
+        {
+          "step": 5,
+          "metres": 100,
+          "prescription": "5. 100m — sciolti"
+        }
+      ],
+      "source_heading": "SW | SW A | 2500m, planned 55' CANDIDATI"
+    },
+    {
+      "week": 1,
+      "day": "MER",
+      "declared_metres": 2500,
+      "interval_sum_m": 2500,
+      "checksum_ok": true,
+      "segments": [
+        {
+          "step": 1,
+          "metres": 300,
+          "prescription": "1. 300m — ingresso progressivo"
+        },
+        {
+          "step": 2,
+          "metres": 300,
+          "prescription": "2. 300m — 6×50 tecnica controllo presa, rec 15s"
+        },
+        {
+          "step": 3,
+          "metres": 1000,
+          "prescription": "3. 1000m — 10×100: RPE3–4, rec 15–20s, ultimi 2 uniformi senza gara"
+        },
+        {
+          "step": 4,
+          "metres": 800,
+          "prescription": "4. 800m — 4×200 facile, rec 20s"
+        },
+        {
+          "step": 5,
+          "metres": 100,
+          "prescription": "5. 100m — sciolti"
+        }
+      ],
+      "source_heading": "SW | SW B | 2500m, planned 55' CANDIDATI"
+    },
+    {
+      "week": 1,
+      "day": "VEN",
+      "declared_metres": 2500,
+      "interval_sum_m": 2500,
+      "checksum_ok": true,
+      "segments": [
+        {
+          "step": 1,
+          "metres": 300,
+          "prescription": "1. 300m — ingresso facile"
+        },
+        {
+          "step": 2,
+          "metres": 200,
+          "prescription": "2. 200m — 4×50 postura e presa, rec 15s"
+        },
+        {
+          "step": 3,
+          "metres": 1600,
+          "prescription": "3. 1600m — 2×800 RPE3, rec 40s, confrontare ultimi 200 dei due blocchi"
+        },
+        {
+          "step": 4,
+          "metres": 300,
+          "prescription": "4. 300m — 2×150 completo facile, rec 20s"
+        },
+        {
+          "step": 5,
+          "metres": 100,
+          "prescription": "5. 100m — sciolti"
+        }
+      ],
+      "source_heading": "SW | SW C | 2500m, planned 55' CANDIDATI"
+    },
+    {
+      "week": 2,
+      "day": "MAR",
+      "declared_metres": 2700,
+      "interval_sum_m": 2700,
+      "checksum_ok": true,
+      "segments": [
+        {
+          "step": 1,
+          "metres": 400,
+          "prescription": "1. 400m — avvio facile"
+        },
+        {
+          "step": 2,
+          "metres": 300,
+          "prescription": "2. 300m — 6×50 tecnica, rec 15s"
+        },
+        {
+          "step": 3,
+          "metres": 1600,
+          "prescription": "3. 1600m — 4×400 RPE3, rec 30s"
+        },
+        {
+          "step": 4,
+          "metres": 200,
+          "prescription": "4. 200m — 2×100 completi RPE3, rec 15s"
+        },
+        {
+          "step": 5,
+          "metres": 200,
+          "prescription": "5. 200m — sciolti"
+        }
+      ],
+      "source_heading": "SW | SW A | 2700m, planned 60' CANDIDATI"
+    },
+    {
+      "week": 2,
+      "day": "MER",
+      "declared_metres": 2500,
+      "interval_sum_m": 2500,
+      "checksum_ok": true,
+      "segments": [
+        {
+          "step": 1,
+          "metres": 300,
+          "prescription": "1. 300m — ingresso progressivo"
+        },
+        {
+          "step": 2,
+          "metres": 300,
+          "prescription": "2. 300m — 6×50 tecnica controllo presa, rec 15s"
+        },
+        {
+          "step": 3,
+          "metres": 1000,
+          "prescription": "3. 1000m — 10×100: RPE3–4, rec 15–20s, ultimi 2 uniformi senza gara"
+        },
+        {
+          "step": 4,
+          "metres": 800,
+          "prescription": "4. 800m — 4×200 facile, rec 20s"
+        },
+        {
+          "step": 5,
+          "metres": 100,
+          "prescription": "5. 100m — sciolti"
+        }
+      ],
+      "source_heading": "SW | SW B | 2500m, planned 55' CANDIDATI"
+    },
+    {
+      "week": 2,
+      "day": "VEN",
+      "declared_metres": 2700,
+      "interval_sum_m": 2700,
+      "checksum_ok": true,
+      "segments": [
+        {
+          "step": 1,
+          "metres": 400,
+          "prescription": "1. 400m — avvio facile"
+        },
+        {
+          "step": 2,
+          "metres": 200,
+          "prescription": "2. 200m — 4×50 economia, rec 15s"
+        },
+        {
+          "step": 3,
+          "metres": 1800,
+          "prescription": "3. 1800m — 2×900 RPE3, rec 40s"
+        },
+        {
+          "step": 4,
+          "metres": 200,
+          "prescription": "4. 200m — 2×100 completi sciolti, rec 15s"
+        },
+        {
+          "step": 5,
+          "metres": 100,
+          "prescription": "5. 100m — sciolti"
+        }
+      ],
+      "source_heading": "SW | SW C | 2700m, planned 60' CANDIDATI"
+    },
+    {
+      "week": 3,
+      "day": "MAR",
+      "declared_metres": 2700,
+      "interval_sum_m": 2700,
+      "checksum_ok": true,
+      "segments": [
+        {
+          "step": 1,
+          "metres": 400,
+          "prescription": "1. 400m — avvio facile"
+        },
+        {
+          "step": 2,
+          "metres": 300,
+          "prescription": "2. 300m — 6×50 tecnica, rec 15s"
+        },
+        {
+          "step": 3,
+          "metres": 1600,
+          "prescription": "3. 1600m — 4×400 RPE3, rec 30s"
+        },
+        {
+          "step": 4,
+          "metres": 200,
+          "prescription": "4. 200m — 2×100 completi RPE3, rec 15s"
+        },
+        {
+          "step": 5,
+          "metres": 200,
+          "prescription": "5. 200m — sciolti"
+        }
+      ],
+      "source_heading": "SW | SW A | 2700m, planned 60' CANDIDATI"
+    },
+    {
+      "week": 3,
+      "day": "MER",
+      "declared_metres": 2700,
+      "interval_sum_m": 2700,
+      "checksum_ok": true,
+      "segments": [
+        {
+          "step": 1,
+          "metres": 400,
+          "prescription": "1. 400m — avvio progressivo"
+        },
+        {
+          "step": 2,
+          "metres": 300,
+          "prescription": "2. 300m — 6×50 tecnica, rec 15s"
+        },
+        {
+          "step": 3,
+          "metres": 1200,
+          "prescription": "3. 1200m — 12×100: 3 facili +1 steady RPE4 per ciascun gruppo di 4, rec 15–20s"
+        },
+        {
+          "step": 4,
+          "metres": 600,
+          "prescription": "4. 600m — 4×150 aerobici rec 20s"
+        },
+        {
+          "step": 5,
+          "metres": 200,
+          "prescription": "5. 200m — sciolti"
+        }
+      ],
+      "source_heading": "SW | SW B | 2700m, planned 60' CANDIDATI"
+    },
+    {
+      "week": 3,
+      "day": "VEN",
+      "declared_metres": 2700,
+      "interval_sum_m": 2700,
+      "checksum_ok": true,
+      "segments": [
+        {
+          "step": 1,
+          "metres": 400,
+          "prescription": "1. 400m — avvio facile"
+        },
+        {
+          "step": 2,
+          "metres": 200,
+          "prescription": "2. 200m — 4×50 economia, rec 15s"
+        },
+        {
+          "step": 3,
+          "metres": 1800,
+          "prescription": "3. 1800m — 2×900 RPE3, rec 40s"
+        },
+        {
+          "step": 4,
+          "metres": 200,
+          "prescription": "4. 200m — 2×100 completi sciolti, rec 15s"
+        },
+        {
+          "step": 5,
+          "metres": 100,
+          "prescription": "5. 100m — sciolti"
+        }
+      ],
+      "source_heading": "SW | SW C | 2700m, planned 60' CANDIDATI"
+    },
+    {
+      "week": 4,
+      "day": "MAR",
+      "declared_metres": 2300,
+      "interval_sum_m": 2300,
+      "checksum_ok": true,
+      "segments": [
+        {
+          "step": 1,
+          "metres": 300,
+          "prescription": "1. 300m — ingresso facile"
+        },
+        {
+          "step": 2,
+          "metres": 300,
+          "prescription": "2. 300m — 6×50 (25 drill/25 completo), rec 15s"
+        },
+        {
+          "step": 3,
+          "metres": 1200,
+          "prescription": "3. 1200m — 4×300 RPE3 presa e respirazione, rec 25s"
+        },
+        {
+          "step": 4,
+          "metres": 400,
+          "prescription": "4. 400m — 4×100 completi controllo stroke count, rec 15s"
+        },
+        {
+          "step": 5,
+          "metres": 100,
+          "prescription": "5. 100m — sciolti"
+        }
+      ],
+      "source_heading": "SW | SW A | 2300m, planned 50' CANDIDATI"
+    },
+    {
+      "week": 4,
+      "day": "MER",
+      "declared_metres": 2300,
+      "interval_sum_m": 2300,
+      "checksum_ok": true,
+      "segments": [
+        {
+          "step": 1,
+          "metres": 300,
+          "prescription": "1. 300m — ingresso progressivo facile"
+        },
+        {
+          "step": 2,
+          "metres": 200,
+          "prescription": "2. 200m — 4×50 tecnica respirazione, rec 15s"
+        },
+        {
+          "step": 3,
+          "metres": 800,
+          "prescription": "3. 800m — 8×100 RPE3–4, rec 15–20s (solo 2×100 eventualmente più vivi se pieno recupero)"
+        },
+        {
+          "step": 4,
+          "metres": 800,
+          "prescription": "4. 800m — 4×200 sciolti con ritorno ritmo stabile, rec 20s"
+        },
+        {
+          "step": 5,
+          "metres": 200,
+          "prescription": "5. 200m — sciolti"
+        }
+      ],
+      "source_heading": "SW | SW B | 2300m, planned 50' CANDIDATI"
+    },
+    {
+      "week": 4,
+      "day": "VEN",
+      "declared_metres": 2300,
+      "interval_sum_m": 2300,
+      "checksum_ok": true,
+      "segments": [
+        {
+          "step": 1,
+          "metres": 300,
+          "prescription": "1. 300m — ingresso facile"
+        },
+        {
+          "step": 2,
+          "metres": 200,
+          "prescription": "2. 200m — 4×50 assetto, rec 15s"
+        },
+        {
+          "step": 3,
+          "metres": 1400,
+          "prescription": "3. 1400m — 2×700 aerobico continuo RPE3, rec 35s"
+        },
+        {
+          "step": 4,
+          "metres": 300,
+          "prescription": "4. 300m — 2×150 nuoto completo, rec 20s"
+        },
+        {
+          "step": 5,
+          "metres": 100,
+          "prescription": "5. 100m — sciolti"
+        }
+      ],
+      "source_heading": "SW | SW C | 2300m, planned 50' CANDIDATI"
+    },
+    {
+      "week": 5,
+      "day": "MAR",
+      "declared_metres": 2700,
+      "interval_sum_m": 2700,
+      "checksum_ok": true,
+      "segments": [
+        {
+          "step": 1,
+          "metres": 400,
+          "prescription": "1. 400m — avvio facile"
+        },
+        {
+          "step": 2,
+          "metres": 300,
+          "prescription": "2. 300m — 6×50 tecnica, rec 15s"
+        },
+        {
+          "step": 3,
+          "metres": 1600,
+          "prescription": "3. 1600m — 4×400 RPE3, rec 30s"
+        },
+        {
+          "step": 4,
+          "metres": 200,
+          "prescription": "4. 200m — 2×100 completi RPE3, rec 15s"
+        },
+        {
+          "step": 5,
+          "metres": 200,
+          "prescription": "5. 200m — sciolti"
+        }
+      ],
+      "source_heading": "SW | SW A | 2700m, planned 60' CANDIDATI"
+    },
+    {
+      "week": 5,
+      "day": "MER",
+      "declared_metres": 2700,
+      "interval_sum_m": 2700,
+      "checksum_ok": true,
+      "segments": [
+        {
+          "step": 1,
+          "metres": 400,
+          "prescription": "1. 400m — avvio progressivo"
+        },
+        {
+          "step": 2,
+          "metres": 300,
+          "prescription": "2. 300m — 6×50 tecnica, rec 15s"
+        },
+        {
+          "step": 3,
+          "metres": 1200,
+          "prescription": "3. 1200m — 12×100: 3 facili +1 steady RPE4 per ciascun gruppo di 4, rec 15–20s"
+        },
+        {
+          "step": 4,
+          "metres": 600,
+          "prescription": "4. 600m — 4×150 aerobici rec 20s"
+        },
+        {
+          "step": 5,
+          "metres": 200,
+          "prescription": "5. 200m — sciolti"
+        }
+      ],
+      "source_heading": "SW | SW B | 2700m, planned 60' CANDIDATI"
+    },
+    {
+      "week": 5,
+      "day": "VEN",
+      "declared_metres": 2700,
+      "interval_sum_m": 2700,
+      "checksum_ok": true,
+      "segments": [
+        {
+          "step": 1,
+          "metres": 400,
+          "prescription": "1. 400m — avvio facile"
+        },
+        {
+          "step": 2,
+          "metres": 200,
+          "prescription": "2. 200m — 4×50 economia, rec 15s"
+        },
+        {
+          "step": 3,
+          "metres": 1800,
+          "prescription": "3. 1800m — 2×900 RPE3, rec 40s"
+        },
+        {
+          "step": 4,
+          "metres": 200,
+          "prescription": "4. 200m — 2×100 completi sciolti, rec 15s"
+        },
+        {
+          "step": 5,
+          "metres": 100,
+          "prescription": "5. 100m — sciolti"
+        }
+      ],
+      "source_heading": "SW | SW C | 2700m, planned 60' CANDIDATI"
+    },
+    {
+      "week": 6,
+      "day": "MAR",
+      "declared_metres": 2700,
+      "interval_sum_m": 2700,
+      "checksum_ok": true,
+      "segments": [
+        {
+          "step": 1,
+          "metres": 400,
+          "prescription": "1. 400m — avvio facile"
+        },
+        {
+          "step": 2,
+          "metres": 300,
+          "prescription": "2. 300m — 6×50 tecnica, rec 15s"
+        },
+        {
+          "step": 3,
+          "metres": 1600,
+          "prescription": "3. 1600m — 4×400 RPE3, rec 30s"
+        },
+        {
+          "step": 4,
+          "metres": 200,
+          "prescription": "4. 200m — 2×100 completi RPE3, rec 15s"
+        },
+        {
+          "step": 5,
+          "metres": 200,
+          "prescription": "5. 200m — sciolti"
+        }
+      ],
+      "source_heading": "SW | SW A | 2700m, planned 60' CANDIDATI"
+    },
+    {
+      "week": 6,
+      "day": "MER",
+      "declared_metres": 2700,
+      "interval_sum_m": 2700,
+      "checksum_ok": true,
+      "segments": [
+        {
+          "step": 1,
+          "metres": 400,
+          "prescription": "1. 400m — avvio progressivo"
+        },
+        {
+          "step": 2,
+          "metres": 300,
+          "prescription": "2. 300m — 6×50 tecnica, rec 15s"
+        },
+        {
+          "step": 3,
+          "metres": 1200,
+          "prescription": "3. 1200m — 12×100: 3 facili +1 steady RPE4 per ciascun gruppo di 4, rec 15–20s"
+        },
+        {
+          "step": 4,
+          "metres": 600,
+          "prescription": "4. 600m — 4×150 aerobici rec 20s"
+        },
+        {
+          "step": 5,
+          "metres": 200,
+          "prescription": "5. 200m — sciolti"
+        }
+      ],
+      "source_heading": "SW | SW B | 2700m, planned 60' CANDIDATI"
+    },
+    {
+      "week": 6,
+      "day": "VEN",
+      "declared_metres": 2700,
+      "interval_sum_m": 2700,
+      "checksum_ok": true,
+      "segments": [
+        {
+          "step": 1,
+          "metres": 400,
+          "prescription": "1. 400m — avvio facile"
+        },
+        {
+          "step": 2,
+          "metres": 200,
+          "prescription": "2. 200m — 4×50 economia, rec 15s"
+        },
+        {
+          "step": 3,
+          "metres": 1800,
+          "prescription": "3. 1800m — 2×900 RPE3, rec 40s"
+        },
+        {
+          "step": 4,
+          "metres": 200,
+          "prescription": "4. 200m — 2×100 completi sciolti, rec 15s"
+        },
+        {
+          "step": 5,
+          "metres": 100,
+          "prescription": "5. 100m — sciolti"
+        }
+      ],
+      "source_heading": "SW | SW C | 2700m, planned 60' CANDIDATI"
+    },
+    {
+      "week": 7,
+      "day": "MAR",
+      "declared_metres": 2700,
+      "interval_sum_m": 2700,
+      "checksum_ok": true,
+      "segments": [
+        {
+          "step": 1,
+          "metres": 400,
+          "prescription": "1. 400m — facili"
+        },
+        {
+          "step": 2,
+          "metres": 300,
+          "prescription": "2. 300m — 6×50 controllo presa e nuotata completa, rec 15s"
+        },
+        {
+          "step": 3,
+          "metres": 1600,
+          "prescription": "3. 1600m — 4×400 endurance RPE3, rec 30s"
+        },
+        {
+          "step": 4,
+          "metres": 200,
+          "prescription": "4. 200m — 2×100 completi, rec 15s"
+        },
+        {
+          "step": 5,
+          "metres": 200,
+          "prescription": "5. 200m — sciolti"
+        }
+      ],
+      "source_heading": "SW | SW A | 2700m, planned 60' candidato"
+    },
+    {
+      "week": 7,
+      "day": "MER",
+      "declared_metres": 2700,
+      "interval_sum_m": 2700,
+      "checksum_ok": true,
+      "segments": [
+        {
+          "step": 1,
+          "metres": 400,
+          "prescription": "1. 400m — progressivi facili"
+        },
+        {
+          "step": 2,
+          "metres": 300,
+          "prescription": "2. 300m — 6×50 drill/nuoto completo, rec 15s"
+        },
+        {
+          "step": 3,
+          "metres": 1200,
+          "prescription": "3. 1200m — 12×100 in 3 gruppi: 3 facili e 1 steady RPE4; rec 15–20s, 40s fra gruppi"
+        },
+        {
+          "step": 4,
+          "metres": 600,
+          "prescription": "4. 600m — 4×150 facili, rec 20s"
+        },
+        {
+          "step": 5,
+          "metres": 200,
+          "prescription": "5. 200m — sciolti"
+        }
+      ],
+      "source_heading": "SW | SW B | 2700m, planned 60' candidato"
+    },
+    {
+      "week": 7,
+      "day": "VEN",
+      "declared_metres": 2700,
+      "interval_sum_m": 2700,
+      "checksum_ok": true,
+      "segments": [
+        {
+          "step": 1,
+          "metres": 400,
+          "prescription": "1. 400m — facili"
+        },
+        {
+          "step": 2,
+          "metres": 200,
+          "prescription": "2. 200m — 4×50 tecnica e respirazione, rec 15s"
+        },
+        {
+          "step": 3,
+          "metres": 1800,
+          "prescription": "3. 1800m — 2×900 endurance RPE3, rec 40s mantenendo gesture stabile"
+        },
+        {
+          "step": 4,
+          "metres": 200,
+          "prescription": "4. 200m — 2×100 sciolti, rec 15s"
+        },
+        {
+          "step": 5,
+          "metres": 100,
+          "prescription": "5. 100m — defaticamento"
+        }
+      ],
+      "source_heading": "SW | SW C | 2700m, planned 60' candidato"
+    },
+    {
+      "week": 8,
+      "day": "MAR",
+      "declared_metres": 2300,
+      "interval_sum_m": 2300,
+      "checksum_ok": true,
+      "segments": [
+        {
+          "step": 1,
+          "metres": 300,
+          "prescription": "1. 300m — facili e cambio presa"
+        },
+        {
+          "step": 2,
+          "metres": 300,
+          "prescription": "2. 300m — 6×50 (25 tecnica/25 intero), rec 15s"
+        },
+        {
+          "step": 3,
+          "metres": 1200,
+          "prescription": "3. 1200m — 4×300 aerobici RPE3, rec 25s; ultimo 100 per gruppo confronto stroke count"
+        },
+        {
+          "step": 4,
+          "metres": 400,
+          "prescription": "4. 400m — 4×100 completo scorrevole rec 15s"
+        },
+        {
+          "step": 5,
+          "metres": 100,
+          "prescription": "5. 100m — sciolti"
+        }
+      ],
+      "source_heading": "SW | SW A | 2300m, planned 50' candidato"
+    },
+    {
+      "week": 8,
+      "day": "MER",
+      "declared_metres": 2300,
+      "interval_sum_m": 2300,
+      "checksum_ok": true,
+      "segments": [
+        {
+          "step": 1,
+          "metres": 300,
+          "prescription": "1. 300m — ingresso facile"
+        },
+        {
+          "step": 2,
+          "metres": 200,
+          "prescription": "2. 200m — 4×50 tecnica presa e respirazione, rec 15s"
+        },
+        {
+          "step": 3,
+          "metres": 800,
+          "prescription": "3. 800m — 8×100 ritmo AEROBICO comparabile RPE3–4, rec 20s, registrare passo medio e deviazione senza massimale"
+        },
+        {
+          "step": 4,
+          "metres": 800,
+          "prescription": "4. 800m — 4×200 uniformi facili, rec 20s"
+        },
+        {
+          "step": 5,
+          "metres": 200,
+          "prescription": "5. 200m — sciolti"
+        }
+      ],
+      "source_heading": "SW | SW B | 2300m, planned 50' candidato"
+    },
+    {
+      "week": 8,
+      "day": "VEN",
+      "declared_metres": 2300,
+      "interval_sum_m": 2300,
+      "checksum_ok": true,
+      "segments": [
+        {
+          "step": 1,
+          "metres": 300,
+          "prescription": "1. 300m — avvio"
+        },
+        {
+          "step": 2,
+          "metres": 200,
+          "prescription": "2. 200m — 4×50 tecnica, rec 15s"
+        },
+        {
+          "step": 3,
+          "metres": 1400,
+          "prescription": "3. 1400m — 2×700 RPE3, rec 35–45s senza deriva tecnica"
+        },
+        {
+          "step": 4,
+          "metres": 300,
+          "prescription": "4. 300m — 2×150 completi, rec 20s"
+        },
+        {
+          "step": 5,
+          "metres": 100,
+          "prescription": "5. 100m — sciolti"
+        }
+      ],
+      "source_heading": "SW | SW C | 2300m, planned 50' candidato"
+    },
+    {
+      "week": 9,
+      "day": "MAR",
+      "declared_metres": 2700,
+      "interval_sum_m": 2700,
+      "checksum_ok": true,
+      "segments": [
+        {
+          "step": 1,
+          "metres": 400,
+          "prescription": "1. 400m — facili"
+        },
+        {
+          "step": 2,
+          "metres": 300,
+          "prescription": "2. 300m — 6×50 controllo presa e nuotata completa, rec 15s"
+        },
+        {
+          "step": 3,
+          "metres": 1600,
+          "prescription": "3. 1600m — 4×400 endurance RPE3, rec 30s"
+        },
+        {
+          "step": 4,
+          "metres": 200,
+          "prescription": "4. 200m — 2×100 completi, rec 15s"
+        },
+        {
+          "step": 5,
+          "metres": 200,
+          "prescription": "5. 200m — sciolti"
+        }
+      ],
+      "source_heading": "SW | SW A | 2700m, planned 60' candidato"
+    },
+    {
+      "week": 9,
+      "day": "MER",
+      "declared_metres": 2700,
+      "interval_sum_m": 2700,
+      "checksum_ok": true,
+      "segments": [
+        {
+          "step": 1,
+          "metres": 400,
+          "prescription": "1. 400m — progressivi facili"
+        },
+        {
+          "step": 2,
+          "metres": 300,
+          "prescription": "2. 300m — 6×50 drill/nuoto completo, rec 15s"
+        },
+        {
+          "step": 3,
+          "metres": 1200,
+          "prescription": "3. 1200m — 12×100: 3 facili +1 controllo ritmo vicino CSS+5–10s/100m, rec 15–20s; nessuna gara di CSS"
+        },
+        {
+          "step": 4,
+          "metres": 600,
+          "prescription": "4. 600m — 4×150 facili, rec 20s"
+        },
+        {
+          "step": 5,
+          "metres": 200,
+          "prescription": "5. 200m — sciolti"
+        }
+      ],
+      "source_heading": "SW | SW B | 2700m, planned 60' candidato"
+    },
+    {
+      "week": 9,
+      "day": "VEN",
+      "declared_metres": 2700,
+      "interval_sum_m": 2700,
+      "checksum_ok": true,
+      "segments": [
+        {
+          "step": 1,
+          "metres": 400,
+          "prescription": "1. 400m — facili"
+        },
+        {
+          "step": 2,
+          "metres": 200,
+          "prescription": "2. 200m — 4×50 tecnica e respirazione, rec 15s"
+        },
+        {
+          "step": 3,
+          "metres": 1800,
+          "prescription": "3. 1800m — 2×900 endurance RPE3, rec 40s mantenendo gesture stabile"
+        },
+        {
+          "step": 4,
+          "metres": 200,
+          "prescription": "4. 200m — 2×100 sciolti, rec 15s"
+        },
+        {
+          "step": 5,
+          "metres": 100,
+          "prescription": "5. 100m — defaticamento"
+        }
+      ],
+      "source_heading": "SW | SW C | 2700m, planned 60' candidato"
+    },
+    {
+      "week": 10,
+      "day": "MAR",
+      "declared_metres": 2700,
+      "interval_sum_m": 2700,
+      "checksum_ok": true,
+      "segments": [
+        {
+          "step": 1,
+          "metres": 400,
+          "prescription": "1. 400m — facili"
+        },
+        {
+          "step": 2,
+          "metres": 300,
+          "prescription": "2. 300m — 6×50 controllo presa e nuotata completa, rec 15s"
+        },
+        {
+          "step": 3,
+          "metres": 1600,
+          "prescription": "3. 1600m — 4×400 endurance RPE3, rec 30s"
+        },
+        {
+          "step": 4,
+          "metres": 200,
+          "prescription": "4. 200m — 2×100 completi, rec 15s"
+        },
+        {
+          "step": 5,
+          "metres": 200,
+          "prescription": "5. 200m — sciolti"
+        }
+      ],
+      "source_heading": "SW | SW A | 2700m, planned 60' candidato"
+    },
+    {
+      "week": 10,
+      "day": "MER",
+      "declared_metres": 2700,
+      "interval_sum_m": 2700,
+      "checksum_ok": true,
+      "segments": [
+        {
+          "step": 1,
+          "metres": 400,
+          "prescription": "1. 400m — progressivi facili"
+        },
+        {
+          "step": 2,
+          "metres": 300,
+          "prescription": "2. 300m — 6×50 drill/nuoto completo, rec 15s"
+        },
+        {
+          "step": 3,
+          "metres": 1200,
+          "prescription": "3. 1200m — 12×100 in 3 gruppi: 3 facili e 1 steady RPE4; rec 15–20s, 40s fra gruppi"
+        },
+        {
+          "step": 4,
+          "metres": 600,
+          "prescription": "4. 600m — 4×150 facili, rec 20s"
+        },
+        {
+          "step": 5,
+          "metres": 200,
+          "prescription": "5. 200m — sciolti"
+        }
+      ],
+      "source_heading": "SW | SW B | 2700m, planned 60' candidato"
+    },
+    {
+      "week": 10,
+      "day": "VEN",
+      "declared_metres": 2700,
+      "interval_sum_m": 2700,
+      "checksum_ok": true,
+      "segments": [
+        {
+          "step": 1,
+          "metres": 400,
+          "prescription": "1. 400m — facili"
+        },
+        {
+          "step": 2,
+          "metres": 200,
+          "prescription": "2. 200m — 4×50 tecnica e respirazione, rec 15s"
+        },
+        {
+          "step": 3,
+          "metres": 1800,
+          "prescription": "3. 1800m — 2×900 endurance RPE3, rec 40s mantenendo gesture stabile"
+        },
+        {
+          "step": 4,
+          "metres": 200,
+          "prescription": "4. 200m — 2×100 sciolti, rec 15s"
+        },
+        {
+          "step": 5,
+          "metres": 100,
+          "prescription": "5. 100m — defaticamento"
+        }
+      ],
+      "source_heading": "SW | SW C | 2700m, planned 60' candidato"
+    },
+    {
+      "week": 11,
+      "day": "MAR",
+      "declared_metres": 2700,
+      "interval_sum_m": 2700,
+      "checksum_ok": true,
+      "segments": [
+        {
+          "step": 1,
+          "metres": 400,
+          "prescription": "1. 400m — facili"
+        },
+        {
+          "step": 2,
+          "metres": 300,
+          "prescription": "2. 300m — 6×50 controllo presa e nuotata completa, rec 15s"
+        },
+        {
+          "step": 3,
+          "metres": 1600,
+          "prescription": "3. 1600m — 4×400 endurance RPE3, rec 30s"
+        },
+        {
+          "step": 4,
+          "metres": 200,
+          "prescription": "4. 200m — 2×100 completi, rec 15s"
+        },
+        {
+          "step": 5,
+          "metres": 200,
+          "prescription": "5. 200m — sciolti"
+        }
+      ],
+      "source_heading": "SW | SW A | 2700m, planned 60' candidato"
+    },
+    {
+      "week": 11,
+      "day": "MER",
+      "declared_metres": 2700,
+      "interval_sum_m": 2700,
+      "checksum_ok": true,
+      "segments": [
+        {
+          "step": 1,
+          "metres": 400,
+          "prescription": "1. 400m — progressivi facili"
+        },
+        {
+          "step": 2,
+          "metres": 300,
+          "prescription": "2. 300m — 6×50 drill/nuoto completo, rec 15s"
+        },
+        {
+          "step": 3,
+          "metres": 1200,
+          "prescription": "3. 1200m — 12×100 in 3 gruppi: 3 facili e 1 steady RPE4; rec 15–20s, 40s fra gruppi"
+        },
+        {
+          "step": 4,
+          "metres": 600,
+          "prescription": "4. 600m — 4×150 facili, rec 20s"
+        },
+        {
+          "step": 5,
+          "metres": 200,
+          "prescription": "5. 200m — sciolti"
+        }
+      ],
+      "source_heading": "SW | SW B | 2700m, planned 60' candidato"
+    },
+    {
+      "week": 11,
+      "day": "VEN",
+      "declared_metres": 2700,
+      "interval_sum_m": 2700,
+      "checksum_ok": true,
+      "segments": [
+        {
+          "step": 1,
+          "metres": 400,
+          "prescription": "1. 400m — facili"
+        },
+        {
+          "step": 2,
+          "metres": 200,
+          "prescription": "2. 200m — 4×50 tecnica e respirazione, rec 15s"
+        },
+        {
+          "step": 3,
+          "metres": 1800,
+          "prescription": "3. 1800m — 2×900 endurance RPE3, rec 40s mantenendo gesture stabile"
+        },
+        {
+          "step": 4,
+          "metres": 200,
+          "prescription": "4. 200m — 2×100 sciolti, rec 15s"
+        },
+        {
+          "step": 5,
+          "metres": 100,
+          "prescription": "5. 100m — defaticamento"
+        }
+      ],
+      "source_heading": "SW | SW C | 2700m, planned 60' candidato"
+    },
+    {
+      "week": 12,
+      "day": "MAR",
+      "declared_metres": 2300,
+      "interval_sum_m": 2300,
+      "checksum_ok": true,
+      "segments": [
+        {
+          "step": 1,
+          "metres": 300,
+          "prescription": "1. 300m — facili e cambio presa"
+        },
+        {
+          "step": 2,
+          "metres": 300,
+          "prescription": "2. 300m — 6×50 (25 tecnica/25 intero), rec 15s"
+        },
+        {
+          "step": 3,
+          "metres": 1200,
+          "prescription": "3. 1200m — 4×300 aerobici RPE3, rec 25s; ultimo 100 per gruppo confronto stroke count"
+        },
+        {
+          "step": 4,
+          "metres": 400,
+          "prescription": "4. 400m — 4×100 completo scorrevole rec 15s"
+        },
+        {
+          "step": 5,
+          "metres": 100,
+          "prescription": "5. 100m — sciolti"
+        }
+      ],
+      "source_heading": "SW | SW A | 2300m, planned 50' candidato"
+    },
+    {
+      "week": 12,
+      "day": "MER",
+      "declared_metres": 2300,
+      "interval_sum_m": 2300,
+      "checksum_ok": true,
+      "segments": [
+        {
+          "step": 1,
+          "metres": 300,
+          "prescription": "1. 300m — ingresso facile"
+        },
+        {
+          "step": 2,
+          "metres": 200,
+          "prescription": "2. 200m — 4×50 tecnica presa e respirazione, rec 15s"
+        },
+        {
+          "step": 3,
+          "metres": 800,
+          "prescription": "3. 800m — 8×100 RPE3–4 con 2 su 8 leggermente sostenuti solo se pronti; rec 15–20s"
+        },
+        {
+          "step": 4,
+          "metres": 800,
+          "prescription": "4. 800m — 4×200 uniformi facili, rec 20s"
+        },
+        {
+          "step": 5,
+          "metres": 200,
+          "prescription": "5. 200m — sciolti"
+        }
+      ],
+      "source_heading": "SW | SW B | 2300m, planned 50' candidato"
+    },
+    {
+      "week": 12,
+      "day": "VEN",
+      "declared_metres": 2300,
+      "interval_sum_m": 2300,
+      "checksum_ok": true,
+      "segments": [
+        {
+          "step": 1,
+          "metres": 300,
+          "prescription": "1. 300m — avvio"
+        },
+        {
+          "step": 2,
+          "metres": 200,
+          "prescription": "2. 200m — 4×50 tecnica, rec 15s"
+        },
+        {
+          "step": 3,
+          "metres": 1400,
+          "prescription": "3. 1400m — 2×700 RPE3, rec 35–45s senza deriva tecnica"
+        },
+        {
+          "step": 4,
+          "metres": 300,
+          "prescription": "4. 300m — 2×150 completi, rec 20s"
+        },
+        {
+          "step": 5,
+          "metres": 100,
+          "prescription": "5. 100m — sciolti"
+        }
+      ],
+      "source_heading": "SW | SW C | 2300m, planned 50' candidato"
+    },
+    {
+      "week": 13,
+      "day": "MAR",
+      "declared_metres": 2900,
+      "interval_sum_m": 2900,
+      "checksum_ok": true,
+      "segments": [
+        {
+          "step": 1,
+          "metres": 400,
+          "prescription": "1) 400m avvio facile"
+        },
+        {
+          "step": 2,
+          "metres": 300,
+          "prescription": "2) 300m 6x50 tecnica e riscontro sul completo, 15s rec"
+        },
+        {
+          "step": 3,
+          "metres": 1600,
+          "prescription": "3) 1600m 4x400 fondo facile RPE3, 30s rec"
+        },
+        {
+          "step": 4,
+          "metres": 400,
+          "prescription": "4) 400m 4x100 completo, 15s rec"
+        },
+        {
+          "step": 5,
+          "metres": 200,
+          "prescription": "5) 200m sciolto"
+        }
+      ],
+      "source_heading": "SW | Tecnica/economia, presa e assetto | 2900m, planned 60' DA VALIDARE"
+    },
+    {
+      "week": 13,
+      "day": "MER",
+      "declared_metres": 2900,
+      "interval_sum_m": 2900,
+      "checksum_ok": true,
+      "segments": [
+        {
+          "step": 1,
+          "metres": 400,
+          "prescription": "1) 400m avvio"
+        },
+        {
+          "step": 2,
+          "metres": 300,
+          "prescription": "2) 300m 6x50 tecnica, rec 15s"
+        },
+        {
+          "step": 3,
+          "metres": 1200,
+          "prescription": "3) 1200m 3x(4x100) ritmo controllato; solo 1x100 per gruppo vicino CSS se non altera presa; 20s rec, 40s gruppi"
+        },
+        {
+          "step": 4,
+          "metres": 800,
+          "prescription": "4) 800m 4x200 RPE3, 25s rec"
+        },
+        {
+          "step": 5,
+          "metres": 200,
+          "prescription": "5) 200m sciolti"
+        }
+      ],
+      "source_heading": "SW | Ritmo nuoto controllato e tecnica sotto fatica | 2900m, planned 60' DA VALIDARE"
+    },
+    {
+      "week": 13,
+      "day": "VEN",
+      "declared_metres": 2800,
+      "interval_sum_m": 2800,
+      "checksum_ok": true,
+      "segments": [
+        {
+          "step": 1,
+          "metres": 400,
+          "prescription": "1) 400m avvio"
+        },
+        {
+          "step": 2,
+          "metres": 200,
+          "prescription": "2) 200m 4x50 tecnica, 15s rec"
+        },
+        {
+          "step": 3,
+          "metres": 1800,
+          "prescription": "3) 1800m 3x600 RPE3, rec 35s, mantenere gesto"
+        },
+        {
+          "step": 4,
+          "metres": 200,
+          "prescription": "4) 200m 2x100 facili, rec 15s"
+        },
+        {
+          "step": 5,
+          "metres": 200,
+          "prescription": "5) 200m defaticamento"
+        }
+      ],
+      "source_heading": "SW | Endurance tecnica, durata della bracciata | 2800m, planned 60' DA VALIDARE"
+    },
+    {
+      "week": 14,
+      "day": "MAR",
+      "declared_metres": 3000,
+      "interval_sum_m": 3000,
+      "checksum_ok": true,
+      "segments": [
+        {
+          "step": 1,
+          "metres": 400,
+          "prescription": "1) 400m avvio facile"
+        },
+        {
+          "step": 2,
+          "metres": 300,
+          "prescription": "2) 300m 6x50 tecnica, 15s rec (pinnette corte facoltative 2x50)"
+        },
+        {
+          "step": 3,
+          "metres": 1500,
+          "prescription": "3) 1500m 3x500 regolari RPE3–4, 35s rec"
+        },
+        {
+          "step": 4,
+          "metres": 600,
+          "prescription": "4) 600m 6x100 nuoto completo (2x100 pull facoltativo), 15s rec"
+        },
+        {
+          "step": 5,
+          "metres": 200,
+          "prescription": "5) 200m sciolti"
+        }
+      ],
+      "source_heading": "SW | Tecnica/economia, presa e assetto | 3000m, planned 65' DA VALIDARE"
+    },
+    {
+      "week": 14,
+      "day": "MER",
+      "declared_metres": 2900,
+      "interval_sum_m": 2900,
+      "checksum_ok": true,
+      "segments": [
+        {
+          "step": 1,
+          "metres": 400,
+          "prescription": "1) 400m avvio"
+        },
+        {
+          "step": 2,
+          "metres": 300,
+          "prescription": "2) 300m 6x50 tecnica, rec 15s"
+        },
+        {
+          "step": 3,
+          "metres": 1200,
+          "prescription": "3) 1200m 3x(4x100) ritmo controllato; solo 1x100 per gruppo vicino CSS se non altera presa; 20s rec, 40s gruppi"
+        },
+        {
+          "step": 4,
+          "metres": 800,
+          "prescription": "4) 800m 4x200 RPE3, 25s rec"
+        },
+        {
+          "step": 5,
+          "metres": 200,
+          "prescription": "5) 200m sciolti"
+        }
+      ],
+      "source_heading": "SW | Ritmo nuoto controllato e tecnica sotto fatica | 2900m, planned 60' DA VALIDARE"
+    },
+    {
+      "week": 14,
+      "day": "VEN",
+      "declared_metres": 3100,
+      "interval_sum_m": 3100,
+      "checksum_ok": true,
+      "segments": [
+        {
+          "step": 1,
+          "metres": 300,
+          "prescription": "1) 300m avvio"
+        },
+        {
+          "step": 2,
+          "metres": 200,
+          "prescription": "2) 200m 4x50 tecnica, 15s rec"
+        },
+        {
+          "step": 3,
+          "metres": 1800,
+          "prescription": "3) 1800m 3x600 RPE3, rec 35s"
+        },
+        {
+          "step": 4,
+          "metres": 600,
+          "prescription": "4) 600m 4x150 completi, 20s rec"
+        },
+        {
+          "step": 5,
+          "metres": 200,
+          "prescription": "5) 200m sciolti"
+        }
+      ],
+      "source_heading": "SW | Endurance tecnica, durata della bracciata | 3100m, planned 65' DA VALIDARE"
+    },
+    {
+      "week": 15,
+      "day": "MAR",
+      "declared_metres": 3000,
+      "interval_sum_m": 3000,
+      "checksum_ok": true,
+      "segments": [
+        {
+          "step": 1,
+          "metres": 400,
+          "prescription": "1) 400m avvio facile"
+        },
+        {
+          "step": 2,
+          "metres": 300,
+          "prescription": "2) 300m 6x50 tecnica, 15s rec (pinnette corte facoltative 2x50)"
+        },
+        {
+          "step": 3,
+          "metres": 1500,
+          "prescription": "3) 1500m 3x500 regolari RPE3–4, 35s rec"
+        },
+        {
+          "step": 4,
+          "metres": 600,
+          "prescription": "4) 600m 6x100 nuoto completo (2x100 pull facoltativo), 15s rec"
+        },
+        {
+          "step": 5,
+          "metres": 200,
+          "prescription": "5) 200m sciolti"
+        }
+      ],
+      "source_heading": "SW | Tecnica/economia, presa e assetto | 3000m, planned 65' DA VALIDARE"
+    },
+    {
+      "week": 15,
+      "day": "MER",
+      "declared_metres": 3100,
+      "interval_sum_m": 3100,
+      "checksum_ok": true,
+      "segments": [
+        {
+          "step": 1,
+          "metres": 400,
+          "prescription": "1) 400m avvio"
+        },
+        {
+          "step": 2,
+          "metres": 300,
+          "prescription": "2) 300m 6x50 tecnica, rec 15s"
+        },
+        {
+          "step": 3,
+          "metres": 1600,
+          "prescription": "3) 1600m 4x(4x100) SOLO aerobici RPE3, niente CSS obbligatorio; 15s rec"
+        },
+        {
+          "step": 4,
+          "metres": 600,
+          "prescription": "4) 600m 3x200 facili, 25s rec"
+        },
+        {
+          "step": 5,
+          "metres": 200,
+          "prescription": "5) 200m sciolti"
+        }
+      ],
+      "source_heading": "SW | Ritmo nuoto controllato e tecnica sotto fatica | 3100m, planned 65' DA VALIDARE"
+    },
+    {
+      "week": 15,
+      "day": "VEN",
+      "declared_metres": 3100,
+      "interval_sum_m": 3100,
+      "checksum_ok": true,
+      "segments": [
+        {
+          "step": 1,
+          "metres": 300,
+          "prescription": "1) 300m avvio"
+        },
+        {
+          "step": 2,
+          "metres": 200,
+          "prescription": "2) 200m 4x50 tecnica, 15s rec"
+        },
+        {
+          "step": 3,
+          "metres": 1800,
+          "prescription": "3) 1800m 3x600 RPE3, rec 35s"
+        },
+        {
+          "step": 4,
+          "metres": 600,
+          "prescription": "4) 600m 4x150 completi, 20s rec"
+        },
+        {
+          "step": 5,
+          "metres": 200,
+          "prescription": "5) 200m sciolti"
+        }
+      ],
+      "source_heading": "SW | Endurance tecnica, durata della bracciata | 3100m, planned 65' DA VALIDARE"
+    },
+    {
+      "week": 16,
+      "day": "MAR",
+      "declared_metres": 2600,
+      "interval_sum_m": 2600,
+      "checksum_ok": true,
+      "segments": [
+        {
+          "step": 1,
+          "metres": 300,
+          "prescription": "1) 300m avvio"
+        },
+        {
+          "step": 2,
+          "metres": 300,
+          "prescription": "2) 300m 6x50 tecnica 25/25, 15s rec"
+        },
+        {
+          "step": 3,
+          "metres": 1200,
+          "prescription": "3) 1200m 3x400 aerobici RPE3, 30s rec"
+        },
+        {
+          "step": 4,
+          "metres": 600,
+          "prescription": "4) 600m 6x100 nuoto completo, 15s rec"
+        },
+        {
+          "step": 5,
+          "metres": 200,
+          "prescription": "5) 200m defaticamento"
+        }
+      ],
+      "source_heading": "SW | Tecnica/economia, presa e assetto | 2600m, planned 55' DA VALIDARE"
+    },
+    {
+      "week": 16,
+      "day": "MER",
+      "declared_metres": 2400,
+      "interval_sum_m": 2400,
+      "checksum_ok": true,
+      "segments": [
+        {
+          "step": 1,
+          "metres": 300,
+          "prescription": "1) 300m avvio"
+        },
+        {
+          "step": 2,
+          "metres": 300,
+          "prescription": "2) 300m 6x50 tecnica, rec 15s"
+        },
+        {
+          "step": 3,
+          "metres": 800,
+          "prescription": "3) 800m 2x(4x100) tra CSS+5–10s/100m e CSS SOLO se recuperato; 20s rec, 60s fra serie"
+        },
+        {
+          "step": 4,
+          "metres": 800,
+          "prescription": "4) 800m 4x200 facili RPE3, 25s rec"
+        },
+        {
+          "step": 5,
+          "metres": 200,
+          "prescription": "5) 200m sciolti"
+        }
+      ],
+      "source_heading": "SW | Richiamo B1/CSS condizionato nello scarico | 2400m, planned 55' DA VALIDARE"
+    },
+    {
+      "week": 16,
+      "day": "VEN",
+      "declared_metres": 2500,
+      "interval_sum_m": 2500,
+      "checksum_ok": true,
+      "segments": [
+        {
+          "step": 1,
+          "metres": 300,
+          "prescription": "1) 300m avvio"
+        },
+        {
+          "step": 2,
+          "metres": 200,
+          "prescription": "2) 200m 4x50 tecnica, rec 15s"
+        },
+        {
+          "step": 3,
+          "metres": 1500,
+          "prescription": "3) 1500m 2x750 RPE3, 40s rec"
+        },
+        {
+          "step": 4,
+          "metres": 400,
+          "prescription": "4) 400m 4x100 facile, 15s rec"
+        },
+        {
+          "step": 5,
+          "metres": 100,
+          "prescription": "5) 100m sciolti"
+        }
+      ],
+      "source_heading": "SW | Endurance tecnica, durata della bracciata | 2500m, planned 55' DA VALIDARE"
+    },
+    {
+      "week": 17,
+      "day": "MAR",
+      "declared_metres": 3000,
+      "interval_sum_m": 3000,
+      "checksum_ok": true,
+      "segments": [
+        {
+          "step": 1,
+          "metres": 400,
+          "prescription": "1) 400m avvio facile"
+        },
+        {
+          "step": 2,
+          "metres": 300,
+          "prescription": "2) 300m 6x50 tecnica, 15s rec (pinnette corte facoltative 2x50)"
+        },
+        {
+          "step": 3,
+          "metres": 1500,
+          "prescription": "3) 1500m 3x500 regolari RPE3–4, 35s rec"
+        },
+        {
+          "step": 4,
+          "metres": 600,
+          "prescription": "4) 600m 6x100 nuoto completo (2x100 pull facoltativo), 15s rec"
+        },
+        {
+          "step": 5,
+          "metres": 200,
+          "prescription": "5) 200m sciolti"
+        }
+      ],
+      "source_heading": "SW | Tecnica/economia, presa e assetto | 3000m, planned 65' DA VALIDARE"
+    },
+    {
+      "week": 17,
+      "day": "MER",
+      "declared_metres": 3100,
+      "interval_sum_m": 3100,
+      "checksum_ok": true,
+      "segments": [
+        {
+          "step": 1,
+          "metres": 400,
+          "prescription": "1) 400m avvio"
+        },
+        {
+          "step": 2,
+          "metres": 300,
+          "prescription": "2) 300m 6x50 tecnica, rec 15s"
+        },
+        {
+          "step": 3,
+          "metres": 1600,
+          "prescription": "3) 1600m 4x(4x100): 3 facili +1 a ritmo IM swim controllato, 15s rec/40s gruppi"
+        },
+        {
+          "step": 4,
+          "metres": 600,
+          "prescription": "4) 600m 3x200 facili, 25s rec"
+        },
+        {
+          "step": 5,
+          "metres": 200,
+          "prescription": "5) 200m sciolti"
+        }
+      ],
+      "source_heading": "SW | Ritmo nuoto controllato e tecnica sotto fatica | 3100m, planned 65' DA VALIDARE"
+    },
+    {
+      "week": 17,
+      "day": "VEN",
+      "declared_metres": 3100,
+      "interval_sum_m": 3100,
+      "checksum_ok": true,
+      "segments": [
+        {
+          "step": 1,
+          "metres": 300,
+          "prescription": "1) 300m avvio"
+        },
+        {
+          "step": 2,
+          "metres": 200,
+          "prescription": "2) 200m 4x50 tecnica, 15s rec"
+        },
+        {
+          "step": 3,
+          "metres": 1800,
+          "prescription": "3) 1800m 3x600 RPE3, rec 35s"
+        },
+        {
+          "step": 4,
+          "metres": 600,
+          "prescription": "4) 600m 4x150 completi, 20s rec"
+        },
+        {
+          "step": 5,
+          "metres": 200,
+          "prescription": "5) 200m sciolti"
+        }
+      ],
+      "source_heading": "SW | Endurance tecnica, durata della bracciata | 3100m, planned 65' DA VALIDARE"
+    },
+    {
+      "week": 18,
+      "day": "MAR",
+      "declared_metres": 3000,
+      "interval_sum_m": 3000,
+      "checksum_ok": true,
+      "segments": [
+        {
+          "step": 1,
+          "metres": 400,
+          "prescription": "1) 400m avvio facile"
+        },
+        {
+          "step": 2,
+          "metres": 300,
+          "prescription": "2) 300m 6x50 tecnica, 15s rec (pinnette corte facoltative 2x50)"
+        },
+        {
+          "step": 3,
+          "metres": 1500,
+          "prescription": "3) 1500m 3x500 regolari RPE3–4, 35s rec"
+        },
+        {
+          "step": 4,
+          "metres": 600,
+          "prescription": "4) 600m 6x100 nuoto completo (2x100 pull facoltativo), 15s rec"
+        },
+        {
+          "step": 5,
+          "metres": 200,
+          "prescription": "5) 200m sciolti"
+        }
+      ],
+      "source_heading": "SW | Tecnica/economia, presa e assetto | 3000m, planned 65' DA VALIDARE"
+    },
+    {
+      "week": 18,
+      "day": "MER",
+      "declared_metres": 2900,
+      "interval_sum_m": 2900,
+      "checksum_ok": true,
+      "segments": [
+        {
+          "step": 1,
+          "metres": 400,
+          "prescription": "1) 400m avvio"
+        },
+        {
+          "step": 2,
+          "metres": 300,
+          "prescription": "2) 300m 6x50 tecnica, rec 15s"
+        },
+        {
+          "step": 3,
+          "metres": 1200,
+          "prescription": "3) 1200m 3x(4x100) ritmo controllato; solo 1x100 per gruppo vicino CSS se non altera presa; 20s rec, 40s gruppi"
+        },
+        {
+          "step": 4,
+          "metres": 800,
+          "prescription": "4) 800m 4x200 RPE3, 25s rec"
+        },
+        {
+          "step": 5,
+          "metres": 200,
+          "prescription": "5) 200m sciolti"
+        }
+      ],
+      "source_heading": "SW | Ritmo nuoto controllato e tecnica sotto fatica | 2900m, planned 60' DA VALIDARE"
+    },
+    {
+      "week": 18,
+      "day": "VEN",
+      "declared_metres": 3100,
+      "interval_sum_m": 3100,
+      "checksum_ok": true,
+      "segments": [
+        {
+          "step": 1,
+          "metres": 300,
+          "prescription": "1) 300m avvio"
+        },
+        {
+          "step": 2,
+          "metres": 200,
+          "prescription": "2) 200m 4x50 tecnica, 15s rec"
+        },
+        {
+          "step": 3,
+          "metres": 1800,
+          "prescription": "3) 1800m 3x600 RPE3, rec 35s"
+        },
+        {
+          "step": 4,
+          "metres": 600,
+          "prescription": "4) 600m 4x150 completi, 20s rec"
+        },
+        {
+          "step": 5,
+          "metres": 200,
+          "prescription": "5) 200m sciolti"
+        }
+      ],
+      "source_heading": "SW | Endurance tecnica, durata della bracciata | 3100m, planned 65' DA VALIDARE"
+    },
+    {
+      "week": 19,
+      "day": "MAR",
+      "declared_metres": 2900,
+      "interval_sum_m": 2900,
+      "checksum_ok": true,
+      "segments": [
+        {
+          "step": 1,
+          "metres": 400,
+          "prescription": "1) 400 m facili"
+        },
+        {
+          "step": 2,
+          "metres": 300,
+          "prescription": "2) 6×50 m tecnica (25 drill + 25 nuoto completo), rec 15–20 s"
+        },
+        {
+          "step": 3,
+          "metres": 1600,
+          "prescription": "3) 8×200 m ritmo aerobico RPE 3–4, rec 20 s"
+        },
+        {
+          "step": 4,
+          "metres": 400,
+          "prescription": "4) 4×100 m nuoto completo, controllo numero bracciate, rec 15 s"
+        },
+        {
+          "step": 5,
+          "metres": 200,
+          "prescription": "5) 200 m sciolti"
+        }
+      ],
+      "source_heading": "SWA | 65' planned | 2900 m CANDIDATI"
+    },
+    {
+      "week": 19,
+      "day": "MER",
+      "declared_metres": 2900,
+      "interval_sum_m": 2900,
+      "checksum_ok": true,
+      "segments": [
+        {
+          "step": 1,
+          "metres": 400,
+          "prescription": "1) 400 m progressivi facili"
+        },
+        {
+          "step": 2,
+          "metres": 300,
+          "prescription": "2) 6×50 m tecnica presa/respirazione, rec 15 s"
+        },
+        {
+          "step": 3,
+          "metres": 1200,
+          "prescription": "3) 4×(3×100 m): i primi 2 a ritmo controllato intorno a CSS +5–10 s/100 m, terzo a CSS solo se sciolto; 15 s fra 100, 40 s fra terne"
+        },
+        {
+          "step": 4,
+          "metres": 800,
+          "prescription": "4) 4×200 m aerobici facili, rec 20 s"
+        },
+        {
+          "step": 5,
+          "metres": 200,
+          "prescription": "5) 200 m sciolti"
+        }
+      ],
+      "source_heading": "SWB | 65' planned | 2900 m CANDIDATI"
+    },
+    {
+      "week": 19,
+      "day": "VEN",
+      "declared_metres": 2900,
+      "interval_sum_m": 2900,
+      "checksum_ok": true,
+      "segments": [
+        {
+          "step": 1,
+          "metres": 300,
+          "prescription": "1) 300 m facili"
+        },
+        {
+          "step": 2,
+          "metres": 200,
+          "prescription": "2) 4×50 m assetto e respirazione, rec 15 s"
+        },
+        {
+          "step": 3,
+          "metres": 1800,
+          "prescription": "3) 3×600 m controllati RPE 3–4, rec 30–40 s; ultimo con tecnica invariata"
+        },
+        {
+          "step": 4,
+          "metres": 400,
+          "prescription": "4) 4×100 m facili alternando 100 m nuoto completo/100 m pull buoy senza palette, rec 15 s"
+        },
+        {
+          "step": 5,
+          "metres": 200,
+          "prescription": "5) 200 m sciolti"
+        }
+      ],
+      "source_heading": "SWC | 65' planned | 2900 m CANDIDATI"
+    },
+    {
+      "week": 20,
+      "day": "MAR",
+      "declared_metres": 2600,
+      "interval_sum_m": 2600,
+      "checksum_ok": true,
+      "segments": [
+        {
+          "step": 1,
+          "metres": 300,
+          "prescription": "1) 300 m facili"
+        },
+        {
+          "step": 2,
+          "metres": 300,
+          "prescription": "2) 6×50 m tecnica (25 drill + 25 completo), rec 15 s"
+        },
+        {
+          "step": 3,
+          "metres": 1200,
+          "prescription": "3) 6×200 m controllo assetto RPE 3–4, rec 20 s"
+        },
+        {
+          "step": 4,
+          "metres": 600,
+          "prescription": "4) 6×100 m rilassati, rec 15 s"
+        },
+        {
+          "step": 5,
+          "metres": 200,
+          "prescription": "5) 200 m sciolti"
+        }
+      ],
+      "source_heading": "SWA | 60' planned | 2600 m CANDIDATI"
+    },
+    {
+      "week": 20,
+      "day": "MER",
+      "declared_metres": 2700,
+      "interval_sum_m": 2700,
+      "checksum_ok": true,
+      "segments": [
+        {
+          "step": 1,
+          "metres": 300,
+          "prescription": "1) 300 m riscaldamento"
+        },
+        {
+          "step": 2,
+          "metres": 300,
+          "prescription": "2) 6×50 m tecnica, rec 15 s"
+        },
+        {
+          "step": 3,
+          "metres": 900,
+          "prescription": "3) 3×(3×100 m): ritmi prevalentemente CSS +5–10 s/100 m, solo 1×100/terna verso CSS se recuperati; 15–20 s rec, 40 s fra terne"
+        },
+        {
+          "step": 4,
+          "metres": 1000,
+          "prescription": "4) 5×200 m aerobici RPE 3, rec 20 s"
+        },
+        {
+          "step": 5,
+          "metres": 200,
+          "prescription": "5) 200 m sciolti"
+        }
+      ],
+      "source_heading": "SWB | 60' planned | 2700 m CANDIDATI"
+    },
+    {
+      "week": 20,
+      "day": "VEN",
+      "declared_metres": 2600,
+      "interval_sum_m": 2600,
+      "checksum_ok": true,
+      "segments": [
+        {
+          "step": 1,
+          "metres": 300,
+          "prescription": "1) 300 m facili"
+        },
+        {
+          "step": 2,
+          "metres": 200,
+          "prescription": "2) 4×50 m tecnica, rec 15 s"
+        },
+        {
+          "step": 3,
+          "metres": 1400,
+          "prescription": "3) 2×700 m continui RPE 3–4, rec 40 s"
+        },
+        {
+          "step": 4,
+          "metres": 600,
+          "prescription": "4) 4×150 m facili, rec 20 s"
+        },
+        {
+          "step": 5,
+          "metres": 100,
+          "prescription": "5) 100 m sciolti"
+        }
+      ],
+      "source_heading": "SWC | 60' planned | 2600 m CANDIDATI"
+    },
+    {
+      "week": 21,
+      "day": "MAR",
+      "declared_metres": 2900,
+      "interval_sum_m": 2900,
+      "checksum_ok": true,
+      "segments": [
+        {
+          "step": 1,
+          "metres": 400,
+          "prescription": "1) 400 m facili"
+        },
+        {
+          "step": 2,
+          "metres": 300,
+          "prescription": "2) 6×50 m tecnica (25 drill + 25 nuoto completo), rec 15–20 s"
+        },
+        {
+          "step": 3,
+          "metres": 1600,
+          "prescription": "3) 8×200 m ritmo aerobico RPE 3–4, rec 20 s"
+        },
+        {
+          "step": 4,
+          "metres": 400,
+          "prescription": "4) 4×100 m nuoto completo, controllo numero bracciate, rec 15 s"
+        },
+        {
+          "step": 5,
+          "metres": 200,
+          "prescription": "5) 200 m sciolti"
+        }
+      ],
+      "source_heading": "SWA | 65' planned | 2900 m CANDIDATI"
+    },
+    {
+      "week": 21,
+      "day": "MER",
+      "declared_metres": 2900,
+      "interval_sum_m": 2900,
+      "checksum_ok": true,
+      "segments": [
+        {
+          "step": 1,
+          "metres": 400,
+          "prescription": "1) 400 m progressivi facili"
+        },
+        {
+          "step": 2,
+          "metres": 300,
+          "prescription": "2) 6×50 m tecnica presa/respirazione, rec 15 s"
+        },
+        {
+          "step": 3,
+          "metres": 1200,
+          "prescription": "3) 4×(3×100 m): i primi 2 a ritmo controllato intorno a CSS +5–10 s/100 m, terzo a CSS solo se sciolto; 15 s fra 100, 40 s fra terne"
+        },
+        {
+          "step": 4,
+          "metres": 800,
+          "prescription": "4) 4×200 m aerobici facili, rec 20 s"
+        },
+        {
+          "step": 5,
+          "metres": 200,
+          "prescription": "5) 200 m sciolti"
+        }
+      ],
+      "source_heading": "SWB | 65' planned | 2900 m CANDIDATI"
+    },
+    {
+      "week": 21,
+      "day": "VEN",
+      "declared_metres": 2900,
+      "interval_sum_m": 2900,
+      "checksum_ok": true,
+      "segments": [
+        {
+          "step": 1,
+          "metres": 300,
+          "prescription": "1) 300 m facili"
+        },
+        {
+          "step": 2,
+          "metres": 200,
+          "prescription": "2) 4×50 m assetto e respirazione, rec 15 s"
+        },
+        {
+          "step": 3,
+          "metres": 1800,
+          "prescription": "3) 3×600 m controllati RPE 3–4, rec 30–40 s; ultimo con tecnica invariata"
+        },
+        {
+          "step": 4,
+          "metres": 400,
+          "prescription": "4) 4×100 m facili alternando 100 m nuoto completo/100 m pull buoy senza palette, rec 15 s"
+        },
+        {
+          "step": 5,
+          "metres": 200,
+          "prescription": "5) 200 m sciolti"
+        }
+      ],
+      "source_heading": "SWC | 65' planned | 2900 m CANDIDATI"
+    },
+    {
+      "week": 22,
+      "day": "MAR",
+      "declared_metres": 2600,
+      "interval_sum_m": 2600,
+      "checksum_ok": true,
+      "segments": [
+        {
+          "step": 1,
+          "metres": 300,
+          "prescription": "1) 300 m facili"
+        },
+        {
+          "step": 2,
+          "metres": 300,
+          "prescription": "2) 6×50 m (25 tecnica+25 completo), rec 15 s"
+        },
+        {
+          "step": 3,
+          "metres": 1200,
+          "prescription": "3) 6×200 m fondo RPE 3, rec 20 s"
+        },
+        {
+          "step": 4,
+          "metres": 600,
+          "prescription": "4) 6×100 m economia/assetto, rec 15 s"
+        },
+        {
+          "step": 5,
+          "metres": 200,
+          "prescription": "5) 200 m defaticamento"
+        }
+      ],
+      "source_heading": "SW | 60' planned | 2600 m CANDIDATI"
+    },
+    {
+      "week": 22,
+      "day": "MER",
+      "declared_metres": 2700,
+      "interval_sum_m": 2700,
+      "checksum_ok": true,
+      "segments": [
+        {
+          "step": 1,
+          "metres": 300,
+          "prescription": "1) 300 m facili"
+        },
+        {
+          "step": 2,
+          "metres": 300,
+          "prescription": "2) 6×50 m tecnica, rec 15 s"
+        },
+        {
+          "step": 3,
+          "metres": 900,
+          "prescription": "3) 3×(3×100 m), solo i terzi a CSS controllato se pronti, altrimenti tutti CSS+5–10 s/100 m; 15 s/100, 40 s/terna"
+        },
+        {
+          "step": 4,
+          "metres": 1000,
+          "prescription": "4) 5×200 m facili e regolari, rec 20 s"
+        },
+        {
+          "step": 5,
+          "metres": 200,
+          "prescription": "5) 200 m defaticamento"
+        }
+      ],
+      "source_heading": "SW | 60' planned | 2700 m CANDIDATI"
+    },
+    {
+      "week": 22,
+      "day": "VEN",
+      "declared_metres": 2600,
+      "interval_sum_m": 2600,
+      "checksum_ok": true,
+      "segments": [
+        {
+          "step": 1,
+          "metres": 300,
+          "prescription": "1) 300 m facili"
+        },
+        {
+          "step": 2,
+          "metres": 200,
+          "prescription": "2) 4×50 m tecnica, rec 15 s"
+        },
+        {
+          "step": 3,
+          "metres": 1400,
+          "prescription": "3) 2×700 m fondo continuo regolare RPE 3, rec 40 s"
+        },
+        {
+          "step": 4,
+          "metres": 600,
+          "prescription": "4) 4×150 m facile, rec 20 s"
+        },
+        {
+          "step": 5,
+          "metres": 100,
+          "prescription": "5) 100 m sciolto"
+        }
+      ],
+      "source_heading": "SW | 60' planned | 2600 m CANDIDATI"
+    },
+    {
+      "week": 23,
+      "day": "MAR",
+      "declared_metres": 1900,
+      "interval_sum_m": 1900,
+      "checksum_ok": true,
+      "segments": [
+        {
+          "step": 1,
+          "metres": 300,
+          "prescription": "1) 300 m facile"
+        },
+        {
+          "step": 2,
+          "metres": 200,
+          "prescription": "2) 4×50 m esercizi semplici/assetto, rec 15 s"
+        },
+        {
+          "step": 3,
+          "metres": 1200,
+          "prescription": "3) 6×200 m fondo regolare RPE 3, rec 20 s"
+        },
+        {
+          "step": 4,
+          "metres": 200,
+          "prescription": "4) 200 m sciolti"
+        }
+      ],
+      "source_heading": "SW | 45' planned | 1900 m CANDIDATI"
+    },
+    {
+      "week": 23,
+      "day": "MER",
+      "declared_metres": 2000,
+      "interval_sum_m": 2000,
+      "checksum_ok": true,
+      "segments": [
+        {
+          "step": 1,
+          "metres": 300,
+          "prescription": "1) 300 m facile"
+        },
+        {
+          "step": 2,
+          "metres": 200,
+          "prescription": "2) 4×50 m tecnica, rec 15 s"
+        },
+        {
+          "step": 3,
+          "metres": 800,
+          "prescription": "3) 2×(4×100 m): il secondo e quarto di ogni serie vicino a CSS solo se sciolto; rec 20 s, 40 s fra gruppi"
+        },
+        {
+          "step": 4,
+          "metres": 600,
+          "prescription": "4) 4×150 m facile, rec 20 s"
+        },
+        {
+          "step": 5,
+          "metres": 100,
+          "prescription": "5) 100 m sciolti"
+        }
+      ],
+      "source_heading": "SW | 45' planned | 2000 m CANDIDATI"
+    },
+    {
+      "week": 23,
+      "day": "VEN",
+      "declared_metres": 2000,
+      "interval_sum_m": 2000,
+      "checksum_ok": true,
+      "segments": [
+        {
+          "step": 1,
+          "metres": 300,
+          "prescription": "1) 300 m facile"
+        },
+        {
+          "step": 2,
+          "metres": 200,
+          "prescription": "2) 4×50 m respirazione/assetto, rec 15 s"
+        },
+        {
+          "step": 3,
+          "metres": 1000,
+          "prescription": "3) 2×500 m fondo RPE 3, rec 30 s"
+        },
+        {
+          "step": 4,
+          "metres": 400,
+          "prescription": "4) 4×100 m completo e rilassato, rec 15 s"
+        },
+        {
+          "step": 5,
+          "metres": 100,
+          "prescription": "5) 100 m sciolti"
+        }
+      ],
+      "source_heading": "SW | 45' planned | 2000 m CANDIDATI"
+    },
+    {
+      "week": 24,
+      "day": "LUN",
+      "declared_metres": 1200,
+      "interval_sum_m": 1200,
+      "checksum_ok": true,
+      "segments": [
+        {
+          "step": 1,
+          "metres": 200,
+          "prescription": "1) 200 m facili"
+        },
+        {
+          "step": 2,
+          "metres": 200,
+          "prescription": "2) 4×50 m respirazione/assetto, recupero 15 s"
+        },
+        {
+          "step": 3,
+          "metres": 600,
+          "prescription": "3) 6×100 m sciolti, 1–2 brevi accenti a ritmo abituale SOLO se nuotata pulita, rec 15 s"
+        },
+        {
+          "step": 4,
+          "metres": 200,
+          "prescription": "4) 200 m facili"
+        }
+      ],
+      "source_heading": "SW | 30' planned | 1200 m CANDIDATI"
+    },
+    {
+      "week": 24,
+      "day": "MER",
+      "declared_metres": 1200,
+      "interval_sum_m": 1200,
+      "checksum_ok": true,
+      "segments": [
+        {
+          "step": 1,
+          "metres": 200,
+          "prescription": "1) 200 m facili"
+        },
+        {
+          "step": 2,
+          "metres": 200,
+          "prescription": "2) 4×50 m respirazione/assetto, recupero 15 s"
+        },
+        {
+          "step": 3,
+          "metres": 600,
+          "prescription": "3) 6×100 m sciolti, 1–2 brevi accenti a ritmo abituale SOLO se nuotata pulita, rec 15 s"
+        },
+        {
+          "step": 4,
+          "metres": 200,
+          "prescription": "4) 200 m facili"
+        }
+      ],
+      "source_heading": "SW | 30' planned | 1200 m CANDIDATI"
+    }
+  ]
+}

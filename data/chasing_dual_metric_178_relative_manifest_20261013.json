@@ -1,0 +1,2350 @@
+{
+  "scope": "private CHASING Training Plan 685173 only",
+  "canonical_reference": "Google Drive IRONMAN Knowledge Base 00/01/02/03/05/07/27",
+  "identity": "relative_week_day_only",
+  "status": "READ_ONLY_MANIFEST_NO_PROVIDER_WRITES",
+  "bicycle_reference_template_id": 14947342,
+  "bicycle_reference_library_id": 3892601,
+  "run_reference_template_id": 14947472,
+  "run_reference_library_id": 3892602,
+  "date_rule": "date-independent training plan; week 1-24 and day 1-7 only",
+  "blockers": [
+    "First golden template must pass verified native double reading",
+    "Race specific CHASING targets not approved at Advanced level; not interchangeable with Intermediate IF by default",
+    "Test/retest and pre-test recovery must be separately reviewed",
+    "No deletion of shared workout library templates before dependency and usage check"
+  ],
+  "classification_counts": {
+    "EASY_RUNNING": 56,
+    "AERO_DURABILITY": 34,
+    "TEST_PROTOCOL": 4,
+    "QUALITY_FUNCTION_REVIEW": 13,
+    "LONG_ENDURANCE": 16,
+    "RECOVERY": 17,
+    "RACE_SPECIFIC_OPEN": 34,
+    "EASY_BRICK": 1,
+    "TAPER_ACTIVATION": 3
+  },
+  "rows": [
+    {
+      "week": 1,
+      "day": 1,
+      "workout_id": 4000490197,
+      "sport": "Run",
+      "minutes": 55,
+      "title": "Aerobico | 55' fondo facile RPE2-3",
+      "source_library_ids": [
+        14962919
+      ],
+      "status": "PENDING_DUAL_METRIC_QA",
+      "function_class": "EASY_RUNNING"
+    },
+    {
+      "week": 1,
+      "day": 2,
+      "workout_id": 4000489926,
+      "sport": "Bike",
+      "minutes": 95,
+      "title": "Aerobico | 95' endurance sotto LT1 e postura",
+      "source_library_ids": [
+        14962510
+      ],
+      "status": "PENDING_DUAL_METRIC_QA",
+      "function_class": "AERO_DURABILITY"
+    },
+    {
+      "week": 1,
+      "day": 3,
+      "workout_id": 4000490168,
+      "sport": "Run",
+      "minutes": 55,
+      "title": "Test | 5 km - riferimento corsa",
+      "source_library_ids": [
+        14947461
+      ],
+      "status": "PENDING_DUAL_METRIC_QA",
+      "function_class": "TEST_PROTOCOL"
+    },
+    {
+      "week": 1,
+      "day": 4,
+      "workout_id": 4000490118,
+      "sport": "Bike",
+      "minutes": 60,
+      "title": "Test | 20' potenza sostenibile - 60'",
+      "source_library_ids": [
+        14963424
+      ],
+      "status": "PENDING_DUAL_METRIC_QA",
+      "function_class": "TEST_PROTOCOL"
+    },
+    {
+      "week": 1,
+      "day": 4,
+      "workout_id": 4000490146,
+      "sport": "Run",
+      "minutes": 35,
+      "title": "Aerobico | 35' facile senza affaticamento",
+      "source_library_ids": [
+        14962915
+      ],
+      "status": "PENDING_DUAL_METRIC_QA",
+      "function_class": "EASY_RUNNING"
+    },
+    {
+      "week": 1,
+      "day": 6,
+      "workout_id": 4000490183,
+      "sport": "Bike",
+      "minutes": 190,
+      "title": "Lungo | 3h10 endurance sotto LT1 e aero opzionale",
+      "source_library_ids": [
+        14962920
+      ],
+      "status": "PENDING_DUAL_METRIC_QA",
+      "function_class": "AERO_DURABILITY"
+    },
+    {
+      "week": 1,
+      "day": 7,
+      "workout_id": 4000490091,
+      "sport": "Run",
+      "minutes": 65,
+      "title": "Aerobico | 65' fondo facile e tecnica opzionale",
+      "source_library_ids": [
+        14962554
+      ],
+      "status": "PENDING_DUAL_METRIC_QA",
+      "function_class": "EASY_RUNNING"
+    },
+    {
+      "week": 2,
+      "day": 1,
+      "workout_id": 4000490397,
+      "sport": "Run",
+      "minutes": 45,
+      "title": "Aerobico | 45' facile con tecnica opzionale",
+      "source_library_ids": [
+        14963001
+      ],
+      "status": "PENDING_DUAL_METRIC_QA",
+      "function_class": "EASY_RUNNING"
+    },
+    {
+      "week": 2,
+      "day": 2,
+      "workout_id": 4000490236,
+      "sport": "Bike",
+      "minutes": 100,
+      "title": "Aerobico | 100' fondo sotto LT1 e aero facoltativa",
+      "source_library_ids": [
+        14962985
+      ],
+      "status": "PENDING_DUAL_METRIC_QA",
+      "function_class": "AERO_DURABILITY"
+    },
+    {
+      "week": 2,
+      "day": 3,
+      "workout_id": 4000490543,
+      "sport": "Run",
+      "minutes": 35,
+      "title": "Aerobico | 35' facile senza affaticamento",
+      "source_library_ids": [
+        14962915
+      ],
+      "status": "PENDING_DUAL_METRIC_QA",
+      "function_class": "EASY_RUNNING"
+    },
+    {
+      "week": 2,
+      "day": 4,
+      "workout_id": 4000490328,
+      "sport": "Bike",
+      "minutes": 110,
+      "title": "Aerobico | 110' fondo sotto LT1 e aero facoltativa",
+      "source_library_ids": [
+        14962986
+      ],
+      "status": "PENDING_DUAL_METRIC_QA",
+      "function_class": "AERO_DURABILITY"
+    },
+    {
+      "week": 2,
+      "day": 4,
+      "workout_id": 4000490348,
+      "sport": "Run",
+      "minutes": 35,
+      "title": "Aerobico | 35' facile senza affaticamento",
+      "source_library_ids": [
+        14962915
+      ],
+      "status": "PENDING_DUAL_METRIC_QA",
+      "function_class": "EASY_RUNNING"
+    },
+    {
+      "week": 2,
+      "day": 6,
+      "workout_id": 4000490450,
+      "sport": "Bike",
+      "minutes": 215,
+      "title": "Lungo | 3h35 fondo sotto LT1 e aero facoltativa",
+      "source_library_ids": [
+        14962987
+      ],
+      "status": "PENDING_DUAL_METRIC_QA",
+      "function_class": "AERO_DURABILITY"
+    },
+    {
+      "week": 2,
+      "day": 7,
+      "workout_id": 4000490280,
+      "sport": "Run",
+      "minutes": 75,
+      "title": "Aerobico | 75' fondo facile e tecnica opzionale",
+      "source_library_ids": [
+        14962999
+      ],
+      "status": "PENDING_DUAL_METRIC_QA",
+      "function_class": "EASY_RUNNING"
+    },
+    {
+      "week": 3,
+      "day": 1,
+      "workout_id": 4000591556,
+      "sport": "Run",
+      "minutes": 35,
+      "title": "Aerobico | 35' facile senza affaticamento",
+      "source_library_ids": [
+        14962915
+      ],
+      "status": "PENDING_DUAL_METRIC_QA",
+      "function_class": "EASY_RUNNING"
+    },
+    {
+      "week": 3,
+      "day": 2,
+      "workout_id": 4000591468,
+      "sport": "Bike",
+      "minutes": 115,
+      "title": "Aerobico | 115' endurance sotto LT1",
+      "source_library_ids": [
+        14962989
+      ],
+      "status": "PENDING_DUAL_METRIC_QA",
+      "function_class": "AERO_DURABILITY"
+    },
+    {
+      "week": 3,
+      "day": 3,
+      "workout_id": 4000591571,
+      "sport": "Run",
+      "minutes": 60,
+      "title": "Aerobico | 60' fondo facile con tecnica opzionale",
+      "source_library_ids": [
+        14963005
+      ],
+      "status": "PENDING_DUAL_METRIC_QA",
+      "function_class": "EASY_RUNNING"
+    },
+    {
+      "week": 3,
+      "day": 4,
+      "workout_id": 4000591505,
+      "sport": "Bike",
+      "minutes": 105,
+      "title": "Qualità | 105' 3x8' steady alto e 6' recupero",
+      "source_library_ids": [
+        14962996
+      ],
+      "status": "PENDING_DUAL_METRIC_QA",
+      "function_class": "QUALITY_FUNCTION_REVIEW"
+    },
+    {
+      "week": 3,
+      "day": 6,
+      "workout_id": 4000591585,
+      "sport": "Bike",
+      "minutes": 240,
+      "title": "Lungo | 4h fondo sotto LT1 e aero facoltativa",
+      "source_library_ids": [
+        14962994
+      ],
+      "status": "PENDING_DUAL_METRIC_QA",
+      "function_class": "AERO_DURABILITY"
+    },
+    {
+      "week": 3,
+      "day": 7,
+      "workout_id": 4000591494,
+      "sport": "Run",
+      "minutes": 85,
+      "title": "Aerobico | 85' fondo facile e tecnica opzionale",
+      "source_library_ids": [
+        14963003
+      ],
+      "status": "PENDING_DUAL_METRIC_QA",
+      "function_class": "EASY_RUNNING"
+    },
+    {
+      "week": 4,
+      "day": 1,
+      "workout_id": 4000591717,
+      "sport": "Run",
+      "minutes": 35,
+      "title": "Aerobico | 35' facile senza affaticamento",
+      "source_library_ids": [
+        14962915
+      ],
+      "status": "PENDING_DUAL_METRIC_QA",
+      "function_class": "EASY_RUNNING"
+    },
+    {
+      "week": 4,
+      "day": 2,
+      "workout_id": 4000591599,
+      "sport": "Bike",
+      "minutes": 95,
+      "title": "Aerobico | 95' endurance sotto LT1 e postura",
+      "source_library_ids": [
+        14962510
+      ],
+      "status": "PENDING_DUAL_METRIC_QA",
+      "function_class": "AERO_DURABILITY"
+    },
+    {
+      "week": 4,
+      "day": 3,
+      "workout_id": 4000591981,
+      "sport": "Run",
+      "minutes": 35,
+      "title": "Aerobico | 35' facile senza affaticamento",
+      "source_library_ids": [
+        14962915
+      ],
+      "status": "PENDING_DUAL_METRIC_QA",
+      "function_class": "EASY_RUNNING"
+    },
+    {
+      "week": 4,
+      "day": 4,
+      "workout_id": 4000591638,
+      "sport": "Bike",
+      "minutes": 105,
+      "title": "Aerobico | 105' fondo sotto LT1",
+      "source_library_ids": [
+        14963018
+      ],
+      "status": "PENDING_DUAL_METRIC_QA",
+      "function_class": "AERO_DURABILITY"
+    },
+    {
+      "week": 4,
+      "day": 4,
+      "workout_id": 4000591643,
+      "sport": "Run",
+      "minutes": 35,
+      "title": "Aerobico | 35' facile senza affaticamento",
+      "source_library_ids": [
+        14962915
+      ],
+      "status": "PENDING_DUAL_METRIC_QA",
+      "function_class": "EASY_RUNNING"
+    },
+    {
+      "week": 4,
+      "day": 6,
+      "workout_id": 4000591845,
+      "sport": "Bike",
+      "minutes": 155,
+      "title": "Lungo | 2h35 facile in scarico",
+      "source_library_ids": [
+        14963020
+      ],
+      "status": "PENDING_DUAL_METRIC_QA",
+      "function_class": "LONG_ENDURANCE"
+    },
+    {
+      "week": 4,
+      "day": 7,
+      "workout_id": 4000591631,
+      "sport": "Run",
+      "minutes": 70,
+      "title": "Aerobico | 70' fondo facile senza tecnica obbligatoria",
+      "source_library_ids": [
+        14963033
+      ],
+      "status": "PENDING_DUAL_METRIC_QA",
+      "function_class": "EASY_RUNNING"
+    },
+    {
+      "week": 5,
+      "day": 1,
+      "workout_id": 4000954300,
+      "sport": "Run",
+      "minutes": 35,
+      "title": "Aerobico | 35' facile senza affaticamento",
+      "source_library_ids": [
+        14962915
+      ],
+      "status": "PENDING_DUAL_METRIC_QA",
+      "function_class": "EASY_RUNNING"
+    },
+    {
+      "week": 5,
+      "day": 2,
+      "workout_id": 4000954208,
+      "sport": "Bike",
+      "minutes": 125,
+      "title": "Aerobico | 125' fondo sotto LT1",
+      "source_library_ids": [
+        14975291
+      ],
+      "status": "PENDING_DUAL_METRIC_QA",
+      "function_class": "AERO_DURABILITY"
+    },
+    {
+      "week": 5,
+      "day": 3,
+      "workout_id": 4000954333,
+      "sport": "Run",
+      "minutes": 20,
+      "title": "Recupero | 20' corsa molto facile",
+      "source_library_ids": [
+        14963036
+      ],
+      "status": "PENDING_DUAL_METRIC_QA",
+      "function_class": "RECOVERY"
+    },
+    {
+      "week": 5,
+      "day": 4,
+      "workout_id": 4000954256,
+      "sport": "Bike",
+      "minutes": 60,
+      "title": "Test | RETEST W05 | 20' potenza - 60'",
+      "source_library_ids": [],
+      "status": "PENDING_DUAL_METRIC_QA",
+      "function_class": "TEST_PROTOCOL"
+    },
+    {
+      "week": 5,
+      "day": 4,
+      "workout_id": 4000954272,
+      "sport": "Run",
+      "minutes": 50,
+      "title": "Aerobico | 50' corsa facile senza affaticamento",
+      "source_library_ids": [
+        14963035
+      ],
+      "status": "PENDING_DUAL_METRIC_QA",
+      "function_class": "EASY_RUNNING"
+    },
+    {
+      "week": 5,
+      "day": 6,
+      "workout_id": 4000954310,
+      "sport": "Bike",
+      "minutes": 245,
+      "title": "Lungo | 4h05 endurance sotto LT1",
+      "source_library_ids": [
+        14975323
+      ],
+      "status": "PENDING_DUAL_METRIC_QA",
+      "function_class": "LONG_ENDURANCE"
+    },
+    {
+      "week": 5,
+      "day": 7,
+      "workout_id": 4000954242,
+      "sport": "Run",
+      "minutes": 85,
+      "title": "Lungo | 85' facile",
+      "source_library_ids": [
+        14947501,
+        14947513
+      ],
+      "status": "PENDING_DUAL_METRIC_QA",
+      "function_class": "LONG_ENDURANCE"
+    },
+    {
+      "week": 6,
+      "day": 1,
+      "workout_id": 4000966560,
+      "sport": "Run",
+      "minutes": 40,
+      "title": "Aerobico | 40' facile con tecnica opzionale",
+      "source_library_ids": [
+        14962916
+      ],
+      "status": "PENDING_DUAL_METRIC_QA",
+      "function_class": "EASY_RUNNING"
+    },
+    {
+      "week": 6,
+      "day": 2,
+      "workout_id": 4000966395,
+      "sport": "Bike",
+      "minutes": 115,
+      "title": "Aerobico | 115' endurance sotto LT1",
+      "source_library_ids": [
+        14962989
+      ],
+      "status": "PENDING_DUAL_METRIC_QA",
+      "function_class": "AERO_DURABILITY"
+    },
+    {
+      "week": 6,
+      "day": 3,
+      "workout_id": 4000966636,
+      "sport": "Run",
+      "minutes": 30,
+      "title": "Recupero | 30' corsa facile",
+      "source_library_ids": [
+        14963040
+      ],
+      "status": "PENDING_DUAL_METRIC_QA",
+      "function_class": "RECOVERY"
+    },
+    {
+      "week": 6,
+      "day": 4,
+      "workout_id": 4000966501,
+      "sport": "Bike",
+      "minutes": 120,
+      "title": "Aerobico | 120' endurance sotto LT1",
+      "source_library_ids": [
+        14963022
+      ],
+      "status": "PENDING_DUAL_METRIC_QA",
+      "function_class": "AERO_DURABILITY"
+    },
+    {
+      "week": 6,
+      "day": 4,
+      "workout_id": 4000966529,
+      "sport": "Run",
+      "minutes": 40,
+      "title": "Aerobico | 40' facile con tecnica opzionale",
+      "source_library_ids": [
+        14962916
+      ],
+      "status": "PENDING_DUAL_METRIC_QA",
+      "function_class": "EASY_RUNNING"
+    },
+    {
+      "week": 6,
+      "day": 6,
+      "workout_id": 4000966582,
+      "sport": "Bike",
+      "minutes": 255,
+      "title": "Lungo | 4h15 durability 3x15' aero +45' easy",
+      "source_library_ids": [
+        14963028
+      ],
+      "status": "PENDING_DUAL_METRIC_QA",
+      "function_class": "AERO_DURABILITY"
+    },
+    {
+      "week": 6,
+      "day": 7,
+      "workout_id": 4000966424,
+      "sport": "Run",
+      "minutes": 70,
+      "title": "Aerobico | 70' fondo facile senza tecnica obbligatoria",
+      "source_library_ids": [
+        14963033
+      ],
+      "status": "PENDING_DUAL_METRIC_QA",
+      "function_class": "EASY_RUNNING"
+    },
+    {
+      "week": 7,
+      "day": 1,
+      "workout_id": 4000973024,
+      "sport": "Run",
+      "minutes": 45,
+      "title": "Aerobico | 45' facile con tecnica opzionale",
+      "source_library_ids": [
+        14963001
+      ],
+      "status": "PENDING_DUAL_METRIC_QA",
+      "function_class": "EASY_RUNNING"
+    },
+    {
+      "week": 7,
+      "day": 2,
+      "workout_id": 4000972922,
+      "sport": "Bike",
+      "minutes": 120,
+      "title": "Aerobico | 120' endurance sotto LT1",
+      "source_library_ids": [
+        14963022
+      ],
+      "status": "PENDING_DUAL_METRIC_QA",
+      "function_class": "AERO_DURABILITY"
+    },
+    {
+      "week": 7,
+      "day": 3,
+      "workout_id": 4000973000,
+      "sport": "Run",
+      "minutes": 40,
+      "title": "Aerobico | 40' facile con tecnica opzionale",
+      "source_library_ids": [
+        14962916
+      ],
+      "status": "PENDING_DUAL_METRIC_QA",
+      "function_class": "EASY_RUNNING"
+    },
+    {
+      "week": 7,
+      "day": 4,
+      "workout_id": 4000972961,
+      "sport": "Bike",
+      "minutes": 130,
+      "title": "Steady | 130' 3x8' RPE4-5 +12' recupero",
+      "source_library_ids": [
+        14963066
+      ],
+      "status": "PENDING_DUAL_METRIC_QA",
+      "function_class": "QUALITY_FUNCTION_REVIEW"
+    },
+    {
+      "week": 7,
+      "day": 6,
+      "workout_id": 4000973031,
+      "sport": "Bike",
+      "minutes": 220,
+      "title": "Lungo | 3h40 3x10' aero facile +45' LT1",
+      "source_library_ids": [
+        14963067
+      ],
+      "status": "PENDING_DUAL_METRIC_QA",
+      "function_class": "AERO_DURABILITY"
+    },
+    {
+      "week": 7,
+      "day": 6,
+      "workout_id": 4000973064,
+      "sport": "Run",
+      "minutes": 15,
+      "title": "Brick | 15' transizione diagnostica e passo IM percepito, guida RPE 2-4",
+      "source_library_ids": [
+        14976570
+      ],
+      "status": "PENDING_DUAL_METRIC_QA",
+      "function_class": "RACE_SPECIFIC_OPEN"
+    },
+    {
+      "week": 7,
+      "day": 7,
+      "workout_id": 4000972947,
+      "sport": "Run",
+      "minutes": 75,
+      "title": "Aerobico | 75' fondo facile e tecnica opzionale",
+      "source_library_ids": [
+        14962999
+      ],
+      "status": "PENDING_DUAL_METRIC_QA",
+      "function_class": "EASY_RUNNING"
+    },
+    {
+      "week": 8,
+      "day": 1,
+      "workout_id": 4001046417,
+      "sport": "Run",
+      "minutes": 35,
+      "title": "Aerobico | 35' facile senza affaticamento",
+      "source_library_ids": [
+        14962915
+      ],
+      "status": "PENDING_DUAL_METRIC_QA",
+      "function_class": "EASY_RUNNING"
+    },
+    {
+      "week": 8,
+      "day": 2,
+      "workout_id": 4001046304,
+      "sport": "Bike",
+      "minutes": 100,
+      "title": "Aerobico | 100' fondo sotto LT1 e aero facoltativa",
+      "source_library_ids": [
+        14962985
+      ],
+      "status": "PENDING_DUAL_METRIC_QA",
+      "function_class": "AERO_DURABILITY"
+    },
+    {
+      "week": 8,
+      "day": 3,
+      "workout_id": 4001046452,
+      "sport": "Run",
+      "minutes": 35,
+      "title": "Aerobico | 35' facile senza affaticamento",
+      "source_library_ids": [
+        14962915
+      ],
+      "status": "PENDING_DUAL_METRIC_QA",
+      "function_class": "EASY_RUNNING"
+    },
+    {
+      "week": 8,
+      "day": 4,
+      "workout_id": 4001046370,
+      "sport": "Bike",
+      "minutes": 115,
+      "title": "Aerobico | 115' endurance sotto LT1",
+      "source_library_ids": [
+        14962989
+      ],
+      "status": "PENDING_DUAL_METRIC_QA",
+      "function_class": "AERO_DURABILITY"
+    },
+    {
+      "week": 8,
+      "day": 4,
+      "workout_id": 4001046392,
+      "sport": "Run",
+      "minutes": 35,
+      "title": "Aerobico | 35' facile senza affaticamento",
+      "source_library_ids": [
+        14962915
+      ],
+      "status": "PENDING_DUAL_METRIC_QA",
+      "function_class": "EASY_RUNNING"
+    },
+    {
+      "week": 8,
+      "day": 6,
+      "workout_id": 4001046439,
+      "sport": "Bike",
+      "minutes": 175,
+      "title": "Aerobico | 2h55 fondo controllato e benchmark opzionale",
+      "source_library_ids": [
+        14963068
+      ],
+      "status": "PENDING_DUAL_METRIC_QA",
+      "function_class": "AERO_DURABILITY"
+    },
+    {
+      "week": 8,
+      "day": 7,
+      "workout_id": 4001046357,
+      "sport": "Run",
+      "minutes": 65,
+      "title": "Aerobico | 65' fondo facile e tecnica opzionale",
+      "source_library_ids": [
+        14962554
+      ],
+      "status": "PENDING_DUAL_METRIC_QA",
+      "function_class": "EASY_RUNNING"
+    },
+    {
+      "week": 9,
+      "day": 1,
+      "workout_id": 4001048482,
+      "sport": "Run",
+      "minutes": 40,
+      "title": "Aerobico | 40' facile con tecnica opzionale",
+      "source_library_ids": [
+        14962916
+      ],
+      "status": "PENDING_DUAL_METRIC_QA",
+      "function_class": "EASY_RUNNING"
+    },
+    {
+      "week": 9,
+      "day": 2,
+      "workout_id": 4001048384,
+      "sport": "Bike",
+      "minutes": 115,
+      "title": "Aerobico | 115' fondo uniforme sotto LT1",
+      "source_library_ids": [
+        14976436
+      ],
+      "status": "PENDING_DUAL_METRIC_QA",
+      "function_class": "AERO_DURABILITY"
+    },
+    {
+      "week": 9,
+      "day": 3,
+      "workout_id": 4001048457,
+      "sport": "Run",
+      "minutes": 45,
+      "title": "Aerobico | 45' facile con tecnica opzionale",
+      "source_library_ids": [
+        14963001
+      ],
+      "status": "PENDING_DUAL_METRIC_QA",
+      "function_class": "EASY_RUNNING"
+    },
+    {
+      "week": 9,
+      "day": 4,
+      "workout_id": 4001048439,
+      "sport": "Bike",
+      "minutes": 130,
+      "title": "Steady | 130' 3x10' tempo controllato +15' facile",
+      "source_library_ids": [
+        14963096
+      ],
+      "status": "PENDING_DUAL_METRIC_QA",
+      "function_class": "QUALITY_FUNCTION_REVIEW"
+    },
+    {
+      "week": 9,
+      "day": 6,
+      "workout_id": 4001048502,
+      "sport": "Bike",
+      "minutes": 270,
+      "title": "Lungo | 4h30 durability 3x25' aero +45' LT1",
+      "source_library_ids": [
+        14963098
+      ],
+      "status": "PENDING_DUAL_METRIC_QA",
+      "function_class": "AERO_DURABILITY"
+    },
+    {
+      "week": 9,
+      "day": 6,
+      "workout_id": 4001048527,
+      "sport": "Run",
+      "minutes": 20,
+      "title": "Brick | 20' diagnostico con passo IM percepito, guida RPE 2-4",
+      "source_library_ids": [
+        14976573
+      ],
+      "status": "PENDING_DUAL_METRIC_QA",
+      "function_class": "RACE_SPECIFIC_OPEN"
+    },
+    {
+      "week": 9,
+      "day": 7,
+      "workout_id": 4001048428,
+      "sport": "Run",
+      "minutes": 100,
+      "title": "Lungo | 100' facile",
+      "source_library_ids": [
+        14947538,
+        14947546,
+        14947553
+      ],
+      "status": "PENDING_DUAL_METRIC_QA",
+      "function_class": "LONG_ENDURANCE"
+    },
+    {
+      "week": 10,
+      "day": 1,
+      "workout_id": 4001050355,
+      "sport": "Run",
+      "minutes": 40,
+      "title": "Aerobico | 40' facile con tecnica opzionale",
+      "source_library_ids": [
+        14962916
+      ],
+      "status": "PENDING_DUAL_METRIC_QA",
+      "function_class": "EASY_RUNNING"
+    },
+    {
+      "week": 10,
+      "day": 2,
+      "workout_id": 4001050247,
+      "sport": "Bike",
+      "minutes": 120,
+      "title": "Aerobico | 120' fondo uniforme sotto LT1",
+      "source_library_ids": [
+        14976437
+      ],
+      "status": "PENDING_DUAL_METRIC_QA",
+      "function_class": "AERO_DURABILITY"
+    },
+    {
+      "week": 10,
+      "day": 3,
+      "workout_id": 4001050402,
+      "sport": "Run",
+      "minutes": 25,
+      "title": "Recupero | 25' corsa facile senza qualità",
+      "source_library_ids": [
+        14963092
+      ],
+      "status": "PENDING_DUAL_METRIC_QA",
+      "function_class": "QUALITY_FUNCTION_REVIEW"
+    },
+    {
+      "week": 10,
+      "day": 4,
+      "workout_id": 4001050288,
+      "sport": "Bike",
+      "minutes": 140,
+      "title": "Aerobico | 140' 3x15' aero controllata +15' easy, guida RPE 3-4",
+      "source_library_ids": [
+        14976575
+      ],
+      "status": "PENDING_DUAL_METRIC_QA",
+      "function_class": "AERO_DURABILITY"
+    },
+    {
+      "week": 10,
+      "day": 4,
+      "workout_id": 4001050304,
+      "sport": "Run",
+      "minutes": 40,
+      "title": "Aerobico | 40' facile con tecnica opzionale",
+      "source_library_ids": [
+        14962916
+      ],
+      "status": "PENDING_DUAL_METRIC_QA",
+      "function_class": "EASY_RUNNING"
+    },
+    {
+      "week": 10,
+      "day": 6,
+      "workout_id": 4001050384,
+      "sport": "Bike",
+      "minutes": 265,
+      "title": "Lungo | 4h25 3x70' endurance e aero opzionale",
+      "source_library_ids": [
+        14963109
+      ],
+      "status": "PENDING_DUAL_METRIC_QA",
+      "function_class": "AERO_DURABILITY"
+    },
+    {
+      "week": 10,
+      "day": 7,
+      "workout_id": 4001050275,
+      "sport": "Run",
+      "minutes": 105,
+      "title": "Lungo | 105' facile",
+      "source_library_ids": [
+        14947551,
+        14947560,
+        14947566
+      ],
+      "status": "PENDING_DUAL_METRIC_QA",
+      "function_class": "LONG_ENDURANCE"
+    },
+    {
+      "week": 11,
+      "day": 1,
+      "workout_id": 4001053049,
+      "sport": "Run",
+      "minutes": 40,
+      "title": "Aerobico | 40' facile con tecnica opzionale",
+      "source_library_ids": [
+        14962916
+      ],
+      "status": "PENDING_DUAL_METRIC_QA",
+      "function_class": "EASY_RUNNING"
+    },
+    {
+      "week": 11,
+      "day": 2,
+      "workout_id": 4001052939,
+      "sport": "Bike",
+      "minutes": 95,
+      "title": "Aerobico | 95' endurance sotto LT1",
+      "source_library_ids": [
+        14976438
+      ],
+      "status": "PENDING_DUAL_METRIC_QA",
+      "function_class": "AERO_DURABILITY"
+    },
+    {
+      "week": 11,
+      "day": 3,
+      "workout_id": 4001053014,
+      "sport": "Run",
+      "minutes": 40,
+      "title": "Aerobico | 40' facile con tecnica opzionale",
+      "source_library_ids": [
+        14962916
+      ],
+      "status": "PENDING_DUAL_METRIC_QA",
+      "function_class": "EASY_RUNNING"
+    },
+    {
+      "week": 11,
+      "day": 4,
+      "workout_id": 4001052997,
+      "sport": "Bike",
+      "minutes": 120,
+      "title": "Specifico | 120' 3x10' IM Bike Pace +20' easy, guida RPE 3-4",
+      "source_library_ids": [
+        14976579
+      ],
+      "status": "PENDING_DUAL_METRIC_QA",
+      "function_class": "RACE_SPECIFIC_OPEN"
+    },
+    {
+      "week": 11,
+      "day": 6,
+      "workout_id": 4001052988,
+      "sport": "Run",
+      "minutes": 110,
+      "title": "Lungo | 110' facile",
+      "source_library_ids": [
+        14947567
+      ],
+      "status": "PENDING_DUAL_METRIC_QA",
+      "function_class": "LONG_ENDURANCE"
+    },
+    {
+      "week": 11,
+      "day": 7,
+      "workout_id": 4001053067,
+      "sport": "Bike",
+      "minutes": 285,
+      "title": "Specifico | 4h45 3x25' IM Pace preliminare +50' easy, guida RPE 3-4",
+      "source_library_ids": [
+        14976581
+      ],
+      "status": "PENDING_DUAL_METRIC_QA",
+      "function_class": "RACE_SPECIFIC_OPEN"
+    },
+    {
+      "week": 11,
+      "day": 7,
+      "workout_id": 4001053081,
+      "sport": "Run",
+      "minutes": 30,
+      "title": "Brick | 30' diagnostico con passo IM percepito, guida RPE 2-4",
+      "source_library_ids": [
+        14976583
+      ],
+      "status": "PENDING_DUAL_METRIC_QA",
+      "function_class": "RACE_SPECIFIC_OPEN"
+    },
+    {
+      "week": 12,
+      "day": 1,
+      "workout_id": 4001055618,
+      "sport": "Run",
+      "minutes": 35,
+      "title": "Aerobico | 35' facile senza affaticamento",
+      "source_library_ids": [
+        14962915
+      ],
+      "status": "PENDING_DUAL_METRIC_QA",
+      "function_class": "EASY_RUNNING"
+    },
+    {
+      "week": 12,
+      "day": 2,
+      "workout_id": 4001055505,
+      "sport": "Bike",
+      "minutes": 95,
+      "title": "Aerobico | 95' fondo sotto LT1 e aero facoltativa",
+      "source_library_ids": [
+        14976439
+      ],
+      "status": "PENDING_DUAL_METRIC_QA",
+      "function_class": "AERO_DURABILITY"
+    },
+    {
+      "week": 12,
+      "day": 3,
+      "workout_id": 4001055650,
+      "sport": "Run",
+      "minutes": 30,
+      "title": "Recupero | 30' corsa facile",
+      "source_library_ids": [
+        14963040
+      ],
+      "status": "PENDING_DUAL_METRIC_QA",
+      "function_class": "RECOVERY"
+    },
+    {
+      "week": 12,
+      "day": 4,
+      "workout_id": 4001055572,
+      "sport": "Bike",
+      "minutes": 110,
+      "title": "Aerobico | 110' fondo sotto LT1 e aero facoltativa",
+      "source_library_ids": [
+        14962986
+      ],
+      "status": "PENDING_DUAL_METRIC_QA",
+      "function_class": "AERO_DURABILITY"
+    },
+    {
+      "week": 12,
+      "day": 4,
+      "workout_id": 4001055592,
+      "sport": "Run",
+      "minutes": 35,
+      "title": "Aerobico | 35' facile senza affaticamento",
+      "source_library_ids": [
+        14962915
+      ],
+      "status": "PENDING_DUAL_METRIC_QA",
+      "function_class": "EASY_RUNNING"
+    },
+    {
+      "week": 12,
+      "day": 6,
+      "workout_id": 4001055631,
+      "sport": "Bike",
+      "minutes": 200,
+      "title": "Lungo | 3h20 scarico endurance",
+      "source_library_ids": [
+        14963086
+      ],
+      "status": "PENDING_DUAL_METRIC_QA",
+      "function_class": "LONG_ENDURANCE"
+    },
+    {
+      "week": 12,
+      "day": 7,
+      "workout_id": 4001055560,
+      "sport": "Run",
+      "minutes": 80,
+      "title": "Lungo | 80' facile",
+      "source_library_ids": [
+        14947541,
+        14947558
+      ],
+      "status": "PENDING_DUAL_METRIC_QA",
+      "function_class": "LONG_ENDURANCE"
+    },
+    {
+      "week": 13,
+      "day": 1,
+      "workout_id": 4001059176,
+      "sport": "Run",
+      "minutes": 55,
+      "title": "Test | RETEST - 5 km - riferimento corsa",
+      "source_library_ids": [
+        14947544
+      ],
+      "status": "PENDING_DUAL_METRIC_QA",
+      "function_class": "TEST_PROTOCOL"
+    },
+    {
+      "week": 13,
+      "day": 2,
+      "workout_id": 4001058948,
+      "sport": "Bike",
+      "minutes": 130,
+      "title": "Specifico | 130' 3x12' IM Pace +8' LT1, guida RPE 3-4",
+      "source_library_ids": [
+        14976585
+      ],
+      "status": "PENDING_DUAL_METRIC_QA",
+      "function_class": "RACE_SPECIFIC_OPEN"
+    },
+    {
+      "week": 13,
+      "day": 3,
+      "workout_id": 4001059124,
+      "sport": "Run",
+      "minutes": 50,
+      "title": "Aerobico | 50' corsa facile senza affaticamento",
+      "source_library_ids": [
+        14963035
+      ],
+      "status": "PENDING_DUAL_METRIC_QA",
+      "function_class": "EASY_RUNNING"
+    },
+    {
+      "week": 13,
+      "day": 4,
+      "workout_id": 4001059087,
+      "sport": "Bike",
+      "minutes": 175,
+      "title": "Specifico | 175' 3x20' IM Pace +20' facile, guida RPE 3-4",
+      "source_library_ids": [
+        14976586
+      ],
+      "status": "PENDING_DUAL_METRIC_QA",
+      "function_class": "RACE_SPECIFIC_OPEN"
+    },
+    {
+      "week": 13,
+      "day": 6,
+      "workout_id": 4001059223,
+      "sport": "Bike",
+      "minutes": 280,
+      "title": "Lungo | 4h40 3x35' IM Pace +25' finale LT1, guida RPE 3-4",
+      "source_library_ids": [
+        14976588
+      ],
+      "status": "PENDING_DUAL_METRIC_QA",
+      "function_class": "RACE_SPECIFIC_OPEN"
+    },
+    {
+      "week": 13,
+      "day": 6,
+      "workout_id": 4001059264,
+      "sport": "Run",
+      "minutes": 25,
+      "title": "Brick | 25' diagnostico IM Run Pace individuale, guida RPE 2-4",
+      "source_library_ids": [
+        14976589
+      ],
+      "status": "PENDING_DUAL_METRIC_QA",
+      "function_class": "RACE_SPECIFIC_OPEN"
+    },
+    {
+      "week": 13,
+      "day": 7,
+      "workout_id": 4001059005,
+      "sport": "Run",
+      "minutes": 110,
+      "title": "Lungo | 110' facile",
+      "source_library_ids": [
+        14947567
+      ],
+      "status": "PENDING_DUAL_METRIC_QA",
+      "function_class": "LONG_ENDURANCE"
+    },
+    {
+      "week": 14,
+      "day": 1,
+      "workout_id": 4001062266,
+      "sport": "Run",
+      "minutes": 45,
+      "title": "Aerobico | 45' facile con tecnica opzionale",
+      "source_library_ids": [
+        14963001
+      ],
+      "status": "PENDING_DUAL_METRIC_QA",
+      "function_class": "EASY_RUNNING"
+    },
+    {
+      "week": 14,
+      "day": 2,
+      "workout_id": 4001062077,
+      "sport": "Bike",
+      "minutes": 130,
+      "title": "Specifico | 130' 3x12' IM Pace +8' LT1, guida RPE 3-4",
+      "source_library_ids": [
+        14976585
+      ],
+      "status": "PENDING_DUAL_METRIC_QA",
+      "function_class": "RACE_SPECIFIC_OPEN"
+    },
+    {
+      "week": 14,
+      "day": 3,
+      "workout_id": 4001062213,
+      "sport": "Run",
+      "minutes": 55,
+      "title": "Aerobico | 55' fondo facile RPE2-3",
+      "source_library_ids": [
+        14962919
+      ],
+      "status": "PENDING_DUAL_METRIC_QA",
+      "function_class": "EASY_RUNNING"
+    },
+    {
+      "week": 14,
+      "day": 4,
+      "workout_id": 4001062176,
+      "sport": "Bike",
+      "minutes": 165,
+      "title": "Specifico | 165' 2x20' IM Pace +25' facile, guida RPE 3-4",
+      "source_library_ids": [
+        14976590
+      ],
+      "status": "PENDING_DUAL_METRIC_QA",
+      "function_class": "RACE_SPECIFIC_OPEN"
+    },
+    {
+      "week": 14,
+      "day": 5,
+      "workout_id": 4001062330,
+      "sport": "Bike",
+      "minutes": 50,
+      "title": "Recupero | 50' pedalata agile senza qualità",
+      "source_library_ids": [
+        14963224
+      ],
+      "status": "PENDING_DUAL_METRIC_QA",
+      "function_class": "QUALITY_FUNCTION_REVIEW"
+    },
+    {
+      "week": 14,
+      "day": 6,
+      "workout_id": 4001062280,
+      "sport": "Bike",
+      "minutes": 215,
+      "title": "Lungo | 3h35 2x30' IM Pace +15' endurance finale, guida RPE 3-4",
+      "source_library_ids": [
+        14976591
+      ],
+      "status": "PENDING_DUAL_METRIC_QA",
+      "function_class": "RACE_SPECIFIC_OPEN"
+    },
+    {
+      "week": 14,
+      "day": 6,
+      "workout_id": 4001062302,
+      "sport": "Run",
+      "minutes": 20,
+      "title": "Brick | 20' diagnostico con passo IM percepito, guida RPE 2-4",
+      "source_library_ids": [
+        14976573
+      ],
+      "status": "PENDING_DUAL_METRIC_QA",
+      "function_class": "RACE_SPECIFIC_OPEN"
+    },
+    {
+      "week": 14,
+      "day": 7,
+      "workout_id": 4001062150,
+      "sport": "Run",
+      "minutes": 120,
+      "title": "Lungo | 120' facile",
+      "source_library_ids": [
+        14976434
+      ],
+      "status": "PENDING_DUAL_METRIC_QA",
+      "function_class": "LONG_ENDURANCE"
+    },
+    {
+      "week": 15,
+      "day": 1,
+      "workout_id": 4001065423,
+      "sport": "Run",
+      "minutes": 55,
+      "title": "Aerobico | 55' fondo facile RPE2-3",
+      "source_library_ids": [
+        14962919
+      ],
+      "status": "PENDING_DUAL_METRIC_QA",
+      "function_class": "EASY_RUNNING"
+    },
+    {
+      "week": 15,
+      "day": 2,
+      "workout_id": 4001065292,
+      "sport": "Bike",
+      "minutes": 150,
+      "title": "Aerobico | 150' endurance sotto LT1",
+      "source_library_ids": [
+        14975235
+      ],
+      "status": "PENDING_DUAL_METRIC_QA",
+      "function_class": "AERO_DURABILITY"
+    },
+    {
+      "week": 15,
+      "day": 3,
+      "workout_id": 4001065469,
+      "sport": "Bike",
+      "minutes": 100,
+      "title": "Recupero | 100' endurance sotto LT1",
+      "source_library_ids": [
+        14976443
+      ],
+      "status": "PENDING_DUAL_METRIC_QA",
+      "function_class": "RECOVERY"
+    },
+    {
+      "week": 15,
+      "day": 4,
+      "workout_id": 4001065348,
+      "sport": "Bike",
+      "minutes": 205,
+      "title": "Specifico | 205' 3x20' IM Pace +55' LT1, guida RPE 3-4",
+      "source_library_ids": [
+        14976592
+      ],
+      "status": "PENDING_DUAL_METRIC_QA",
+      "function_class": "RACE_SPECIFIC_OPEN"
+    },
+    {
+      "week": 15,
+      "day": 4,
+      "workout_id": 4001065362,
+      "sport": "Run",
+      "minutes": 50,
+      "title": "Aerobico | 50' corsa facile senza affaticamento",
+      "source_library_ids": [
+        14963035
+      ],
+      "status": "PENDING_DUAL_METRIC_QA",
+      "function_class": "EASY_RUNNING"
+    },
+    {
+      "week": 15,
+      "day": 6,
+      "workout_id": 4001065326,
+      "sport": "Run",
+      "minutes": 130,
+      "title": "Lungo | 130' facile",
+      "source_library_ids": [
+        14976435
+      ],
+      "status": "PENDING_DUAL_METRIC_QA",
+      "function_class": "LONG_ENDURANCE"
+    },
+    {
+      "week": 15,
+      "day": 7,
+      "workout_id": 4001065433,
+      "sport": "Bike",
+      "minutes": 300,
+      "title": "Lungo | 5h 3x30' IM Pace +55' easy, guida RPE 3-4",
+      "source_library_ids": [
+        14976594
+      ],
+      "status": "PENDING_DUAL_METRIC_QA",
+      "function_class": "RACE_SPECIFIC_OPEN"
+    },
+    {
+      "week": 15,
+      "day": 7,
+      "workout_id": 4001065444,
+      "sport": "Run",
+      "minutes": 30,
+      "title": "Brick | 30' diagnostico con passo IM percepito, guida RPE 2-4",
+      "source_library_ids": [
+        14976583
+      ],
+      "status": "PENDING_DUAL_METRIC_QA",
+      "function_class": "RACE_SPECIFIC_OPEN"
+    },
+    {
+      "week": 16,
+      "day": 1,
+      "workout_id": 4001069201,
+      "sport": "Run",
+      "minutes": 45,
+      "title": "Aerobico | 45' facile con tecnica opzionale",
+      "source_library_ids": [
+        14963001
+      ],
+      "status": "PENDING_DUAL_METRIC_QA",
+      "function_class": "EASY_RUNNING"
+    },
+    {
+      "week": 16,
+      "day": 2,
+      "workout_id": 4001069047,
+      "sport": "Bike",
+      "minutes": 110,
+      "title": "Recupero | 110' fondo uniforme sotto LT1",
+      "source_library_ids": [
+        14976444
+      ],
+      "status": "PENDING_DUAL_METRIC_QA",
+      "function_class": "RECOVERY"
+    },
+    {
+      "week": 16,
+      "day": 3,
+      "workout_id": 4001069271,
+      "sport": "Run",
+      "minutes": 30,
+      "title": "Recupero | 30' corsa facile",
+      "source_library_ids": [
+        14963040
+      ],
+      "status": "PENDING_DUAL_METRIC_QA",
+      "function_class": "RECOVERY"
+    },
+    {
+      "week": 16,
+      "day": 4,
+      "workout_id": 4001069080,
+      "sport": "Bike",
+      "minutes": 140,
+      "title": "Recupero | 140' endurance sotto LT1",
+      "source_library_ids": [
+        14963168
+      ],
+      "status": "PENDING_DUAL_METRIC_QA",
+      "function_class": "RECOVERY"
+    },
+    {
+      "week": 16,
+      "day": 4,
+      "workout_id": 4001069106,
+      "sport": "Run",
+      "minutes": 35,
+      "title": "Aerobico | 35' facile senza affaticamento",
+      "source_library_ids": [
+        14962915
+      ],
+      "status": "PENDING_DUAL_METRIC_QA",
+      "function_class": "EASY_RUNNING"
+    },
+    {
+      "week": 16,
+      "day": 6,
+      "workout_id": 4001069238,
+      "sport": "Bike",
+      "minutes": 190,
+      "title": "Recupero | 3h10 fondo aerobico senza test",
+      "source_library_ids": [
+        14963995
+      ],
+      "status": "PENDING_DUAL_METRIC_QA",
+      "function_class": "AERO_DURABILITY"
+    },
+    {
+      "week": 16,
+      "day": 7,
+      "workout_id": 4001069070,
+      "sport": "Run",
+      "minutes": 90,
+      "title": "Lungo | 90' facile",
+      "source_library_ids": [
+        14947510,
+        14947576
+      ],
+      "status": "PENDING_DUAL_METRIC_QA",
+      "function_class": "LONG_ENDURANCE"
+    },
+    {
+      "week": 17,
+      "day": 1,
+      "workout_id": 4001072067,
+      "sport": "Run",
+      "minutes": 45,
+      "title": "Aerobico | 45' facile con tecnica opzionale",
+      "source_library_ids": [
+        14963001
+      ],
+      "status": "PENDING_DUAL_METRIC_QA",
+      "function_class": "EASY_RUNNING"
+    },
+    {
+      "week": 17,
+      "day": 2,
+      "workout_id": 4001071953,
+      "sport": "Bike",
+      "minutes": 130,
+      "title": "Specifico | 130' 3x12' IM Pace +8' LT1, guida RPE 3-4",
+      "source_library_ids": [
+        14976585
+      ],
+      "status": "PENDING_DUAL_METRIC_QA",
+      "function_class": "RACE_SPECIFIC_OPEN"
+    },
+    {
+      "week": 17,
+      "day": 3,
+      "workout_id": 4001072163,
+      "sport": "Bike",
+      "minutes": 45,
+      "title": "Recupero | 45' pedalata agile senza qualità",
+      "source_library_ids": [
+        14963222
+      ],
+      "status": "PENDING_DUAL_METRIC_QA",
+      "function_class": "QUALITY_FUNCTION_REVIEW"
+    },
+    {
+      "week": 17,
+      "day": 4,
+      "workout_id": 4001072016,
+      "sport": "Bike",
+      "minutes": 145,
+      "title": "Specifico | 145' 2x25' IM Pace +10' easy, guida RPE 3-4",
+      "source_library_ids": [
+        14976595
+      ],
+      "status": "PENDING_DUAL_METRIC_QA",
+      "function_class": "RACE_SPECIFIC_OPEN"
+    },
+    {
+      "week": 17,
+      "day": 4,
+      "workout_id": 4001072026,
+      "sport": "Run",
+      "minutes": 45,
+      "title": "Aerobico | 45' facile con tecnica opzionale",
+      "source_library_ids": [
+        14963001
+      ],
+      "status": "PENDING_DUAL_METRIC_QA",
+      "function_class": "EASY_RUNNING"
+    },
+    {
+      "week": 17,
+      "day": 6,
+      "workout_id": 4001071997,
+      "sport": "Run",
+      "minutes": 150,
+      "title": "Lungo | 150' facile",
+      "source_library_ids": [
+        14976477
+      ],
+      "status": "PENDING_DUAL_METRIC_QA",
+      "function_class": "LONG_ENDURANCE"
+    },
+    {
+      "week": 17,
+      "day": 7,
+      "workout_id": 4001072083,
+      "sport": "Bike",
+      "minutes": 250,
+      "title": "Lungo | 4h10 3x35' IM Pace +25' LT1, guida RPE 3-4",
+      "source_library_ids": [
+        14976596
+      ],
+      "status": "PENDING_DUAL_METRIC_QA",
+      "function_class": "RACE_SPECIFIC_OPEN"
+    },
+    {
+      "week": 17,
+      "day": 7,
+      "workout_id": 4001072135,
+      "sport": "Run",
+      "minutes": 30,
+      "title": "Brick | 30' diagnostico con passo IM percepito, guida RPE 2-4",
+      "source_library_ids": [
+        14976583
+      ],
+      "status": "PENDING_DUAL_METRIC_QA",
+      "function_class": "RACE_SPECIFIC_OPEN"
+    },
+    {
+      "week": 18,
+      "day": 1,
+      "workout_id": 4001074550,
+      "sport": "Run",
+      "minutes": 55,
+      "title": "Aerobico | 55' fondo facile RPE2-3",
+      "source_library_ids": [
+        14962919
+      ],
+      "status": "PENDING_DUAL_METRIC_QA",
+      "function_class": "EASY_RUNNING"
+    },
+    {
+      "week": 18,
+      "day": 2,
+      "workout_id": 4001074463,
+      "sport": "Bike",
+      "minutes": 125,
+      "title": "Specifico | 125' 2x10' IM Pace +20' easy, guida RPE 3-4",
+      "source_library_ids": [
+        14976597
+      ],
+      "status": "PENDING_DUAL_METRIC_QA",
+      "function_class": "RACE_SPECIFIC_OPEN"
+    },
+    {
+      "week": 18,
+      "day": 3,
+      "workout_id": 4001074593,
+      "sport": "Bike",
+      "minutes": 40,
+      "title": "Recupero | 40' pedalata agile",
+      "source_library_ids": [
+        14963228
+      ],
+      "status": "PENDING_DUAL_METRIC_QA",
+      "function_class": "RECOVERY"
+    },
+    {
+      "week": 18,
+      "day": 4,
+      "workout_id": 4001074506,
+      "sport": "Bike",
+      "minutes": 165,
+      "title": "Specifico | 165' 2x20' IM Pace +25' facile, guida RPE 3-4",
+      "source_library_ids": [
+        14976590
+      ],
+      "status": "PENDING_DUAL_METRIC_QA",
+      "function_class": "RACE_SPECIFIC_OPEN"
+    },
+    {
+      "week": 18,
+      "day": 4,
+      "workout_id": 4001074520,
+      "sport": "Run",
+      "minutes": 50,
+      "title": "Aerobico | 50' corsa facile senza affaticamento",
+      "source_library_ids": [
+        14963035
+      ],
+      "status": "PENDING_DUAL_METRIC_QA",
+      "function_class": "EASY_RUNNING"
+    },
+    {
+      "week": 18,
+      "day": 6,
+      "workout_id": 4001074565,
+      "sport": "Bike",
+      "minutes": 220,
+      "title": "Lungo | 3h40 durability 3x15' aero",
+      "source_library_ids": [
+        14976483
+      ],
+      "status": "PENDING_DUAL_METRIC_QA",
+      "function_class": "AERO_DURABILITY"
+    },
+    {
+      "week": 18,
+      "day": 6,
+      "workout_id": 4001074584,
+      "sport": "Run",
+      "minutes": 25,
+      "title": "Recupero | 25' corsa facile senza qualità",
+      "source_library_ids": [
+        14963092
+      ],
+      "status": "PENDING_DUAL_METRIC_QA",
+      "function_class": "QUALITY_FUNCTION_REVIEW"
+    },
+    {
+      "week": 18,
+      "day": 7,
+      "workout_id": 4001074490,
+      "sport": "Run",
+      "minutes": 120,
+      "title": "Lungo | 120' facile",
+      "source_library_ids": [
+        14976434
+      ],
+      "status": "PENDING_DUAL_METRIC_QA",
+      "function_class": "LONG_ENDURANCE"
+    },
+    {
+      "week": 19,
+      "day": 1,
+      "workout_id": 4001076949,
+      "sport": "Run",
+      "minutes": 60,
+      "title": "Aerobico | 60' fondo facile con tecnica opzionale",
+      "source_library_ids": [
+        14963005
+      ],
+      "status": "PENDING_DUAL_METRIC_QA",
+      "function_class": "EASY_RUNNING"
+    },
+    {
+      "week": 19,
+      "day": 2,
+      "workout_id": 4001076774,
+      "sport": "Bike",
+      "minutes": 130,
+      "title": "Specifico | 130' 3x10' IM Pace +15' easy, guida RPE 3-4",
+      "source_library_ids": [
+        14976598
+      ],
+      "status": "PENDING_DUAL_METRIC_QA",
+      "function_class": "RACE_SPECIFIC_OPEN"
+    },
+    {
+      "week": 19,
+      "day": 3,
+      "workout_id": 4001076818,
+      "sport": "Bike",
+      "minutes": 45,
+      "title": "Recupero | 45' pedalata agile senza qualità",
+      "source_library_ids": [
+        14963222
+      ],
+      "status": "PENDING_DUAL_METRIC_QA",
+      "function_class": "QUALITY_FUNCTION_REVIEW"
+    },
+    {
+      "week": 19,
+      "day": 3,
+      "workout_id": 4001076854,
+      "sport": "Run",
+      "minutes": 100,
+      "title": "Aerobico | 100' fondo facile RPE2-3",
+      "source_library_ids": [
+        14963275
+      ],
+      "status": "PENDING_DUAL_METRIC_QA",
+      "function_class": "EASY_RUNNING"
+    },
+    {
+      "week": 19,
+      "day": 4,
+      "workout_id": 4001076867,
+      "sport": "Bike",
+      "minutes": 150,
+      "title": "Specifico | 150' 3x15' IM Pace +15' facile, guida RPE 3-4",
+      "source_library_ids": [
+        14976600
+      ],
+      "status": "PENDING_DUAL_METRIC_QA",
+      "function_class": "RACE_SPECIFIC_OPEN"
+    },
+    {
+      "week": 19,
+      "day": 4,
+      "workout_id": 4001076883,
+      "sport": "Run",
+      "minutes": 55,
+      "title": "Aerobico | 55' fondo facile RPE2-3",
+      "source_library_ids": [
+        14962919
+      ],
+      "status": "PENDING_DUAL_METRIC_QA",
+      "function_class": "EASY_RUNNING"
+    },
+    {
+      "week": 19,
+      "day": 6,
+      "workout_id": 4001076968,
+      "sport": "Bike",
+      "minutes": 295,
+      "title": "Lungo | 4h55 3x30' IM Pace +35' fondo facile, guida RPE 3-4",
+      "source_library_ids": [
+        14976601
+      ],
+      "status": "PENDING_DUAL_METRIC_QA",
+      "function_class": "RACE_SPECIFIC_OPEN"
+    },
+    {
+      "week": 19,
+      "day": 6,
+      "workout_id": 4001076980,
+      "sport": "Run",
+      "minutes": 40,
+      "title": "Brick | 40' race execution",
+      "source_library_ids": [
+        14947582
+      ],
+      "status": "PENDING_DUAL_METRIC_QA",
+      "function_class": "RACE_SPECIFIC_OPEN"
+    },
+    {
+      "week": 20,
+      "day": 1,
+      "workout_id": 4001078864,
+      "sport": "Run",
+      "minutes": 50,
+      "title": "Aerobico | 50' corsa facile senza affaticamento",
+      "source_library_ids": [
+        14963035
+      ],
+      "status": "PENDING_DUAL_METRIC_QA",
+      "function_class": "EASY_RUNNING"
+    },
+    {
+      "week": 20,
+      "day": 2,
+      "workout_id": 4001078724,
+      "sport": "Bike",
+      "minutes": 115,
+      "title": "Aerobico | 115' endurance sotto LT1",
+      "source_library_ids": [
+        14962989
+      ],
+      "status": "PENDING_DUAL_METRIC_QA",
+      "function_class": "AERO_DURABILITY"
+    },
+    {
+      "week": 20,
+      "day": 3,
+      "workout_id": 4001078766,
+      "sport": "Bike",
+      "minutes": 50,
+      "title": "Recupero | 50' pedalata agile senza qualità",
+      "source_library_ids": [
+        14963224
+      ],
+      "status": "PENDING_DUAL_METRIC_QA",
+      "function_class": "QUALITY_FUNCTION_REVIEW"
+    },
+    {
+      "week": 20,
+      "day": 3,
+      "workout_id": 4001078902,
+      "sport": "Run",
+      "minutes": 30,
+      "title": "Recupero | 30' corsa facile",
+      "source_library_ids": [
+        14963040
+      ],
+      "status": "PENDING_DUAL_METRIC_QA",
+      "function_class": "RECOVERY"
+    },
+    {
+      "week": 20,
+      "day": 4,
+      "workout_id": 4001078788,
+      "sport": "Bike",
+      "minutes": 130,
+      "title": "Recupero | 130' endurance sotto LT1 RPE2",
+      "source_library_ids": [
+        14963226
+      ],
+      "status": "PENDING_DUAL_METRIC_QA",
+      "function_class": "RECOVERY"
+    },
+    {
+      "week": 20,
+      "day": 4,
+      "workout_id": 4001078809,
+      "sport": "Run",
+      "minutes": 45,
+      "title": "Aerobico | 45' facile con tecnica opzionale",
+      "source_library_ids": [
+        14963001
+      ],
+      "status": "PENDING_DUAL_METRIC_QA",
+      "function_class": "EASY_RUNNING"
+    },
+    {
+      "week": 20,
+      "day": 6,
+      "workout_id": 4001078883,
+      "sport": "Bike",
+      "minutes": 240,
+      "title": "Lungo | 4h fondo sotto LT1 e aero facoltativa",
+      "source_library_ids": [
+        14962994
+      ],
+      "status": "PENDING_DUAL_METRIC_QA",
+      "function_class": "AERO_DURABILITY"
+    },
+    {
+      "week": 20,
+      "day": 7,
+      "workout_id": 4001078893,
+      "sport": "Bike",
+      "minutes": 40,
+      "title": "Recupero | 40' pedalata agile",
+      "source_library_ids": [
+        14963228
+      ],
+      "status": "PENDING_DUAL_METRIC_QA",
+      "function_class": "RECOVERY"
+    },
+    {
+      "week": 20,
+      "day": 7,
+      "workout_id": 4001078777,
+      "sport": "Run",
+      "minutes": 80,
+      "title": "Recupero | 80' corsa lenta RPE2",
+      "source_library_ids": [
+        14963148
+      ],
+      "status": "PENDING_DUAL_METRIC_QA",
+      "function_class": "RECOVERY"
+    },
+    {
+      "week": 21,
+      "day": 1,
+      "workout_id": 4001081181,
+      "sport": "Run",
+      "minutes": 45,
+      "title": "Aerobico | 45' facile con tecnica opzionale",
+      "source_library_ids": [
+        14963001
+      ],
+      "status": "PENDING_DUAL_METRIC_QA",
+      "function_class": "EASY_RUNNING"
+    },
+    {
+      "week": 21,
+      "day": 2,
+      "workout_id": 4001080961,
+      "sport": "Bike",
+      "minutes": 150,
+      "title": "Specifico | 150' 3x10' IM Pace +50' LT1, guida RPE 3-4",
+      "source_library_ids": [
+        14976603
+      ],
+      "status": "PENDING_DUAL_METRIC_QA",
+      "function_class": "RACE_SPECIFIC_OPEN"
+    },
+    {
+      "week": 21,
+      "day": 3,
+      "workout_id": 4001080997,
+      "sport": "Bike",
+      "minutes": 60,
+      "title": "Recupero | 60' endurance senza qualità",
+      "source_library_ids": [
+        14963248
+      ],
+      "status": "PENDING_DUAL_METRIC_QA",
+      "function_class": "QUALITY_FUNCTION_REVIEW"
+    },
+    {
+      "week": 21,
+      "day": 4,
+      "workout_id": 4001081061,
+      "sport": "Bike",
+      "minutes": 170,
+      "title": "Aerobico | 170' 2x60' endurance sotto LT1",
+      "source_library_ids": [
+        14976484
+      ],
+      "status": "PENDING_DUAL_METRIC_QA",
+      "function_class": "AERO_DURABILITY"
+    },
+    {
+      "week": 21,
+      "day": 4,
+      "workout_id": 4001081094,
+      "sport": "Run",
+      "minutes": 55,
+      "title": "Aerobico | 55' fondo facile RPE2-3",
+      "source_library_ids": [
+        14962919
+      ],
+      "status": "PENDING_DUAL_METRIC_QA",
+      "function_class": "EASY_RUNNING"
+    },
+    {
+      "week": 21,
+      "day": 5,
+      "workout_id": 4001081275,
+      "sport": "Bike",
+      "minutes": 30,
+      "title": "Recupero | 30' pedalata agile",
+      "source_library_ids": [
+        14976485
+      ],
+      "status": "PENDING_DUAL_METRIC_QA",
+      "function_class": "RECOVERY"
+    },
+    {
+      "week": 21,
+      "day": 6,
+      "workout_id": 4001081009,
+      "sport": "Run",
+      "minutes": 150,
+      "title": "Lungo | 150' facile",
+      "source_library_ids": [
+        14976477
+      ],
+      "status": "PENDING_DUAL_METRIC_QA",
+      "function_class": "LONG_ENDURANCE"
+    },
+    {
+      "week": 21,
+      "day": 7,
+      "workout_id": 4001081215,
+      "sport": "Bike",
+      "minutes": 330,
+      "title": "Lungo | 5h30 - peak race execution",
+      "source_library_ids": [
+        14947410
+      ],
+      "status": "PENDING_DUAL_METRIC_QA",
+      "function_class": "RACE_SPECIFIC_OPEN"
+    },
+    {
+      "week": 21,
+      "day": 7,
+      "workout_id": 4001081245,
+      "sport": "Run",
+      "minutes": 30,
+      "title": "Brick | 30' diagnostico con passo IM percepito, guida RPE 2-4",
+      "source_library_ids": [
+        14976583
+      ],
+      "status": "PENDING_DUAL_METRIC_QA",
+      "function_class": "RACE_SPECIFIC_OPEN"
+    },
+    {
+      "week": 22,
+      "day": 1,
+      "workout_id": 4001083706,
+      "sport": "Run",
+      "minutes": 40,
+      "title": "Aerobico | 40' facile con tecnica opzionale",
+      "source_library_ids": [
+        14962916
+      ],
+      "status": "PENDING_DUAL_METRIC_QA",
+      "function_class": "EASY_RUNNING"
+    },
+    {
+      "week": 22,
+      "day": 2,
+      "workout_id": 4001083455,
+      "sport": "Bike",
+      "minutes": 125,
+      "title": "Specifico | 125' 2x10' IM Pace +20' easy, guida RPE 3-4",
+      "source_library_ids": [
+        14976597
+      ],
+      "status": "PENDING_DUAL_METRIC_QA",
+      "function_class": "RACE_SPECIFIC_OPEN"
+    },
+    {
+      "week": 22,
+      "day": 3,
+      "workout_id": 4001083527,
+      "sport": "Bike",
+      "minutes": 35,
+      "title": "Recupero | 35' pedalata facile",
+      "source_library_ids": [
+        14963256
+      ],
+      "status": "PENDING_DUAL_METRIC_QA",
+      "function_class": "RECOVERY"
+    },
+    {
+      "week": 22,
+      "day": 4,
+      "workout_id": 4001083608,
+      "sport": "Bike",
+      "minutes": 115,
+      "title": "Aerobico | 115' endurance sotto LT1",
+      "source_library_ids": [
+        14962989
+      ],
+      "status": "PENDING_DUAL_METRIC_QA",
+      "function_class": "AERO_DURABILITY"
+    },
+    {
+      "week": 22,
+      "day": 4,
+      "workout_id": 4001083631,
+      "sport": "Run",
+      "minutes": 45,
+      "title": "Aerobico | 45' facile con tecnica opzionale",
+      "source_library_ids": [
+        14963001
+      ],
+      "status": "PENDING_DUAL_METRIC_QA",
+      "function_class": "EASY_RUNNING"
+    },
+    {
+      "week": 22,
+      "day": 5,
+      "workout_id": 4001083818,
+      "sport": "Bike",
+      "minutes": 50,
+      "title": "Aerobico | 50' facile",
+      "source_library_ids": [
+        14976486
+      ],
+      "status": "PENDING_DUAL_METRIC_QA",
+      "function_class": "AERO_DURABILITY"
+    },
+    {
+      "week": 22,
+      "day": 6,
+      "workout_id": 4001083740,
+      "sport": "Bike",
+      "minutes": 225,
+      "title": "Specifico | 225' 2x20' IM Pace +55' facile, guida RPE 3-4",
+      "source_library_ids": [
+        14976604
+      ],
+      "status": "PENDING_DUAL_METRIC_QA",
+      "function_class": "RACE_SPECIFIC_OPEN"
+    },
+    {
+      "week": 22,
+      "day": 6,
+      "workout_id": 4001083759,
+      "sport": "Run",
+      "minutes": 25,
+      "title": "Recupero | 25' corsa facile senza qualità",
+      "source_library_ids": [
+        14963092
+      ],
+      "status": "PENDING_DUAL_METRIC_QA",
+      "function_class": "QUALITY_FUNCTION_REVIEW"
+    },
+    {
+      "week": 22,
+      "day": 7,
+      "workout_id": 4001083555,
+      "sport": "Run",
+      "minutes": 80,
+      "title": "Lungo | 80' facile",
+      "source_library_ids": [
+        14947541,
+        14947558
+      ],
+      "status": "PENDING_DUAL_METRIC_QA",
+      "function_class": "LONG_ENDURANCE"
+    },
+    {
+      "week": 23,
+      "day": 1,
+      "workout_id": 4001086515,
+      "sport": "Run",
+      "minutes": 30,
+      "title": "Recupero | 30' corsa facile",
+      "source_library_ids": [
+        14963040
+      ],
+      "status": "PENDING_DUAL_METRIC_QA",
+      "function_class": "RECOVERY"
+    },
+    {
+      "week": 23,
+      "day": 2,
+      "workout_id": 4001086397,
+      "sport": "Bike",
+      "minutes": 75,
+      "title": "Recupero | 75' fondo facile in taper",
+      "source_library_ids": [
+        14963265
+      ],
+      "status": "PENDING_DUAL_METRIC_QA",
+      "function_class": "RECOVERY"
+    },
+    {
+      "week": 23,
+      "day": 3,
+      "workout_id": 4001086473,
+      "sport": "Run",
+      "minutes": 70,
+      "title": "Aerobico | 70' fondo facile senza tecnica obbligatoria",
+      "source_library_ids": [
+        14963033
+      ],
+      "status": "PENDING_DUAL_METRIC_QA",
+      "function_class": "EASY_RUNNING"
+    },
+    {
+      "week": 23,
+      "day": 4,
+      "workout_id": 4001086484,
+      "sport": "Bike",
+      "minutes": 65,
+      "title": "Recupero | 65' fondo facile in taper",
+      "source_library_ids": [
+        14963266
+      ],
+      "status": "PENDING_DUAL_METRIC_QA",
+      "function_class": "RECOVERY"
+    },
+    {
+      "week": 23,
+      "day": 4,
+      "workout_id": 4001086492,
+      "sport": "Run",
+      "minutes": 35,
+      "title": "Aerobico | 35' facile senza affaticamento",
+      "source_library_ids": [
+        14962915
+      ],
+      "status": "PENDING_DUAL_METRIC_QA",
+      "function_class": "EASY_RUNNING"
+    },
+    {
+      "week": 23,
+      "day": 6,
+      "workout_id": 4001086537,
+      "sport": "Bike",
+      "minutes": 125,
+      "title": "Specifico | 125' 2x8' IM Pace +16' easy, guida RPE 3-4",
+      "source_library_ids": [
+        14976605
+      ],
+      "status": "PENDING_DUAL_METRIC_QA",
+      "function_class": "RACE_SPECIFIC_OPEN"
+    },
+    {
+      "week": 23,
+      "day": 6,
+      "workout_id": 4001086549,
+      "sport": "Run",
+      "minutes": 15,
+      "title": "Brick | BRICK 15' facile",
+      "source_library_ids": [
+        14947457
+      ],
+      "status": "PENDING_DUAL_METRIC_QA",
+      "function_class": "EASY_BRICK"
+    },
+    {
+      "week": 23,
+      "day": 7,
+      "workout_id": 4001086559,
+      "sport": "Bike",
+      "minutes": 50,
+      "title": "Recupero | 50' pedalata agile senza qualità",
+      "source_library_ids": [
+        14963224
+      ],
+      "status": "PENDING_DUAL_METRIC_QA",
+      "function_class": "QUALITY_FUNCTION_REVIEW"
+    },
+    {
+      "week": 24,
+      "day": 2,
+      "workout_id": 4001089835,
+      "sport": "Bike",
+      "minutes": 45,
+      "title": "Recupero | 45' pedalata agile senza qualità",
+      "source_library_ids": [
+        14963222
+      ],
+      "status": "PENDING_DUAL_METRIC_QA",
+      "function_class": "QUALITY_FUNCTION_REVIEW"
+    },
+    {
+      "week": 24,
+      "day": 2,
+      "workout_id": 4001089853,
+      "sport": "Run",
+      "minutes": 15,
+      "title": "Attivazione | 15' corsa sciolta pre-gara",
+      "source_library_ids": [
+        14963282
+      ],
+      "status": "PENDING_DUAL_METRIC_QA",
+      "function_class": "TAPER_ACTIVATION"
+    },
+    {
+      "week": 24,
+      "day": 4,
+      "workout_id": 4001089879,
+      "sport": "Bike",
+      "minutes": 40,
+      "title": "Attivazione | 40' 3x2' IM Pace rilassato, RPE 2-3",
+      "source_library_ids": [
+        14976563
+      ],
+      "status": "PENDING_DUAL_METRIC_QA",
+      "function_class": "RACE_SPECIFIC_OPEN"
+    },
+    {
+      "week": 24,
+      "day": 4,
+      "workout_id": 4001089902,
+      "sport": "Run",
+      "minutes": 15,
+      "title": "Attivazione | 15' corsa sciolta pre-gara",
+      "source_library_ids": [
+        14963282
+      ],
+      "status": "PENDING_DUAL_METRIC_QA",
+      "function_class": "TAPER_ACTIVATION"
+    },
+    {
+      "week": 24,
+      "day": 5,
+      "workout_id": 4001089913,
+      "sport": "Bike",
+      "minutes": 20,
+      "title": "Attivazione | 20' 2x1' IM Pace familiare, guida RPE 2-3",
+      "source_library_ids": [
+        14976606
+      ],
+      "status": "PENDING_DUAL_METRIC_QA",
+      "function_class": "RACE_SPECIFIC_OPEN"
+    },
+    {
+      "week": 24,
+      "day": 5,
+      "workout_id": 4001089934,
+      "sport": "Run",
+      "minutes": 15,
+      "title": "Attivazione | 15' corsa sciolta pre-gara",
+      "source_library_ids": [
+        14963282
+      ],
+      "status": "PENDING_DUAL_METRIC_QA",
+      "function_class": "TAPER_ACTIVATION"
+    }
+  ]
+}

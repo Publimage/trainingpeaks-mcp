@@ -51,6 +51,9 @@ _SUMMARY_PATH = "/workout-analysis/v2/analyze/summary"
 _CHARTS_PATH = "/workout-analysis/v2/analyze/charts"
 _LAPS_PATH = "/workout-analysis/v2/analyze/laps"
 
+ALLOWED_TIME_SERIES_SAMPLE_SECONDS = {1, 5, 10, 30, 60}
+MAX_INLINE_TIME_SERIES_POINTS = 5000
+
 
 def _save_analysis_json(workout_id: int, data: dict[str, Any]) -> str:
     """Save full analysis data (including time-series) to a JSON file.
@@ -132,6 +135,40 @@ async def _post_analysis(
         }
 
 
+def _sample_time_series(
+    points: list[dict[str, Any]],
+    *,
+    sample_seconds: int,
+    max_points: int,
+) -> tuple[list[dict[str, Any]], bool]:
+    """Return one chart point per elapsed-time bucket for inline MCP output.
+
+    The TrainingPeaks charts endpoint already limits/decimates long workouts.
+    We still downsample the returned series before sending it through MCP so a
+    full Ironman does not create an unnecessarily large chat payload. The full
+    unmodified chart data is always retained in data_file.
+    """
+    if not points:
+        return [], False
+
+    selected: list[dict[str, Any]] = []
+    last_bucket: int | None = None
+    for index, point in enumerate(points):
+        time_value = point.get("time") if isinstance(point, dict) else None
+        if isinstance(time_value, (int, float)):
+            bucket = int(float(time_value) // sample_seconds)
+        else:
+            bucket = index // sample_seconds
+        if bucket == last_bucket:
+            continue
+        last_bucket = bucket
+        if len(selected) >= max_points:
+            return selected, True
+        selected.append(point)
+
+    return selected, False
+
+
 def _stop_timestamp(start_iso: str | None, elapsed_seconds: Any) -> str | None:
     """v2's summary endpoint only gives ``startTimestamp`` — derive the stop
     from ``TotalElapsedTime`` (wall-clock elapsed, includes any pauses), to
@@ -146,16 +183,24 @@ def _stop_timestamp(start_iso: str | None, elapsed_seconds: Any) -> str | None:
     return (start_dt + timedelta(seconds=float(elapsed_seconds))).isoformat()
 
 
-async def tp_analyze_workout(workout_id: str) -> dict[str, Any]:
-    """Get detailed workout analysis including metrics, zones, and lap data.
+async def tp_analyze_workout(
+    workout_id: str,
+    sample_seconds: int = 30,
+    max_time_series_points: int = 2000,
+) -> dict[str, Any]:
+    """Get detailed workout analysis including metrics, laps and chart data.
 
-    Full time-series data is saved to a JSON file for further analysis.
+    Full time-series data is saved to a JSON file. A downsampled series is also
+    returned inline so callers can compare power/HR/speed without separately
+    opening the server-side file.
 
     Args:
         workout_id: The workout ID (from tp_get_workouts).
+        sample_seconds: Inline time-series sampling bucket (1/5/10/30/60 s).
+        max_time_series_points: Safety cap for inline points (1..5000).
 
     Returns:
-        Dict with totals, data channels, lap data, and path to full data file.
+        Dict with totals, channels, laps, sampled chart data and full-data path.
     """
     try:
         validated = WorkoutIdInput(workout_id=workout_id)
@@ -167,6 +212,24 @@ async def tp_analyze_workout(workout_id: str) -> dict[str, Any]:
             "message": msg,
         }
     wid = validated.workout_id
+    if sample_seconds not in ALLOWED_TIME_SERIES_SAMPLE_SECONDS:
+        return {
+            "isError": True,
+            "error_code": "VALIDATION_ERROR",
+            "message": (
+                "sample_seconds must be one of "
+                f"{sorted(ALLOWED_TIME_SERIES_SAMPLE_SECONDS)}."
+            ),
+        }
+    if not 1 <= max_time_series_points <= MAX_INLINE_TIME_SERIES_POINTS:
+        return {
+            "isError": True,
+            "error_code": "VALIDATION_ERROR",
+            "message": (
+                "max_time_series_points must be between 1 and "
+                f"{MAX_INLINE_TIME_SERIES_POINTS}."
+            ),
+        }
 
     async with TPClient() as client:
         athlete_id = await client.ensure_athlete_id()
@@ -288,7 +351,13 @@ async def tp_analyze_workout(workout_id: str) -> dict[str, Any]:
     # Save full raw data (including time-series) to file
     data_file = _save_analysis_json(wid, raw_data)
 
-    # Return summary inline, point to file for full data
+    # Return summary plus a bounded sampled series inline. The full chart data
+    # remains in data_file for lossless follow-up analysis.
+    inline_series, inline_truncated = _sample_time_series(
+        analysis.data,
+        sample_seconds=sample_seconds,
+        max_points=max_time_series_points,
+    )
     totals_out = {t.name: {"value": t.value, "unit": t.unit} for t in analysis.totals}
 
     channels = [
@@ -317,5 +386,9 @@ async def tp_analyze_workout(workout_id: str) -> dict[str, Any]:
         "lapData": analysis.lap_data,
         "lapColumns": analysis.lap_columns,
         "time_series_points": len(analysis.data),
+        "time_series_sample_seconds": sample_seconds,
+        "time_series_points_returned": len(inline_series),
+        "time_series_truncated": inline_truncated,
+        "data": inline_series,
         "data_file": data_file,
     }

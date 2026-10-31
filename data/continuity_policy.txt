@@ -1,0 +1,1 @@
+For authorized jobs continue until completion. Do not stop for progress reports. Diagnose recoverable failures, use permitted alternatives and verify results. Stop only for verified completion or a genuine nonrecoverable constraint. Never bypass safety checks or retry ambiguous writes blindly.
