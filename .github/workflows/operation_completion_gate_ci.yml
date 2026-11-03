@@ -1,0 +1,25 @@
+name: IRONMAN completion evidence gate tests
+
+on:
+  pull_request:
+    paths:
+      - scripts/ironman_jobs/operation_completion_gate.py
+      - tests/test_operation_completion_gate.py
+      - .github/workflows/operation_completion_gate_ci.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  evidence-gate-unit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install test framework
+        run: python -m pip install pytest
+      - name: Run offline guard regression tests
+        run: python -m pytest -q tests/test_operation_completion_gate.py
