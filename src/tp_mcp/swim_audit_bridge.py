@@ -10,9 +10,10 @@ import asyncio
 import copy
 import json
 import re
+from collections.abc import Callable
 from datetime import datetime, timezone
 from types import SimpleNamespace
-from typing import Any, Callable
+from typing import Any
 from urllib.error import HTTPError, URLError
 from urllib.request import HTTPRedirectHandler, ProxyHandler, Request, build_opener
 
@@ -102,7 +103,7 @@ async def build_swim_input(payload: Any, allowed_targets: Any, *, client: Any,
         raise PermissionError("SWIM_LIBRARY_OWNER_MISMATCH")
     items = await _rows(client, f"/exerciselibrary/v2/libraries/{target['container_id']}/items")
     item = _one(items, "exerciseLibraryItemId", int(target["workout_id"]))
-    _need(ITEM_KEYS <= set(item), "SWIM_PROVIDER_FIELDS_MISSING")
+    _need(set(item) >= ITEM_KEYS, "SWIM_PROVIDER_FIELDS_MISSING")
     library_out = {key: library[key] for key in ("exerciseLibraryId", "ownerId")}
     item_out = {key: item[key] for key in ITEM_KEYS}
     _validate_projection(library_out, item_out, target)

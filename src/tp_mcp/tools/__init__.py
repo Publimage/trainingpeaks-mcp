@@ -1,9 +1,13 @@
 """MCP tools for TrainingPeaks."""
 
 from tp_mcp.tools.analyze import tp_analyze_workout
-from tp_mcp.tools.atp import tp_get_atp
 from tp_mcp.tools.assets import tp_publish_public_asset
+from tp_mcp.tools.atp import tp_get_atp
 from tp_mcp.tools.auth_status import tp_auth_status
+from tp_mcp.tools.beginner_strength_plan import (
+    tp_batch_add_beginner_strength,
+    tp_batch_delete_beginner_classic_strength,
+)
 from tp_mcp.tools.equipment import (
     tp_create_equipment,
     tp_delete_equipment,
@@ -30,7 +34,6 @@ from tp_mcp.tools.events import (
 )
 from tp_mcp.tools.fit_reader import tp_get_workout_fit_data
 from tp_mcp.tools.fitness import tp_get_fitness
-from tp_mcp.tools.radar import tp_get_coaching_radar
 from tp_mcp.tools.groups import (
     tp_add_athletes_to_group,
     tp_create_group,
@@ -40,6 +43,9 @@ from tp_mcp.tools.groups import (
     tp_remove_athletes_from_group,
     tp_rename_group,
 )
+from tp_mcp.tools.ironman_dynamic_targets import tp_ironman_resolve_target
+from tp_mcp.tools.ironman_operator import tp_ironman_operator
+from tp_mcp.tools.ironman_publisher_status import tp_get_ironman_publisher_status
 from tp_mcp.tools.library import (
     tp_create_library,
     tp_create_library_item,
@@ -50,14 +56,14 @@ from tp_mcp.tools.library import (
     tp_schedule_library_workout,
     tp_update_library_item,
 )
-from tp_mcp.tools.ironman_operator import tp_ironman_operator
-from tp_mcp.tools.ironman_publisher_status import tp_get_ironman_publisher_status
+from tp_mcp.tools.metrics import tp_get_metrics, tp_get_nutrition, tp_log_metrics
+from tp_mcp.tools.native_note_library import tp_sync_intermediate_native_notes
 from tp_mcp.tools.organization import (
+    tp_copy_library_items,
     tp_copy_training_plan,
     tp_create_plan_folder,
-    tp_delete_training_plan,
-    tp_copy_library_items,
     tp_delete_library_items,
+    tp_delete_training_plan,
     tp_list_plan_folders,
     tp_move_athletes_between_groups,
     tp_move_library_items,
@@ -66,15 +72,13 @@ from tp_mcp.tools.organization import (
     tp_rename_plan_folder,
     tp_rename_training_plan,
 )
-from tp_mcp.tools.native_note_library import tp_sync_intermediate_native_notes
-from tp_mcp.tools.metrics import tp_get_metrics, tp_get_nutrition, tp_log_metrics
 from tp_mcp.tools.peaks import tp_get_peaks, tp_get_workout_prs
 from tp_mcp.tools.plan_attachments import tp_attach_training_plan_note_pdf
 from tp_mcp.tools.plans import (
     tp_add_training_plan_library_workout,
-    tp_batch_add_training_plan_library_workouts,
     tp_add_training_plan_note,
     tp_apply_training_plan,
+    tp_batch_add_training_plan_library_workouts,
     tp_create_training_plan,
     tp_delete_training_plan_other,
     tp_get_training_plan,
@@ -83,6 +87,7 @@ from tp_mcp.tools.plans import (
     tp_list_training_plans,
 )
 from tp_mcp.tools.profile import tp_get_profile, tp_list_athletes
+from tp_mcp.tools.radar import tp_get_coaching_radar
 from tp_mcp.tools.refresh_auth import tp_refresh_auth
 from tp_mcp.tools.settings import (
     tp_create_zones,
@@ -92,10 +97,6 @@ from tp_mcp.tools.settings import (
     tp_update_hr_zones,
     tp_update_nutrition,
     tp_update_speed_zones,
-)
-from tp_mcp.tools.beginner_strength_plan import (
-    tp_batch_add_beginner_strength,
-    tp_batch_delete_beginner_classic_strength,
 )
 from tp_mcp.tools.strength import (
     tp_batch_add_intermediate_strength,
@@ -177,6 +178,7 @@ __all__ = [
     "tp_get_libraries",
     "tp_get_library_item",
     "tp_get_library_items",
+    "tp_ironman_resolve_target",
     "tp_ironman_operator",
     "tp_get_ironman_publisher_status",
     "tp_list_plan_folders",

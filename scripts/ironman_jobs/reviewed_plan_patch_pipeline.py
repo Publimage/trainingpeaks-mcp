@@ -234,6 +234,32 @@ def require_explicit_target(cfg: dict[str, Any], requested_plan_id: str | None) 
             "STOP_TARGET_MISMATCH")
 
 
+
+def require_explicit_change_request(cfg: dict[str, Any], requested_scope: str | None,
+                                    requested_ids_json: str | None) -> None:
+    """Protect against a stale manifest for a NEW edit of the SAME plan.
+
+    The independent request scope and exact IDs are supplied by the operator,
+    never resolved from the last manifest file.
+    """
+    manifest = cfg["manifest"]
+    require(isinstance(requested_scope, str)
+            and requested_scope.startswith("trainingpeaks:plan:"),
+            "REQUEST_SCOPE_REQUIRED")
+    require(requested_scope == manifest["scope"], "STOP_REQUEST_SCOPE_MISMATCH")
+    require(isinstance(requested_ids_json, str)
+            and len(requested_ids_json) <= 5000, "REQUEST_WORKOUT_IDS_REQUIRED")
+    try:
+        ids = json.loads(requested_ids_json)
+    except ValueError as exc:
+        raise PlanPatchStop("REQUEST_WORKOUT_IDS_INVALID") from exc
+    require(type(ids) is list and 1 <= len(ids) <= 150
+            and all(type(x) is int and x > 0 for x in ids)
+            and len(ids) == len(set(ids)), "REQUEST_WORKOUT_IDS_INVALID")
+    expected_ids = [x["workout_id"] for x in manifest["items"]]
+    require(sorted(ids) == sorted(expected_ids), "STOP_REQUEST_RESOURCE_MISMATCH")
+
+
 def run_main(*, execute: bool) -> None:
     try:
         # The permanent read-only job can be health-checked even before a new
@@ -252,6 +278,9 @@ def run_main(*, execute: bool) -> None:
         # The operator supplies a separate, explicit live-verified plan ID.
         cfg = load_config()
         require_explicit_target(cfg, os.environ.get("IRONMAN_REQUEST_TARGET_PLAN_ID"))
+        require_explicit_change_request(
+            cfg, os.environ.get("IRONMAN_REQUEST_TARGET_SCOPE"),
+            os.environ.get("IRONMAN_REQUEST_WORKOUT_IDS_JSON"))
         print(json.dumps(asyncio.run(publish(execute=execute)),
                          ensure_ascii=False, sort_keys=True), flush=True)
     except Exception as exc:

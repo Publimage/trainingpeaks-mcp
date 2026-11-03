@@ -151,6 +151,10 @@ async def tp_batch_add_beginner_strength(
         if signature in seen:
             return _err("VALIDATION_ERROR", "Duplicate item.")
         seen.add(signature)
+        set_counts: list[int] = [
+            len(exercise["sets"]) for block in blocks for exercise in block["exercises"]
+        ]
+        total_sets = sum(set_counts)
         manifest.append(
             {
                 "source_id": source_id,
@@ -158,11 +162,7 @@ async def tp_batch_add_beginner_strength(
                 "title": title,
                 "instructions": instructions,
                 "blocks": blocks,
-                "sets": sum(
-                    len(exercise["sets"])
-                    for block in blocks
-                    for exercise in block["exercises"]
-                ),
+                "sets": total_sets,
             }
         )
 
