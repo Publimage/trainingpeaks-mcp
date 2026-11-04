@@ -1,0 +1,65 @@
+{
+  "schema": "IRONMAN_COACHING_RADAR_ROSTER_V1",
+  "group_id": 74397,
+  "group_name": "Alberto",
+  "source": "TrainingPeaks coach group readback 2026-10-17",
+  "exclusions": [
+    {
+      "athlete_id": 3737499,
+      "name": "Marco Troni",
+      "reason": "excluded from active coached roster per project instruction"
+    }
+  ],
+  "athletes": [
+    {
+      "athlete_id": 6133559,
+      "name": "Cesare Bertuccelli",
+      "enabled": true
+    },
+    {
+      "athlete_id": 3657374,
+      "name": "Eugenio Rossetti",
+      "enabled": true
+    },
+    {
+      "athlete_id": 5590716,
+      "name": "Francesco Franceschini",
+      "enabled": true
+    },
+    {
+      "athlete_id": 5976093,
+      "name": "Gianluca Gregorini",
+      "enabled": true
+    },
+    {
+      "athlete_id": 4732548,
+      "name": "Giuseppe Giannoni",
+      "enabled": true
+    },
+    {
+      "athlete_id": 6605664,
+      "name": "Lorenzo Notaro",
+      "enabled": true
+    },
+    {
+      "athlete_id": 2932097,
+      "name": "Massimiliano Polverari",
+      "enabled": true
+    },
+    {
+      "athlete_id": 6583514,
+      "name": "Michele Manfredi",
+      "enabled": true
+    },
+    {
+      "athlete_id": 6610602,
+      "name": "Samuele Ascenzi",
+      "enabled": true
+    },
+    {
+      "athlete_id": 4480273,
+      "name": "Silvia Moglioni",
+      "enabled": true
+    }
+  ]
+}

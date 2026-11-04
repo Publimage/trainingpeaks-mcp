@@ -1,0 +1,186 @@
+{
+  "schema": "IRONMAN_RADAR_AI_CONTEXT_EVAL_CASES_V1",
+  "as_of": "2026-10-17",
+  "source": "live Coaching Radar category snapshot; no workout payloads or KB contents",
+  "expected_role_families": [
+    "athlete_card",
+    "master_coaching_context",
+    "specialist"
+  ],
+  "cases": [
+    {
+      "athlete_id": 6133559,
+      "categories": [
+        "TSS_DATA_QUALITY"
+      ],
+      "data_quality": [
+        "WELLNESS_PRESENT"
+      ],
+      "expected_topics": [
+        "TSS",
+        "threshold/soglia",
+        "RPE",
+        "data quality"
+      ],
+      "radar_evidence_sha256": "9da9aa43041d4a35348b8ede3e3508a9785054299c8eba61339fe0bbc255ffcc",
+      "radar_status": "YELLOW"
+    },
+    {
+      "athlete_id": 3657374,
+      "categories": [
+        "COMPLETION_UNCONFIRMED",
+        "IF_DATA_QUALITY",
+        "TSS_DATA_QUALITY"
+      ],
+      "data_quality": [
+        "WELLNESS_PRESENT"
+      ],
+      "expected_topics": [
+        "completion",
+        "IF",
+        "TSS",
+        "threshold/soglia",
+        "RPE"
+      ],
+      "radar_evidence_sha256": "c100516ebe2f16fd878be01f157cf7ca3fbb8e6ab12173b202dbb366e5899afb",
+      "radar_status": "YELLOW"
+    },
+    {
+      "athlete_id": 5590716,
+      "categories": [
+        "COMPLETION_UNCONFIRMED"
+      ],
+      "data_quality": [
+        "MISSING_RPE"
+      ],
+      "expected_topics": [
+        "completion",
+        "feedback",
+        "absence of data"
+      ],
+      "radar_evidence_sha256": "f4af474fe7872eb7d211ed6f399fc8668bd6439828e6ee65753b866a82e3bc09",
+      "radar_status": "YELLOW"
+    },
+    {
+      "athlete_id": 5976093,
+      "categories": [],
+      "data_quality": [
+        "MISSING_RPE"
+      ],
+      "expected_topics": [
+        "feedback",
+        "absence of data",
+        "coach review policy"
+      ],
+      "radar_evidence_sha256": "87e2132027fe775738da92d2ade1159071d4482f4d071e7d68f341c2f801c47a",
+      "radar_status": "GREEN"
+    },
+    {
+      "athlete_id": 4732548,
+      "categories": [
+        "COMPLETION_UNCONFIRMED"
+      ],
+      "data_quality": [
+        "MISSING_RPE"
+      ],
+      "expected_topics": [
+        "completion",
+        "feedback",
+        "upcoming load context"
+      ],
+      "radar_evidence_sha256": "4775265f3001c36067f8ddc516d24596a1910e2f83efce38f31cd723cca93168",
+      "radar_status": "YELLOW"
+    },
+    {
+      "athlete_id": 6605664,
+      "categories": [
+        "COMPLETION_UNCONFIRMED"
+      ],
+      "data_quality": [
+        "WELLNESS_MISSING"
+      ],
+      "expected_topics": [
+        "completion",
+        "wellness absence",
+        "feedback"
+      ],
+      "radar_evidence_sha256": "4ebb731364d5d1ea4298137a4d11af0b4ca3bab7baf597ccfecded039514643d",
+      "radar_status": "YELLOW"
+    },
+    {
+      "athlete_id": 2932097,
+      "categories": [
+        "IF_DATA_QUALITY",
+        "TSS_DATA_QUALITY"
+      ],
+      "data_quality": [
+        "WELLNESS_MISSING"
+      ],
+      "expected_topics": [
+        "IF",
+        "TSS",
+        "threshold/soglia",
+        "RPE",
+        "wellness absence"
+      ],
+      "radar_evidence_sha256": "f1576a11e73305472930723f429c2d05d883e105f15dbc3548d8914d1c5296fe",
+      "radar_status": "YELLOW"
+    },
+    {
+      "athlete_id": 6583514,
+      "categories": [
+        "COMPLETION_UNCONFIRMED",
+        "IF_DATA_QUALITY"
+      ],
+      "data_quality": [
+        "WELLNESS_PRESENT"
+      ],
+      "expected_topics": [
+        "completion",
+        "IF",
+        "RPE",
+        "threshold/soglia"
+      ],
+      "radar_evidence_sha256": "303e836206d9442ab97c8fdd1875a71724398952cd22d77f68620278a089171b",
+      "radar_status": "YELLOW"
+    },
+    {
+      "athlete_id": 6610602,
+      "categories": [
+        "DURATION_SHORT"
+      ],
+      "data_quality": [
+        "MISSING_RPE"
+      ],
+      "expected_topics": [
+        "planned vs actual duration",
+        "feedback",
+        "recovery"
+      ],
+      "radar_evidence_sha256": "bad81353239fa9b8af773c531e34ec271c7df839ca39eda1af26622b63d7c571",
+      "radar_status": "YELLOW"
+    },
+    {
+      "athlete_id": 4480273,
+      "categories": [
+        "COMPLETION_UNCONFIRMED",
+        "IF_DATA_QUALITY"
+      ],
+      "data_quality": [
+        "MISSING_RPE"
+      ],
+      "expected_topics": [
+        "completion",
+        "IF",
+        "RPE",
+        "feedback"
+      ],
+      "radar_evidence_sha256": "d0620c5f179871217dbf27cb6a2d4ef66900115e37541c63d32a4ecadcd986a5",
+      "radar_status": "YELLOW"
+    }
+  ],
+  "trainingpeaks_writes": 0,
+  "drive_writes": 0,
+  "ai_calls": 0,
+  "snapshot_provenance": "Evidence hashes read back independently from TrainingPeaks Coaching Radar on 2026-10-17; no workout payloads stored."
+}

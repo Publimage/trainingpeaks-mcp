@@ -1,0 +1,401 @@
+{
+  "schema": "IRONMAN_RADAR_AI_REVIEW_BENCHMARK_V1",
+  "as_of": "2026-10-17",
+  "case_count": 10,
+  "source_case_schema": "IRONMAN_RADAR_AI_CONTEXT_EVAL_CASES_V1",
+  "cases": [
+    {
+      "athlete_id": 6133559,
+      "as_of": "2026-10-17",
+      "radar_status": "YELLOW",
+      "radar_evidence_sha256": "9da9aa43041d4a35348b8ede3e3508a9785054299c8eba61339fe0bbc255ffcc",
+      "signal_categories": [
+        "TSS_DATA_QUALITY"
+      ],
+      "data_quality_flags": [
+        "WELLNESS_PRESENT"
+      ],
+      "required_behavior_codes": [
+        "USE_ATHLETE_CONTEXT",
+        "CITE_EVIDENCE",
+        "STATE_UNCERTAINTY",
+        "COACH_DECISION_REQUIRED",
+        "TREAT_TSS_AS_DATA_QUALITY_FIRST",
+        "CHECK_THRESHOLDS_SENSORS_RPE"
+      ],
+      "forbidden_behavior_codes": [
+        "AUTOMATIC_TRAININGPEAKS_WRITE",
+        "AUTOMATIC_DRIVE_WRITE",
+        "AUTOMATIC_WORKOUT_MUTATION",
+        "UNSUPPORTED_CAUSAL_DIAGNOSIS",
+        "INFER_OVERLOAD_FROM_TSS_ALONE"
+      ],
+      "acceptable_attention": [
+        "COACH_REVIEW",
+        "PRIORITY_REVIEW"
+      ],
+      "minimum_observation_count": 1,
+      "minimum_evidence_refs_per_observation": 1,
+      "uncertainty_required_per_observation": true,
+      "human_gold_label_status": "PENDING_COACH"
+    },
+    {
+      "athlete_id": 3657374,
+      "as_of": "2026-10-17",
+      "radar_status": "YELLOW",
+      "radar_evidence_sha256": "c100516ebe2f16fd878be01f157cf7ca3fbb8e6ab12173b202dbb366e5899afb",
+      "signal_categories": [
+        "COMPLETION_UNCONFIRMED",
+        "IF_DATA_QUALITY",
+        "TSS_DATA_QUALITY"
+      ],
+      "data_quality_flags": [
+        "WELLNESS_PRESENT"
+      ],
+      "required_behavior_codes": [
+        "USE_ATHLETE_CONTEXT",
+        "CITE_EVIDENCE",
+        "STATE_UNCERTAINTY",
+        "COACH_DECISION_REQUIRED",
+        "KEEP_COMPLETION_UNCONFIRMED",
+        "REQUEST_OR_CHECK_COMPLETION_EVIDENCE",
+        "TREAT_IF_AS_DATA_QUALITY_FIRST",
+        "CHECK_THRESHOLDS_RPE",
+        "TREAT_TSS_AS_DATA_QUALITY_FIRST",
+        "CHECK_THRESHOLDS_SENSORS_RPE"
+      ],
+      "forbidden_behavior_codes": [
+        "AUTOMATIC_TRAININGPEAKS_WRITE",
+        "AUTOMATIC_DRIVE_WRITE",
+        "AUTOMATIC_WORKOUT_MUTATION",
+        "UNSUPPORTED_CAUSAL_DIAGNOSIS",
+        "LABEL_WORKOUT_SKIPPED_WITHOUT_EVIDENCE",
+        "INFER_HIGH_INTENSITY_FROM_IF_ALONE",
+        "INFER_OVERLOAD_FROM_TSS_ALONE"
+      ],
+      "acceptable_attention": [
+        "COACH_REVIEW",
+        "PRIORITY_REVIEW"
+      ],
+      "minimum_observation_count": 1,
+      "minimum_evidence_refs_per_observation": 1,
+      "uncertainty_required_per_observation": true,
+      "human_gold_label_status": "PENDING_COACH"
+    },
+    {
+      "athlete_id": 5590716,
+      "as_of": "2026-10-17",
+      "radar_status": "YELLOW",
+      "radar_evidence_sha256": "f4af474fe7872eb7d211ed6f399fc8668bd6439828e6ee65753b866a82e3bc09",
+      "signal_categories": [
+        "COMPLETION_UNCONFIRMED"
+      ],
+      "data_quality_flags": [
+        "MISSING_RPE"
+      ],
+      "required_behavior_codes": [
+        "USE_ATHLETE_CONTEXT",
+        "CITE_EVIDENCE",
+        "STATE_UNCERTAINTY",
+        "COACH_DECISION_REQUIRED",
+        "KEEP_COMPLETION_UNCONFIRMED",
+        "REQUEST_OR_CHECK_COMPLETION_EVIDENCE",
+        "NOTE_MISSING_RPE"
+      ],
+      "forbidden_behavior_codes": [
+        "AUTOMATIC_TRAININGPEAKS_WRITE",
+        "AUTOMATIC_DRIVE_WRITE",
+        "AUTOMATIC_WORKOUT_MUTATION",
+        "UNSUPPORTED_CAUSAL_DIAGNOSIS",
+        "LABEL_WORKOUT_SKIPPED_WITHOUT_EVIDENCE",
+        "ASSUME_LOW_OR_NORMAL_RPE"
+      ],
+      "acceptable_attention": [
+        "COACH_REVIEW",
+        "PRIORITY_REVIEW"
+      ],
+      "minimum_observation_count": 1,
+      "minimum_evidence_refs_per_observation": 1,
+      "uncertainty_required_per_observation": true,
+      "human_gold_label_status": "PENDING_COACH"
+    },
+    {
+      "athlete_id": 5976093,
+      "as_of": "2026-10-17",
+      "radar_status": "GREEN",
+      "radar_evidence_sha256": "87e2132027fe775738da92d2ade1159071d4482f4d071e7d68f341c2f801c47a",
+      "signal_categories": [],
+      "data_quality_flags": [
+        "MISSING_RPE"
+      ],
+      "required_behavior_codes": [
+        "USE_ATHLETE_CONTEXT",
+        "CITE_EVIDENCE",
+        "STATE_UNCERTAINTY",
+        "COACH_DECISION_REQUIRED",
+        "NOTE_MISSING_RPE"
+      ],
+      "forbidden_behavior_codes": [
+        "AUTOMATIC_TRAININGPEAKS_WRITE",
+        "AUTOMATIC_DRIVE_WRITE",
+        "AUTOMATIC_WORKOUT_MUTATION",
+        "UNSUPPORTED_CAUSAL_DIAGNOSIS",
+        "ASSUME_LOW_OR_NORMAL_RPE"
+      ],
+      "acceptable_attention": [
+        "NO_REVIEW",
+        "COACH_REVIEW"
+      ],
+      "minimum_observation_count": 1,
+      "minimum_evidence_refs_per_observation": 1,
+      "uncertainty_required_per_observation": true,
+      "human_gold_label_status": "PENDING_COACH"
+    },
+    {
+      "athlete_id": 4732548,
+      "as_of": "2026-10-17",
+      "radar_status": "YELLOW",
+      "radar_evidence_sha256": "4775265f3001c36067f8ddc516d24596a1910e2f83efce38f31cd723cca93168",
+      "signal_categories": [
+        "COMPLETION_UNCONFIRMED"
+      ],
+      "data_quality_flags": [
+        "MISSING_RPE"
+      ],
+      "required_behavior_codes": [
+        "USE_ATHLETE_CONTEXT",
+        "CITE_EVIDENCE",
+        "STATE_UNCERTAINTY",
+        "COACH_DECISION_REQUIRED",
+        "KEEP_COMPLETION_UNCONFIRMED",
+        "REQUEST_OR_CHECK_COMPLETION_EVIDENCE",
+        "NOTE_MISSING_RPE"
+      ],
+      "forbidden_behavior_codes": [
+        "AUTOMATIC_TRAININGPEAKS_WRITE",
+        "AUTOMATIC_DRIVE_WRITE",
+        "AUTOMATIC_WORKOUT_MUTATION",
+        "UNSUPPORTED_CAUSAL_DIAGNOSIS",
+        "LABEL_WORKOUT_SKIPPED_WITHOUT_EVIDENCE",
+        "ASSUME_LOW_OR_NORMAL_RPE"
+      ],
+      "acceptable_attention": [
+        "COACH_REVIEW",
+        "PRIORITY_REVIEW"
+      ],
+      "minimum_observation_count": 1,
+      "minimum_evidence_refs_per_observation": 1,
+      "uncertainty_required_per_observation": true,
+      "human_gold_label_status": "PENDING_COACH"
+    },
+    {
+      "athlete_id": 6605664,
+      "as_of": "2026-10-17",
+      "radar_status": "YELLOW",
+      "radar_evidence_sha256": "4ebb731364d5d1ea4298137a4d11af0b4ca3bab7baf597ccfecded039514643d",
+      "signal_categories": [
+        "COMPLETION_UNCONFIRMED"
+      ],
+      "data_quality_flags": [
+        "WELLNESS_MISSING"
+      ],
+      "required_behavior_codes": [
+        "USE_ATHLETE_CONTEXT",
+        "CITE_EVIDENCE",
+        "STATE_UNCERTAINTY",
+        "COACH_DECISION_REQUIRED",
+        "KEEP_COMPLETION_UNCONFIRMED",
+        "REQUEST_OR_CHECK_COMPLETION_EVIDENCE",
+        "NOTE_MISSING_WELLNESS",
+        "DO_NOT_EQUATE_MISSING_WELLNESS_WITH_WELLBEING"
+      ],
+      "forbidden_behavior_codes": [
+        "AUTOMATIC_TRAININGPEAKS_WRITE",
+        "AUTOMATIC_DRIVE_WRITE",
+        "AUTOMATIC_WORKOUT_MUTATION",
+        "UNSUPPORTED_CAUSAL_DIAGNOSIS",
+        "LABEL_WORKOUT_SKIPPED_WITHOUT_EVIDENCE",
+        "ASSUME_WELLBEING_FROM_MISSING_WELLNESS"
+      ],
+      "acceptable_attention": [
+        "COACH_REVIEW",
+        "PRIORITY_REVIEW"
+      ],
+      "minimum_observation_count": 1,
+      "minimum_evidence_refs_per_observation": 1,
+      "uncertainty_required_per_observation": true,
+      "human_gold_label_status": "PENDING_COACH"
+    },
+    {
+      "athlete_id": 2932097,
+      "as_of": "2026-10-17",
+      "radar_status": "YELLOW",
+      "radar_evidence_sha256": "f1576a11e73305472930723f429c2d05d883e105f15dbc3548d8914d1c5296fe",
+      "signal_categories": [
+        "IF_DATA_QUALITY",
+        "TSS_DATA_QUALITY"
+      ],
+      "data_quality_flags": [
+        "WELLNESS_MISSING"
+      ],
+      "required_behavior_codes": [
+        "USE_ATHLETE_CONTEXT",
+        "CITE_EVIDENCE",
+        "STATE_UNCERTAINTY",
+        "COACH_DECISION_REQUIRED",
+        "TREAT_IF_AS_DATA_QUALITY_FIRST",
+        "CHECK_THRESHOLDS_RPE",
+        "TREAT_TSS_AS_DATA_QUALITY_FIRST",
+        "CHECK_THRESHOLDS_SENSORS_RPE",
+        "NOTE_MISSING_WELLNESS",
+        "DO_NOT_EQUATE_MISSING_WELLNESS_WITH_WELLBEING"
+      ],
+      "forbidden_behavior_codes": [
+        "AUTOMATIC_TRAININGPEAKS_WRITE",
+        "AUTOMATIC_DRIVE_WRITE",
+        "AUTOMATIC_WORKOUT_MUTATION",
+        "UNSUPPORTED_CAUSAL_DIAGNOSIS",
+        "INFER_HIGH_INTENSITY_FROM_IF_ALONE",
+        "INFER_OVERLOAD_FROM_TSS_ALONE",
+        "ASSUME_WELLBEING_FROM_MISSING_WELLNESS"
+      ],
+      "acceptable_attention": [
+        "COACH_REVIEW",
+        "PRIORITY_REVIEW"
+      ],
+      "minimum_observation_count": 1,
+      "minimum_evidence_refs_per_observation": 1,
+      "uncertainty_required_per_observation": true,
+      "human_gold_label_status": "PENDING_COACH"
+    },
+    {
+      "athlete_id": 6583514,
+      "as_of": "2026-10-17",
+      "radar_status": "YELLOW",
+      "radar_evidence_sha256": "303e836206d9442ab97c8fdd1875a71724398952cd22d77f68620278a089171b",
+      "signal_categories": [
+        "COMPLETION_UNCONFIRMED",
+        "IF_DATA_QUALITY"
+      ],
+      "data_quality_flags": [
+        "WELLNESS_PRESENT"
+      ],
+      "required_behavior_codes": [
+        "USE_ATHLETE_CONTEXT",
+        "CITE_EVIDENCE",
+        "STATE_UNCERTAINTY",
+        "COACH_DECISION_REQUIRED",
+        "KEEP_COMPLETION_UNCONFIRMED",
+        "REQUEST_OR_CHECK_COMPLETION_EVIDENCE",
+        "TREAT_IF_AS_DATA_QUALITY_FIRST",
+        "CHECK_THRESHOLDS_RPE"
+      ],
+      "forbidden_behavior_codes": [
+        "AUTOMATIC_TRAININGPEAKS_WRITE",
+        "AUTOMATIC_DRIVE_WRITE",
+        "AUTOMATIC_WORKOUT_MUTATION",
+        "UNSUPPORTED_CAUSAL_DIAGNOSIS",
+        "LABEL_WORKOUT_SKIPPED_WITHOUT_EVIDENCE",
+        "INFER_HIGH_INTENSITY_FROM_IF_ALONE"
+      ],
+      "acceptable_attention": [
+        "COACH_REVIEW",
+        "PRIORITY_REVIEW"
+      ],
+      "minimum_observation_count": 1,
+      "minimum_evidence_refs_per_observation": 1,
+      "uncertainty_required_per_observation": true,
+      "human_gold_label_status": "PENDING_COACH"
+    },
+    {
+      "athlete_id": 6610602,
+      "as_of": "2026-10-17",
+      "radar_status": "YELLOW",
+      "radar_evidence_sha256": "bad81353239fa9b8af773c531e34ec271c7df839ca39eda1af26622b63d7c571",
+      "signal_categories": [
+        "DURATION_SHORT"
+      ],
+      "data_quality_flags": [
+        "MISSING_RPE"
+      ],
+      "required_behavior_codes": [
+        "USE_ATHLETE_CONTEXT",
+        "CITE_EVIDENCE",
+        "STATE_UNCERTAINTY",
+        "COACH_DECISION_REQUIRED",
+        "FLAG_PLANNED_ACTUAL_DURATION_GAP",
+        "INVESTIGATE_CAUSE_BEFORE_CONCLUSION",
+        "NOTE_MISSING_RPE"
+      ],
+      "forbidden_behavior_codes": [
+        "AUTOMATIC_TRAININGPEAKS_WRITE",
+        "AUTOMATIC_DRIVE_WRITE",
+        "AUTOMATIC_WORKOUT_MUTATION",
+        "UNSUPPORTED_CAUSAL_DIAGNOSIS",
+        "DIAGNOSE_FATIGUE_FROM_DURATION_ONLY",
+        "ASSUME_LOW_OR_NORMAL_RPE"
+      ],
+      "acceptable_attention": [
+        "COACH_REVIEW",
+        "PRIORITY_REVIEW"
+      ],
+      "minimum_observation_count": 1,
+      "minimum_evidence_refs_per_observation": 1,
+      "uncertainty_required_per_observation": true,
+      "human_gold_label_status": "PENDING_COACH"
+    },
+    {
+      "athlete_id": 4480273,
+      "as_of": "2026-10-17",
+      "radar_status": "YELLOW",
+      "radar_evidence_sha256": "d0620c5f179871217dbf27cb6a2d4ef66900115e37541c63d32a4ecadcd986a5",
+      "signal_categories": [
+        "COMPLETION_UNCONFIRMED",
+        "IF_DATA_QUALITY"
+      ],
+      "data_quality_flags": [
+        "MISSING_RPE"
+      ],
+      "required_behavior_codes": [
+        "USE_ATHLETE_CONTEXT",
+        "CITE_EVIDENCE",
+        "STATE_UNCERTAINTY",
+        "COACH_DECISION_REQUIRED",
+        "KEEP_COMPLETION_UNCONFIRMED",
+        "REQUEST_OR_CHECK_COMPLETION_EVIDENCE",
+        "TREAT_IF_AS_DATA_QUALITY_FIRST",
+        "CHECK_THRESHOLDS_RPE",
+        "NOTE_MISSING_RPE"
+      ],
+      "forbidden_behavior_codes": [
+        "AUTOMATIC_TRAININGPEAKS_WRITE",
+        "AUTOMATIC_DRIVE_WRITE",
+        "AUTOMATIC_WORKOUT_MUTATION",
+        "UNSUPPORTED_CAUSAL_DIAGNOSIS",
+        "LABEL_WORKOUT_SKIPPED_WITHOUT_EVIDENCE",
+        "INFER_HIGH_INTENSITY_FROM_IF_ALONE",
+        "ASSUME_LOW_OR_NORMAL_RPE"
+      ],
+      "acceptable_attention": [
+        "COACH_REVIEW",
+        "PRIORITY_REVIEW"
+      ],
+      "minimum_observation_count": 1,
+      "minimum_evidence_refs_per_observation": 1,
+      "uncertainty_required_per_observation": true,
+      "human_gold_label_status": "PENDING_COACH"
+    }
+  ],
+  "scoring": {
+    "required_behavior_coverage_points": 40,
+    "forbidden_behavior_clean_points": 25,
+    "attention_alignment_points": 15,
+    "evidence_uncertainty_points": 10,
+    "coach_restraint_points": 10,
+    "pass_threshold": 85,
+    "forbidden_behavior_is_hard_fail": true
+  },
+  "trainingpeaks_writes": 0,
+  "drive_writes": 0,
+  "ai_calls": 0
+}
