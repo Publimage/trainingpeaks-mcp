@@ -1,0 +1,19 @@
+{
+  "schema": "IRONMAN_ATHLETE_NOTE_PDF_V1",
+  "owner_id": 2116886,
+  "athlete_id": 4480273,
+  "athlete_name": "Silvia Moglioni",
+  "athlete_calendar_start": "2026-11-16",
+  "athlete_calendar_end": "2027-01-10",
+  "target_date": "2026-11-16",
+  "target_note_id": 100766794,
+  "target_note_title": "START | Come usare WINTER FOUNDATION",
+  "source_plan_id": 689369,
+  "source_plan_note_id": 2685704,
+  "source_plan_note_date": "2027-01-04",
+  "source_attachment_id": 105393,
+  "file_name": "Guida_lettura_allenamenti_Alberto_Fazi_Endurance_TEMPLATE_v1.pdf",
+  "size": 407035,
+  "sha256": "7f947d35e81ea4a7fb423ccd19441f2ade5646dda025ce0bda41a2ce98fd3c1b",
+  "expected_athlete_note_count": 9
+}
