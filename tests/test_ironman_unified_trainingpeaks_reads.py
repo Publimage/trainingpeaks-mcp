@@ -1,0 +1,247 @@
+"""Read-only TrainingPeaks gateway tests with a synthetic provider.
+
+No real credentials, remote host, or provider mutation.
+"""
+import asyncio
+
+import pytest
+
+from scripts.ironman_jobs.ironman_unified_changeset_engine import SecurityDenied, VALID_KINDS
+from scripts.ironman_jobs.ironman_unified_trainingpeaks_reads import (
+    create_read_registry, plan_windows, read_trainingpeaks_item
+)
+
+OWNER = 2116886
+PLAN = 684602
+LIBRARY = 3891872
+PERSON = 6678583
+NOTE = 2653899
+WORKOUT = 3996858792
+STRENGTH = 33973536
+LIB_ITEM = 14963420
+
+
+def spec(kind, rid, container_id=PLAN):
+    return {
+        "kind": kind,
+        "target": {
+            "provider": "trainingpeaks", "owner_id": OWNER,
+            "container_kind": "workout_library" if kind.startswith("library.") else "training_plan",
+            "container_id": container_id, "resource_id": rid
+        }
+    }
+
+
+class Response:
+    is_error = False
+
+    def __init__(self, data):
+        self.data = data
+
+
+class FakeTP:
+    def __init__(self):
+        self.reads = []
+
+    async def __aenter__(self):
+        return self
+
+    async def __aexit__(self, *_):
+        return False
+
+    async def _get_user_data(self):
+        return {"personId": OWNER}
+
+    async def get(self, route):
+        self.reads.append(route)
+        if route == "/plans/v1/plans/684602":
+            return Response({
+                "planId": PLAN, "ownerPersonId": OWNER, "planPersonId": PERSON,
+                "startDate": "2026-10-05T00:00:00Z", "weekCount": 24
+            })
+        if "/workouts/" in route:
+            return Response([{
+                "workoutId": WORKOUT, "title": "Torque week 2",
+                "description": "3x5'", "structure": {"structure": []}
+            }] if route.endswith("2026-10-05/2026-11-29") else [])
+        if "/calendarNote/" in route:
+            return Response([{
+                "id": NOTE, "planId": PLAN, "title": "README FIRST",
+                "description": "Three PDFs",
+                "attachments": [{"id": 98909, "fileName": "weekly_v1.1.pdf"}]
+            }])
+        if route == "/exerciselibrary/v2/libraries/3891872/items":
+            return Response([{
+                "exerciseLibraryItemId": LIB_ITEM,
+                "itemName": "CSS 2200m", "structure": {"structure": []}
+            }])
+        raise AssertionError("UNEXPECTED_PROVIDER_ENDPOINT:" + route)
+
+
+def test_plan_windows_reused_for_all_24_weeks():
+    ranges = plan_windows({"startDate": "2026-10-05", "weekCount": 24})
+    assert ranges == [
+        ("2026-10-05", "2026-11-29"),
+        ("2026-11-30", "2027-01-24"),
+        ("2027-01-25", "2027-03-21")
+    ]
+
+
+@pytest.mark.parametrize("kind,rid,container,expected", [
+    ("plan.workout.patch", WORKOUT, PLAN, "Torque week 2"),
+    ("plan.note.patch", NOTE, PLAN, "README FIRST"),
+    ("plan.note.attachment.add", NOTE, PLAN, "README FIRST"),
+    ("plan.note.attachment.retire", NOTE, PLAN, "README FIRST"),
+    ("library.workout.patch", LIB_ITEM, LIBRARY, "CSS 2200m"),
+])
+def test_one_provider_read_gateway_for_five_kinds(monkeypatch, kind, rid, container, expected):
+    import tp_mcp.client
+    monkeypatch.setattr(tp_mcp.client, "TPClient", FakeTP)
+    data = asyncio.run(read_trainingpeaks_item(spec(kind, rid, container)))
+    assert expected in (data.get("title") or data.get("itemName") or "")
+
+
+def test_strength_native_reader_scoped_to_plan_and_same_owner(monkeypatch):
+    import tp_mcp.client
+    import tp_mcp.tools.strength as strength
+    import httpx
+
+    monkeypatch.setattr(tp_mcp.client, "TPClient", FakeTP)
+
+    async def access(_):
+        return 123, "fake_test_token", None
+
+    monkeypatch.setattr(strength, "_access", access)
+    monkeypatch.setattr(strength, "_headers", lambda _: {"X-Test": "synthetic"})
+
+    class MockHttp:
+        status_code = 200
+
+        def json(self):
+            return {"data": {
+                "id": STRENGTH, "calendarId": PERSON,
+                "workoutType": "StructuredStrength", "title": "Strength Monday",
+                "blocks": [{"type": "WarmUp"}]
+            }}
+
+    class MockAsyncHttp:
+        def __init__(self, **kwargs):
+            assert kwargs["follow_redirects"] is False
+
+        async def __aenter__(self):
+            return self
+
+        async def __aexit__(self, *_):
+            return False
+
+        async def get(self, url, headers):
+            assert url.endswith("/rx/activity/v1/workouts/33973536")
+            return MockHttp()
+
+    monkeypatch.setattr(httpx, "AsyncClient", MockAsyncHttp)
+    obj = asyncio.run(read_trainingpeaks_item(spec("plan.strength.relocate", STRENGTH)))
+    assert obj["id"] == STRENGTH and obj["calendarId"] == PERSON
+
+
+def test_registry_is_generic_and_provider_writes_are_unavailable():
+    registry = create_read_registry()
+    assert set(registry) == VALID_KINDS
+    with pytest.raises(SecurityDenied, match="PDF_RETIRE_WRITER_NOT_ACTIVATED"):
+        registry["plan.note.attachment.retire"].apply(spec("plan.note.attachment.retire", NOTE))
+    with pytest.raises(SecurityDenied, match="CLASSIC_PLAN_WRITER_NOT_ACTIVATED"):
+        registry["plan.workout.patch"].apply(spec("plan.workout.patch", WORKOUT))
+
+
+def test_rejects_wrong_owner_before_provider_read(monkeypatch):
+    target = spec("plan.note.patch", NOTE)
+    target["target"]["owner_id"] = 44
+    with pytest.raises(Exception, match="PROVIDER_OWNER_MISMATCH"):
+        asyncio.run(read_trainingpeaks_item(target))
+
+
+def test_same_generic_registry_selects_vpc_read_transport():
+    from tp_mcp.unified_read_bridge import PrivateBridgeReadAdapter
+    registry = create_read_registry("private_bridge")
+    assert set(registry) == VALID_KINDS
+    assert isinstance(registry["plan.note.patch"], PrivateBridgeReadAdapter)
+    assert isinstance(registry["plan.note.attachment.retire"].reader, PrivateBridgeReadAdapter)
+    assert isinstance(registry["plan.workout.patch"].reader, PrivateBridgeReadAdapter)
+    with pytest.raises(SecurityDenied, match="PDF_RETIRE_WRITER_NOT_ACTIVATED"):
+        registry["plan.note.attachment.retire"].apply(spec("plan.note.attachment.retire", NOTE))
+    with pytest.raises(Exception, match="UNIFIED_UNSUPPORTED_READ_TRANSPORT"):
+        create_read_registry("arbitrary_url")
+
+
+@pytest.mark.parametrize("error_name", ["AUTH_EXPIRED", "AUTH_INVALID", "FORBIDDEN_ENDPOINT", "PREMIUM_REQUIRED"])
+@pytest.mark.parametrize("stage,kind,rid,container", [
+    ("plan", "plan.workout.patch", WORKOUT, PLAN),
+    ("workouts", "plan.workout.patch", WORKOUT, PLAN),
+    ("calendarNote", "plan.note.patch", NOTE, PLAN),
+    ("library", "library.workout.patch", LIB_ITEM, LIBRARY),
+])
+def test_provider_permission_denial_is_not_a_temporary_read_failure(
+        monkeypatch, error_name, stage, kind, rid, container):
+    import tp_mcp.client
+    from tp_mcp.client.http import APIResponse, ErrorCode
+
+    class DeniedTP(FakeTP):
+        async def get(self, route):
+            matches = ((stage == "plan" and route == f"/plans/v1/plans/{PLAN}")
+                       or (stage == "library" and "/libraries/" in route)
+                       or f"/{stage}/" in route)
+            if matches:
+                return APIResponse(success=False, error_code=ErrorCode[error_name], message="synthetic-private-detail")
+            return await super().get(route)
+
+    monkeypatch.setattr(tp_mcp.client, "TPClient", DeniedTP)
+    with pytest.raises(SecurityDenied) as denied:
+        asyncio.run(read_trainingpeaks_item(spec(kind, rid, container)))
+    assert "synthetic-private-detail" not in str(denied.value)
+
+
+@pytest.mark.parametrize("status", [401, 403, 503])
+def test_strength_http_denial_preserves_security_category(monkeypatch, status):
+    import httpx
+    import tp_mcp.client
+    import tp_mcp.tools.strength as strength
+    from scripts.ironman_jobs.ironman_unified_changeset_engine import ChangeStop
+
+    async def access(_):
+        return 123, "synthetic", None
+
+    class MockHttp:
+        def __init__(self, **kwargs):
+            assert kwargs["follow_redirects"] is False
+
+        async def __aenter__(self):
+            return self
+
+        async def __aexit__(self, *_):
+            return False
+
+        async def get(self, *args, **kwargs):
+            return httpx.Response(status, json={"error": "synthetic-private-detail"})
+
+    monkeypatch.setattr(tp_mcp.client, "TPClient", FakeTP)
+    monkeypatch.setattr(strength, "_access", access)
+    monkeypatch.setattr(httpx, "AsyncClient", MockHttp)
+    with pytest.raises(SecurityDenied if status in {401, 403} else ChangeStop) as failure:
+        asyncio.run(read_trainingpeaks_item(spec("plan.strength.relocate", STRENGTH)))
+    assert isinstance(failure.value, SecurityDenied) is (status in {401, 403})
+    assert "synthetic-private-detail" not in str(failure.value)
+
+
+@pytest.mark.parametrize("error_name", ["NETWORK_ERROR", "RATE_LIMITED", "NOT_FOUND"])
+def test_non_security_read_errors_keep_existing_failure_category(monkeypatch, error_name):
+    import tp_mcp.client
+    from tp_mcp.client.http import APIResponse, ErrorCode
+    from scripts.ironman_jobs.ironman_unified_changeset_engine import ChangeStop
+
+    class UnavailableTP(FakeTP):
+        async def get(self, route):
+            return APIResponse(success=False, error_code=ErrorCode[error_name])
+
+    monkeypatch.setattr(tp_mcp.client, "TPClient", UnavailableTP)
+    with pytest.raises(ChangeStop, match="TRAINING_PLAN_READ_FAILED") as failure:
+        asyncio.run(read_trainingpeaks_item(spec("plan.workout.patch", WORKOUT)))
+    assert not isinstance(failure.value, SecurityDenied)

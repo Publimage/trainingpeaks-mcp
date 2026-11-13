@@ -49,3 +49,18 @@ La durata e la distanza native per Swim e il Builder completo sono prerequisiti;
 Il codice non elimina blocchi o divieti della piattaforma. In particolare, il tentativo precedente di write+restore sul private LAB 684206 ha ricevuto un diniego esplicito: **questo nuovo publisher non va utilizzato come nuovo mezzo per ripetere quell'operazione**. Non si prova a modificare il LAB negato e non si avvia una scrittura di prova su piani commerciali in assenza di uno scope autorizzato. Risolvere eventuali controlli con le procedure ufficiali, non facendo cambiare faccia alla richiesta.
 
 Per una prossima richiesta le operazioni che rimangono ripetibili sono: modificare il JSON, review, CI, preview e (se autorizzato) execute + readback. Il software non va riscritto per ogni piano.
+
+
+## 2026-10-25 — Request binding esteso (PR18, NON IN PRODUZIONE)
+
+Il gate oggi collaudato sul publisher classic confronta target_plan_id indipendente e manifest.plan_id. Non basta per distinguere DUE richieste diverse sullo STESSO piano: il manifest Winter 689369 (58 item, gia' verificati) non deve diventare automaticamente l'input di un'ulteriore modifica al piano 689369.
+
+Nella PR18 draft, in aggiunta a target_plan_id sono stati introdotti per entrambi i job reviewed_plan_patch_preview/publish (operation=execute):
+- request_scope: identificativo completo DELLA RICHIESTA CORRENTE, ricavato dall'intento autorizzato, non dall'ultimo manifest;
+- requested_workout_ids: lista completa e univoca degli ID workout risolti indipendentemente dalla richiesta corrente e dal provider live.
+
+Il tool MCP e l'entrypoint reviewed_plan_patch_pipeline verificano entrambi la corrispondenza esatta (plan_id + scope + SET degli ID) con il manifest prima di accessi provider/scritture; un mismatch genera STOP_TARGET_MISMATCH, STOP_REQUEST_SCOPE_MISMATCH o STOP_REQUEST_RESOURCE_MISMATCH. Gli ID devono avere una corrispondenza totale, non soltanto una sovrapposizione. L'operatore trasmette lo scope e l'elenco degli ID al child process con variabili d'ambiente controllate, non usando URL/script scelti dall'utente. I test offline dedicati sono in tests/test_ironman_operator.py e tests/test_reviewed_plan_patch_pipeline.py.
+
+Queste nuove firme sono SOLO CODICE DI SVILUPPO nella PR18: nessun server/tool catalog di produzione e' stato aggiornato. Non chiamare i parametri nuovi sul runtime attuale finche' non risultano deploy, refresh e prova sul vero operatore. Il publisher classico attuale rimane il Proven Path per modifiche consentite, con identificazione separata di richiesta, piano e ID e readback per item; NON ripubblicare WINTER689369. Per una modifica nuova generare un nuovo scope e un nuovo reviewed before/after; mai copiare gli ID dal file storico come se fossero la nuova intenzione del coach.
+
+Una preview dormant con configured=false rimane health-check a zero provider-write. I nuovi controlli non autorizzano un writer universale e non permettono di aggirare un diniego specifico di sicurezza.

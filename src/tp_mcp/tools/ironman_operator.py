@@ -18,7 +18,7 @@ import os
 import re
 import subprocess
 from pathlib import Path
-from typing import Any
+from typing import Any, cast
 
 from tp_mcp.client import TPClient
 from tp_mcp.client.context import athlete_override
@@ -38,11 +38,20 @@ GUARDED_WRITE = "GUARDED_WRITE"
 REVIEWED_PLAN_JOBS = frozenset({"reviewed_plan_patch_preview", "reviewed_plan_patch_publish"})
 
 
-class BridgeStop(Exception):
-    pass
+class BridgeError(Exception):
+    """Fail closed with a machine-readable operational failure category."""
+
+    def __init__(self, message: str, *, code: str = "SAFE_STOP") -> None:
+        super().__init__(message)
+        self.code = code
 
 
-def _run(*argv: str, timeout: int = 30, request_plan_id: int | None = None) -> subprocess.CompletedProcess[str]:
+BridgeStop = BridgeError
+
+
+def _run(*argv: str, timeout: int = 30, request_plan_id: int | None = None,
+         request_scope: str | None = None,
+         request_workout_ids: list[int] | None = None) -> subprocess.CompletedProcess[str]:
     env = {
         key: value for key, value in os.environ.items()
         if key in {"HOME", "PATH", "LANG", "LC_ALL", "LC_CTYPE", "XDG_CONFIG_HOME"}
@@ -51,6 +60,11 @@ def _run(*argv: str, timeout: int = 30, request_plan_id: int | None = None) -> s
     env["PYTHONPATH"] = str(REPO / "src")
     if request_plan_id is not None:
         env["IRONMAN_REQUEST_TARGET_PLAN_ID"] = str(request_plan_id)
+    if request_scope is not None:
+        env["IRONMAN_REQUEST_TARGET_SCOPE"] = request_scope
+    if request_workout_ids is not None:
+        env["IRONMAN_REQUEST_WORKOUT_IDS_JSON"] = json.dumps(
+            sorted(request_workout_ids), separators=(",", ":"))
     try:
         return subprocess.run(
             list(argv), cwd=REPO, env=env, text=True, capture_output=True,
@@ -156,15 +170,59 @@ def _check_reviewed_manifest_target(job: str, target_plan_id: int | None) -> Non
         raise BridgeStop("STOP_TARGET_MISMATCH")
 
 
+
+def _check_reviewed_manifest_request(job: str, requested_scope: str | None,
+                                     requested_workout_ids: list[int] | None) -> None:
+    """Require the current operation scope AND exact workout IDs independently.
+
+    A completed batch from the SAME Training Plan must never be reinterpreted
+    as a new request merely because target_plan_id still matches.
+    """
+    if job not in REVIEWED_PLAN_JOBS:
+        return
+    try:
+        cfg = json.loads((REPO / "data/ironman_reviewed_plan_patch.json").read_text(encoding="utf-8"))
+    except (OSError, ValueError) as exc:
+        raise BridgeStop("REVIEWED_MANIFEST_UNREADABLE") from exc
+    if cfg.get("configured") is False:
+        # Preserve the existing inactive, provider-free preview health check.
+        # The separate target gate still blocks inactive publish.
+        return
+    if cfg.get("configured") is not True:
+        raise BridgeStop("REVIEWED_MANIFEST_INVALID")
+    if not isinstance(requested_scope, str) or not requested_scope.startswith("trainingpeaks:plan:"):
+        raise BridgeStop("REQUEST_SCOPE_REQUIRED_FOR_REVIEWED_PUBLISHER")
+    ids = requested_workout_ids
+    if (type(ids) is not list or not 1 <= len(ids) <= 150
+            or any(type(x) is not int or x <= 0 for x in ids)
+            or len(set(ids)) != len(ids)):
+        raise BridgeStop("REQUEST_WORKOUT_IDS_REQUIRED_FOR_REVIEWED_PUBLISHER")
+    manifest = cfg.get("manifest")
+    if not isinstance(manifest, dict):
+        raise BridgeStop("REVIEWED_MANIFEST_INVALID")
+    if manifest.get("scope") != requested_scope:
+        raise BridgeStop("STOP_REQUEST_SCOPE_MISMATCH")
+    items = manifest.get("items")
+    if not isinstance(items, list):
+        raise BridgeStop("REVIEWED_MANIFEST_ITEMS_INVALID")
+    actual_ids = [x.get("workout_id") for x in items if isinstance(x, dict)]
+    if len(actual_ids) != len(items) or any(type(x) is not int or x <= 0 for x in actual_ids):
+        raise BridgeStop("REVIEWED_MANIFEST_ITEMS_INVALID")
+    if sorted(ids) != sorted(cast(list[int], actual_ids)):
+        raise BridgeStop("STOP_REQUEST_RESOURCE_MISMATCH")
+
+
 def _execute_blocking(job: str, revision: str, operation: str, ack_scope: str | None,
-                      target_plan_id: int | None = None) -> dict[str, Any]:
+                      target_plan_id: int | None = None,
+                      request_scope: str | None = None,
+                      requested_workout_ids: list[int] | None = None) -> dict[str, Any]:
     if not HEX40.fullmatch(revision):
         raise BridgeStop("A complete pinned 40-character commit SHA is required.")
     # Job registration is generic. Bind each reviewed plan execution to the
     # caller-confirmed plan ID independently of any persisted JSON manifest.
-    if operation == "execute" and job in REVIEWED_PLAN_JOBS:
-        if type(target_plan_id) is not int or target_plan_id <= 0:
-            raise BridgeStop("TARGET_PLAN_ID_REQUIRED_FOR_REVIEWED_PUBLISHER")
+    if (operation == "execute" and job in REVIEWED_PLAN_JOBS
+            and (type(target_plan_id) is not int or target_plan_id <= 0)):
+        raise BridgeStop("TARGET_PLAN_ID_REQUIRED_FOR_REVIEWED_PUBLISHER")
     if not REPO.is_dir() or not VENV_PYTHON.is_file():
         raise BridgeStop("Verified cloud installation unavailable.")
     STATE_DIR.mkdir(mode=0o700, parents=True, exist_ok=True)
@@ -173,17 +231,21 @@ def _execute_blocking(job: str, revision: str, operation: str, ack_scope: str | 
         try:
             fcntl.flock(lock.fileno(), fcntl.LOCK_EX | fcntl.LOCK_NB)
         except BlockingIOError as exc:
-            raise BridgeStop("Another IRONMAN job is running; no concurrent execution.") from exc
+            raise BridgeStop("Another IRONMAN job is running; no concurrent execution.", code="OPERATOR_BUSY") from exc
         origin = _require_ok(_run("git", "remote", "get-url", "origin"), "Origin")
         if not ORIGIN.fullmatch(origin):
             raise BridgeStop("Untrusted GitHub origin.")
         change = _require_ok(_run("git", "status", "--porcelain", "--untracked-files=normal"), "Worktree")
         if change:
-            raise BridgeStop("Local working tree is not clean; preserving local modifications.")
+            raise BridgeStop("Local working tree is not clean; preserving local modifications.", code="WORKTREE_DIRTY")
         _require_ok(_run("git", "fetch", "--no-tags", "--depth=1", "origin", BRANCH, timeout=60), "Fetch")
         sha = _require_ok(_run("git", "rev-parse", "FETCH_HEAD"), "Revision")
         if sha != revision:
-            raise BridgeStop("Pinned revision differs from current trusted branch tip.")
+            raise BridgeStop(
+                f"Pinned revision differs from current trusted branch tip "
+                f"(requested={revision[:12]}, current={sha[:12]}). No checkout performed.",
+                code="REVISION_DRIFT",
+            )
         # Do not mutate the server until a matching, trusted, explicit revision exists.
         if operation == "execute":
             _require_ok(_run("git", "checkout", "--detach", revision, timeout=35), "Checkout")
@@ -197,6 +259,7 @@ def _execute_blocking(job: str, revision: str, operation: str, ack_scope: str | 
         spec = _check_job(job, operation, ack_scope)
         # Check against the request before creating a write receipt or invoking a job.
         _check_reviewed_manifest_target(job, target_plan_id)
+        _check_reviewed_manifest_request(job, request_scope, requested_workout_ids)
         kind = spec["mode"]
         command = [str(VENV_PYTHON), "-m", "pytest", "-q", spec["test"]]
         _require_ok(_run(*command, timeout=125), "Approved job tests")
@@ -206,12 +269,13 @@ def _execute_blocking(job: str, revision: str, operation: str, ack_scope: str | 
         receipt_path = None
         if kind == GUARDED_WRITE:
             fingerprint = hashlib.sha256(
-                f"{job}|{revision}|{spec['scope']}".encode("utf-8")
+                f"{job}|{revision}|{spec['scope']}".encode()
             ).hexdigest()[:32]
             receipt_path = STATE_DIR / f"{fingerprint}.json"
             if receipt_path.exists():
                 raise BridgeStop(
-                    "Protected job already attempted; inspect provider state before any repeat."
+                    "Protected job already attempted; inspect provider state before any repeat.",
+                    code="WRITE_RECEIPT_EXISTS",
                 )
             pending = {
                 "job": job, "revision": revision, "scope": spec["scope"],
@@ -228,7 +292,8 @@ def _execute_blocking(job: str, revision: str, operation: str, ack_scope: str | 
         # Only a trusted checked-out script path. Never shell=True / caller argv.
         if job in REVIEWED_PLAN_JOBS:
             proc = _run(str(VENV_PYTHON), str(script), timeout=175,
-                        request_plan_id=target_plan_id)
+                        request_plan_id=target_plan_id, request_scope=request_scope,
+                        request_workout_ids=requested_workout_ids)
         else:
             proc = _run(str(VENV_PYTHON), str(script), timeout=175)
         if receipt_path is not None:
@@ -245,10 +310,8 @@ def _execute_blocking(job: str, revision: str, operation: str, ack_scope: str | 
                 os.fsync(out.fileno())
             tmp.replace(receipt_path)
         # Strip any accidental bearer/cookie/password strings from returned logs.
-        output = re.sub(
-            r"(?i)(authorization|bearer|cookie|password|secret|token)\s*[:=]\s*\S+",
-            "[redacted]", proc.stdout[-MAX_STDOUT:],
-        )
+        from tp_mcp.private_bridge import _redact_admin_text
+        output = _redact_admin_text(proc.stdout[-MAX_STDOUT:])
         # Fail CLOSED: unknown write outcomes MUST be read back, not retried.
         stage = "DONE" if proc.returncode == 0 else "STOP_REVIEW"
         return {
@@ -257,6 +320,7 @@ def _execute_blocking(job: str, revision: str, operation: str, ack_scope: str | 
             "mode": kind, "scope": spec["scope"], "output": output,
             "exit_code": proc.returncode,
             "never_retry_ambiguous_post": kind == GUARDED_WRITE,
+            "error_code": "JOB_SCRIPT_FAILED" if proc.returncode != 0 else None,
         }
 
 
@@ -264,6 +328,8 @@ async def tp_ironman_operator(
     job: str, revision: str, operation: str = "preview",
     ack_scope: str | None = None,
     target_plan_id: int | None = None,
+    request_scope: str | None = None,
+    requested_workout_ids: list[int] | None = None,
 ) -> dict[str, Any]:
     """Execute a version-pinned, repo-registered job, not caller supplied shell."""
     if operation not in {"preview", "execute"}:
@@ -276,9 +342,10 @@ async def tp_ironman_operator(
             return {"isError": True, "error_code": "ACCOUNT_MISMATCH"}
     try:
         outcome = await asyncio.to_thread(_execute_blocking, job, revision, operation,
-                                          ack_scope, target_plan_id)
+                                          ack_scope, target_plan_id,
+                                          request_scope, requested_workout_ids)
         if not outcome.get("success"):
             outcome["isError"] = True
         return outcome
     except BridgeStop as exc:
-        return {"isError": True, "error_code": "SAFE_STOP", "message": str(exc)}
+        return {"isError": True, "error_code": exc.code, "message": str(exc)}

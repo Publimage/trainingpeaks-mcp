@@ -1,0 +1,26 @@
+prefect-version: "3.8.8"
+name: ironman-unified-changeset-v1
+build: []
+push: []
+pull:
+  - prefect.deployments.steps.set_working_directory:
+      directory: "/opt/ironman-prefect/swim-audit-src"
+deployments:
+  - name: scoped-plan-preview-once
+    version: "v1-vpc-readonly-canary"
+    description: "Single reusable plan/library preview: private VPC TP reads, no provider writes, no schedule."
+    tags:
+      - ironman
+      - unified
+      - preview
+      - readonly
+    entrypoint: "scripts/ironman_jobs/ironman_unified_prefect_flow.py:unified_changeset_flow"
+    parameters:
+      mode: "preview"
+      read_transport: "private_bridge"
+      ledger_path: "/var/lib/ironman-prefect/unified-changesets/ledger.sqlite3"
+    schedules: []
+    work_pool:
+      name: "ironman-prefect-staging-process"
+      work_queue_name: null
+      job_variables: {}

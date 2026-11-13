@@ -409,8 +409,16 @@ async def tp_create_library_item(
             "workoutSubTypeId": sport_type_id,
         }
         if distance_meters is not None:
-            if not isinstance(distance_meters, (int, float)) or isinstance(distance_meters, bool) or not 0 <= distance_meters < float("inf"):
-                return {"isError": True, "error_code": "VALIDATION_ERROR", "message": "distance_meters must be a finite, non-negative number."}
+            if (
+                not isinstance(distance_meters, (int, float))
+                or isinstance(distance_meters, bool)
+                or not 0 <= distance_meters < float("inf")
+            ):
+                return {
+                    "isError": True,
+                    "error_code": "VALIDATION_ERROR",
+                    "message": "distance_meters must be a finite, non-negative number.",
+                }
             payload["distancePlanned"] = distance_meters
         if duration_hours is not None:
             payload["totalTimePlanned"] = duration_hours
@@ -524,8 +532,16 @@ async def tp_update_library_item(
 
         # Merge updates
         if distance_meters is not None:
-            if not isinstance(distance_meters, (int, float)) or isinstance(distance_meters, bool) or not 0 <= distance_meters < float("inf"):
-                return {"isError": True, "error_code": "VALIDATION_ERROR", "message": "distance_meters must be a finite, non-negative number."}
+            if (
+                not isinstance(distance_meters, (int, float))
+                or isinstance(distance_meters, bool)
+                or not 0 <= distance_meters < float("inf")
+            ):
+                return {
+                    "isError": True,
+                    "error_code": "VALIDATION_ERROR",
+                    "message": "distance_meters must be a finite, non-negative number.",
+                }
             existing["distancePlanned"] = distance_meters
         if name is not None:
             existing["itemName"] = name

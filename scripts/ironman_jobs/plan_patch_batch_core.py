@@ -170,7 +170,7 @@ async def _run_batch_unlocked(
     meta = await gateway.get_plan(manifest["plan_id"])
     assert_provider_scope(meta, manifest)
     path = Path(journal_path)
-    ledger = _read_journal(path, digest, manifest) if execute else None
+    ledger = _read_journal(path, digest, manifest) if execute else {}
     results: list[dict[str, Any]] = []
     for row in manifest["items"]:
         wid = row["workout_id"]

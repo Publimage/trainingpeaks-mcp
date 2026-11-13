@@ -16,14 +16,14 @@ here because the TP UI contract deletes every plan inside the folder.
 """
 from __future__ import annotations
 
-from typing import Any
 import asyncio
 import copy
+from typing import Any
 
 import httpx
 
 from tp_mcp.client import TPClient
-from tp_mcp.tools.strength import _access, _headers, STRENGTH_API_BASE
+from tp_mcp.tools.strength import STRENGTH_API_BASE, _access, _headers
 
 _PLAN_FOLDER_LIST = "/planfolder/v1/folder/all"
 _PLAN_FOLDER_CREATE = "/planfolder/v1/folder"
@@ -204,7 +204,7 @@ async def tp_move_training_plans(plan_ids: list[int], to_folder_id: str) -> dict
     if not isinstance(plan_ids, list) or not plan_ids:
         return _error("VALIDATION_ERROR", "plan_ids must be a non-empty list.")
     try:
-        ids = sorted(set(int(x) for x in plan_ids))
+        ids = sorted({int(x) for x in plan_ids})
     except (TypeError, ValueError):
         return _error("VALIDATION_ERROR", "Every plan_id must be numeric.")
     destination = str(to_folder_id or "").strip()
@@ -240,7 +240,7 @@ async def tp_move_training_plans(plan_ids: list[int], to_folder_id: str) -> dict
             rb, read_err = await _read_folders(client)
             if read_err:
                 return None
-            mapping: dict[int, str | None] = {pid: None for pid in ids}
+            mapping: dict[int, str | None] = dict.fromkeys(ids)
             for row in rb:
                 fid = _folder_id(row)
                 for pid in _folder_plan_ids(row):
@@ -276,7 +276,7 @@ async def tp_move_training_plans(plan_ids: list[int], to_folder_id: str) -> dict
                 err_result = await mutate(
                     _PLAN_FOLDER_REMOVE,
                     {"folderId": source, "planIds": moving},
-                    {pid: None for pid in moving},
+                    dict.fromkeys(moving),
                     "remove_plans_from_folder",
                 )
                 if err_result:
@@ -287,7 +287,7 @@ async def tp_move_training_plans(plan_ids: list[int], to_folder_id: str) -> dict
                 err_result = await mutate(
                     _PLAN_FOLDER_ASSIGN,
                     {"folderId": destination, "planIds": unfiled},
-                    {pid: destination for pid in unfiled},
+                    dict.fromkeys(unfiled, destination),
                     "assign_plans_to_folder",
                 )
                 if err_result:
@@ -299,7 +299,7 @@ async def tp_move_training_plans(plan_ids: list[int], to_folder_id: str) -> dict
                 err_result = await mutate(
                     _PLAN_FOLDER_MOVE,
                     {"fromFolder": source, "toFolder": destination, "planIds": moving},
-                    {pid: destination for pid in moving},
+                    dict.fromkeys(moving, destination),
                     "move_plans_between_folders",
                 )
                 if err_result:
@@ -347,7 +347,9 @@ async def tp_rename_training_plan(plan_id: int | str, title: str) -> dict[str, A
             response = None
         after = await client.get(f"/plans/v1/plans/{pid}")
         if after.is_error or not isinstance(after.data, dict):
-            return _error("AMBIGUOUS_WRITE", "Training Plan rename outcome could not be read back; do not retry blindly.")
+            return _error(
+                "AMBIGUOUS_WRITE", "Training Plan rename outcome could not be read back; do not retry blindly."
+            )
         if after.data.get("title") != title:
             code = "AMBIGUOUS_WRITE" if response is None else "READBACK_FAILED"
             return _error(code, "Training Plan rename was not verified; do not retry blindly.")
@@ -533,7 +535,7 @@ async def tp_move_athletes_between_groups(
     try:
         source_id = int(from_group_id)
         dest_id = int(to_group_id)
-        ids = sorted(set(int(x) for x in athlete_ids))
+        ids = sorted({int(x) for x in athlete_ids})
     except (TypeError, ValueError):
         return _error("VALIDATION_ERROR", "Group and athlete IDs must be numeric.")
     if not ids:
@@ -912,7 +914,10 @@ async def tp_copy_library_items(
         libraries, err = await _read_library_inventory(client)
         if err:
             return err
-        if _owned_library(libraries, source_id, owner) is None or _owned_library(libraries, destination_id, owner) is None:
+        if (
+            _owned_library(libraries, source_id, owner) is None
+            or _owned_library(libraries, destination_id, owner) is None
+        ):
             return _error("FORBIDDEN_OR_NOT_FOUND", "Both libraries must be mutable coach-owned libraries.")
 
         http, headers, native_err = await _native_session(client)
@@ -932,9 +937,13 @@ async def tp_copy_library_items(
                     destination_items, read_err = await _read_classic_items(client, destination_id)
                     if read_err:
                         return read_err
-                    collisions = [x for x in destination_items if str(x.get("itemName") or x.get("title") or "") == title]
+                    collisions = [
+                        x for x in destination_items if str(x.get("itemName") or x.get("title") or "") == title
+                    ]
                     if collisions:
-                        return _error("ALREADY_EXISTS", f"Destination already contains a classic item titled {title!r}.")
+                        return _error(
+                            "ALREADY_EXISTS", f"Destination already contains a classic item titled {title!r}."
+                        )
                     payload = _classic_copy_payload(source, destination_id, title)
                     try:
                         response = await client._request(
@@ -955,9 +964,9 @@ async def tp_copy_library_items(
                             f"Classic copy of item {iid} was not uniquely verified; do not retry blindly.",
                         )
                     copied = matches[0]
-                    if _classic_semantic(copied, ignore_library=True, ignore_id=True, ignore_title=True) != _classic_semantic(
-                        source, ignore_library=True, ignore_id=True, ignore_title=True
-                    ):
+                    if _classic_semantic(
+                        copied, ignore_library=True, ignore_id=True, ignore_title=True
+                    ) != _classic_semantic(source, ignore_library=True, ignore_id=True, ignore_title=True):
                         return _error("PROVIDER_DRIFT", f"Classic copy of item {iid} changed workout content.")
                     results.append({
                         "source_item_id": iid,
@@ -973,7 +982,7 @@ async def tp_copy_library_items(
                     if any(str(x.get("title") or "") == title for x in destination_items):
                         return _error("ALREADY_EXISTS", f"Destination already contains a native item titled {title!r}.")
                     try:
-                        response = await http.post(
+                        native_response = await http.post(
                             STRENGTH_API_BASE + _NATIVE_COPY,
                             json={
                                 "libraryId": destination_id,
@@ -983,14 +992,14 @@ async def tp_copy_library_items(
                             headers=headers,
                         )
                     except httpx.RequestError:
-                        response = None
+                        native_response = None
                     after, rb_err = await _read_native_items_http(http, headers, destination_id)
                     if rb_err:
                         return _error("AMBIGUOUS_WRITE", "Native copy readback failed; do not retry blindly.")
                     matches = [x for x in after if str(x.get("title") or "") == title]
                     if len(matches) != 1:
                         return _error(
-                            "AMBIGUOUS_WRITE" if response is None else "READBACK_FAILED",
+                            "AMBIGUOUS_WRITE" if native_response is None else "READBACK_FAILED",
                             f"Native copy of item {iid} was not uniquely verified; do not retry blindly.",
                         )
                     copied = matches[0]
@@ -1000,7 +1009,10 @@ async def tp_copy_library_items(
                         source_sem.pop(key, None)
                         copied_sem.pop(key, None)
                     if copied_sem != source_sem:
-                        return _error("PROVIDER_DRIFT", f"Native StructuredStrength copy of item {iid} changed prescribed structure.")
+                        return _error(
+                            "PROVIDER_DRIFT",
+                            f"Native StructuredStrength copy of item {iid} changed prescribed structure.",
+                        )
                     results.append({
                         "source_item_id": iid,
                         "copied_item_id": _native_item_id(copied),
@@ -1043,7 +1055,10 @@ async def tp_move_library_items(
         libraries, err = await _read_library_inventory(client)
         if err:
             return err
-        if _owned_library(libraries, source_id, owner) is None or _owned_library(libraries, destination_id, owner) is None:
+        if (
+            _owned_library(libraries, source_id, owner) is None
+            or _owned_library(libraries, destination_id, owner) is None
+        ):
             return _error("FORBIDDEN_OR_NOT_FOUND", "Both libraries must be mutable coach-owned libraries.")
 
         http, headers, native_err = await _native_session(client)
@@ -1102,13 +1117,13 @@ async def tp_move_library_items(
                         "workoutLibraryItemType": source["workoutLibraryItemType"],
                     }
                     try:
-                        response = await http.post(
+                        native_response = await http.post(
                             STRENGTH_API_BASE + _NATIVE_SAVE,
                             json=payload,
                             headers=headers,
                         )
                     except httpx.RequestError:
-                        response = None
+                        native_response = None
                     source_after, source_err = await _read_native_items_http(http, headers, source_id)
                     dest_after, dest_err = await _read_native_items_http(http, headers, destination_id)
                     if source_err or dest_err:
@@ -1117,7 +1132,7 @@ async def tp_move_library_items(
                     destination = [x for x in dest_after if _native_item_id(x) == iid]
                     if still_source or len(destination) != 1:
                         return _error(
-                            "AMBIGUOUS_WRITE" if response is None else "READBACK_FAILED",
+                            "AMBIGUOUS_WRITE" if native_response is None else "READBACK_FAILED",
                             f"Native move of item {iid} was not verified; do not retry blindly.",
                         )
                     if _native_semantic(destination[0]) != baseline:
@@ -1194,18 +1209,18 @@ async def tp_delete_library_items(
                         )
                 else:
                     try:
-                        response = await http.delete(
+                        native_response = await http.delete(
                             STRENGTH_API_BASE + _NATIVE_DELETE.format(item_id=iid),
                             headers=headers,
                         )
                     except httpx.RequestError:
-                        response = None
+                        native_response = None
                     after, rb_err = await _read_native_items_http(http, headers, lid)
                     if rb_err:
                         return _error("AMBIGUOUS_WRITE", "Native delete readback failed; do not retry blindly.")
                     if any(_native_item_id(x) == iid for x in after):
                         return _error(
-                            "AMBIGUOUS_WRITE" if response is None else "READBACK_FAILED",
+                            "AMBIGUOUS_WRITE" if native_response is None else "READBACK_FAILED",
                             f"Native deletion of item {iid} was not verified; do not retry blindly.",
                         )
                 deleted.append({"item_id": iid, "kind": kind, "verified": True})

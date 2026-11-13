@@ -31,16 +31,19 @@ from tp_mcp.private_bridge import maybe_start_private_bridge
 from tp_mcp.tools import (
     tp_add_athletes_to_group,
     tp_add_note_comment,
+    tp_add_training_plan_library_workout,
+    tp_add_training_plan_note,
     tp_add_workout_comment,
     tp_analyze_workout,
-    tp_add_training_plan_library_workout,
-    tp_batch_add_training_plan_library_workouts,
-    tp_add_training_plan_note,
-    tp_attach_training_plan_note_pdf,
     tp_apply_training_plan,
+    tp_attach_training_plan_note_pdf,
     tp_auth_status,
-    tp_create_training_plan,
-    tp_delete_training_plan_other,
+    tp_batch_add_beginner_strength,
+    tp_batch_add_intermediate_strength,
+    tp_batch_add_training_plan_library_workouts,
+    tp_batch_delete_beginner_classic_strength,
+    tp_copy_library_items,
+    tp_copy_training_plan,
     tp_copy_workout,
     tp_create_availability,
     tp_create_equipment,
@@ -49,11 +52,10 @@ from tp_mcp.tools import (
     tp_create_library,
     tp_create_library_item,
     tp_create_note,
-    tp_batch_add_intermediate_strength,
-    tp_batch_add_beginner_strength,
-    tp_batch_delete_beginner_classic_strength,
+    tp_create_plan_folder,
     tp_create_strength_plan_lab_probe,
     tp_create_strength_workout,
+    tp_create_training_plan,
     tp_create_workout,
     tp_create_zones,
     tp_delete_availability,
@@ -61,8 +63,11 @@ from tp_mcp.tools import (
     tp_delete_event,
     tp_delete_group,
     tp_delete_library,
+    tp_delete_library_items,
     tp_delete_note,
     tp_delete_strength_workout,
+    tp_delete_training_plan,
+    tp_delete_training_plan_other,
     tp_delete_workout,
     tp_delete_workout_file,
     tp_download_workout_file,
@@ -70,29 +75,14 @@ from tp_mcp.tools import (
     tp_get_atp,
     tp_get_availability,
     tp_get_coaching_radar,
-    tp_publish_public_asset,
     tp_get_equipment,
     tp_get_events,
     tp_get_fitness,
     tp_get_focus_event,
+    tp_get_ironman_publisher_status,
     tp_get_libraries,
     tp_get_library_item,
     tp_get_library_items,
-    tp_ironman_operator,
-    tp_get_ironman_publisher_status,
-    tp_list_plan_folders,
-    tp_copy_training_plan,
-    tp_create_plan_folder,
-    tp_delete_training_plan,
-    tp_copy_library_items,
-    tp_delete_library_items,
-    tp_rename_library,
-    tp_rename_plan_folder,
-    tp_move_training_plans,
-    tp_rename_training_plan,
-    tp_move_athletes_between_groups,
-    tp_move_library_items,
-    tp_sync_intermediate_native_notes,
     tp_get_metrics,
     tp_get_next_event,
     tp_get_note,
@@ -116,20 +106,31 @@ from tp_mcp.tools import (
     tp_get_workout_types,
     tp_get_workouts,
     tp_get_zone_methods,
+    tp_ironman_operator,
+    tp_ironman_resolve_target,
     tp_list_athletes,
     tp_list_athletes_in_group,
     tp_list_groups,
     tp_list_notes,
+    tp_list_plan_folders,
     tp_list_training_plans,
     tp_log_metrics,
+    tp_move_athletes_between_groups,
+    tp_move_library_items,
+    tp_move_training_plans,
     tp_pair_workout,
+    tp_publish_public_asset,
     tp_refresh_auth,
     tp_remove_athletes_from_group,
     tp_rename_group,
+    tp_rename_library,
+    tp_rename_plan_folder,
+    tp_rename_training_plan,
     tp_reorder_workouts,
     tp_schedule_library_workout,
     tp_search_exercises,
     tp_set_workout_note,
+    tp_sync_intermediate_native_notes,
     tp_unpair_workout,
     tp_update_equipment,
     tp_update_event,
@@ -740,7 +741,8 @@ TOOLS = [
     Tool(
         name="tp_copy_training_plan",
         description=("Copy one Training Plan using TrainingPeaks' native asynchronous whole-plan copy command. "
-                     "The new plan is verified by provider readback and copy status; ambiguous POSTs are reconciled, never blindly retried."),
+                     'The new plan is verified by provider readback and copy status; '
+                         'ambiguous POSTs are reconciled, never blindly retried.'),
         input_schema={
             "type": "object",
             "properties": {
@@ -753,7 +755,8 @@ TOOLS = [
     Tool(
         name="tp_delete_training_plan",
         description=("Delete one private, unpriced Training Plan only after exact ID+title preflight. "
-                     "Public or priced plans are blocked. Provider inventory absence is the authoritative immediate readback; no blind retry."),
+                     'Public or priced plans are blocked. Provider inventory absence '
+                         'is the authoritative immediate readback; no blind retry.'),
         input_schema={
             "type": "object",
             "properties": {
@@ -823,7 +826,8 @@ TOOLS = [
                 "title": {"type": "string", "description": "Any nonempty native note title"},
                 "start_date": {"type": "string", "description": "Monday YYYY-MM-DD"},
                 "week_count": {"type": "integer", "minimum": 1, "maximum": 24,
-                               "description": "1-2 for ordinary private lab plans; 24 only for the locked [MCP TEST] IRONMAN Intermediate 24W - Archive Pilot, anchored 2027-01-04"},
+                               "description": ('1-2 for ordinary private lab plans; 24 only for the locked [MCP '
+                                   'TEST] IRONMAN Intermediate 24W - Archive Pilot, anchored 2027-01-04')},
                 "description": {"type": "string"},
             },
             "required": ["title", "start_date"],
@@ -919,7 +923,8 @@ TOOLS = [
                 "plan_id": {"type": "integer", "description": "Must be 684463"},
                 "expected_title": {"type": "string", "description": "Exact [MCP TEST] Other title from plan reader"},
                 "dry_run": {"type": "boolean", "default": True,
-                            "description": "True is read-only; false is blocked until plan-specific DELETE route is verified"},
+                            "description": ('True is read-only; false is blocked until plan-specific DELETE '
+                                'route is verified')},
             },
             "required": ["plan_id", "expected_title"],
         },
@@ -1452,6 +1457,44 @@ TOOLS = [
         ),
         input_schema={"type": "object", "properties": {}, "required": []},
     ),
+    # --- Shared IRONMAN target discovery (read-only; NO static plan-ID registry) ---
+    Tool(
+        name="tp_ironman_resolve_target",
+        description=(
+            "Read-only identity binding from the CURRENT request and live TrainingPeaks "
+            "coach account. Finds any visible Training Plan, athlete, Workout Library "
+            "or plan/athlete workout or native Plan Note for PDF attachment, including unseen IDs. Supports new-plan "
+            "and new-library NAME-ABSENCE preflight, NOT creation. A nonunique name "
+            "produces TARGET_AMBIGUOUS, never chooses the last plan/athlete. "
+            "Does not approve, publish, delete, stage code or bypass provider permissions."
+        ),
+        input_schema={
+            "type": "object",
+            "properties": {
+                "kind": {"type": "string", "enum": [
+                    "training_plan", "new_training_plan", "athlete",
+                    "workout_library", "new_workout_library",
+                    "plan_workout", "plan_note", "athlete_workout"
+                ]},
+                "query": {"type": "string", "minLength": 1,
+                          "description": ('Current intended resource ID or unique name fragment; for a new '
+                              'plan/library, its proposed exact new name.')},
+                "plan_selector": {"type": "string",
+                                  "description": ('For plan_workout only: independently specified Training Plan '
+                                      'name or ID.')},
+                "athlete_selector": {"type": "string",
+                                     "description": ('For athlete_workout only: independently specified coached '
+                                         'athlete name or ID.')},
+                "week": {"type": "integer", "minimum": 1,
+                         "description": "Optional relative plan week, paired with weekday."},
+                "weekday": {"type": "integer", "minimum": 1, "maximum": 7,
+                            "description": "Optional relative weekday 1=Mon..7=Sun, paired with week."},
+                "start_date": {"type": "string", "description": "Athlete workout date window start YYYY-MM-DD."},
+                "end_date": {"type": "string", "description": "Athlete workout date window end YYYY-MM-DD, <=90 days."},
+            },
+            "required": ["kind", "query"],
+        },
+    ),
     # --- IRONMAN Cloud Operator ---
     Tool(
         name="tp_ironman_operator",
@@ -1477,7 +1520,19 @@ TOOLS = [
                 "ack_scope": {"type": "string",
                               "description": "Required only for explicitly approved guarded-write jobs."},
                 "target_plan_id": {"type": "integer", "minimum": 1,
-                                   "description": "For reviewed_plan_patch_preview/publish execution: independently confirmed live Training Plan ID, required and matched to the reviewed payload before provider access."},
+                                   "description": ('For reviewed plan patch jobs: independent current-request '
+                                       'Training Plan ID.')},
+                "request_scope": {"type": "string", "minLength": 12,
+                                  "description": ('For reviewed plan patch jobs: independently established CURRENT '
+                                      'request scope, not copied from the previous manifest.')},
+                "requested_workout_ids": {"type": "array", "minItems": 1, "maxItems": 150,
+                                          "uniqueItems": True,
+                                          "items": {"type": "integer", "minimum": 1},
+                                          "description": (
+                                              'For reviewed plan patch jobs: exact unique workout IDs '
+                                              'resolved from current request and live provider, '
+                                              'never inferred from stale manifest.'
+                                          )},
             },
             "required": ["job", "revision"],
         },
@@ -1642,7 +1697,9 @@ TOOLS = [
                     "description": "Sport subtype ID (e.g. 3=Road Bike)",
                 },
                 "duration_hours": {"type": "number"},
-                "distance_meters": {"type": "number", "minimum": 0, "description": "Planned distance in meters; stored as distancePlanned."},
+                "distance_meters": {
+                    "type": "number", "minimum": 0, "description": ('Planned distance in meters; stored as '
+                    'distancePlanned.')},
                 "tss": {"type": "number"},
                 "description": {"type": "string"},
                 "structure": {"type": "object", "description": "Interval structure (nested object)"},
@@ -1660,7 +1717,9 @@ TOOLS = [
                 "item_id": {"type": "string"},
                 "name": {"type": "string"},
                 "duration_hours": {"type": "number"},
-                "distance_meters": {"type": "number", "minimum": 0, "description": "Planned distance in meters; stored as distancePlanned."},
+                "distance_meters": {
+                    "type": "number", "minimum": 0, "description": ('Planned distance in meters; stored as '
+                    'distancePlanned.')},
                 "tss": {"type": "number"},
                 "description": {"type": "string"},
                 "structure": {"type": "object"},
@@ -2110,7 +2169,7 @@ for _tool in TOOLS:
 # ---------------------------------------------------------------------------
 
 _READ_ONLY_PREFIXES = ("tp_get_", "tp_list_", "tp_download_", "tp_search_", "tp_validate_", "tp_analyze_")
-_READ_ONLY_EXTRA = {"tp_auth_status"}
+_READ_ONLY_EXTRA = {"tp_auth_status", "tp_ironman_resolve_target"}
 
 # DestructiveHint covers deletion AND modification that overwrites existing
 # user data; the former may be irreversible, and the latter may lose an old
@@ -2776,6 +2835,17 @@ async def _h_ironman_publisher_status(args):
     return await tp_get_ironman_publisher_status()
 
 
+@_handler("tp_ironman_resolve_target")
+async def _h_ironman_resolve_target(args):
+    return await tp_ironman_resolve_target(
+        kind=args["kind"], query=args["query"],
+        plan_selector=args.get("plan_selector"),
+        athlete_selector=args.get("athlete_selector"),
+        week=args.get("week"), weekday=args.get("weekday"),
+        start_date=args.get("start_date"), end_date=args.get("end_date"),
+    )
+
+
 @_handler("tp_ironman_operator")
 async def _h_ironman_operator(args):
     return await tp_ironman_operator(
@@ -2784,6 +2854,8 @@ async def _h_ironman_operator(args):
         operation=args.get("operation", "preview"),
         ack_scope=args.get("ack_scope"),
         target_plan_id=args.get("target_plan_id"),
+        request_scope=args.get("request_scope"),
+        requested_workout_ids=args.get("requested_workout_ids"),
     )
 
 @_handler("tp_sync_intermediate_native_notes")
@@ -2987,7 +3059,8 @@ async def run_server_async() -> None:
     try:
         private_bridge = maybe_start_private_bridge()
         if private_bridge is not None:
-            host, port = private_bridge.server.server_address
+            address = private_bridge.server.server_address
+            host, port = address[0], address[1]
             logger.info("IRONMAN private read-only bridge listening on %s:%s", host, port)
 
         async with stdio_server() as (read_stream, write_stream):
