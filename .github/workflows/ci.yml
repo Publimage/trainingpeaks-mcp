@@ -2,9 +2,9 @@ name: CI
 
 on:
   push:
-    branches: [main, v2.x]
+    branches: [main, v2.x, 'feat/**']
   pull_request:
-    branches: [main, v2.x]
+    branches: [main, v2.x, feat/mcp-test-training-plan-lab]
   schedule:
     # Weekly canary: catches fresh-install breakage from unpinned upstream
     # releases between pushes (mcp 2.0.0 broke installs with zero red CI).
@@ -19,6 +19,8 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Set up Python ${{ matrix.python-version }}
         uses: actions/setup-python@v5
@@ -34,14 +36,16 @@ jobs:
         run: |
           python -c "from importlib.metadata import version; v = version('mcp'); assert int(v.split('.')[0]) == 2, f'mcp resolved to {v}, expected 2.x - the <2 cap in pyproject.toml is not being enforced'"
 
-      - name: Lint
-        run: ruff check src/
+      - name: Native note PDF tool tests (plan + athlete)
+        run: pytest -q tests/test_shared_native_note_pdf.py
 
-      - name: Type check
-        run: mypy src/
+      - name: Run all tests
+        run: python -m pytest tests/ -q
 
-      - name: Run tests
-        run: pytest tests/ -v
+      - name: Static analysis non-regression (Ruff and mypy)
+        env:
+          STATIC_BASE_SHA: ${{ github.event.pull_request.base.sha || github.event.before }}
+        run: python scripts/ci/static_diagnostics_guard.py
 
   legacy-client:
     # Release-blocking compat gate: a REAL SDK 1.x client must work against
