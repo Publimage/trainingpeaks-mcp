@@ -42,13 +42,10 @@ jobs:
       - name: Run all tests
         run: python -m pytest tests/ -q
 
-      - name: Type check
-        run: mypy src/
-
-      - name: Ruff no-new-diagnostics gate against exact base
+      - name: Static analysis non-regression (Ruff and mypy)
         env:
-          RUFF_BASE_SHA: ${{ github.event.pull_request.base.sha || github.event.before }}
-        run: python scripts/ci/ruff_baseline_guard.py
+          STATIC_BASE_SHA: ${{ github.event.pull_request.base.sha || github.event.before }}
+        run: python scripts/ci/static_diagnostics_guard.py
 
   legacy-client:
     # Release-blocking compat gate: a REAL SDK 1.x client must work against
