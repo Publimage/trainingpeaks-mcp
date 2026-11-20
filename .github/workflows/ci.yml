@@ -40,7 +40,7 @@ jobs:
         run: pytest -q tests/test_shared_native_note_pdf.py
 
       - name: Run all tests
-        run: pytest tests/ -q
+        run: python -m pytest tests/ -q
 
       - name: Type check
         run: mypy src/
