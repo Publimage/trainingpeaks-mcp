@@ -36,6 +36,7 @@ from tp_mcp.tools import (
     tp_add_training_plan_library_workout,
     tp_batch_add_training_plan_library_workouts,
     tp_add_training_plan_note,
+    tp_attach_native_note_pdf,
     tp_attach_training_plan_note_pdf,
     tp_apply_training_plan,
     tp_auth_status,
@@ -883,6 +884,30 @@ TOOLS = [
                 "description": {"type": "string"},
             },
             "required": ["plan_id", "note_date", "title", "description"],
+        },
+    ),
+    Tool(
+        name="tp_attach_native_note_pdf",
+        description=("Attach one verified binary PDF to an existing native Calendar Note, "
+                     "either on a coach-owned Training Plan or on a roster-verified athlete. "
+                     "Uses a short-lived trusted HTTPS source, checks SHA256/size, note identity, "
+                     "duplicate filename, and independent post-write provider readback. "
+                     "No overwrite; do not retry an uncertain upload."),
+        input_schema={
+            "type": "object",
+            "properties": {
+                "target_type": {"type": "string", "enum": ["plan", "athlete"]},
+                "target_id": {"type": "integer", "description": "Exact Training Plan or athlete ID"},
+                "note_id": {"type": "integer", "description": "Exact existing native note ID"},
+                "expected_note_title": {"type": "string", "description": "Existing note title; mandatory for athlete"},
+                "expected_note_date": {"type": "string", "description": "YYYY-MM-DD; mandatory for athlete"},
+                "file_name": {"type": "string", "description": "PDF attachment filename"},
+                "source_url": {"type": "string", "description": "Trusted short-lived OpenAI signed file URL"},
+                "expected_sha256": {"type": "string", "description": "Lowercase SHA256 of the PDF"},
+                "expected_size_bytes": {"type": "integer", "description": "Exact file size in bytes"},
+            },
+            "required": ["target_type", "target_id", "note_id", "file_name",
+                         "source_url", "expected_sha256", "expected_size_bytes"],
         },
     ),
     Tool(
@@ -2069,6 +2094,7 @@ _ATHLETE_EXEMPT_TOOLS = {
     "tp_get_ironman_publisher_status",
     "tp_list_athletes", "tp_get_workout_types",
     "tp_publish_public_asset",
+    "tp_attach_native_note_pdf",
     # Coach-scoped — enumerates methods under the caller's own user, not an athlete.
     "tp_get_zone_methods",
     # Offline exercise-library search — not athlete-scoped.
@@ -2159,6 +2185,7 @@ _NON_IDEMPOTENT_WRITES = {
     "tp_batch_add_training_plan_library_workouts",
     "tp_add_training_plan_note",
     "tp_attach_training_plan_note_pdf",
+    "tp_attach_native_note_pdf",
     "tp_apply_training_plan",
     "tp_create_training_plan",
     "tp_copy_workout",
@@ -2529,6 +2556,17 @@ async def _h_add_training_plan_note(args):
     return await tp_add_training_plan_note(
         plan_id=args["plan_id"], note_date=args["note_date"],
         title=args["title"], description=args["description"],
+    )
+
+@_handler("tp_attach_native_note_pdf")
+async def _h_attach_native_note_pdf(args):
+    return await tp_attach_native_note_pdf(
+        target_type=args["target_type"], target_id=args["target_id"],
+        note_id=args["note_id"], file_name=args["file_name"],
+        source_url=args["source_url"], expected_sha256=args["expected_sha256"],
+        expected_size_bytes=args["expected_size_bytes"],
+        expected_note_title=args.get("expected_note_title"),
+        expected_note_date=args.get("expected_note_date"),
     )
 
 @_handler("tp_attach_training_plan_note_pdf")

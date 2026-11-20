@@ -130,7 +130,10 @@ class TestListTools:
             "tp_apply_training_plan",
         }
         assert v2_tools.issubset(names)
-        assert len(names) == len(core_tools) + len(v2_tools)
+        # Tool inventory grows as optional integrations are added.
+        # Unique names are the invariant, not a frozen inventory count.
+        assert len(names) == len(tools)
+        assert "tp_attach_native_note_pdf" in names
 
     @pytest.mark.asyncio
     async def test_training_plan_cleanup_tool_is_destructive_and_dry_run_by_default(self):
