@@ -88,7 +88,12 @@ async def tp_attach_native_note_pdf(
             return _error("VALIDATION_ERROR", "Athlete note date must be YYYY-MM-DD.")
 
     async with TPClient() as client:
-        me = await client._get_user_data()
+        # Read the provider user record fresh: do not trust the connector's
+        # legacy process-global roster cache when selecting a new athlete.
+        user_response = await client.get("/users/v3/user")
+        if user_response.is_error or not isinstance(user_response.data, dict):
+            return _error("API_ERROR", "Cannot verify current TrainingPeaks identity.")
+        me = user_response.data.get("user", user_response.data)
         if not isinstance(me, dict) or me.get("personId") != OWNER:
             return _error("PROTECTED_RESOURCE", "Authenticated coach owner mismatch.")
 
@@ -254,6 +259,7 @@ async def tp_attach_native_note_pdf(
             "note_id": note_id, "attachment_id": match[0]["id"],
             "file_name": file_name, "content_length": expected_size_bytes,
             "sha256": expected_sha256.lower(), "note_count": len(after),
+            **({"workout_count": plan.get("workoutCount")} if plan is not None else {}),
         }
 
 
