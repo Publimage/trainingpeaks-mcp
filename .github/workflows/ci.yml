@@ -34,6 +34,9 @@ jobs:
         run: |
           python -c "from importlib.metadata import version; v = version('mcp'); assert int(v.split('.')[0]) == 2, f'mcp resolved to {v}, expected 2.x - the <2 cap in pyproject.toml is not being enforced'"
 
+      - name: Native note PDF tool tests (plan + athlete)
+        run: pytest -q tests/test_shared_native_note_pdf.py
+
       - name: Lint
         run: ruff check src/
 
