@@ -72,6 +72,14 @@ class FakeTP:
         }
 
     async def get(self, path):
+        if path == "/users/v3/user":
+            return SimpleNamespace(is_error=False, data={
+                "user": {
+                    "personId": pdf.OWNER,
+                    "athletes": ([{"athleteId": 6757136, "firstName": "Andrea",
+                                   "lastName": "Della Tommasina"}] if self.roster else []),
+                }
+            })
         if path == "/plans/v1/plans":
             return SimpleNamespace(is_error=False, data=[copy.deepcopy(self.plan)])
         if path == "/plans/v1/plans/689369":
