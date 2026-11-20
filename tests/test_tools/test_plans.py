@@ -369,8 +369,10 @@ async def test_add_workout_refuses_out_of_range_date():
 @pytest.mark.asyncio
 async def test_plan_note_payload_and_protection():
     client = AsyncMock()
+    client._get_user_data = AsyncMock(return_value={"personId": 2116886})
     client.get = AsyncMock(side_effect=[
-        APIResponse(success=True, data=_TEST_PLAN),
+        APIResponse(success=True, data=[{"planId": 91919}]),  # coach-owned inventory
+        APIResponse(success=True, data=_TEST_PLAN),  # exact plan metadata
         APIResponse(success=True, data=[]),  # no same-day note
     ])
     client.post = AsyncMock(return_value=APIResponse(success=True, data={}))
@@ -650,8 +652,10 @@ async def test_workouts_reader_survives_a_notes_endpoint_failure():
 @pytest.mark.asyncio
 async def test_plan_note_duplicate_is_detected_before_post():
     client = AsyncMock()
+    client._get_user_data = AsyncMock(return_value={"personId": 2116886})
     client.get = AsyncMock(side_effect=[
-        APIResponse(success=True, data=_TEST_PLAN),
+        APIResponse(success=True, data=[{"planId": 91919}]),  # coach-owned inventory
+        APIResponse(success=True, data=_TEST_PLAN),  # exact plan metadata
         APIResponse(success=True, data=[{
             "calendarNoteId": 99515,
             "title": "[MCP TEST] Instructions",
@@ -676,8 +680,10 @@ async def test_plan_note_duplicate_is_detected_before_post():
 @pytest.mark.asyncio
 async def test_plan_note_aborts_on_unexpected_preflight_response():
     client = AsyncMock()
+    client._get_user_data = AsyncMock(return_value={"personId": 2116886})
     client.get = AsyncMock(side_effect=[
-        APIResponse(success=True, data=_TEST_PLAN),
+        APIResponse(success=True, data=[{"planId": 91919}]),  # coach-owned inventory
+        APIResponse(success=True, data=_TEST_PLAN),  # exact plan metadata
         APIResponse(success=True, data={"unexpected": "shape"}),
     ])
     client.post = AsyncMock()
