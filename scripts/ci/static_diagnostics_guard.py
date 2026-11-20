@@ -40,7 +40,7 @@ def ruff_errors(repo: Path) -> Counter[tuple[str, str, str]]:
 def mypy_errors(repo: Path) -> Counter[tuple[str, str, str]]:
     raw = run(["mypy", "src/", "--no-incremental", "--show-error-codes"], repo, (0, 1))
     errors: Counter[tuple[str, str, str]] = Counter()
-    rx = re.compile(r"^(src/[^:]+):\\d+(?::\\d+)?: error: (.*?)(?: \\[([^\\]]+)\\])?$")
+    rx = re.compile(r"^(src/[^:]+):\d+(?::\d+)?: error: (.*?)(?: \[([^\]]+)\])?$")
     for line in raw.splitlines():
         if ": error:" in line:
             m = rx.match(line)
