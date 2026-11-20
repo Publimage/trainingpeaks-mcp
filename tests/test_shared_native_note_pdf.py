@@ -128,7 +128,7 @@ async def test_shared_upload_and_repeat_is_idempotent(monkeypatch, scope):
     monkeypatch.setattr(pdf, "TPClient", lambda: fake)
     monkeypatch.setattr(pdf.httpx, "AsyncClient", FakeSource)
     first = await pdf.tp_attach_native_note_pdf(**params(scope))
-    assert first["success"] is True and first["readback_verified"] is True
+    assert first["success"] is True and first["readback_verified"] is True, first
     assert first["attachment_id"] == 50001 and fake.calls == 1
     second = await pdf.tp_attach_native_note_pdf(**params(scope))
     assert second["already_present"] is True and fake.calls == 1
@@ -181,7 +181,7 @@ async def test_old_plan_tool_remains_compatible(monkeypatch):
         plan_id=689369, note_id=101273446, file_name="readme.pdf",
         source_url=URL, expected_sha256=SHA, expected_size_bytes=len(BLOB),
     )
-    assert result["success"] is True and result["plan_id"] == 689369
+    assert result["success"] is True and result["plan_id"] == 689369, result
 
 
 @pytest.mark.parametrize("target,expected", [
