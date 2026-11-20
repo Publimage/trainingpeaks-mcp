@@ -55,6 +55,7 @@ class FakeTP:
             "startDate": DATE, "weekCount": 8, "dayCount": 56,
             "workoutCount": 74, "isPublic": False, "price": None,
         }
+        self.base_url = "https://tpapi.trainingpeaks.com"
         self._client = self
 
     async def __aenter__(self):
