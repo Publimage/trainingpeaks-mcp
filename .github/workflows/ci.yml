@@ -19,6 +19,8 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Set up Python ${{ matrix.python-version }}
         uses: actions/setup-python@v5
@@ -37,14 +39,16 @@ jobs:
       - name: Native note PDF tool tests (plan + athlete)
         run: pytest -q tests/test_shared_native_note_pdf.py
 
-      - name: Lint
-        run: ruff check src/
+      - name: Run all tests
+        run: pytest tests/ -q
 
       - name: Type check
         run: mypy src/
 
-      - name: Run tests
-        run: pytest tests/ -v
+      - name: Ruff no-new-diagnostics gate against exact base
+        env:
+          RUFF_BASE_SHA: ${{ github.event.pull_request.base.sha || github.event.before }}
+        run: python scripts/ci/ruff_baseline_guard.py
 
   legacy-client:
     # Release-blocking compat gate: a REAL SDK 1.x client must work against
