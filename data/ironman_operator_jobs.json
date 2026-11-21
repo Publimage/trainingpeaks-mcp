@@ -2378,6 +2378,30 @@
       "scope": "trainingpeaks:athlete:4480273:note:100766794:winter8-start-native-pdf-original-only",
       "script": "scripts/ironman_jobs/athlete_native_note_pdf_publish.py",
       "test": "tests/test_athlete_native_note_pdf_publish.py"
+    },
+    {
+      "name": "complete_plan_transfer_lab_preview",
+      "mode": "READ_ONLY",
+      "owner_id": 2116886,
+      "scope": "trainingpeaks:plan:689369:test-athlete:941614:2028-01-03:complete-copy-readonly",
+      "script": "scripts/ironman_jobs/complete_plan_transfer_lab_preview.py",
+      "test": "tests/test_complete_plan_transfer_lab.py"
+    },
+    {
+      "name": "complete_plan_transfer_lab_execute",
+      "mode": "GUARDED_WRITE",
+      "owner_id": 2116886,
+      "scope": "trainingpeaks:lab-athlete:941614:2028-01-03..2028-02-27:copy-plan-689369:complete-transfer-v1",
+      "script": "scripts/ironman_jobs/complete_plan_transfer_lab_execute.py",
+      "test": "tests/test_complete_plan_transfer_lab.py"
+    },
+    {
+      "name": "complete_plan_transfer_lab_verify",
+      "mode": "READ_ONLY",
+      "owner_id": 2116886,
+      "scope": "trainingpeaks:lab-athlete:941614:complete-copy-replay-readonly",
+      "script": "scripts/ironman_jobs/complete_plan_transfer_lab_verify.py",
+      "test": "tests/test_complete_plan_transfer_lab.py"
     }
   ]
 }
