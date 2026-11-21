@@ -176,8 +176,10 @@ note text and order, and the original PDF bytes. It verifies every created
 object, the complete destination inventory and the unchanged source. There are
 two complete destination reads in a clean execution, plus a focused readback
 of each new object; no per-workout reread of the entire calendar is required.
-Unsupported source content (including plan events, weekly goals, non-PDF
-attachments or completed workout data) blocks the preflight before writes.
+Unsupported source content blocks the preflight before writes. This includes
+plan events, weekly goals, plan-description attachments, classic-workout
+attachments, non-PDF note attachments, workout comments and completed workout
+data. These elements are never silently omitted from a successful transfer.
 
 The runtime keeps a private durable receipt. Use the **same request ID and
 parameters** after an interruption. A completed replay creates nothing; an
