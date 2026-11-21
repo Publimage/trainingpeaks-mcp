@@ -37,6 +37,7 @@ from tp_mcp.tools import (
     tp_batch_add_training_plan_library_workouts,
     tp_add_training_plan_note,
     tp_attach_native_note_pdf,
+    tp_delete_native_note_pdf,
     tp_apply_training_plan,
     tp_auth_status,
     tp_create_training_plan,
@@ -883,6 +884,25 @@ TOOLS = [
                 "description": {"type": "string"},
             },
             "required": ["plan_id", "note_date", "title", "description"],
+        },
+    ),
+    Tool(
+        name="tp_delete_native_note_pdf",
+        description=("Preview or delete one exact PDF from a native note. "
+                     "Deletion enabled only for verified plan routes; athlete preview is read-only."),
+        input_schema={
+            "type": "object",
+            "properties": {
+                "target_type": {"type":"string","enum":["plan","athlete"],"description":"Exact note owner type"},
+                "target_id": {"type":"integer","description":"Exact plan or athlete ID"},
+                "note_id": {"type":"integer","description":"Exact existing note ID"},
+                "attachment_id": {"type":"integer","description":"Exact PDF attachment ID"},
+                "expected_file_name": {"type":"string","description":"Exact existing PDF filename"},
+                "expected_note_date": {"type":"string","description":"Exact note date, YYYY-MM-DD"},
+                "expected_note_title": {"type":"string","description":"Exact note title"},
+                "dry_run": {"type":"boolean","default":True,"description":"Preview by default. Set false only after verifying the exact attachment. Athlete deletion currently blocked."},
+            },
+            "required": ["target_type","target_id","note_id","attachment_id","expected_file_name","expected_note_date","expected_note_title"],
         },
     ),
     Tool(
@@ -2074,6 +2094,7 @@ _ATHLETE_EXEMPT_TOOLS = {
     "tp_list_athletes", "tp_get_workout_types",
     "tp_publish_public_asset",
     "tp_attach_native_note_pdf",
+    "tp_delete_native_note_pdf",
     # Coach-scoped — enumerates methods under the caller's own user, not an athlete.
     "tp_get_zone_methods",
     # Offline exercise-library search — not athlete-scoped.
@@ -2123,6 +2144,7 @@ _READ_ONLY_EXTRA = {"tp_auth_status"}
 # these writes to the account selected by the authenticated session; the
 # Publishing Gate additionally restricts real-athlete mutations.
 _DESTRUCTIVE_TOOLS = {
+    "tp_delete_native_note_pdf",
     "tp_batch_delete_beginner_classic_strength",
     "tp_delete_availability",
     "tp_delete_equipment",
@@ -2164,6 +2186,7 @@ _NON_IDEMPOTENT_WRITES = {
     "tp_batch_add_training_plan_library_workouts",
     "tp_add_training_plan_note",
     "tp_attach_native_note_pdf",
+    "tp_delete_native_note_pdf",
     "tp_apply_training_plan",
     "tp_create_training_plan",
     "tp_copy_workout",
@@ -2535,6 +2558,11 @@ async def _h_add_training_plan_note(args):
         plan_id=args["plan_id"], note_date=args["note_date"],
         title=args["title"], description=args["description"],
     )
+
+@_handler("tp_delete_native_note_pdf")
+async def _h_delete_native_note_pdf(args):
+    return await tp_delete_native_note_pdf(**args)
+
 
 @_handler("tp_attach_native_note_pdf")
 async def _h_attach_native_note_pdf(args):
