@@ -219,3 +219,43 @@ def test_tool_registration():
     assert matching[0].annotations.idempotent_hint is False
     assert set(matching[0].input_schema["properties"]["target_type"]["enum"]) == {"plan", "athlete"}
     assert "tp_attach_native_note_pdf" in _TOOL_HANDLERS
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize("scope", ["plan", "athlete"])
+async def test_delete_pdf_preview_and_verified_plan_removal(monkeypatch, scope):
+    fake = FakeTP(target_type=scope, source_has_file=True)
+    fake.note["attachments"][0]["contentType"] = "application/pdf"
+    sibling = {"id": 9998, "fileName": "keep.pdf", "contentType": "application/pdf"}
+    fake.note["attachments"].append(sibling)
+    baseline = copy.deepcopy(fake.note)
+
+    async def remove(method, path, *, _retry_on_401):
+        assert method == "DELETE" and not _retry_on_401
+        assert path == "/plans/v1/plans/689369/calendarNote/101273446/attachments/9999"
+        fake.calls += 1
+        fake.note["attachments"].pop(0)
+        raise TimeoutError("response lost after deletion")
+
+    monkeypatch.setattr(fake, "_request", remove, raising=False)
+    monkeypatch.setattr(pdf, "TPClient", lambda: fake)
+    request = {
+        "target_type": scope, "target_id": params(scope)["target_id"],
+        "note_id": 101273446, "attachment_id": 9999,
+        "expected_file_name": "readme.pdf", "expected_note_date": DATE,
+        "expected_note_title": TITLE,
+    }
+    assert (await pdf.tp_delete_native_note_pdf(**request))["dry_run"]
+    assert (await pdf.tp_delete_native_note_pdf(
+        **{**request, "expected_file_name": "wrong.pdf"}, dry_run=False,
+    ))["error_code"] == "CONFLICT"
+    assert fake.note == baseline and fake.calls == 0
+    result = await pdf.tp_delete_native_note_pdf(**request, dry_run=False)
+    if scope == "athlete":
+        assert result["error_code"] == "ROUTE_UNVERIFIED"
+        assert fake.calls == 0 and fake.note == baseline
+    else:
+        assert result["readback_verified"] and fake.calls == 1
+        assert fake.note == {**baseline, "attachments": [sibling]}
+        assert (await pdf.tp_delete_native_note_pdf(**request, dry_run=False))["error_code"] == "CONFLICT"
+        assert fake.calls == 1

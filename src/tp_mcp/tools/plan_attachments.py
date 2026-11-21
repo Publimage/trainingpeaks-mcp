@@ -45,6 +45,83 @@ def _note_id(note: dict[str, Any]) -> int:
     return int(note.get("id") or note.get("calendarNoteId") or note.get("noteId") or 0)
 
 
+async def _note_context(client: TPClient, target_type: str, target_id: int, note_id: int,
+                        expected_note_date: str | None, expected_note_title: str | None) -> Any:
+    # Read the provider user record fresh: do not trust the connector's
+    # legacy process-global roster cache when selecting a new athlete.
+    user_response = await client.get("/users/v3/user")
+    if user_response.is_error or not isinstance(user_response.data, dict):
+        return _error("API_ERROR", "Cannot verify current TrainingPeaks identity.")
+    me = user_response.data.get("user", user_response.data)
+    if not isinstance(me, dict) or me.get("personId") != OWNER:
+        return _error("PROTECTED_RESOURCE", "Authenticated coach owner mismatch.")
+
+    plan = None
+    if target_type == "plan":
+        owned = await client.get("/plans/v1/plans")
+        if owned.is_error or not isinstance(owned.data, list) or not any(
+            p.get("planId") == target_id for p in owned.data
+        ):
+            return _error("PROTECTED_RESOURCE", "Target plan not coach-owned.")
+        response = await client.get(f"/plans/v1/plans/{target_id}")
+        if response.is_error or not isinstance(response.data, dict):
+            return _error("API_ERROR", "Unable to verify target plan metadata.")
+        plan = response.data
+        if plan.get("planId") != target_id:
+            return _error("PROTECTED_RESOURCE", "Plan identity mismatch.")
+        try:
+            technical_start = date.fromisoformat(str(plan["startDate"])[:10])
+            start = technical_start - timedelta(days=technical_start.weekday())
+            week_count = int(plan["weekCount"])
+            end = start + timedelta(days=max(7 * week_count, int(plan.get("dayCount") or 0)) + 1)
+        except (ValueError, TypeError, KeyError):
+            return _error("API_ERROR", "Plan has no verifiable relative calendar.")
+        notes_url = (f"/plans/v1/plans/{target_id}/calendarNote/"
+                     f"{start.isoformat()}/{end.isoformat()}")
+        attachment_url = f"/plans/v1/plans/{target_id}/calendarNote/{note_id}/attachments"
+    else:
+        # A tag-only membership with name=null is NOT proof of coach authority.
+        roster = me.get("athletes")
+        if not isinstance(roster, list) or len([
+            a for a in roster if isinstance(a, dict)
+            and a.get("athleteId") == target_id
+            and (str(a.get("firstName") or "").strip() or str(a.get("lastName") or "").strip())
+        ]) != 1:
+            return _error("PROTECTED_RESOURCE", "Athlete not uniquely identified in current coach roster.")
+        notes_url = (f"/fitness/v2/athletes/{target_id}/calendarNote/"
+                     f"{expected_note_date}/{expected_note_date}")
+        attachment_url = f"/fitness/v1/athletes/{target_id}/calendarNote/{note_id}/attachments"
+
+    async def all_notes() -> list[dict[str, Any]] | None:
+        response = await client.get(notes_url)
+        return response.data if not response.is_error and isinstance(response.data, list) else None
+
+    before = await all_notes()
+    if before is None:
+        return _error("API_ERROR", "Cannot read native notes.")
+    selected = [n for n in before if _note_id(n) == note_id]
+    if len(selected) != 1:
+        return _error("NOT_FOUND", "Note ID not uniquely present on target.")
+    target = selected[0]
+    if expected_note_title is not None and target.get("title") != expected_note_title:
+        return _error("CONFLICT", "Note title mismatch.")
+    if expected_note_date is not None and not str(
+        target.get("noteDate") or target.get("date") or ""
+    ).startswith(expected_note_date):
+        return _error("CONFLICT", "Note date mismatch.")
+    if target_type == "athlete":
+        # Independent endpoint read protects against a stale range result.
+        detail = await client.get(f"/fitness/v1/athletes/{target_id}/calendarNote/{note_id}")
+        if (detail.is_error or not isinstance(detail.data, dict)
+            or _note_id(detail.data) != note_id
+            or detail.data.get("title") != target.get("title")
+            or not str(detail.data.get("noteDate") or detail.data.get("date") or "")
+                   .startswith(expected_note_date)):
+            return _error("PROTECTED_RESOURCE", "Athlete note identity not confirmed.")
+
+    return plan, all_notes, before, target, attachment_url
+
+
 async def tp_attach_native_note_pdf(
     target_type: str,
     target_id: int,
@@ -88,77 +165,12 @@ async def tp_attach_native_note_pdf(
             return _error("VALIDATION_ERROR", "Athlete note date must be YYYY-MM-DD.")
 
     async with TPClient() as client:
-        # Read the provider user record fresh: do not trust the connector's
-        # legacy process-global roster cache when selecting a new athlete.
-        user_response = await client.get("/users/v3/user")
-        if user_response.is_error or not isinstance(user_response.data, dict):
-            return _error("API_ERROR", "Cannot verify current TrainingPeaks identity.")
-        me = user_response.data.get("user", user_response.data)
-        if not isinstance(me, dict) or me.get("personId") != OWNER:
-            return _error("PROTECTED_RESOURCE", "Authenticated coach owner mismatch.")
-
-        plan = None
-        if target_type == "plan":
-            owned = await client.get("/plans/v1/plans")
-            if owned.is_error or not isinstance(owned.data, list) or not any(
-                p.get("planId") == target_id for p in owned.data
-            ):
-                return _error("PROTECTED_RESOURCE", "Target plan not coach-owned.")
-            response = await client.get(f"/plans/v1/plans/{target_id}")
-            if response.is_error or not isinstance(response.data, dict):
-                return _error("API_ERROR", "Unable to verify target plan metadata.")
-            plan = response.data
-            if plan.get("planId") != target_id:
-                return _error("PROTECTED_RESOURCE", "Plan identity mismatch.")
-            try:
-                technical_start = date.fromisoformat(str(plan["startDate"])[:10])
-                start = technical_start - timedelta(days=technical_start.weekday())
-                week_count = int(plan["weekCount"])
-                end = start + timedelta(days=max(7 * week_count, int(plan.get("dayCount") or 0)) + 1)
-            except (ValueError, TypeError, KeyError):
-                return _error("API_ERROR", "Plan has no verifiable relative calendar.")
-            notes_url = (f"/plans/v1/plans/{target_id}/calendarNote/"
-                         f"{start.isoformat()}/{end.isoformat()}")
-            attachment_url = f"/plans/v1/plans/{target_id}/calendarNote/{note_id}/attachments"
-        else:
-            # A tag-only membership with name=null is NOT proof of coach authority.
-            roster = me.get("athletes")
-            if not isinstance(roster, list) or len([
-                a for a in roster if isinstance(a, dict)
-                and a.get("athleteId") == target_id
-                and (str(a.get("firstName") or "").strip() or str(a.get("lastName") or "").strip())
-            ]) != 1:
-                return _error("PROTECTED_RESOURCE", "Athlete not uniquely identified in current coach roster.")
-            notes_url = (f"/fitness/v2/athletes/{target_id}/calendarNote/"
-                         f"{expected_note_date}/{expected_note_date}")
-            attachment_url = f"/fitness/v1/athletes/{target_id}/calendarNote/{note_id}/attachments"
-
-        async def all_notes() -> list[dict[str, Any]] | None:
-            response = await client.get(notes_url)
-            return response.data if not response.is_error and isinstance(response.data, list) else None
-
-        before = await all_notes()
-        if before is None:
-            return _error("API_ERROR", "Cannot read native notes.")
-        selected = [n for n in before if _note_id(n) == note_id]
-        if len(selected) != 1:
-            return _error("NOT_FOUND", "Note ID not uniquely present on target.")
-        target = selected[0]
-        if expected_note_title is not None and target.get("title") != expected_note_title:
-            return _error("CONFLICT", "Note title mismatch.")
-        if expected_note_date is not None and not str(
-            target.get("noteDate") or target.get("date") or ""
-        ).startswith(expected_note_date):
-            return _error("CONFLICT", "Note date mismatch.")
-        if target_type == "athlete":
-            # Independent endpoint read protects against a stale range result.
-            detail = await client.get(f"/fitness/v1/athletes/{target_id}/calendarNote/{note_id}")
-            if (detail.is_error or not isinstance(detail.data, dict)
-                or _note_id(detail.data) != note_id
-                or detail.data.get("title") != target.get("title")
-                or not str(detail.data.get("noteDate") or detail.data.get("date") or "")
-                       .startswith(expected_note_date)):
-                return _error("PROTECTED_RESOURCE", "Athlete note identity not confirmed.")
+        context = await _note_context(
+            client, target_type, target_id, note_id, expected_note_date, expected_note_title,
+        )
+        if isinstance(context, dict):
+            return context
+        plan, all_notes, before, target, attachment_url = context
 
         old = target.get("attachments") or []
         if not isinstance(old, list) or len(old) >= 15:
@@ -277,3 +289,66 @@ async def tp_attach_training_plan_note_pdf(
     if result.get("success"):
         result["plan_id"] = plan_id
     return result
+
+
+async def tp_delete_native_note_pdf(
+    target_type: str, target_id: int, note_id: int, attachment_id: int,
+    expected_file_name: str, expected_note_date: str, expected_note_title: str,
+    dry_run: bool = True,
+) -> dict[str, Any]:
+    """Preview or remove one exact PDF without deleting or editing its note."""
+    if target_type not in ("plan", "athlete") or any(
+        type(value) is not int or value <= 0 for value in (target_id, note_id, attachment_id)
+    ):
+        return _error("VALIDATION_ERROR", "Invalid target, note or attachment ID.")
+    try:
+        valid_date = date.fromisoformat(expected_note_date).isoformat() == expected_note_date
+    except (ValueError, TypeError):
+        valid_date = False
+    if (not valid_date or not expected_note_title.strip()
+        or not expected_file_name.lower().endswith(".pdf") or type(dry_run) is not bool):
+        return _error("VALIDATION_ERROR", "Exact date, note title and PDF name are required.")
+
+    async with TPClient() as client:
+        context = await _note_context(
+            client, target_type, target_id, note_id, expected_note_date, expected_note_title,
+        )
+        if isinstance(context, dict):
+            return context
+        plan, all_notes, before, target, attachment_url = context
+        attachments = target.get("attachments")
+        if not isinstance(attachments, list) or any(not isinstance(a, dict) for a in attachments):
+            return _error("PROTECTED_RESOURCE", "Unsupported attachment inventory.")
+        match = [a for a in attachments if a.get("id") == attachment_id]
+        if (len(match) != 1 or match[0].get("fileName") != expected_file_name
+            or match[0].get("contentType") != "application/pdf"):
+            return _error("CONFLICT", "The exact PDF attachment is not present on this note.")
+        receipt = {
+            "success": True, "dry_run": dry_run, "target_type": target_type,
+            "target_id": target_id, "note_id": note_id, "attachment_id": attachment_id,
+            "file_name": expected_file_name, "content_length": match[0].get("contentLength"),
+        }
+        if dry_run:
+            return receipt
+        if target_type == "athlete":
+            return _error("ROUTE_UNVERIFIED", "Athlete attachment removal still requires a provider canary.")
+
+        try:
+            await client._request("DELETE", f"{attachment_url}/{attachment_id}", _retry_on_401=False)
+        except Exception:
+            # An interrupted response does not establish whether deletion happened.
+            pass
+
+        expected = {**target, "attachments": [a for a in attachments if a.get("id") != attachment_id]}
+        after = await all_notes()
+        if after is None or sorted(after, key=_note_id) != sorted(
+            [expected if _note_id(n) == note_id else n for n in before], key=_note_id,
+        ):
+            return _error("WRITE_UNVERIFIED", "Inspect the attachment inventory before retrying.")
+        after_plan = await client.get(f"/plans/v1/plans/{target_id}")
+        if after_plan.is_error or not isinstance(after_plan.data, dict) or any(
+            after_plan.data.get(key) != plan.get(key)
+            for key in ("planId", "title", "workoutCount", "weekCount", "isPublic", "price")
+        ):
+            return _error("WRITE_UNVERIFIED", "Plan metadata changed or could not be verified.")
+        return {**receipt, "deleted": True, "readback_verified": True}
