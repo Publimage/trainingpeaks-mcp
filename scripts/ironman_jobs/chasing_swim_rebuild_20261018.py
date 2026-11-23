@@ -7,7 +7,9 @@ import asyncio, copy, hashlib, json, math
 from datetime import date
 from pathlib import Path
 from tp_mcp.client import TPClient
-from tp_mcp.tools.library import _ensure_structure_preview
+from tp_mcp.tools.library import (
+    build_native_repeat_structure, audit_native_repeat_structure,
+)
 
 PLAN=685173
 OWNER=2116886
@@ -255,80 +257,42 @@ def _swim_distance_polyline(blocks):
     return poly
 
 
-def structure_for(groups):
-    """Use (n-1) work/rest cycles plus a final rep without a trailing rest."""
-    blocks = []
-    cursor = 0
+def _normalized_swim_groups(groups):
+    """Map product data into the single shared native Builder contract."""
+    normalized=[]
     for group in groups:
-        n, metres = group["count"], group["metres"]
-        work = {
-            "name":group["name"],
-            "length":{"value":metres,"unit":"meter"},
-            "targets":[{"minValue":group["rpe"][0],"maxValue":group["rpe"][1]}],
-            "intensityClass":group["klass"],"openDuration":False}
-        if n > 1 and group["recovery"] > 0:
-            recovery = {
-                "name":"Recover",
-                "length":{"value":group["recovery"],"unit":"second"},
-                "targets":[{"minValue":0,"maxValue":0}],
-                "intensityClass":"rest","openDuration":False}
-            before_last = (n-1)*metres
-            blocks.append({
-                "type":"repetition","length":{"value":n-1,"unit":"repetition"},
-                "steps":[copy.deepcopy(work),recovery],
-                "begin":cursor,"end":cursor+before_last})
-            cursor += before_last
-            blocks.append({
-                "type":"step","length":{"value":1,"unit":"repetition"},
-                "steps":[copy.deepcopy(work)],
-                "begin":cursor,"end":cursor+metres})
-            cursor += metres
-        else:
-            blocks.append({
-                "type":"step" if n==1 else "repetition",
-                "length":{"value":n,"unit":"repetition"},
-                "steps":[work],"begin":cursor,"end":cursor+n*metres})
-            cursor += n*metres
-    data = {
-        "structure":blocks,"primaryLengthMetric":"distance",
-        "visualizationDistanceUnit":"meter",
-        "primaryIntensityMetric":"rpe",
-        "primaryIntensityTargetOrRange":"range",
-        "polyline":_swim_distance_polyline(blocks)}
-    return _ensure_structure_preview(data)
+        n,metres=group["count"],group["metres"]
+        work={"name":group["name"],
+              "length":{"value":metres,"unit":"meter"},
+              "targets":[{"minValue":group["rpe"][0],"maxValue":group["rpe"][1]}],
+              "intensityClass":group["klass"],"openDuration":False}
+        steps=[work]
+        if n>1 and group["recovery"]>0:
+            steps.append({"name":"Recupero",
+                          "length":{"value":group["recovery"],"unit":"second"},
+                          "targets":[{"minValue":0,"maxValue":0}],
+                          "intensityClass":"rest","openDuration":False})
+        normalized.append({"count":n,"steps":steps})
+    return normalized
+
+
+def structure_for(groups):
+    """Shared native compiler; no plan-specific N-1 final-repetition logic."""
+    return build_native_repeat_structure(
+        _normalized_swim_groups(groups),
+        length_metric="distance", intensity_metric="rpe",
+    )
 
 
 def audit_native_swim_rests(groups, structure):
-    """Check full step order and N-1 Recover events, including final rep."""
-    blocks = (structure or {}).get("structure") or []
-    actual_steps = []
-    for block in blocks:
-        n = block["length"]["value"] if block.get("type")=="repetition" else 1
-        for _ in range(n):
-            actual_steps.extend(block["steps"])
-    observed = [(s["length"]["unit"],s["length"]["value"],s["name"]) for s in actual_steps]
-    expected = []
-    for group in groups:
-        for k in range(group["count"]):
-            expected.append(("meter",group["metres"],group["name"]))
-            if k < group["count"]-1 and group["recovery"]>0:
-                expected.append(("second",group["recovery"],"Recover"))
-    need(observed==expected,"SWIM_NATIVE_RESTS_NOT_EQUAL_TEXT")
-    for step in actual_steps:
-        if step["name"]=="Recover":
-            need(step.get("targets")==[{"minValue":0,"maxValue":0}]
-                 and step.get("intensityClass")=="rest","SWIM_RECOVER_TARGET_INVALID")
-        else:
-            need(bool(step.get("targets")),"SWIM_ACTIVE_TARGET_MISSING")
-    sum_metres = sum(g["count"]*g["metres"] for g in groups)
-    need(blocks and blocks[-1]["end"]==sum_metres,"SWIM_BLOCK_METRES_DRIFT")
-    need(structure.get("primaryLengthMetric")=="distance"
-         and bool(structure.get("polyline")),"SWIM_GRAPH_MISSING")
-    return {"swim_groups":len(groups),
-            "native_rest_groups":sum(max(0,g["count"]-1)
-                                     for g in groups if g["recovery"]>0),
-            "native_metres":sum_metres}
-
+    """Validate complete series and all explicitly prescribed recovery steps."""
+    normalized=_normalized_swim_groups(groups)
+    verified=audit_native_repeat_structure(
+        normalized, structure, length_metric="distance", intensity_metric="rpe",
+    )
+    return {"swim_groups":verified["groups"],
+            "native_rest_groups":verified["native_rest_events"],
+            "native_metres":verified["axis_length"]}
 
 
 def equipment_for(week,kind):
