@@ -81,15 +81,15 @@ def test_winter_swim_validator_rejects_split_last_repetition():
     native=[p.swimming_group(g["count"],g["distance"],g["label"],tuple(g["rpe"]),
             "warmUp" if i==0 else "coolDown" if "Defaticamento" in g["label"]
             else "active",g["rest"]) for i,g in enumerate(e["groups"])]
-    valid=p.winter_swim_structure_for(native)
-    assert p.audit_winter_swim_groups(native,valid)["native_metres"]==e["metres"]
+    valid=p.swimming_builder(native)
+    assert p.audit_swimming(native,valid)["native_metres"]==e["metres"]
     broken=copy.deepcopy(valid)
     ix=next(i for i,b in enumerate(broken["structure"]) if
             b["type"]=="repetition" and len(b["steps"])==2)
     broken["structure"][ix]["length"]["value"]-=1
     import pytest
-    with pytest.raises(ValueError,match="WINTER_SWIM_N_MINUS_ONE"):
-        p.audit_winter_swim_groups(native,broken)
+    with pytest.raises(ValueError,match="BUILDER_DRIFT_STRUCTURE"):
+        p.audit_swimming(native,broken)
 
 
 def test_steady_complete_repeats_and_unchanged_total_minutes():
