@@ -200,6 +200,68 @@ def audit_native_repeat_structure(
     }
 
 
+
+def _normalize_native_swim_groups(
+    swim_groups: list[dict[str, Any]],
+) -> list[dict[str, Any]]:
+    """Convert swim prescription data to the single generic step-group format."""
+    groups = []
+    for group in swim_groups:
+        n = group["count"]
+        metres = group["metres"]
+        recovery = group.get("recovery", 0)
+        if type(n) is not int or n < 1 or type(metres) is not int or metres < 1:
+            raise ValueError("SWIM_GROUP_INVALID_DOSE")
+        if not isinstance(recovery, (int, float)) or recovery < 0:
+            raise ValueError("SWIM_GROUP_INVALID_RECOVERY")
+        rpe = group["rpe"]
+        if len(rpe) != 2 or rpe[0] > rpe[1]:
+            raise ValueError("SWIM_GROUP_INVALID_RPE")
+        steps = [{
+            "name": group["name"],
+            "length": {"value": metres, "unit": "meter"},
+            "targets": [{"minValue": rpe[0], "maxValue": rpe[1]}],
+            "intensityClass": group["klass"],
+            "openDuration": False,
+        }]
+        if n > 1 and recovery > 0:
+            steps.append({
+                "name": "Recupero",
+                "length": {"value": recovery, "unit": "second"},
+                "targets": [{"minValue": 0, "maxValue": 0}],
+                "intensityClass": "rest",
+                "openDuration": False,
+            })
+        groups.append({"count": n, "steps": steps})
+    return groups
+
+
+def build_native_swim_structure(
+    swim_groups: list[dict[str, Any]],
+) -> dict[str, Any]:
+    """Shared distance/RPE swim compilation for every training-plan product."""
+    return build_native_repeat_structure(
+        _normalize_native_swim_groups(swim_groups),
+        length_metric="distance", intensity_metric="rpe",
+    )
+
+
+def audit_native_swim_structure(
+    swim_groups: list[dict[str, Any]],
+    structure: dict[str, Any],
+) -> dict[str, Any]:
+    """Product-independent swim audit, including full final recoveries."""
+    normalized = _normalize_native_swim_groups(swim_groups)
+    result = audit_native_repeat_structure(
+        normalized, structure, length_metric="distance", intensity_metric="rpe",
+    )
+    return {
+        "swim_groups": result["groups"],
+        "native_rest_groups": result["native_rest_events"],
+        "native_metres": result["axis_length"],
+    }
+
+
 async def tp_get_libraries() -> dict[str, Any]:
     """List all workout library folders.
 
