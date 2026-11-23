@@ -12,6 +12,7 @@ from typing import Any
 from pydantic import BaseModel, Field, ValidationError, field_validator, model_validator
 
 from tp_mcp.tools._validation import format_validation_error
+from tp_mcp.tools.library import build_native_repeat_structure
 
 logger = logging.getLogger("tp-mcp")
 
@@ -111,92 +112,29 @@ def _compute_block_duration(block: SimpleStep | SimpleRepetitionBlock) -> int:
     return block.duration_seconds
 
 
-def _polyline_bar(
-    t_start: float, t_end: float, intensity: float, polyline: list[list[float]],
-) -> None:
-    """Append a rectangular bar to the polyline (TP native format).
-
-    Each segment is drawn as: drop to 0 → rise to intensity → hold → drop to 0.
-    """
-    polyline.append([round(t_start, 4), 0])
-    polyline.append([round(t_start, 4), round(intensity, 4)])
-    polyline.append([round(t_end, 4), round(intensity, 4)])
-    polyline.append([round(t_end, 4), 0])
-
-
 def build_wire_structure(structure: SimpleWorkoutStructure) -> dict[str, Any]:
-    """Convert simplified structure to TP API wire format.
+    """Convert simplified workout steps using the single shared native Builder.
 
-    Args:
-        structure: The simplified workout structure.
-
-    Returns:
-        Dict matching the TP API structure format.
+    Normalized groups are compiled by the same engine used for Training Plans,
+    Workout Library templates, and athlete-calendar workouts. Repeated blocks
+    retain every prescribed recovery, including recovery after the last rep.
     """
-    wire_blocks: list[dict[str, Any]] = []
-    cumulative_seconds = 0
-
-    # First pass: compute total duration for polyline normalisation
-    total_duration = sum(_compute_block_duration(b) for b in structure.steps)
-
-    for block in structure.steps:
-        block_duration = _compute_block_duration(block)
-        begin = cumulative_seconds
-        end = cumulative_seconds + block_duration
-
-        if isinstance(block, SimpleRepetitionBlock):
-            inner_steps = [_build_step_wire(s) for s in block.steps]
-
-            wire_block: dict[str, Any] = {
-                "type": "repetition",
-                "length": {"value": block.reps, "unit": "repetition"},
-                "steps": inner_steps,
-                "begin": begin,
-                "end": end,
-            }
-            wire_blocks.append(wire_block)
-
-        else:
-            # Single step — TP uses repetition wrapper with value=1
-            wire_step = _build_step_wire(block)
-            wire_block = {
-                "type": "step",
-                "length": {"value": 1, "unit": "repetition"},
-                "steps": [wire_step],
-                "begin": begin,
-                "end": end,
-            }
-            wire_blocks.append(wire_block)
-
-        cumulative_seconds = end
-
-    # Build polyline with zero-drop bars (matches TP native format)
-    polyline: list[list[float]] = []
-    poly_cumulative = 0
-
+    groups: list[dict[str, Any]] = []
     for block in structure.steps:
         if isinstance(block, SimpleRepetitionBlock):
-            for _rep in range(block.reps):
-                for s in block.steps:
-                    t_start = poly_cumulative / total_duration if total_duration > 0 else 0
-                    poly_cumulative += s.duration_seconds
-                    t_end = poly_cumulative / total_duration if total_duration > 0 else 0
-                    intensity = s.intensity_max / 100.0
-                    _polyline_bar(t_start, t_end, intensity, polyline)
+            groups.append({
+                "count": block.reps,
+                "steps": [_build_step_wire(step) for step in block.steps],
+            })
         else:
-            t_start = poly_cumulative / total_duration if total_duration > 0 else 0
-            poly_cumulative += block.duration_seconds
-            t_end = poly_cumulative / total_duration if total_duration > 0 else 0
-            intensity = block.intensity_max / 100.0
-            _polyline_bar(t_start, t_end, intensity, polyline)
-
-    return {
-        "structure": wire_blocks,
-        "polyline": polyline,
-        "primaryLengthMetric": "duration",
-        "primaryIntensityMetric": structure.primaryIntensityMetric,
-        "primaryIntensityTargetOrRange": "range",
-    }
+            groups.append({
+                "count": 1,
+                "steps": [_build_step_wire(block)],
+            })
+    return build_native_repeat_structure(
+        groups, length_metric="duration",
+        intensity_metric=structure.primaryIntensityMetric,
+    )
 
 
 def compute_if_tss(structure: SimpleWorkoutStructure) -> tuple[float, float, int]:
