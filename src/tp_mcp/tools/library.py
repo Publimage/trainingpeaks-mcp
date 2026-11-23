@@ -109,13 +109,13 @@ def build_native_repeat_structure(
         raise ValueError("BUILDER_EMPTY_GROUPS")
     axis_unit = "meter" if length_metric == "distance" else "second"
     blocks: list[dict[str, Any]] = []
-    axis = 0
+    axis: int | float = 0
     for group in groups:
         count = group.get("count")
         steps = group.get("steps")
         if type(count) is not int or count < 1 or not isinstance(steps, list) or not steps:
             raise ValueError("BUILDER_INVALID_GROUP")
-        distance_or_time = 0
+        distance_or_time: int | float = 0
         for step in steps:
             length = step.get("length") if isinstance(step, dict) else None
             if not isinstance(length, dict):
@@ -157,7 +157,7 @@ def build_native_repeat_structure(
                     if step["length"]["unit"] == "meter":
                         spans.append((step["length"]["value"], _step_intensity(step)))
         highest = max((value for _, value in spans if isinstance(value, (int, float)) and value > 0), default=0)
-        position = 0
+        position: int | float = 0
         poly = []
         if highest <= 0 or sum(length for length, _ in spans) != axis:
             raise ValueError("BUILDER_INVALID_DISTANCE_PREVIEW")
