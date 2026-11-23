@@ -234,29 +234,6 @@ def title_for(week,kind,total,main,groups,test_index=0):
     if kind=="activation":return f"Attivazione | tecnica + 8x100 controllo - {total} m"
     return f"Attivazione | sciolto + richiami brevi - {total} m"
 
-def _swim_distance_polyline(blocks):
-    """Preview X axis is swim distance; timed rest is not swim distance."""
-    spans = []
-    for block in blocks:
-        reps = block["length"]["value"] if block.get("type") == "repetition" else 1
-        for _ in range(reps):
-            for step in block["steps"]:
-                if step["length"]["unit"] == "meter":
-                    spans.append((step["length"]["value"], step["targets"][0]["maxValue"]))
-    total = sum(m for m, _ in spans)
-    high = max((v for _, v in spans), default=0)
-    need(total > 0 and high > 0, "SWIM_PREVIEW_INVALID")
-    poly = []
-    pos = 0
-    for metres, rpe in spans:
-        left = round(pos / total, 4)
-        pos += metres
-        right = round(pos / total, 4)
-        val = round(rpe / high, 4)
-        poly.extend([[left, 0], [left, val], [right, val], [right, 0]])
-    return poly
-
-
 def _normalized_swim_groups(groups):
     """Map product data into the single shared native Builder contract."""
     normalized=[]
