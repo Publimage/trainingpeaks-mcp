@@ -44,33 +44,74 @@ def test_all_builder_steps_and_polyline():
         unique[k]=actual
     assert len(unique)==51
 
-def test_swim_recovers_exactly_n_minus_one():
+def test_swim_full_repeats_with_last_recovery_and_italian_labels():
     _,items=p.source()
+    seen=0
     for e in items:
         if e["sport"]!="SW":continue
-        structure=p.compiled(e)["structure"]
-        found=sum(b["length"]["value"] for b in structure["structure"]
-                  if b["type"]=="repetition" and
-                  any(s["name"]=="Recover" for s in b["steps"]))
-        expected=sum(g["count"]-1 for g in e["groups"] if g["rest"]>0)
-        assert found==expected
-        for b in structure["structure"]:
-            for s in b["steps"]:
-                if s["name"]=="Recover":
-                    assert s["length"]["unit"]=="second"
-                    assert s["targets"]==[{"minValue":0,"maxValue":0}]
-                    assert s["intensityClass"]=="rest"
+        seen+=1
+        structured=p.compiled(e)["structure"]
+        blocks=structured["structure"]
+        assert len(blocks)==len(e["groups"])
+        total_rest=0
+        for original,block in zip(e["groups"],blocks):
+            assert block["length"]["value"]==original["count"]
+            assert block["type"]==("repetition" if original["count"]>1 else "step")
+            assert block["steps"][0]["length"]=={"value":original["distance"],"unit":"meter"}
+            rests=[step for step in block["steps"] if step["intensityClass"]=="rest"]
+            if original["count"]>1 and original["rest"]>0:
+                assert len(rests)==1
+                assert rests[0]["name"]=="Recupero"
+                assert rests[0]["length"]=={"value":original["rest"],"unit":"second"}
+                assert rests[0]["targets"]==[{"minValue":0,"maxValue":0}]
+                total_rest+=original["count"]
+            else:
+                assert not rests
+        assert total_rest==sum(g["count"] for g in e["groups"]
+                               if g["count"]>1 and g["rest"]>0)
+        assert structured["polyline"]
+        assert blocks[-1]["end"]==e["metres"]
+    assert seen==16
 
-def test_steady_recoveries_only_between_repetitions():
+
+def test_winter_swim_validator_rejects_split_last_repetition():
+    import copy
     _,items=p.source()
-    for e in items:
-        if e["sport"]!="BI" or e["week"] not in (6,7) or e["weekday"]!=2:continue
-        builder=p.compiled(e)["structure"]["structure"]
-        rest=sum(b["length"]["value"] for b in builder if b["type"]=="repetition"
-                 for x in b["steps"] if x["intensityClass"]=="rest")
-        assert rest==2
-        assert all(len(x["targets"])==1 for b in builder for x in b["steps"])
-        assert builder[-1]["end"]==e["minutes"]*60
+    e=next(x for x in items if x["sport"]=="SW")
+    native=[p.swimming_group(g["count"],g["distance"],g["label"],tuple(g["rpe"]),
+            "warmUp" if i==0 else "coolDown" if "Defaticamento" in g["label"]
+            else "active",g["rest"]) for i,g in enumerate(e["groups"])]
+    valid=p.swimming_builder(native)
+    assert p.audit_swimming(native,valid)["native_metres"]==e["metres"]
+    broken=copy.deepcopy(valid)
+    ix=next(i for i,b in enumerate(broken["structure"]) if
+            b["type"]=="repetition" and len(b["steps"])==2)
+    broken["structure"][ix]["length"]["value"]-=1
+    import pytest
+    with pytest.raises(ValueError,match="BUILDER_DRIFT_STRUCTURE"):
+        p.audit_swimming(native,broken)
+
+
+def test_steady_complete_repeats_and_unchanged_total_minutes():
+    _,items=p.source()
+    targets=[e for e in items if e["sport"]=="BI" and any(
+            z[0]=="steady" for z in e["blocks"])]
+    assert len(targets)==2
+    assert sorted(e["minutes"] for e in targets)==[70,75]
+    for e in targets:
+        blocks=p.compiled(e)["structure"]["structure"]
+        steady=[b for b in blocks if b["type"]=="repetition" and
+                b["steps"][0]["name"].startswith("Steady")]
+        assert len(steady)==1 and steady[0]["length"]["value"]==3
+        assert len(steady[0]["steps"])==2
+        assert steady[0]["steps"][1]["intensityClass"]=="rest"
+        recovery_min=next(z[1] for z in e["blocks"] if z[0]=="rest")
+        endurance_min=next(z[1] for z in e["blocks"] if z[0]=="endurance")
+        after=next(b["steps"][0]["length"]["value"] for b in blocks
+                   if b["steps"][0]["name"].startswith("Fondo aerobico"))
+        assert after==(endurance_min-recovery_min)*60
+        assert blocks[-1]["end"]==e["minutes"]*60
+
 
 def test_golden_and_placement():
     _,items=p.source()

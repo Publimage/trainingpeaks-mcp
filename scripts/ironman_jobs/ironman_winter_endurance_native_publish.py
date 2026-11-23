@@ -1,8 +1,8 @@
 """Publish WINTER 8W SW/BI/RU native Builder templates and plan occurrences.
 
 Scoped to coach-owned 3 shared libraries and already-private plan 689369.
-Translates canonical manifest with the same swim recovery compiler and native
-preview function already proven on CHASING. Strict duplicate prevention;
+Translates the canonical prescription through the shared Builder compiler
+and native preview function used by all plan products. Strict duplicate prevention;
 golden-first 1 SW + 1 BI + 1 RU; up to 14 provider writes per invocation.
 No athlete calendar, no strength modifications, no new plan.
 """
@@ -17,7 +17,7 @@ from datetime import date,timedelta
 from pathlib import Path
 
 from tp_mcp.client import TPClient
-from tp_mcp.tools.library import _ensure_structure_preview
+from tp_mcp.tools.library import (build_native_repeat_structure, audit_native_repeat_structure)
 try:
     from scripts.ironman_jobs.chasing_swim_rebuild_20261018 import (
         _group as swimming_group,
@@ -82,17 +82,17 @@ def timeblock(name,kind,minutes,lo,hi):
             "intensityClass":kind,"openDuration":False}
 
 def finish_duration(blocks,metric):
-    secs=0
-    for b in blocks:
-        reps=b["length"]["value"] if b["type"]=="repetition" else 1
-        length=sum(q["length"]["value"] for q in b["steps"])*reps
-        b["begin"]=secs;b["end"]=secs+length;secs+=length
-    data={"structure":blocks,"primaryLengthMetric":"duration",
-          "primaryIntensityMetric":metric,"primaryIntensityTargetOrRange":"range"}
-    result=_ensure_structure_preview(data)
+    # Reuse the same provider-native repetition compiler for Bike and Run.
+    groups=[{"count":b["length"]["value"],"steps":b["steps"]} for b in blocks]
+    result=build_native_repeat_structure(
+        groups,length_metric="duration",intensity_metric=metric,
+    )
+    audit_native_repeat_structure(
+        groups,result,length_metric="duration",intensity_metric=metric,
+    )
     must(bool(result.get("polyline")),"MISSING_GRAPH")
-    must(blocks[-1]["end"]==secs,"BLOCK_TIME_END")
-    return result,secs
+    return result,result["structure"][-1]["end"]
+
 
 def bike_builder(e):
     parts=e["blocks"]
@@ -122,9 +122,11 @@ def bike_builder(e):
         must([z[0] for z in parts]==["warm","steady","rest","endurance","cool"],"BAD_STEADY_BLOCKS")
         must(parts[1][2]==3 and parts[2][2]==2,"BAD_STEADY_RECOVERY")
         add([block("warm",parts[0][1])])
-        add([block("steady",parts[1][1]),block("rest",parts[2][1])],2)
-        add([block("steady",parts[1][1])])
-        add([block("endurance",parts[3][1])]);add([block("cool",parts[4][1])])
+        # Keep the complete 3x steady/recovery block. The third recovery
+        # replaces equal time in the subsequent easy endurance section.
+        must(parts[3][1]>parts[2][1],"STEADY_RECOVERY_ENDURANCE_TOO_SHORT")
+        add([block("steady",parts[1][1]),block("rest",parts[2][1])],3)
+        add([block("endurance",parts[3][1]-parts[2][1])]);add([block("cool",parts[4][1])])
     else:
         must(len(parts)==3,"BAD_ENDURANCE_PARTS")
         for kind,minutes in parts:add([block(kind,minutes)])

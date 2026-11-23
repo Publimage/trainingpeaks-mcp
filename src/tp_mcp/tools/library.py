@@ -89,6 +89,179 @@ def _ensure_structure_preview(structure: Any) -> Any:
     return out
 
 
+
+def build_native_repeat_structure(
+    groups: list[dict[str, Any]],
+    *,
+    length_metric: str,
+    intensity_metric: str,
+) -> dict[str, Any]:
+    """Compile any normalized workout into native TP steps and repeat groups.
+
+    Each group has count (positive integer) and ordered native steps. A
+    recovery in a repeated block is repeated after *every* work interval,
+    including the final interval. Source prescriptions decide whether a
+    recovery step exists; the compiler never silently drops one.
+    """
+    if length_metric not in ("distance", "duration"):
+        raise ValueError("BUILDER_UNSUPPORTED_LENGTH_METRIC")
+    if not groups:
+        raise ValueError("BUILDER_EMPTY_GROUPS")
+    axis_unit = "meter" if length_metric == "distance" else "second"
+    blocks: list[dict[str, Any]] = []
+    axis: int | float = 0
+    for group in groups:
+        count = group.get("count")
+        steps = group.get("steps")
+        if type(count) is not int or count < 1 or not isinstance(steps, list) or not steps:
+            raise ValueError("BUILDER_INVALID_GROUP")
+        distance_or_time: int | float = 0
+        for step in steps:
+            length = step.get("length") if isinstance(step, dict) else None
+            if not isinstance(length, dict):
+                raise ValueError("BUILDER_INVALID_STEP")
+            value = length.get("value")
+            unit = length.get("unit")
+            if not isinstance(value, (int, float)) or value <= 0 or unit not in ("meter", "second"):
+                raise ValueError("BUILDER_INVALID_LENGTH")
+            if not step.get("targets") or not isinstance(step.get("name"), str) or not step["name"]:
+                raise ValueError("BUILDER_MISSING_TARGET_OR_NAME")
+            if step.get("intensityClass") == "rest" and unit == "second" and step["name"] == "Recover":
+                raise ValueError("BUILDER_RECOVERY_NOT_LOCALIZED")
+            if unit == axis_unit:
+                distance_or_time += value
+            elif length_metric == "duration":
+                raise ValueError("BUILDER_UNEXPECTED_DISTANCE_IN_TIMED_WORKOUT")
+        if distance_or_time <= 0:
+            raise ValueError("BUILDER_GROUP_WITHOUT_AXIS_LENGTH")
+        next_axis = axis + count * distance_or_time
+        blocks.append({
+            "type": "repetition" if count > 1 else "step",
+            "length": {"value": count, "unit": "repetition"},
+            "steps": [dict(step) for step in steps],
+            "begin": axis,
+            "end": next_axis,
+        })
+        axis = next_axis
+    structure: dict[str, Any] = {
+        "structure": blocks,
+        "primaryLengthMetric": length_metric,
+        "primaryIntensityMetric": intensity_metric,
+        "primaryIntensityTargetOrRange": "range",
+    }
+    if length_metric == "distance":
+        spans = []
+        for block in blocks:
+            for _ in range(block["length"]["value"]):
+                for step in block["steps"]:
+                    if step["length"]["unit"] == "meter":
+                        spans.append((step["length"]["value"], _step_intensity(step)))
+        highest = max((value for _, value in spans if isinstance(value, (int, float)) and value > 0), default=0)
+        position: int | float = 0
+        poly = []
+        if highest <= 0 or sum(length for length, _ in spans) != axis:
+            raise ValueError("BUILDER_INVALID_DISTANCE_PREVIEW")
+        for length, value in spans:
+            left = round(position / axis, 4)
+            position += length
+            right = round(position / axis, 4)
+            y = round(value / highest, 4) if isinstance(value, (int, float)) and value > 0 else 0
+            poly.extend([[left, 0], [left, y], [right, y], [right, 0]])
+        structure["visualizationDistanceUnit"] = "meter"
+        structure["polyline"] = poly
+    return _ensure_structure_preview(structure)
+
+
+def audit_native_repeat_structure(
+    groups: list[dict[str, Any]],
+    result: dict[str, Any],
+    *,
+    length_metric: str,
+    intensity_metric: str,
+) -> dict[str, Any]:
+    """Fail closed if a compiled workout loses final rests or splits a repeat."""
+    expected = build_native_repeat_structure(
+        groups, length_metric=length_metric, intensity_metric=intensity_metric,
+    )
+    if not isinstance(result, dict):
+        raise ValueError("BUILDER_INVALID_RESULT")
+    for key in ("structure", "primaryLengthMetric", "primaryIntensityMetric",
+                "primaryIntensityTargetOrRange", "polyline"):
+        if result.get(key) != expected.get(key):
+            raise ValueError("BUILDER_DRIFT_" + key.upper())
+    return {
+        "groups": len(groups),
+        "axis_length": expected["structure"][-1]["end"],
+        "native_rest_events": sum(
+            group["count"] * sum(step.get("intensityClass") == "rest"
+                                 for step in group["steps"])
+            for group in groups
+        ),
+    }
+
+
+
+def _normalize_native_swim_groups(
+    swim_groups: list[dict[str, Any]],
+) -> list[dict[str, Any]]:
+    """Convert swim prescription data to the single generic step-group format."""
+    groups = []
+    for group in swim_groups:
+        n = group["count"]
+        metres = group["metres"]
+        recovery = group.get("recovery", 0)
+        if type(n) is not int or n < 1 or type(metres) is not int or metres < 1:
+            raise ValueError("SWIM_GROUP_INVALID_DOSE")
+        if not isinstance(recovery, (int, float)) or recovery < 0:
+            raise ValueError("SWIM_GROUP_INVALID_RECOVERY")
+        rpe = group["rpe"]
+        if len(rpe) != 2 or rpe[0] > rpe[1]:
+            raise ValueError("SWIM_GROUP_INVALID_RPE")
+        steps = [{
+            "name": group["name"],
+            "length": {"value": metres, "unit": "meter"},
+            "targets": [{"minValue": rpe[0], "maxValue": rpe[1]}],
+            "intensityClass": group["klass"],
+            "openDuration": False,
+        }]
+        if n > 1 and recovery > 0:
+            steps.append({
+                "name": "Recupero",
+                "length": {"value": recovery, "unit": "second"},
+                "targets": [{"minValue": 0, "maxValue": 0}],
+                "intensityClass": "rest",
+                "openDuration": False,
+            })
+        groups.append({"count": n, "steps": steps})
+    return groups
+
+
+def build_native_swim_structure(
+    swim_groups: list[dict[str, Any]],
+) -> dict[str, Any]:
+    """Shared distance/RPE swim compilation for every training-plan product."""
+    return build_native_repeat_structure(
+        _normalize_native_swim_groups(swim_groups),
+        length_metric="distance", intensity_metric="rpe",
+    )
+
+
+def audit_native_swim_structure(
+    swim_groups: list[dict[str, Any]],
+    structure: dict[str, Any],
+) -> dict[str, Any]:
+    """Product-independent swim audit, including full final recoveries."""
+    normalized = _normalize_native_swim_groups(swim_groups)
+    result = audit_native_repeat_structure(
+        normalized, structure, length_metric="distance", intensity_metric="rpe",
+    )
+    return {
+        "swim_groups": result["groups"],
+        "native_rest_groups": result["native_rest_events"],
+        "native_metres": result["axis_length"],
+    }
+
+
 async def tp_get_libraries() -> dict[str, Any]:
     """List all workout library folders.
 
