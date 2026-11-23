@@ -1,6 +1,6 @@
 {
   "schema": "IRONMAN_REVIEWED_PLAN_PATCH_CONFIG_V1",
-  "configured": true,
+  "configured": false,
   "manifest": {
     "schema": "IRONMAN_PLAN_PATCH_V1",
     "owner_id": 2116886,
