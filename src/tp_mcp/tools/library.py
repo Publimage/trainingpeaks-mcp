@@ -143,7 +143,7 @@ def build_native_repeat_structure(
             "end": next_axis,
         })
         axis = next_axis
-    structure = {
+    structure: dict[str, Any] = {
         "structure": blocks,
         "primaryLengthMetric": length_metric,
         "primaryIntensityMetric": intensity_metric,
