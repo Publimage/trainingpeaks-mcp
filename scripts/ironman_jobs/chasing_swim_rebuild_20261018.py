@@ -8,7 +8,8 @@ from datetime import date
 from pathlib import Path
 from tp_mcp.client import TPClient
 from tp_mcp.tools.library import (
-    build_native_repeat_structure, audit_native_repeat_structure,
+    build_native_swim_structure as structure_for,
+    audit_native_swim_structure as audit_native_swim_rests,
 )
 
 PLAN=685173
@@ -233,44 +234,6 @@ def title_for(week,kind,total,main,groups,test_index=0):
     if kind=="aero":return f"Aerobico | 6x200 + 6x100 negative split - {total} m"
     if kind=="activation":return f"Attivazione | tecnica + 8x100 controllo - {total} m"
     return f"Attivazione | sciolto + richiami brevi - {total} m"
-
-def _normalized_swim_groups(groups):
-    """Map product data into the single shared native Builder contract."""
-    normalized=[]
-    for group in groups:
-        n,metres=group["count"],group["metres"]
-        work={"name":group["name"],
-              "length":{"value":metres,"unit":"meter"},
-              "targets":[{"minValue":group["rpe"][0],"maxValue":group["rpe"][1]}],
-              "intensityClass":group["klass"],"openDuration":False}
-        steps=[work]
-        if n>1 and group["recovery"]>0:
-            steps.append({"name":"Recupero",
-                          "length":{"value":group["recovery"],"unit":"second"},
-                          "targets":[{"minValue":0,"maxValue":0}],
-                          "intensityClass":"rest","openDuration":False})
-        normalized.append({"count":n,"steps":steps})
-    return normalized
-
-
-def structure_for(groups):
-    """Shared native compiler; no plan-specific N-1 final-repetition logic."""
-    return build_native_repeat_structure(
-        _normalized_swim_groups(groups),
-        length_metric="distance", intensity_metric="rpe",
-    )
-
-
-def audit_native_swim_rests(groups, structure):
-    """Validate complete series and all explicitly prescribed recovery steps."""
-    normalized=_normalized_swim_groups(groups)
-    verified=audit_native_repeat_structure(
-        normalized, structure, length_metric="distance", intensity_metric="rpe",
-    )
-    return {"swim_groups":verified["groups"],
-            "native_rest_groups":verified["native_rest_events"],
-            "native_metres":verified["axis_length"]}
-
 
 def equipment_for(week,kind):
     if kind in ("tech","tech_easy"):
