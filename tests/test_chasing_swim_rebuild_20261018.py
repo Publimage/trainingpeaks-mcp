@@ -111,3 +111,34 @@ def test_shared_builder_generic_duration_and_distance():
     assert swim["polyline"][-1][0]==1
     assert audit_native_repeat_structure(distance_groups,swim,length_metric="distance",
                                           intensity_metric="rpe")["native_rest_events"]==6
+
+
+def test_standard_workout_tool_uses_same_shared_repeat_compiler():
+    from tp_mcp.tools.structure import parse_structure_input, build_wire_structure
+    from tp_mcp.tools.library import build_native_repeat_structure
+
+    payload={
+        "primaryIntensityMetric":"percentOfFtp",
+        "steps":[
+            {"type":"repetition","reps":3,"steps":[
+                {"name":"Steady","duration_seconds":180,"intensity_min":80,
+                 "intensity_max":90,"intensityClass":"active"},
+                {"name":"Recupero","duration_seconds":60,"intensity_min":40,
+                 "intensity_max":50,"intensityClass":"rest"},
+            ]},
+            {"name":"Fondo","duration_seconds":600,"intensity_min":60,
+             "intensity_max":70,"intensityClass":"active"},
+        ],
+    }
+    parsed=parse_structure_input(payload)
+    from tp_mcp.tools.structure import _build_step_wire
+    expected=build_native_repeat_structure(
+        [{"count":3,"steps":[_build_step_wire(st) for st in parsed.steps[0].steps]},
+         {"count":1,"steps":[_build_step_wire(parsed.steps[1])]}],
+        length_metric="duration",intensity_metric="percentOfFtp",
+    )
+    actual=build_wire_structure(parsed)
+    assert actual==expected
+    assert actual["structure"][0]["length"]["value"]==3
+    assert actual["structure"][0]["steps"][-1]["name"]=="Recupero"
+    assert actual["structure"][-1]["end"]==1320
