@@ -21,15 +21,13 @@ from tp_mcp.tools.library import _ensure_structure_preview
 try:
     from scripts.ironman_jobs.chasing_swim_rebuild_20261018 import (
         _group as swimming_group,
-        structure_for as swimming_builder,
-        audit_native_swim_rests as audit_swimming,
+        _swim_distance_polyline as swim_distance_polyline,
     )
 except ModuleNotFoundError:
     # Direct execution by the revision-pinned operator adds this script folder.
     from chasing_swim_rebuild_20261018 import (
         _group as swimming_group,
-        structure_for as swimming_builder,
-        audit_native_swim_rests as audit_swimming,
+        _swim_distance_polyline as swim_distance_polyline,
     )
 
 ROOT=Path(__file__).resolve().parents[2]
@@ -151,11 +149,9 @@ def run_builder(e):
 def winter_swim_structure_for(groups):
     """Winter policy: keep every N-repeat block whole, including its final rest.
 
-    The imported historical CHASING compiler remains unchanged for its own
-    existing products. The generated distance polyline is preserved because
-    timed rest never adds metres to its horizontal axis.
+    Reuse only the proven distance-polyline helper: the historical CHASING
+    N-1 structure compiler is never invoked by Winter. Timed rest adds no metres.
     """
-    result=swimming_builder(groups)
     blocks=[]
     cursor=0
     for group in groups:
@@ -175,8 +171,12 @@ def winter_swim_structure_for(groups):
                        "length":{"value":n,"unit":"repetition"},
                        "steps":steps,"begin":cursor,"end":end})
         cursor=end
-    result["structure"]=blocks
-    return result
+    result={"structure":blocks,"primaryLengthMetric":"distance",
+            "visualizationDistanceUnit":"meter",
+            "primaryIntensityMetric":"rpe",
+            "primaryIntensityTargetOrRange":"range",
+            "polyline":swim_distance_polyline(blocks)}
+    return _ensure_structure_preview(result)
 
 
 def audit_winter_swim_groups(groups, result):
