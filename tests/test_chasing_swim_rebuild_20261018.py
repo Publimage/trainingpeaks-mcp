@@ -142,3 +142,5 @@ def test_standard_workout_tool_uses_same_shared_repeat_compiler():
     assert actual["structure"][0]["length"]["value"]==3
     assert actual["structure"][0]["steps"][-1]["name"]=="Recupero"
     assert actual["structure"][-1]["end"]==1320
+    assert actual["primaryLengthMetric"]=="duration"
+    assert actual["structure"][0]["steps"][1]["length"]=={"value":60,"unit":"second"}
