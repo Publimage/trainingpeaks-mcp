@@ -1,8 +1,8 @@
 """Publish WINTER 8W SW/BI/RU native Builder templates and plan occurrences.
 
 Scoped to coach-owned 3 shared libraries and already-private plan 689369.
-Translates canonical manifest with the same swim recovery compiler and native
-preview function already proven on CHASING. Strict duplicate prevention;
+Translates the canonical prescription through the shared Builder compiler
+and native preview function used by all plan products. Strict duplicate prevention;
 golden-first 1 SW + 1 BI + 1 RU; up to 14 provider writes per invocation.
 No athlete calendar, no strength modifications, no new plan.
 """
@@ -17,17 +17,19 @@ from datetime import date,timedelta
 from pathlib import Path
 
 from tp_mcp.client import TPClient
-from tp_mcp.tools.library import _ensure_structure_preview
+from tp_mcp.tools.library import (build_native_repeat_structure, audit_native_repeat_structure)
 try:
     from scripts.ironman_jobs.chasing_swim_rebuild_20261018 import (
         _group as swimming_group,
-        _swim_distance_polyline as swim_distance_polyline,
+        structure_for as swimming_builder,
+        audit_native_swim_rests as audit_swimming,
     )
 except ModuleNotFoundError:
     # Direct execution by the revision-pinned operator adds this script folder.
     from chasing_swim_rebuild_20261018 import (
         _group as swimming_group,
-        _swim_distance_polyline as swim_distance_polyline,
+        structure_for as swimming_builder,
+        audit_native_swim_rests as audit_swimming,
     )
 
 ROOT=Path(__file__).resolve().parents[2]
@@ -80,17 +82,17 @@ def timeblock(name,kind,minutes,lo,hi):
             "intensityClass":kind,"openDuration":False}
 
 def finish_duration(blocks,metric):
-    secs=0
-    for b in blocks:
-        reps=b["length"]["value"] if b["type"]=="repetition" else 1
-        length=sum(q["length"]["value"] for q in b["steps"])*reps
-        b["begin"]=secs;b["end"]=secs+length;secs+=length
-    data={"structure":blocks,"primaryLengthMetric":"duration",
-          "primaryIntensityMetric":metric,"primaryIntensityTargetOrRange":"range"}
-    result=_ensure_structure_preview(data)
+    # Reuse the same provider-native repetition compiler for Bike and Run.
+    groups=[{"count":b["length"]["value"],"steps":b["steps"]} for b in blocks]
+    result=build_native_repeat_structure(
+        groups,length_metric="duration",intensity_metric=metric,
+    )
+    audit_native_repeat_structure(
+        groups,result,length_metric="duration",intensity_metric=metric,
+    )
     must(bool(result.get("polyline")),"MISSING_GRAPH")
-    must(blocks[-1]["end"]==secs,"BLOCK_TIME_END")
-    return result,secs
+    return result,result["structure"][-1]["end"]
+
 
 def bike_builder(e):
     parts=e["blocks"]
@@ -146,73 +148,6 @@ def run_builder(e):
     must(seconds==e["minutes"]*60,"RUN_SECONDS_DIFFER_FROM_MANIFEST")
     return result
 
-def winter_swim_structure_for(groups):
-    """Winter policy: keep every N-repeat block whole, including its final rest.
-
-    Reuse only the proven distance-polyline helper: the historical CHASING
-    N-1 structure compiler is never invoked by Winter. Timed rest adds no metres.
-    """
-    blocks=[]
-    cursor=0
-    for group in groups:
-        n=int(group["count"]);metres=int(group["metres"])
-        must(n>0 and metres>0 and group["recovery"]>=0,"WINTER_SWIM_BAD_GROUP")
-        work={"name":group["name"],"length":{"value":metres,"unit":"meter"},
-              "targets":[{"minValue":group["rpe"][0],"maxValue":group["rpe"][1]}],
-              "intensityClass":group["klass"],"openDuration":False}
-        steps=[work]
-        if n>1 and group["recovery"]>0:
-            steps.append({"name":"Recupero",
-                "length":{"value":group["recovery"],"unit":"second"},
-                "targets":[{"minValue":0,"maxValue":0}],
-                "intensityClass":"rest","openDuration":False})
-        end=cursor+n*metres
-        blocks.append({"type":"repetition" if n>1 else "step",
-                       "length":{"value":n,"unit":"repetition"},
-                       "steps":steps,"begin":cursor,"end":end})
-        cursor=end
-    result={"structure":blocks,"primaryLengthMetric":"distance",
-            "visualizationDistanceUnit":"meter",
-            "primaryIntensityMetric":"rpe",
-            "primaryIntensityTargetOrRange":"range",
-            "polyline":swim_distance_polyline(blocks)}
-    return _ensure_structure_preview(result)
-
-
-def audit_winter_swim_groups(groups, result):
-    """Fail closed on loose final reps, missing final rests or English labels."""
-    blocks=result.get("structure") or []
-    must(len(blocks)==len(groups),"WINTER_SWIM_SPLIT_GROUP")
-    expected_metres=0
-    expected_recoveries=0
-    for group,block in zip(groups,blocks):
-        n=group["count"];metres=group["metres"];rest=group["recovery"]
-        expected_metres+=n*metres
-        must(block["length"]["value"]==n,"WINTER_SWIM_N_MINUS_ONE")
-        must(block["type"]==("repetition" if n>1 else "step"),"WINTER_SWIM_LOOSE_REP")
-        must(block["steps"][0]["length"]=={"value":metres,"unit":"meter"},
-             "WINTER_SWIM_WRONG_METRES")
-        must(block["steps"][0]["name"]==group["name"],"WINTER_SWIM_WRONG_DRILL")
-        must(block["steps"][0]["targets"]==[{"minValue":group["rpe"][0],
-            "maxValue":group["rpe"][1]}],"WINTER_SWIM_WRONG_RPE")
-        recovery_steps=[step for step in block["steps"]
-                        if step.get("intensityClass")=="rest"]
-        if n>1 and rest>0:
-            expected_recoveries+=n
-            must(len(block["steps"])==2 and len(recovery_steps)==1,
-                 "WINTER_SWIM_RECOVERY_MISSING")
-            r=recovery_steps[0]
-            must(r["name"]=="Recupero" and r["length"]=={"value":rest,"unit":"second"}
-                 and r["targets"]==[{"minValue":0,"maxValue":0}],
-                 "WINTER_SWIM_RECOVERY_INCORRECT")
-        else:
-            must(len(block["steps"])==1,"WINTER_SWIM_UNPRESCRIBED_REST")
-    must(blocks[-1]["end"]==expected_metres,"WINTER_SWIM_TOTAL_METRES")
-    must(bool(result.get("polyline")) and result["primaryLengthMetric"]=="distance",
-         "WINTER_SWIM_PREVIEW_MISSING")
-    return {"native_metres":expected_metres,"native_rest_events":expected_recoveries}
-
-
 def swim_builder(e):
     parts=e["groups"]
     native=[]
@@ -220,8 +155,8 @@ def swim_builder(e):
         klass=("warmUp" if ix==0 else "coolDown" if "Defaticamento" in g["label"] else "active")
         z=swimming_group(g["count"],g["distance"],g["label"],tuple(g["rpe"]),klass,g["rest"])
         native.append(z)
-    s=winter_swim_structure_for(native)
-    qa=audit_winter_swim_groups(native,s)
+    s=swimming_builder(native)
+    qa=audit_swimming(native,s)
     must(qa["native_metres"]==e["metres"],"SWIMMING_METRES")
     must(s["primaryIntensityMetric"]=="rpe" and s["primaryLengthMetric"]=="distance","SWIM_METRIC")
     must(all(bool(step["targets"]) for block in s["structure"] for step in block["steps"]),"SWIM_TARGET_MISSING")
