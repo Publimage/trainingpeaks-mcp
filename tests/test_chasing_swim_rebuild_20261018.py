@@ -35,3 +35,79 @@ def test_tests_are_only_intentional_repeated_protocol():
     tests=[s for s in specs if s["kind"]=="test"]
     assert [s["week"] for s in tests]==[1,5,9]
     assert all(s["metres"]==2500 and s["main"]==1500 for s in tests)
+
+
+def test_chasing_all_71_swims_full_native_repeats():
+    specs=x.build_specs()
+    assert len(specs)==71
+    for spec in specs:
+        groups=spec["groups"]
+        result=x.structure_for(groups)
+        audit=x.audit_native_swim_rests(groups,result)
+        assert audit["native_metres"]==spec["metres"]
+        assert result["primaryLengthMetric"]=="distance"
+        assert result["primaryIntensityMetric"]=="rpe"
+        assert result["polyline"]
+        assert len(result["structure"])==len(groups)
+        for group,block in zip(groups,result["structure"]):
+            assert block["length"]["value"]==group["count"]
+            assert block["type"]==("repetition" if group["count"]>1 else "step")
+            rests=[step for step in block["steps"] if step["intensityClass"]=="rest"]
+            if group["count"]>1 and group["recovery"]>0:
+                assert len(rests)==1
+                assert rests[0]["name"]=="Recupero"
+                assert rests[0]["length"]=={"value":group["recovery"],"unit":"second"}
+            else:
+                assert not rests
+
+
+def test_chasing_validator_rejects_detached_last_rep_and_english_rest():
+    import copy
+    import pytest
+
+    spec=next(s for s in x.build_specs() if any(g["count"]>1 and g["recovery"]>0
+                                                  for g in s["groups"]))
+    good=x.structure_for(spec["groups"])
+    bad=copy.deepcopy(good)
+    block=next(b for b in bad["structure"] if b["type"]=="repetition" and
+               len(b["steps"])==2)
+    block["length"]["value"]-=1
+    with pytest.raises(ValueError,match="BUILDER_DRIFT_STRUCTURE"):
+        x.audit_native_swim_rests(spec["groups"],bad)
+    bad=copy.deepcopy(good)
+    block=next(b for b in bad["structure"] if b["type"]=="repetition" and
+               len(b["steps"])==2)
+    block["steps"][1]["name"]="Recover"
+    with pytest.raises(ValueError,match="BUILDER_DRIFT_STRUCTURE"):
+        x.audit_native_swim_rests(spec["groups"],bad)
+
+
+def test_shared_builder_generic_duration_and_distance():
+    from tp_mcp.tools.library import build_native_repeat_structure, audit_native_repeat_structure
+    work={"name":"Lavoro","length":{"value":180,"unit":"second"},
+          "targets":[{"minValue":80,"maxValue":90}],
+          "intensityClass":"active","openDuration":False}
+    rest={"name":"Recupero","length":{"value":60,"unit":"second"},
+          "targets":[{"minValue":40,"maxValue":50}],
+          "intensityClass":"rest","openDuration":False}
+    groups=[{"count":3,"steps":[work,rest]}]
+    compiled=build_native_repeat_structure(groups,length_metric="duration",
+                                            intensity_metric="percentOfFtp")
+    assert compiled["structure"][0]["length"]["value"]==3
+    assert compiled["structure"][-1]["end"]==720
+    assert len(compiled["polyline"])>=4
+    assert audit_native_repeat_structure(groups,compiled,length_metric="duration",
+                                          intensity_metric="percentOfFtp")["native_rest_events"]==3
+    metres={"name":"50 m","length":{"value":50,"unit":"meter"},
+            "targets":[{"minValue":2,"maxValue":3}],
+            "intensityClass":"active","openDuration":False}
+    seconds={"name":"Recupero","length":{"value":15,"unit":"second"},
+             "targets":[{"minValue":0,"maxValue":0}],
+             "intensityClass":"rest","openDuration":False}
+    distance_groups=[{"count":6,"steps":[metres,seconds]}]
+    swim=build_native_repeat_structure(distance_groups,length_metric="distance",
+                                        intensity_metric="rpe")
+    assert swim["structure"][-1]["end"]==300
+    assert swim["polyline"][-1][0]==1
+    assert audit_native_repeat_structure(distance_groups,swim,length_metric="distance",
+                                          intensity_metric="rpe")["native_rest_events"]==6
