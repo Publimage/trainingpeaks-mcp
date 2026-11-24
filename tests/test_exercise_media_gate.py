@@ -106,3 +106,48 @@ def test_explicit_unknown_resource_fails_closed():
         prescribed_uids=["RUN_NOT_APPROVED"],
     )
     assert "MEDIA_RESOURCE_NOT_APPROVED:RUN_NOT_APPROVED" in result["issues"]
+
+
+@pytest.mark.asyncio
+async def test_athlete_original_creation_blocks_unexplained_a_march_before_provider_io():
+    from unittest.mock import patch
+    from tp_mcp.tools.workouts import tp_create_workout
+
+    with patch("tp_mcp.tools.workouts.TPClient") as client:
+        result = await tp_create_workout(
+            date_str="2027-01-04", sport="Run", title="Tecnica | 40 minuti",
+            duration_minutes=40,
+            description="TECNICA E INDICAZIONI\\nEsegui A-March 2x15 metri.",
+        )
+        assert result["error_code"] == "EXERCISE_MEDIA_NOT_READY"
+        client.assert_not_called()
+
+
+@pytest.mark.asyncio
+async def test_library_item_creation_blocks_generic_swim_builder_before_provider_io():
+    from unittest.mock import patch
+    from tp_mcp.tools.library import tp_create_library_item
+
+    with patch("tp_mcp.tools.library.TPClient") as client:
+        result = await tp_create_library_item(
+            library_id="123", name="Tecnica | 1800 metri",
+            sport_family_id=1, sport_type_id=1, duration_hours=0.7,
+            description="Nuoto facile e controllato.",
+            structure={"structure":[{"type":"repetition","length":{"value":6},
+                                     "steps":[{"name":"Tecnica 25 m + completo 25 m"}]}]},
+        )
+        assert result["error_code"] == "EXERCISE_MEDIA_NOT_READY"
+        client.assert_not_called()
+
+
+def test_library_to_athlete_schedule_applies_same_gate():
+    from tp_mcp.tools.library import _template_workout_payload
+
+    item = {
+        "itemName": "Tecnica nuoto", "workoutTypeId": 1,
+        "description": "Nuota 6x50 facile",
+        "structure": {"structure": [{"type": "repetition", "length": {"value": 6},
+                                     "steps": [{"name": "Tecnica 25 m + completo 25 m"}]}]},
+    }
+    with pytest.raises(ExerciseMediaGateError, match="SWIM_DRILL_UNSPECIFIED"):
+        _template_workout_payload(item, "2027-01-04", 123)
