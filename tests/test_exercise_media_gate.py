@@ -166,3 +166,27 @@ def test_original_strength_workout_uses_same_media_gate():
     with patch("tp_mcp.tools.strength._catalogue", return_value=snapshot):
         with pytest.raises(ExerciseMediaGateError, match="NATIVE_EXERCISE_VIDEO"):
             _assert_native_strength_media(blocks)
+
+
+def test_shared_training_plan_publisher_blocks_missing_drill_media():
+    from scripts.ironman_jobs.reviewed_plan_patch_pipeline import validate_reviewed_media_delta
+
+    source = {
+        "workoutTypeValueId": 1,
+        "title": "Tecnica | 1800 metri",
+        "description": "Nuoto facile.",
+        "structure": {"structure": [
+            {"type": "repetition", "length": {"value": 6},
+             "steps": [{"name": "Tecnica 25 m + completo 25 m"}]},
+        ]},
+    }
+    with pytest.raises(ExerciseMediaGateError, match="SWIM_DRILL_UNSPECIFIED"):
+        validate_reviewed_media_delta(
+            source, {"description": "Nuoto facile, verifica la presa."},
+            surface="training-plan:preview",
+        )
+    # An unrelated reviewed change must not retroactively block an existing
+    # workout before its exercise content is independently repaired.
+    validate_reviewed_media_delta(
+        source, {"totalTimePlanned": 0.7}, surface="training-plan:preview",
+    )
