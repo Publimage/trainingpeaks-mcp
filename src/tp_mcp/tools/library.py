@@ -432,16 +432,6 @@ async def tp_create_library(name: str) -> dict[str, Any]:
     Returns:
         Dict with confirmation or error.
     """
-    try:
-        assert_exercise_media_ready(
-            description, sport=normalize_media_sport(sport_family_id),
-            surface="workout-library:create",
-            title=name, structure=structure,
-        )
-    except ExerciseMediaGateError as exc:
-        return {"isError": True, "error_code": "EXERCISE_MEDIA_NOT_READY",
-                "message": str(exc)}
-
     if not name or not name.strip():
         return {
             "isError": True,
@@ -568,6 +558,16 @@ async def tp_create_library_item(
             "error_code": "VALIDATION_ERROR",
             "message": msg,
         }
+
+    try:
+        assert_exercise_media_ready(
+            description, sport=normalize_media_sport(sport_family_id),
+            surface="workout-library:create",
+            title=name, structure=structure,
+        )
+    except ExerciseMediaGateError as exc:
+        return {"isError": True, "error_code": "EXERCISE_MEDIA_NOT_READY",
+                "message": str(exc)}
 
     if not name or not name.strip():
         return {
