@@ -450,6 +450,8 @@ async def tp_create_workout(
         assert_exercise_media_ready(
             params.description, sport=normalize_media_sport(params.sport),
             surface="athlete-calendar:create",
+            title=params.title,
+            structure=params.structure if params.structure is not None else params.structured_workout,
         )
     except ExerciseMediaGateError as exc:
         return {"isError": True, "error_code": "EXERCISE_MEDIA_NOT_READY",
@@ -729,6 +731,8 @@ async def tp_update_workout(
                     existing.get("description"),
                     sport=normalize_media_sport(existing.get("workoutTypeValueId")),
                     surface="athlete-calendar:update",
+                    title=str(existing.get("title") or ""),
+                    structure=existing.get("structure"),
                 )
             except ExerciseMediaGateError as exc:
                 return {"isError": True, "error_code": "EXERCISE_MEDIA_NOT_READY",
@@ -913,6 +917,8 @@ async def tp_copy_workout(
                 source.get("description"),
                 sport=normalize_media_sport(source.get("workoutTypeValueId")),
                 surface="athlete-calendar:copy",
+                title=str(source.get("title") or ""),
+                structure=source.get("structure"),
             )
             assert_exercise_description_preserved(
                 source, payload, surface="athlete-calendar:copy",
