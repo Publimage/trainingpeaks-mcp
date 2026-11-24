@@ -31,6 +31,18 @@ class ExerciseMediaGateError(ValueError):
     """The athlete-facing exercise prescription is not ready to publish."""
 
 
+
+def normalize_media_sport(sport: str | int | None) -> str:
+    """Normalize calendar, library and plan provider sport identifiers."""
+    if isinstance(sport, int):
+        return {1: "swim", 2: "bike", 3: "run", 9: "strength"}.get(sport, "other")
+    if isinstance(sport, str):
+        text = sport.strip().lower()
+        return {"swim": "swim", "bike": "bike", "run": "run",
+                "strength": "strength"}.get(text, "other")
+    return "other"
+
+
 def approved_media_snapshot() -> dict[str, Any]:
     data = json.loads(_CATALOG.read_text(encoding="utf-8"))
     if data.get("schema") != "IRONMAN_APPROVED_EXERCISE_MEDIA_SNAPSHOT_V1":
