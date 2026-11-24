@@ -9,10 +9,10 @@ from __future__ import annotations
 import json
 import re
 from collections.abc import Mapping, Sequence
-from pathlib import Path
+from importlib.resources import files
 from typing import Any
 
-_CATALOG = Path(__file__).resolve().parents[3] / "data" / "ironman_approved_exercise_media_snapshot.json"
+_CATALOG_NAME = "data/ironman_approved_exercise_media_snapshot.json"
 _URL = re.compile(r"https?://[^\s<>]+", re.IGNORECASE)
 _GENERIC_SWIM = re.compile(
     r"\b(?:tecnica\s+\d+\s*m\s*\+\s*completo|"
@@ -44,7 +44,7 @@ def normalize_media_sport(sport: str | int | None) -> str:
 
 
 def approved_media_snapshot() -> dict[str, Any]:
-    data = json.loads(_CATALOG.read_text(encoding="utf-8"))
+    data = json.loads(files("tp_mcp").joinpath(_CATALOG_NAME).read_text(encoding="utf-8"))
     if data.get("schema") != "IRONMAN_APPROVED_EXERCISE_MEDIA_SNAPSHOT_V1":
         raise ExerciseMediaGateError("MEDIA_CATALOG_SCHEMA_INVALID")
     resources = data.get("resources")
