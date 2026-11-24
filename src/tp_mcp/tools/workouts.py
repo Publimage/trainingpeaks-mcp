@@ -17,8 +17,10 @@ from tp_mcp.tools._validation import (
     format_validation_error,
 )
 from tp_mcp.tools.exercise_media_gate import (
-    ExerciseMediaGateError, assert_exercise_media_ready,
-    normalize_media_sport, assert_exercise_description_preserved,
+    ExerciseMediaGateError,
+    assert_exercise_description_preserved,
+    assert_exercise_media_ready,
+    normalize_media_sport,
 )
 from tp_mcp.tools.structure import (
     build_wire_structure,
