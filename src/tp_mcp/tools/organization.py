@@ -25,8 +25,10 @@ import httpx
 from tp_mcp.client import TPClient
 from tp_mcp.tools.strength import _access, _headers, STRENGTH_API_BASE
 from tp_mcp.tools.exercise_media_gate import (
-    ExerciseMediaGateError, assert_exercise_media_ready,
-    assert_exercise_description_preserved, normalize_media_sport,
+    ExerciseMediaGateError,
+    assert_exercise_description_preserved,
+    assert_exercise_media_ready,
+    normalize_media_sport,
 )
 
 _PLAN_FOLDER_LIST = "/planfolder/v1/folder/all"
