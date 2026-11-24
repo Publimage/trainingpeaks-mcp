@@ -160,11 +160,11 @@ def audit_exercise_media(
         if sport == "swim":
             generic = bool(_GENERIC_SWIM.search(prescription_text))
             generic = generic or any(
-                re.search(r"(?i)\\b(?:tecnica|respirazione e assetto|presa e assetto)\\b", name)
+                re.search(r"(?i)\b(?:tecnica|respirazione e assetto|presa e assetto)\b", name)
                 for name in names
             )
             generic = generic or (
-                bool(re.search(r"(?i)^\\s*tecnica\\s*\\|", title)) and
+                bool(re.search(r"(?i)^\s*tecnica\s*\|", title)) and
                 not names and not any(uid.startswith("SWIM_") for uid in matched)
             )
             if generic and not any(uid.startswith("SWIM_") for uid in matched):
