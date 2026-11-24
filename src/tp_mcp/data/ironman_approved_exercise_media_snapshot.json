@@ -5,7 +5,7 @@
     "141wM3yTcwRYz261qDZmHd-TX_d84pXoFcfi6aia3yLo",
     "1-HRTVqHvRVFZTXRFceKmtgK6ZMfYQLKGN9aYGoWGpXg"
   ],
-  "note": "Deploy snapshot only; approve and update in canonical Google Drive before changing mappings. A resource is not a prescription of exercise dose.",
+  "note": "Derived versioned deployment snapshot from canonical RESOURCE_LIBRARY tab; videos can have separately approved product variants. Product-specific exercise selection/dose belongs to prescriptions and approved Product Specs, never the common gate.",
   "resources": [
     {
       "uid": "RUN_A_MARCH",
@@ -17,7 +17,14 @@
       "url": "https://www.youtube.com/watch?v=ErLfYSa5m7A",
       "status": "APPROVED",
       "discipline": "run",
-      "source_doc_id": "141wM3yTcwRYz261qDZmHd-TX_d84pXoFcfi6aia3yLo"
+      "source_doc_id": "141wM3yTcwRYz261qDZmHd-TX_d84pXoFcfi6aia3yLo",
+      "source_resource_uid": "RES-RUN-A-SKIP",
+      "approved_levels": [
+        "Intermediate"
+      ],
+      "approved_product_ids": [
+        "IM-INTERMEDIATE-24W"
+      ]
     },
     {
       "uid": "RUN_A_SKIP",
@@ -29,7 +36,14 @@
       "url": "https://www.youtube.com/watch?v=ErLfYSa5m7A",
       "status": "APPROVED",
       "discipline": "run",
-      "source_doc_id": "141wM3yTcwRYz261qDZmHd-TX_d84pXoFcfi6aia3yLo"
+      "source_doc_id": "141wM3yTcwRYz261qDZmHd-TX_d84pXoFcfi6aia3yLo",
+      "source_resource_uid": "RES-RUN-A-SKIP",
+      "approved_levels": [
+        "Intermediate"
+      ],
+      "approved_product_ids": [
+        "IM-INTERMEDIATE-24W"
+      ]
     },
     {
       "uid": "RUN_ANKLING",
@@ -40,7 +54,14 @@
       "url": "https://jr.nba.com/video/ankling/",
       "status": "APPROVED",
       "discipline": "run",
-      "source_doc_id": "141wM3yTcwRYz261qDZmHd-TX_d84pXoFcfi6aia3yLo"
+      "source_doc_id": "141wM3yTcwRYz261qDZmHd-TX_d84pXoFcfi6aia3yLo",
+      "source_resource_uid": "RES-RUN-ANKLING",
+      "approved_levels": [
+        "Intermediate"
+      ],
+      "approved_product_ids": [
+        "IM-INTERMEDIATE-24W"
+      ]
     },
     {
       "uid": "RUN_HIGH_KNEES",
@@ -51,7 +72,14 @@
       "url": "https://jr.nba.com/video/high-knees/",
       "status": "APPROVED",
       "discipline": "run",
-      "source_doc_id": "141wM3yTcwRYz261qDZmHd-TX_d84pXoFcfi6aia3yLo"
+      "source_doc_id": "141wM3yTcwRYz261qDZmHd-TX_d84pXoFcfi6aia3yLo",
+      "source_resource_uid": "RES-RUN-HIGH-KNEES",
+      "approved_levels": [
+        "Intermediate"
+      ],
+      "approved_product_ids": [
+        "IM-INTERMEDIATE-24W"
+      ]
     },
     {
       "uid": "RUN_STRIDES",
@@ -63,7 +91,14 @@
       "url": "https://www.youtube.com/watch?v=IeZS646X44M",
       "status": "APPROVED",
       "discipline": "run",
-      "source_doc_id": "141wM3yTcwRYz261qDZmHd-TX_d84pXoFcfi6aia3yLo"
+      "source_doc_id": "141wM3yTcwRYz261qDZmHd-TX_d84pXoFcfi6aia3yLo",
+      "source_resource_uid": "RES-RUN-STRIDES",
+      "approved_levels": [
+        "Intermediate"
+      ],
+      "approved_product_ids": [
+        "IM-INTERMEDIATE-24W"
+      ]
     },
     {
       "uid": "RUN_POGOS",
@@ -76,7 +111,14 @@
       "url": "https://jr.nba.com/video/pogo-jumps/",
       "status": "APPROVED",
       "discipline": "run",
-      "source_doc_id": "141wM3yTcwRYz261qDZmHd-TX_d84pXoFcfi6aia3yLo"
+      "source_doc_id": "141wM3yTcwRYz261qDZmHd-TX_d84pXoFcfi6aia3yLo",
+      "source_resource_uid": "RES-RUN-POGO",
+      "approved_levels": [
+        "Intermediate"
+      ],
+      "approved_product_ids": [
+        "IM-INTERMEDIATE-24W"
+      ]
     },
     {
       "uid": "RUN_ROPE",
@@ -89,7 +131,14 @@
       "url": "https://www.jumpropecanada.ca/learn-1",
       "status": "APPROVED",
       "discipline": "run",
-      "source_doc_id": "141wM3yTcwRYz261qDZmHd-TX_d84pXoFcfi6aia3yLo"
+      "source_doc_id": "141wM3yTcwRYz261qDZmHd-TX_d84pXoFcfi6aia3yLo",
+      "source_resource_uid": "RES-RUN-ROPE",
+      "approved_levels": [
+        "Intermediate"
+      ],
+      "approved_product_ids": [
+        "IM-INTERMEDIATE-24W"
+      ]
     },
     {
       "uid": "SWIM_FIST",
@@ -97,10 +146,24 @@
       "aliases": [
         "pugni chiusi"
       ],
-      "url": "https://youtu.be/o0ffl059C1Q",
+      "url": "https://www.usms.org/fitness-and-training/articles-and-videos/videos/three-key-freestyle-drills",
       "status": "APPROVED",
       "discipline": "swim",
-      "source_doc_id": "1-HRTVqHvRVFZTXRFceKmtgK6ZMfYQLKGN9aYGoWGpXg"
+      "source_doc_id": "1ulKJfLdr3X2WK32XP7TSXbF90OIDXSmkjkWULpNTIgk",
+      "source_resource_uid": "RES-SWIM-FIST",
+      "approved_levels": [
+        "Intermediate"
+      ],
+      "approved_product_ids": [
+        "IM-INTERMEDIATE-24W"
+      ],
+      "alternative_approved_urls": [
+        {
+          "url": "https://youtu.be/o0ffl059C1Q",
+          "source_doc_id": "1-HRTVqHvRVFZTXRFceKmtgK6ZMfYQLKGN9aYGoWGpXg",
+          "product_id": "FIRST-IRONMAN-24W-BEGINNER"
+        }
+      ]
     },
     {
       "uid": "SWIM_SCULLING",
@@ -108,10 +171,25 @@
       "aliases": [
         "sculling"
       ],
-      "url": "https://youtu.be/3WYyowAvb5U",
+      "url": "https://www.usms.org/fitness-and-training/articles-and-videos/videos/3-drills-to-improve-your-freestyle-catch",
       "status": "APPROVED",
       "discipline": "swim",
-      "source_doc_id": "1-HRTVqHvRVFZTXRFceKmtgK6ZMfYQLKGN9aYGoWGpXg"
+      "source_doc_id": "1ulKJfLdr3X2WK32XP7TSXbF90OIDXSmkjkWULpNTIgk",
+      "source_resource_uid": "RES-SWIM-SCULL",
+      "approved_levels": [
+        "Intermediate"
+      ],
+      "approved_product_ids": [
+        "IM-INTERMEDIATE-24W"
+      ],
+      "alternative_approved_urls": [
+        {
+          "url": "https://youtu.be/3WYyowAvb5U",
+          "source_doc_id": "1-HRTVqHvRVFZTXRFceKmtgK6ZMfYQLKGN9aYGoWGpXg",
+          "product_id": "FIRST-IRONMAN-24W-BEGINNER"
+        }
+      ]
     }
-  ]
+  ],
+  "canonical_resource_registry_id": "1ulKJfLdr3X2WK32XP7TSXbF90OIDXSmkjkWULpNTIgk"
 }
