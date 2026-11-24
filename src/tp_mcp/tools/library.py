@@ -436,6 +436,7 @@ async def tp_create_library(name: str) -> dict[str, Any]:
         assert_exercise_media_ready(
             description, sport=normalize_media_sport(sport_family_id),
             surface="workout-library:create",
+            title=name, structure=structure,
         )
     except ExerciseMediaGateError as exc:
         return {"isError": True, "error_code": "EXERCISE_MEDIA_NOT_READY",
@@ -734,6 +735,8 @@ async def tp_update_library_item(
                     existing.get("description"),
                     sport=normalize_media_sport(existing.get("workoutTypeId")),
                     surface="workout-library:update",
+                    title=str(existing.get("itemName") or ""),
+                    structure=existing.get("structure"),
                 )
             except ExerciseMediaGateError as exc:
                 return {"isError": True, "error_code": "EXERCISE_MEDIA_NOT_READY",
@@ -786,6 +789,8 @@ def _template_workout_payload(
         item.get("description"),
         sport=normalize_media_sport(item.get("workoutTypeId")),
         surface="workout-library:schedule",
+        title=str(item.get("itemName") or ""),
+        structure=item.get("structure"),
     )
     assert_exercise_description_preserved(
         item, payload, surface="workout-library:schedule",
@@ -908,6 +913,13 @@ async def tp_schedule_library_workout(
                     f"library {lib_validated.workout_id}."
                 ),
             }
+
+        # One shared preflight before either the single or multi-athlete copy.
+        try:
+            _template_workout_payload(item, date, athlete_id or 0)
+        except ExerciseMediaGateError as exc:
+            return {"isError": True, "error_code": "EXERCISE_MEDIA_NOT_READY",
+                    "message": str(exc)}
 
         if athletes is not None:
             return await _schedule_item_bulk(client, item, date, athletes)
