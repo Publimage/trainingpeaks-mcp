@@ -727,7 +727,7 @@ async def tp_update_workout(
 
         # Keep old workouts editable without requiring retroactive mass fixes:
         # validate only when instructions are being rewritten.
-        if params.description is not None:
+        if params.description is not None or params.structure is not None or params.structured_workout is not None:
             try:
                 assert_exercise_media_ready(
                     existing.get("description"),
