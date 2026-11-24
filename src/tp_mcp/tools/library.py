@@ -731,7 +731,7 @@ async def tp_update_library_item(
         if workout_sub_type_id is not None:
             existing["workoutSubTypeId"] = workout_sub_type_id
 
-        if description is not None:
+        if description is not None or structure is not None:
             try:
                 assert_exercise_media_ready(
                     existing.get("description"),
