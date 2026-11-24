@@ -10,8 +10,10 @@ from tp_mcp.client import TPClient
 from tp_mcp.client.context import athlete_override
 from tp_mcp.tools._validation import WorkoutIdInput, format_validation_error
 from tp_mcp.tools.exercise_media_gate import (
-    ExerciseMediaGateError, assert_exercise_media_ready,
-    normalize_media_sport, assert_exercise_description_preserved,
+    ExerciseMediaGateError,
+    assert_exercise_description_preserved,
+    assert_exercise_media_ready,
+    normalize_media_sport,
 )
 
 logger = logging.getLogger("tp-mcp")
