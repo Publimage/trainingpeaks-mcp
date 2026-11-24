@@ -45,7 +45,7 @@ jobs:
         with:
           python-version: "3.12"
       - name: Install test runtime
-        run: python -m pip install 'pytest>=8,<10'
+        run: python -m pip install -e . 'pytest>=8,<10' 'pytest-asyncio>=0.24'
       - name: Verify offline patch engine (no provider calls)
         env:
           PYTHONPATH: src
