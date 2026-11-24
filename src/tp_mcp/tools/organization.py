@@ -24,6 +24,12 @@ import httpx
 
 from tp_mcp.client import TPClient
 from tp_mcp.tools.strength import _access, _headers, STRENGTH_API_BASE
+from tp_mcp.tools.exercise_media_gate import (
+    ExerciseMediaGateError,
+    assert_exercise_description_preserved,
+    assert_exercise_media_ready,
+    normalize_media_sport,
+)
 
 _PLAN_FOLDER_LIST = "/planfolder/v1/folder/all"
 _PLAN_FOLDER_CREATE = "/planfolder/v1/folder"
@@ -936,6 +942,18 @@ async def tp_copy_library_items(
                     if collisions:
                         return _error("ALREADY_EXISTS", f"Destination already contains a classic item titled {title!r}.")
                     payload = _classic_copy_payload(source, destination_id, title)
+                    try:
+                        assert_exercise_media_ready(
+                            source.get("description"),
+                            sport=normalize_media_sport(source.get("workoutTypeId")),
+                            surface="workout-library:copy",
+                            title=title, structure=source.get("structure"),
+                        )
+                        assert_exercise_description_preserved(
+                            source, payload, surface="workout-library:copy",
+                        )
+                    except ExerciseMediaGateError as exc:
+                        return _error("EXERCISE_MEDIA_NOT_READY", str(exc))
                     try:
                         response = await client._request(
                             "POST",

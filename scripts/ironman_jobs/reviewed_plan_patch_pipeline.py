@@ -17,6 +17,11 @@ from datetime import date
 from pathlib import Path
 from typing import Any
 
+from tp_mcp.tools.exercise_media_gate import (
+    assert_exercise_media_ready,
+    normalize_media_sport,
+)
+
 try:
     from scripts.ironman_jobs.plan_patch_batch_core import (
         PlanPatchStop, canonical, require, run_batch, selected, sha256,
@@ -76,6 +81,25 @@ def load_config(path: Path = MANIFEST_FILE) -> dict[str, Any]:
     return cfg
 
 
+
+def validate_reviewed_media_delta(
+    current: dict[str, Any], fields_after: dict[str, Any],
+    *, surface: str,
+) -> None:
+    """Shared preflight for plan publications that alter exercise-facing content."""
+    if not ({"description", "structure"} & set(fields_after)):
+        return
+    proposed = dict(current)
+    proposed.update(fields_after)
+    assert_exercise_media_ready(
+        proposed.get("description"),
+        sport=normalize_media_sport(proposed.get("workoutTypeValueId")),
+        surface=surface,
+        title=str(proposed.get("title") or ""),
+        structure=proposed.get("structure"),
+    )
+
+
 def stable(obj: Any) -> Any:
     # TP can refresh write timestamps without changing the prescription.
     if isinstance(obj, dict):
@@ -121,6 +145,9 @@ class ReviewedPlanGateway(TrainingPeaksPlanReadGateway):
                 "PREWRITE_CONTENT_DRIFT")
         require(selected(payload, row["after"]) == row["after"],
                 "PAYLOAD_NOT_REVIEWED_DESIRED")
+        validate_reviewed_media_delta(
+            current, row["after"], surface="training-plan:reviewed-patch",
+        )
         # Proven, plan-scoped endpoint; never an athlete-calendar update.
         reply = await self.client._request(
             "PUT", f"/plans/v1/plans/{plan_id}/workouts/{workout_id}",
@@ -179,6 +206,9 @@ async def _run(cfg: dict[str, Any], client: Any, *, execute: bool,
         native = before[row["workout_id"]]
         require(selected(native, row["after"]) in (row["before"], row["after"]),
                 "PREVIEW_TARGET_DRIFT")
+        validate_reviewed_media_delta(
+            native, row["after"], surface="training-plan:preview",
+        )
         if "expected_sport_id" in row:
             require(native.get("workoutTypeValueId") == row["expected_sport_id"],
                     "SPORT_SCOPE_MISMATCH")

@@ -59,6 +59,7 @@ from typing import Any
 import httpx
 
 from tp_mcp.client import TPClient
+from tp_mcp.tools.exercise_media_gate import ExerciseMediaGateError, assert_exercise_media_ready
 
 logger = logging.getLogger("tp-mcp")
 
@@ -253,6 +254,28 @@ def _build_prescription(ex: dict[str, Any], catalogue: dict[str, Any]) -> dict[s
     }
 
 
+
+def _assert_native_strength_media(blocks: list[dict[str, Any]]) -> None:
+    """Use the same shared gate, with provider-catalog exercise IDs and media."""
+    catalogue = _catalogue()
+    prescs = []
+    for block in blocks:
+        for exercise in block.get("exercises", []):
+            eid = str(exercise["id"])
+            meta = catalogue.get(eid) or {}
+            prescs.append({
+                "exercise_id": eid,
+                "name": meta.get("title"),
+                "video_verified": bool(meta.get("videoUrl")),
+                # Exact provider ID resolves to the named exercise, no fuzzy alias.
+                "variant_verified": str(meta.get("id", eid)) == eid and bool(meta.get("title")),
+            })
+    assert_exercise_media_ready(
+        None, sport="strength", surface="strength-builder:write",
+        native_exercises=prescs,
+    )
+
+
 def _build_payload(
     athlete_id: int,
     date: str,
@@ -368,6 +391,10 @@ async def tp_create_strength_workout(
     invalid = _validate_blocks(blocks)
     if invalid:
         return _err("VALIDATION_ERROR", invalid)
+    try:
+        _assert_native_strength_media(blocks)
+    except ExerciseMediaGateError as exc:
+        return _err("EXERCISE_MEDIA_NOT_READY", str(exc))
 
     async with TPClient() as client:
         athlete_id, access, err = await _access(client)
@@ -510,6 +537,10 @@ async def tp_update_strength_workout(
         invalid = _validate_blocks(blocks)
         if invalid:
             return _err("VALIDATION_ERROR", invalid)
+        try:
+            _assert_native_strength_media(blocks)
+        except ExerciseMediaGateError as exc:
+            return _err("EXERCISE_MEDIA_NOT_READY", str(exc))
     if blocks is None and title is None and instructions is None and not mark_complete:
         return _err(
             "VALIDATION_ERROR",

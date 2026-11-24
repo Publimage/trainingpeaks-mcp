@@ -9,6 +9,12 @@ from pydantic import ValidationError
 from tp_mcp.client import TPClient
 from tp_mcp.client.context import athlete_override
 from tp_mcp.tools._validation import WorkoutIdInput, format_validation_error
+from tp_mcp.tools.exercise_media_gate import (
+    ExerciseMediaGateError,
+    assert_exercise_description_preserved,
+    assert_exercise_media_ready,
+    normalize_media_sport,
+)
 
 logger = logging.getLogger("tp-mcp")
 
@@ -555,6 +561,16 @@ async def tp_create_library_item(
             "message": msg,
         }
 
+    try:
+        assert_exercise_media_ready(
+            description, sport=normalize_media_sport(sport_family_id),
+            surface="workout-library:create",
+            title=name, structure=structure,
+        )
+    except ExerciseMediaGateError as exc:
+        return {"isError": True, "error_code": "EXERCISE_MEDIA_NOT_READY",
+                "message": str(exc)}
+
     if not name or not name.strip():
         return {
             "isError": True,
@@ -715,6 +731,19 @@ async def tp_update_library_item(
         if workout_sub_type_id is not None:
             existing["workoutSubTypeId"] = workout_sub_type_id
 
+        if description is not None or structure is not None:
+            try:
+                assert_exercise_media_ready(
+                    existing.get("description"),
+                    sport=normalize_media_sport(existing.get("workoutTypeId")),
+                    surface="workout-library:update",
+                    title=str(existing.get("itemName") or ""),
+                    structure=existing.get("structure"),
+                )
+            except ExerciseMediaGateError as exc:
+                return {"isError": True, "error_code": "EXERCISE_MEDIA_NOT_READY",
+                        "message": str(exc)}
+
         put_endpoint = (
             f"/exerciselibrary/v1/libraries/{lib_validated.workout_id}"
             f"/items/{item_validated.workout_id}"
@@ -756,6 +785,18 @@ def _template_workout_payload(
     }
     if item.get("workoutSubTypeId") is not None:
         payload["workoutSubTypeId"] = item["workoutSubTypeId"]
+    # Validate before any single or bulk athlete write. The gate applies
+    # to ALL Workout Libraries via the same function, with no plan-specific ID.
+    assert_exercise_media_ready(
+        item.get("description"),
+        sport=normalize_media_sport(item.get("workoutTypeId")),
+        surface="workout-library:schedule",
+        title=str(item.get("itemName") or ""),
+        structure=item.get("structure"),
+    )
+    assert_exercise_description_preserved(
+        item, payload, surface="workout-library:schedule",
+    )
     if item.get("structure"):
         # Calendar workouts carry structure as a JSON string
         payload["structure"] = json.dumps(item["structure"])
@@ -874,6 +915,13 @@ async def tp_schedule_library_workout(
                     f"library {lib_validated.workout_id}."
                 ),
             }
+
+        # One shared preflight before either the single or multi-athlete copy.
+        try:
+            _template_workout_payload(item, date, athlete_id or 0)
+        except ExerciseMediaGateError as exc:
+            return {"isError": True, "error_code": "EXERCISE_MEDIA_NOT_READY",
+                    "message": str(exc)}
 
         if athletes is not None:
             return await _schedule_item_bulk(client, item, date, athletes)
