@@ -151,3 +151,18 @@ def test_library_to_athlete_schedule_applies_same_gate():
     }
     with pytest.raises(ExerciseMediaGateError, match="SWIM_DRILL_UNSPECIFIED"):
         _template_workout_payload(item, "2027-01-04", 123)
+
+
+def test_original_strength_workout_uses_same_media_gate():
+    from unittest.mock import patch
+    from tp_mcp.tools.strength import _assert_native_strength_media
+
+    blocks = [{"exercises": [{"id": "144", "sets": [{"Reps": 8}]}]}]
+    snapshot = {"144": {"id": "144", "title": "Goblet Squat",
+                        "videoUrl": "https://video.trainingpeaks.example/goblet"}}
+    with patch("tp_mcp.tools.strength._catalogue", return_value=snapshot):
+        _assert_native_strength_media(blocks)
+    snapshot["144"]["videoUrl"] = None
+    with patch("tp_mcp.tools.strength._catalogue", return_value=snapshot):
+        with pytest.raises(ExerciseMediaGateError, match="NATIVE_EXERCISE_VIDEO"):
+            _assert_native_strength_media(blocks)
