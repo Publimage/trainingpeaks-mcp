@@ -58,7 +58,10 @@ def approved_media_snapshot() -> dict[str, Any]:
             not isinstance(item.get("url"), str) or
             not item["url"].startswith("https://") or
             not isinstance(item.get("source_doc_id"), str) or
-            not item["source_doc_id"]):
+            not item["source_doc_id"] or
+            not item.get("source_resource_uid") or
+            not item.get("approved_levels") or
+            not item.get("approved_product_ids")):
             raise ExerciseMediaGateError("MEDIA_CATALOG_ITEM_INVALID")
         seen.add(uid)
     return data
@@ -155,7 +158,15 @@ def audit_exercise_media(
             resource = by_uid.get(uid)
             if resource is None:
                 issues.append("MEDIA_RESOURCE_NOT_APPROVED:" + uid)
-            elif resource["url"] not in body:
+            elif not any(
+                url in body for url in (
+                    [resource["url"]] + [
+                        item["url"] for item in resource.get("alternative_approved_urls", [])
+                        if isinstance(item, dict) and isinstance(item.get("url"), str)
+                        and item.get("source_doc_id") and item.get("product_id")
+                    ]
+                )
+            ):
                 issues.append("MEDIA_APPROVED_VIDEO_MISSING:" + uid)
         if sport == "swim":
             generic = bool(_GENERIC_SWIM.search(prescription_text))

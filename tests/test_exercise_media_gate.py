@@ -190,3 +190,19 @@ def test_shared_training_plan_publisher_blocks_missing_drill_media():
     validate_reviewed_media_delta(
         source, {"totalTimePlanned": 0.7}, surface="training-plan:preview",
     )
+
+
+def test_canonical_swim_video_and_approved_beginner_variant_both_pass():
+    fst = "Esegui 2x50 Pugni chiusi (25 esercizio + 25 completo)."
+    intermediate = fst + (
+        " Video U.S. Masters Swimming: "
+        "https://www.usms.org/fitness-and-training/articles-and-videos/videos/three-key-freestyle-drills"
+    )
+    beginner = fst + " Video Beginner: https://youtu.be/o0ffl059C1Q"
+    assert_exercise_media_ready(intermediate, sport="swim", surface="library")
+    assert_exercise_media_ready(beginner, sport="swim", surface="library")
+    catalogue = approved_media_snapshot()
+    item = next(r for r in catalogue["resources"] if r["uid"] == "SWIM_FIST")
+    assert item["source_resource_uid"] == "RES-SWIM-FIST"
+    assert item["approved_product_ids"] == ["IM-INTERMEDIATE-24W"]
+    assert item["alternative_approved_urls"][0]["source_doc_id"]
