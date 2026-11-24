@@ -396,6 +396,32 @@ async def tp_copy_training_plan(
         if source.is_error or not isinstance(source.data, dict):
             return _error("NOT_FOUND", f"Training Plan {pid} details could not be read.")
 
+        # One shared preflight on the source plan BEFORE a provider-native copy.
+        # A copied plan must never propagate exercise/video omissions silently.
+        # Use the existing plan reader rather than a plan-specific job.
+        from tp_mcp.tools.plans import _fetch_plan_workouts
+
+        _, rows = await _fetch_plan_workouts(client, pid)
+        if not isinstance(rows, list):
+            return _error("PLAN_WORKOUT_READ_FAILED",
+                          "Could not verify source plan exercises before copying.")
+        if len(rows) != int(source.data.get("workoutCount") or 0):
+            return _error("PLAN_WORKOUT_COUNT_DRIFT",
+                          "Source plan exercise inventory is incomplete.")
+        for row in rows:
+            try:
+                assert_exercise_media_ready(
+                    row.get("description"),
+                    sport=normalize_media_sport(row.get("workoutTypeValueId")),
+                    surface="training-plan:copy",
+                    title=str(row.get("title") or ""),
+                    structure=row.get("structure"),
+                )
+            except ExerciseMediaGateError as exc:
+                ident = row.get("workoutId")
+                return _error("EXERCISE_MEDIA_NOT_READY",
+                              f"Source plan workout {ident}: {exc}")
+
         payload = {"planId": pid, "title": title, "planData": source.data}
         try:
             response = await client._request(
