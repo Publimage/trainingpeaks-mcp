@@ -135,21 +135,17 @@ class TestEnsureAthleteIdNoOverride:
         assert aid == 100
 
     @pytest.mark.asyncio
-    async def test_caches_when_no_override(self):
+    async def test_reads_provider_for_coach_without_override(self):
         client = _mock_client(COACH_USER_DATA)
-        await client.ensure_athlete_id()
-        assert TPClient._cached_athlete_id == 100
+        assert await client.ensure_athlete_id() == 100
+        client._get_user_data.assert_awaited_once()
 
     @pytest.mark.asyncio
-    async def test_uses_cache_on_second_call(self):
+    async def test_re_reads_provider_on_second_call(self):
         client = _mock_client(COACH_USER_DATA)
-        await client.ensure_athlete_id()
-        # Second call should use cache, not call _get_user_data again
-        client2 = _mock_client(COACH_USER_DATA)
-        TPClient._cached_athlete_id = 100  # simulate cache from first call
-        aid = await client2.ensure_athlete_id()
-        assert aid == 100
-        client2._get_user_data.assert_not_called()
+        assert await client.ensure_athlete_id() == 100
+        assert await client.ensure_athlete_id() == 100
+        assert client._get_user_data.await_count == 2
 
     @pytest.mark.asyncio
     async def test_solo_account_uses_person_id(self):
