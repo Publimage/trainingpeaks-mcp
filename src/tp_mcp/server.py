@@ -38,6 +38,7 @@ from tp_mcp.tools import (
     tp_add_training_plan_note,
     tp_attach_native_note_pdf,
     tp_apply_training_plan,
+    tp_copy_training_plan_to_athlete,
     tp_auth_status,
     tp_create_training_plan,
     tp_delete_training_plan_other,
@@ -2065,6 +2066,42 @@ TOOLS = [
     ),
 ]
 
+# A complete copy uses an explicit independently verified target ID, not the
+# process's last selected athlete. Preview and execution share one receipt.
+TOOLS.append(Tool(
+    name="tp_copy_training_plan_to_athlete",
+    description=(
+        "Copy a complete coach-owned plan into an empty athlete calendar interval, "
+        "including classic workouts, native strength, native notes and binary PDFs. "
+        "Preserves relative dates, prescribed content, order and chosen visibility. "
+        "Default execute=false previews without writes; pass its source_digest as "
+        "expected_source_digest for execution. Keep request_id unchanged for retries/resume. "
+        "Creates independent copies, never a native linked-plan application or an Unapply. "
+        "Unsupported or incomplete source data stops before copying; uncertain writes "
+        "are reconciled and never blindly repeated."
+    ),
+    input_schema={
+        "type": "object",
+        "properties": {
+            "plan_id": {"type": "integer", "minimum": 1},
+            "athlete_id": {"type": "integer", "minimum": 1,
+                           "description": "Explicit target athlete ID verified in the current coach roster."},
+            "start_date": {"type": "string", "description": "Target date for source plan day one, YYYY-MM-DD."},
+            "request_id": {"type": "string", "minLength": 1, "maxLength": 200,
+                           "description": "Persistent operation ID; retain it across retries and resumed sessions."},
+            "visible_through": {
+                "type": ["string", "null"],
+                "description": "Last visible date, inclusive; later copies are hidden. Omit for all visible.",
+            },
+            "expected_source_digest": {"type": "string", "pattern": "^[a-f0-9]{64}$",
+                                       "description": "Source digest from the preview; required when execute=true."},
+            "execute": {"type": "boolean", "default": False},
+        },
+        "required": ["plan_id", "athlete_id", "start_date", "request_id"],
+        "additionalProperties": False,
+    },
+))
+
 # ---------------------------------------------------------------------------
 # Coach account support: inject 'athlete' parameter into all applicable tools
 # ---------------------------------------------------------------------------
@@ -2074,6 +2111,7 @@ _ATHLETE_EXEMPT_TOOLS = {
     "tp_list_athletes", "tp_get_workout_types",
     "tp_publish_public_asset",
     "tp_attach_native_note_pdf",
+    "tp_copy_training_plan_to_athlete",
     # Coach-scoped — enumerates methods under the caller's own user, not an athlete.
     "tp_get_zone_methods",
     # Offline exercise-library search — not athlete-scoped.
@@ -2600,6 +2638,17 @@ async def _h_get_training_plan_workouts(args): return await tp_get_training_plan
 @_handler("tp_apply_training_plan")
 async def _h_apply_training_plan(args):
     return await tp_apply_training_plan(plan_id=args["plan_id"], start_date=args["start_date"])
+
+
+@_handler("tp_copy_training_plan_to_athlete")
+async def _h_copy_training_plan_to_athlete(args):
+    return await tp_copy_training_plan_to_athlete(
+        plan_id=args["plan_id"], athlete_id=args["athlete_id"],
+        start_date=args["start_date"], request_id=args["request_id"],
+        visible_through=args.get("visible_through"),
+        expected_source_digest=args.get("expected_source_digest"),
+        execute=args.get("execute", False),
+    )
 
 # --- Athlete Settings ---
 @_handler("tp_get_athlete_settings")

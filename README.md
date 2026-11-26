@@ -157,7 +157,51 @@ honoured exactly. They update a **threshold** (FTP / LTHR / threshold pace).
 | `tp_list_training_plans` | List the coach's authored multi-week training plans |
 | `tp_get_training_plan` | Summary of one plan: weeks, per-week duration/distance, sport breakdown |
 | `tp_get_training_plan_workouts` | All workouts of a plan laid out by week/day |
-| `tp_apply_training_plan` | Apply a plan to an athlete's calendar from a start date (safe synthetic copy) |
+| `tp_apply_training_plan` | Restricted laboratory copy of three classic workouts; does not copy notes or native strength |
+| `tp_copy_training_plan_to_athlete` | Preview, copy and resume a complete supported plan: classic workouts and Builders, native Strength, calendar notes and their PDFs |
+
+#### Complete plan copy
+
+The new copy tool takes explicit `plan_id`, `athlete_id`, `start_date` and a stable
+`request_id`. With the default `execute=false`, it inventories the source and
+destination without writes, returns a `source_digest`, and reports collisions.
+To copy, repeat the same parameters with `execute=true` and
+`expected_source_digest` set to the preview's digest. `visible_through` is an
+inclusive calendar date: copied items after that date are hidden, including
+native strength and notes. Omitting it makes the whole copied block visible.
+
+A new request requires an empty destination interval and a coach-owned source.
+The transfer preserves relative dates, planned content, workout structures,
+note text and order, and the original PDF bytes. It verifies every created
+object, the complete destination inventory and the unchanged source. There are
+two complete destination reads in a clean execution, plus a focused readback
+of each new object; no per-workout reread of the entire calendar is required.
+Unsupported source content blocks the preflight before writes. This includes
+plan events, weekly goals, plan-description attachments, classic-workout
+attachments, non-PDF note attachments, workout comments and completed workout
+data. These elements are never silently omitted from a successful transfer.
+
+The runtime keeps a private durable receipt. Use the **same request ID and
+parameters** after an interruption. A completed replay creates nothing; an
+uncertain POST is reconciled against provider data and is never blindly
+repeated. The request ID cannot be rebound to another athlete, and a pending
+uncertain operation reserves its interval even when the provider still returns
+an empty calendar. `UNCERTAIN` or `BLOCKED` is not successful completion: inspect
+the returned IDs and difference before continuing. Do not start a new request
+to work around either state.
+
+This creates independent calendar objects. It does not establish TrainingPeaks
+native Applied Plan linkage, invoke native Apply/Unapply, remove existing
+calendar items, or change the source plan. There is no automatic rollback.
+Any later correction or cleanup must target only IDs in the receipt through the
+existing appropriate object tools and verify the result; never use Unapply for
+these independent copies.
+
+Offline tests establish the engine and adapter contracts. Provider readiness
+requires the registered TEST acceptance: a complete mixed plan copy, zero-write
+replay, PDF hash equality, visibility/order readback, and unchanged source and
+adjacent calendar dates. Test receipts and release evidence belong in the
+canonical IRONMAN workstream state; source code alone is not a live certification.
 
 ### Reference & Auth
 | Tool | Description |
