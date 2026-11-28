@@ -519,6 +519,7 @@ def _apply_prescription_edits(
         for key, field, children in zip(
             path, ("id", "id", "id", "parameter"),
             ("prescriptions", "sets", "parameterValues", None),
+            strict=True,
         ):
             matches = [row for row in rows if row.get(field) == key]
             if len(matches) != 1:
