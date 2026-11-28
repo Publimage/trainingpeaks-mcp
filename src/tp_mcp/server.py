@@ -1520,11 +1520,12 @@ TOOLS = [
         name="tp_get_library_items",
         description=(
             "List the workout templates in one library (slim listing). library_id from tp_get_libraries. For a "
-            "template's full interval structure use tp_get_library_item."
+            "template's full interval structure use tp_get_library_item. "
+            "Set native_strength to list native Strength Builder templates and their copy/move item IDs."
         ),
         input_schema={
             "type": "object",
-            "properties": {"library_id": {"type": "string"}},
+            "properties": {"library_id": {"type": "string"}, "native_strength": {"type": "boolean"}},
             "required": ["library_id"],
         },
     ),
@@ -2793,7 +2794,8 @@ async def _h_zone_methods(args): return await tp_get_zone_methods(metric=args.ge
 async def _h_get_libs(args): return await tp_get_libraries()
 
 @_handler("tp_get_library_items")
-async def _h_get_lib_items(args): return await tp_get_library_items(library_id=args["library_id"])
+async def _h_get_lib_items(args):
+    return await tp_get_library_items(library_id=args["library_id"], native_strength=args.get("native_strength", False))
 
 @_handler("tp_get_ironman_publisher_status")
 async def _h_ironman_publisher_status(args):
