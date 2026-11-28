@@ -52,6 +52,7 @@ Choosing a default unit (e.g. kg) is the caller's concern, not the connector's.
 
 import json
 import logging
+import math
 import uuid
 from functools import lru_cache
 from typing import Any
@@ -488,6 +489,48 @@ def _mark_complete(blocks: list[dict[str, Any]]) -> None:
                         pv["executedValue"] = pv.get("prescribedValue")
 
 
+def _apply_prescription_edits(
+    doc: dict[str, Any], edits: list[dict[str, Any]]
+) -> None:
+    """Validate the full batch before modifying any prescribed value."""
+    if not edits:
+        raise ValueError("Provide at least one prescription edit.")
+    updates = []
+    seen = set()
+    for edit in edits:
+        if not isinstance(edit, dict):
+            raise ValueError("Each prescription edit must be an object.")
+        path = tuple(edit.get(key) for key in ("block_id", "prescription_id", "set_id", "parameter"))
+        if any(not isinstance(key, str) or not key for key in path):
+            raise ValueError("Each edit requires block_id, prescription_id, set_id and parameter.")
+        if path in seen:
+            raise ValueError("The same parameter is targeted more than once.")
+        seen.add(path)
+        value = edit.get("value")
+        if type(value) not in (str, int, float) or not str(value).strip():
+            raise ValueError("Each edit requires a non-empty numeric value.")
+        try:
+            finite = math.isfinite(float(value))
+        except (ValueError, OverflowError):
+            finite = False
+        if not finite:
+            raise ValueError("Each edit requires a finite numeric value.")
+        rows = doc.get("blocks") or []
+        for key, field, children in zip(
+            path, ("id", "id", "id", "parameter"),
+            ("prescriptions", "sets", "parameterValues", None),
+        ):
+            matches = [row for row in rows if row.get(field) == key]
+            if len(matches) != 1:
+                raise ValueError(f"Prescription path could not be resolved uniquely: {path!r}.")
+            target = matches[0]
+            if children:
+                rows = target.get(children) or []
+        updates.append((target, str(value)))
+    for target, value in updates:
+        target["prescribedValue"] = value
+
+
 async def tp_update_strength_workout(
     workout_id: str,
     blocks: list[dict[str, Any]] | None = None,
@@ -496,6 +539,7 @@ async def tp_update_strength_workout(
     mode: str = "replace",
     mark_complete: bool = False,
     dry_run: bool = False,
+    prescription_edits: list[dict[str, Any]] | None = None,
 ) -> dict[str, Any]:
     """Update an existing strength workout in place (blocks, title, instructions).
 
@@ -519,8 +563,10 @@ async def tp_update_strength_workout(
             executed ones, so the workout reports real volume and compliance.
             Use when logging a session already performed. Existing executed
             values are left untouched.
-        dry_run: Validate and build the update, report what would change, but
-            send nothing.
+        dry_run: Validate the update and report changes without writing.
+        prescription_edits: Batch of existing prescribed values to edit by
+            block_id, prescription_id, set_id and parameter. The value changes
+            independently of the executed value and completion state.
 
     Returns:
         Dict with the workout_id, before/after block and set counts, the fields
@@ -541,14 +587,16 @@ async def tp_update_strength_workout(
             _assert_native_strength_media(blocks)
         except ExerciseMediaGateError as exc:
             return _err("EXERCISE_MEDIA_NOT_READY", str(exc))
-    if blocks is None and title is None and instructions is None and not mark_complete:
+    if prescription_edits is not None and (blocks is not None or mark_complete):
+        return _err("VALIDATION_ERROR", "Prescription edits cannot be combined with blocks or mark_complete.")
+    if blocks is None and title is None and instructions is None and not mark_complete and prescription_edits is None:
         return _err(
             "VALIDATION_ERROR",
-            "Nothing to update: provide blocks, title, instructions or mark_complete.",
+            "Nothing to update: provide blocks, title, instructions, mark_complete or prescription_edits.",
         )
 
     async with TPClient() as client:
-        _, access, err = await _access(client)
+        athlete_id, access, err = await _access(client)
         if err:
             return err
         try:
@@ -565,6 +613,21 @@ async def tp_update_strength_workout(
 
                 before = dict(doc.get("snapshot") or {})
                 changed: list[str] = []
+
+                if prescription_edits is not None:
+                    if (
+                        str(doc.get("id")) != wid
+                        or str(doc.get("calendarId")) != str(athlete_id)
+                        or doc.get("workoutType") != "StructuredStrength"
+                        or doc.get("planId")
+                        or doc.get("trainingPlanId")
+                    ):
+                        return _err("PROTECTED_RESOURCE", "Workout is outside the selected calendar.")
+                    try:
+                        _apply_prescription_edits(doc, prescription_edits)
+                    except ValueError as exc:
+                        return _err("VALIDATION_ERROR", str(exc))
+                    changed.append("prescription_edits")
 
                 if blocks is not None:
                     catalogue = _catalogue()
@@ -596,7 +659,8 @@ async def tp_update_strength_workout(
                     _mark_complete(doc.get("blocks") or [])
                     changed.append("mark_complete")
 
-                doc["snapshot"] = _recount(doc.get("blocks") or [])
+                if prescription_edits is None:
+                    doc["snapshot"] = _recount(doc.get("blocks") or [])
 
                 if dry_run:
                     return {
@@ -614,6 +678,23 @@ async def tp_update_strength_workout(
                     headers=_headers(access),
                     json=doc,
                 )
+                if prescription_edits is not None and r.status_code == 200:
+                    try:
+                        readback = await h.get(
+                            f"{STRENGTH_API_BASE}/rx/activity/v1/workouts/{wid}",
+                            headers=_headers(access),
+                        )
+                        persisted = readback.json().get("data") if readback.status_code == 200 else None
+                    except (httpx.RequestError, ValueError, AttributeError):
+                        persisted = None
+                    if not isinstance(persisted, dict) or any(
+                        persisted.get(key) != value for key, value in doc.items()
+                        if key != "lastUpdatedAt"
+                    ):
+                        return _err(
+                            "READBACK_FAILED",
+                            "The saved prescription or workout history could not be verified. Check before retrying.",
+                        )
         except httpx.TimeoutException:
             return _err("NETWORK_ERROR", "Strength update timed out.")
         except httpx.RequestError:
@@ -629,7 +710,7 @@ async def tp_update_strength_workout(
                 pass
             return _map_status(r.status_code, r.text)
 
-        data = r.json().get("data") or {}
+        data = persisted if prescription_edits is not None else (r.json().get("data") or {})
         snap = data.get("snapshot") or doc["snapshot"]
         returned = str(data.get("id")) if data.get("id") is not None else wid
         result = {
@@ -644,6 +725,8 @@ async def tp_update_strength_workout(
         }
         # The upsert must edit in place; a different id means a duplicate was
         # created and the caller needs to know immediately.
+        if prescription_edits is not None:
+            result["readback_verified"] = True
         if returned != wid:
             result["warning"] = (
                 f"Server returned id {returned}, expected {wid} — a duplicate may "
@@ -720,13 +803,16 @@ def _fmt_set(s: dict[str, Any]) -> dict[str, Any]:
             prescribed[p] = pv["prescribedValue"]
         if pv.get("executedValue") is not None:
             executed[p] = pv["executedValue"]
-    return {"prescribed": prescribed, "executed": executed, "complete": bool(s.get("isComplete"))}
+    return {"set_id": s.get("id"), "prescribed": prescribed, "executed": executed,
+            "complete": bool(s.get("isComplete"))}
 
 
 def _fmt_prescription(p: dict[str, Any]) -> dict[str, Any]:
     """One prescription = one exercise + its sets."""
     ex = p.get("exercise") or {}
     return {
+        "prescription_id": p.get("id"),
+        "exercise_id": ex.get("id"),
         "exercise": ex.get("title"),
         "video_url": ex.get("videoUrl"),
         "notes": p.get("coachNotes"),
@@ -741,6 +827,7 @@ def _fmt_workout_detail(d: dict[str, Any]) -> dict[str, Any]:
     for b in d.get("blocks") or []:
         blocks_out.append(
             {
+                "block_id": b.get("id"),
                 "type": b.get("blockType"),
                 "title": b.get("title"),
                 "notes": b.get("coachNotes"),
