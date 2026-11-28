@@ -52,6 +52,7 @@ Choosing a default unit (e.g. kg) is the caller's concern, not the connector's.
 
 import json
 import logging
+import math
 import uuid
 from functools import lru_cache
 from typing import Any
@@ -488,6 +489,49 @@ def _mark_complete(blocks: list[dict[str, Any]]) -> None:
                         pv["executedValue"] = pv.get("prescribedValue")
 
 
+def _apply_prescription_edits(
+    doc: dict[str, Any], edits: list[dict[str, Any]]
+) -> None:
+    """Validate the full batch before modifying any prescribed value."""
+    if not edits:
+        raise ValueError("Provide at least one prescription edit.")
+    updates = []
+    seen = set()
+    for edit in edits:
+        if not isinstance(edit, dict):
+            raise ValueError("Each prescription edit must be an object.")
+        path = tuple(edit.get(key) for key in ("block_id", "prescription_id", "set_id", "parameter"))
+        if any(not isinstance(key, str) or not key for key in path):
+            raise ValueError("Each edit requires block_id, prescription_id, set_id and parameter.")
+        if path in seen:
+            raise ValueError("The same parameter is targeted more than once.")
+        seen.add(path)
+        value = edit.get("value")
+        if type(value) not in (str, int, float) or not str(value).strip():
+            raise ValueError("Each edit requires a non-empty numeric value.")
+        try:
+            finite = math.isfinite(float(value))
+        except (ValueError, OverflowError):
+            finite = False
+        if not finite:
+            raise ValueError("Each edit requires a finite numeric value.")
+        rows = doc.get("blocks") or []
+        for key, field, children in zip(
+            path, ("id", "id", "id", "parameter"),
+            ("prescriptions", "sets", "parameterValues", None),
+            strict=True,
+        ):
+            matches = [row for row in rows if row.get(field) == key]
+            if len(matches) != 1:
+                raise ValueError(f"Prescription path could not be resolved uniquely: {path!r}.")
+            target = matches[0]
+            if children:
+                rows = target.get(children) or []
+        updates.append((target, str(value)))
+    for target, value in updates:
+        target["prescribedValue"] = value
+
+
 async def tp_update_strength_workout(
     workout_id: str,
     blocks: list[dict[str, Any]] | None = None,
@@ -496,6 +540,7 @@ async def tp_update_strength_workout(
     mode: str = "replace",
     mark_complete: bool = False,
     dry_run: bool = False,
+    prescription_edits: list[dict[str, Any]] | None = None,
 ) -> dict[str, Any]:
     """Update an existing strength workout in place (blocks, title, instructions).
 
@@ -519,8 +564,10 @@ async def tp_update_strength_workout(
             executed ones, so the workout reports real volume and compliance.
             Use when logging a session already performed. Existing executed
             values are left untouched.
-        dry_run: Validate and build the update, report what would change, but
-            send nothing.
+        dry_run: Validate the update and report changes without writing.
+        prescription_edits: Batch of existing prescribed values to edit by
+            block_id, prescription_id, set_id and parameter. The value changes
+            independently of the executed value and completion state.
 
     Returns:
         Dict with the workout_id, before/after block and set counts, the fields
@@ -541,14 +588,16 @@ async def tp_update_strength_workout(
             _assert_native_strength_media(blocks)
         except ExerciseMediaGateError as exc:
             return _err("EXERCISE_MEDIA_NOT_READY", str(exc))
-    if blocks is None and title is None and instructions is None and not mark_complete:
+    if prescription_edits is not None and (blocks is not None or mark_complete):
+        return _err("VALIDATION_ERROR", "Prescription edits cannot be combined with blocks or mark_complete.")
+    if blocks is None and title is None and instructions is None and not mark_complete and prescription_edits is None:
         return _err(
             "VALIDATION_ERROR",
-            "Nothing to update: provide blocks, title, instructions or mark_complete.",
+            "Nothing to update: provide blocks, title, instructions, mark_complete or prescription_edits.",
         )
 
     async with TPClient() as client:
-        _, access, err = await _access(client)
+        athlete_id, access, err = await _access(client)
         if err:
             return err
         try:
@@ -565,6 +614,21 @@ async def tp_update_strength_workout(
 
                 before = dict(doc.get("snapshot") or {})
                 changed: list[str] = []
+
+                if prescription_edits is not None:
+                    if (
+                        str(doc.get("id")) != wid
+                        or str(doc.get("calendarId")) != str(athlete_id)
+                        or doc.get("workoutType") != "StructuredStrength"
+                        or doc.get("planId")
+                        or doc.get("trainingPlanId")
+                    ):
+                        return _err("PROTECTED_RESOURCE", "Workout is outside the selected calendar.")
+                    try:
+                        _apply_prescription_edits(doc, prescription_edits)
+                    except ValueError as exc:
+                        return _err("VALIDATION_ERROR", str(exc))
+                    changed.append("prescription_edits")
 
                 if blocks is not None:
                     catalogue = _catalogue()
@@ -596,7 +660,8 @@ async def tp_update_strength_workout(
                     _mark_complete(doc.get("blocks") or [])
                     changed.append("mark_complete")
 
-                doc["snapshot"] = _recount(doc.get("blocks") or [])
+                if prescription_edits is None:
+                    doc["snapshot"] = _recount(doc.get("blocks") or [])
 
                 if dry_run:
                     return {
@@ -614,6 +679,23 @@ async def tp_update_strength_workout(
                     headers=_headers(access),
                     json=doc,
                 )
+                if prescription_edits is not None and r.status_code == 200:
+                    try:
+                        readback = await h.get(
+                            f"{STRENGTH_API_BASE}/rx/activity/v1/workouts/{wid}",
+                            headers=_headers(access),
+                        )
+                        persisted = readback.json().get("data") if readback.status_code == 200 else None
+                    except (httpx.RequestError, ValueError, AttributeError):
+                        persisted = None
+                    if not isinstance(persisted, dict) or any(
+                        persisted.get(key) != value for key, value in doc.items()
+                        if key != "lastUpdatedAt"
+                    ):
+                        return _err(
+                            "READBACK_FAILED",
+                            "The saved prescription or workout history could not be verified. Check before retrying.",
+                        )
         except httpx.TimeoutException:
             return _err("NETWORK_ERROR", "Strength update timed out.")
         except httpx.RequestError:
@@ -629,7 +711,7 @@ async def tp_update_strength_workout(
                 pass
             return _map_status(r.status_code, r.text)
 
-        data = r.json().get("data") or {}
+        data = persisted if prescription_edits is not None else (r.json().get("data") or {})
         snap = data.get("snapshot") or doc["snapshot"]
         returned = str(data.get("id")) if data.get("id") is not None else wid
         result = {
@@ -644,6 +726,8 @@ async def tp_update_strength_workout(
         }
         # The upsert must edit in place; a different id means a duplicate was
         # created and the caller needs to know immediately.
+        if prescription_edits is not None:
+            result["readback_verified"] = True
         if returned != wid:
             result["warning"] = (
                 f"Server returned id {returned}, expected {wid} — a duplicate may "
@@ -720,13 +804,16 @@ def _fmt_set(s: dict[str, Any]) -> dict[str, Any]:
             prescribed[p] = pv["prescribedValue"]
         if pv.get("executedValue") is not None:
             executed[p] = pv["executedValue"]
-    return {"prescribed": prescribed, "executed": executed, "complete": bool(s.get("isComplete"))}
+    return {"set_id": s.get("id"), "prescribed": prescribed, "executed": executed,
+            "complete": bool(s.get("isComplete"))}
 
 
 def _fmt_prescription(p: dict[str, Any]) -> dict[str, Any]:
     """One prescription = one exercise + its sets."""
     ex = p.get("exercise") or {}
     return {
+        "prescription_id": p.get("id"),
+        "exercise_id": ex.get("id"),
         "exercise": ex.get("title"),
         "video_url": ex.get("videoUrl"),
         "notes": p.get("coachNotes"),
@@ -741,6 +828,7 @@ def _fmt_workout_detail(d: dict[str, Any]) -> dict[str, Any]:
     for b in d.get("blocks") or []:
         blocks_out.append(
             {
+                "block_id": b.get("id"),
                 "type": b.get("blockType"),
                 "title": b.get("title"),
                 "notes": b.get("coachNotes"),
@@ -927,18 +1015,25 @@ async def tp_create_strength_plan_lab_probe(dry_run: bool = True) -> dict[str, A
     plan_title = "[MCP TEST] TP Native Strength Plan Route 2026-10-09"
     sample_id = "33903234"
     trial_date = "2027-08-05"
+    plan_person_id = 6678164
+    expected_count = 6
     trial_title = "[MCP TEST] Native Strength Plan route - Goblet 1x7"
     if type(dry_run) is not bool:
         return _err("VALIDATION_ERROR", "dry_run must be boolean.")
     async with TPClient() as client:
+        owner = await client._get_user_data()
+        if not isinstance(owner, dict) or owner.get("personId") != 2116886:
+            return _err("PROTECTED_RESOURCE", "Lab owner does not match.")
         detail = await client.get(f"/plans/v1/plans/{plan_id}")
         if detail.is_error or not isinstance(detail.data, dict):
             return _err("PLAN_UNAVAILABLE", "Lab plan cannot be verified; no write.")
         plan = detail.data
         if (plan.get("planId") != plan_id
             or plan.get("title") != plan_title
-            or (plan.get("startDate") or "")[:10] != "2027-08-02"
-            or plan.get("workoutCount") != 2
+            or (plan.get("startDate") or "")[:10] != "2026-10-07"
+            or plan.get("workoutCount") != expected_count
+            or plan.get("isPublic") is not False
+            or plan.get("planPersonId") != plan_person_id
             or plan.get("price") not in (None, 0)):
             return _err("PROTECTED_RESOURCE",
                         "Lab identity, privacy, anchor or prior count changed.")
@@ -976,14 +1071,26 @@ async def tp_create_strength_plan_lab_probe(dry_run: bool = True) -> dict[str, A
                 calendar_id = int(raw.get("calendarId"))
             except (ValueError, TypeError, KeyError, IndexError):
                 correct, calendar_id = False, 0
-            if not correct or calendar_id <= 0:
+            if not correct or calendar_id != plan_person_id:
                 return _err("SOURCE_UNVERIFIED",
                             "Source exercise, 1x7 dose or plan calendar ID not verified.")
+            route = f"{STRENGTH_API_BASE}/rx/activity/v1/plans/{plan_id}/workouts"
+            slot_url = f"{route}/{trial_date}/2027-08-06"
+            slot_before = await h.get(slot_url, headers=_headers(access))
+            if slot_before.status_code != 200:
+                return _err("NATIVE_MEMBERSHIP_UNAVAILABLE", "Could not inspect the native LAB slot.")
+            slot = slot_before.json()
+            slot = slot.get("data") if isinstance(slot, dict) else slot
+            if not isinstance(slot, list) or any(not isinstance(row, dict) for row in slot):
+                return _err("NATIVE_MEMBERSHIP_BAD_SHAPE", "Unexpected native LAB slot format.")
+            if any(row.get("title") == trial_title for row in slot):
+                return _err("ALREADY_EXISTS_IN_TARGET", "The exact LAB trial already exists.")
+
             if dry_run:
                 return {
                     "success": True, "dry_run": True, "plan_id": plan_id,
                     "source_workout_id": sample_id,
-                    "source_calendar_matches_plan": calendar_id == plan_id,
+                    "source_calendar_matches_plan": True,
                     "observed_provider_route":
                         f"/rx/activity/v1/plans/{plan_id}/workouts/save",
                     "planned_date": trial_date, "planned_title": trial_title,
@@ -1023,16 +1130,25 @@ async def tp_create_strength_plan_lab_probe(dry_run: bool = True) -> dict[str, A
             native = check.json().get("data") or {}
             refreshed = await client.get(f"/plans/v1/plans/{plan_id}")
             updated = refreshed.data if not refreshed.is_error else {}
+            member_response = await h.get(slot_url, headers=_headers(access))
+            members = member_response.json() if member_response.status_code == 200 else None
+            members = members.get("data") if isinstance(members, dict) else members
             return {
                 "success": (
                     native.get("workoutType") == "StructuredStrength"
                     and native.get("title") == trial_title
-                    and updated.get("workoutCount") == 3
+                    and native.get("calendarId") == plan_person_id
+                    and str(native.get("prescribedDate") or "")[:10] == trial_date
+                    and (native.get("snapshot") or {}).get("totalSets") == 1
+                    and isinstance(members, list)
+                    and sum(isinstance(row, dict) and str(row.get("id")) == new_id for row in members) == 1
+                    and isinstance(updated, dict)
+                    and updated.get("workoutCount") == expected_count + 1
                 ),
                 "plan_id": plan_id, "workout_id": new_id,
                 "native_type": native.get("workoutType"),
                 "title": native.get("title"),
-                "workout_count_after": updated.get("workoutCount"),
+                "workout_count_after": (updated or {}).get("workoutCount"),
                 "provider_acknowledged": True,
                 "manual_plan_ui_confirmation_still_required": True,
                 "never_retry_without_inspection": True,

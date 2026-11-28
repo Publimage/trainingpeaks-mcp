@@ -1520,11 +1520,12 @@ TOOLS = [
         name="tp_get_library_items",
         description=(
             "List the workout templates in one library (slim listing). library_id from tp_get_libraries. For a "
-            "template's full interval structure use tp_get_library_item."
+            "template's full interval structure use tp_get_library_item. "
+            "Set native_strength to list native Strength Builder templates and their copy/move item IDs."
         ),
         input_schema={
             "type": "object",
-            "properties": {"library_id": {"type": "string"}},
+            "properties": {"library_id": {"type": "string"}, "native_strength": {"type": "boolean"}},
             "required": ["library_id"],
         },
     ),
@@ -1924,6 +1925,22 @@ TOOLS = [
                         "Blocks in the same shape as tp_create_strength_workout. "
                         "Omit to leave the existing structure untouched."
                     ),
+                },
+                "prescription_edits": {
+                    "type": "array",
+                    "minItems": 1,
+                    "items": {
+                        "type": "object",
+                        "properties": {
+                            "block_id": {"type": "string"},
+                            "prescription_id": {"type": "string"},
+                            "set_id": {"type": "string"},
+                            "parameter": {"type": "string"},
+                            "value": {"type": ["string", "number"]},
+                        },
+                        "required": ["block_id", "prescription_id", "set_id", "parameter", "value"],
+                    },
+                    "description": "Edit existing prescribed set values in place, using native IDs.",
                 },
                 "title": {"type": "string", "description": "Optional new title."},
                 "instructions": {"type": "string", "description": "Optional new instructions."},
@@ -2475,7 +2492,8 @@ async def _h_update_strength(args):
         title=args.get("title"), instructions=args.get("instructions"),
         mode=args.get("mode", "replace"),
         mark_complete=bool(args.get("mark_complete", False)),
-        dry_run=bool(args.get("dry_run", False)))
+        dry_run=bool(args.get("dry_run", False)),
+        prescription_edits=args.get("prescription_edits"))
 
 @_handler("tp_delete_strength_workout")
 async def _h_delete_strength(args):
@@ -2776,7 +2794,8 @@ async def _h_zone_methods(args): return await tp_get_zone_methods(metric=args.ge
 async def _h_get_libs(args): return await tp_get_libraries()
 
 @_handler("tp_get_library_items")
-async def _h_get_lib_items(args): return await tp_get_library_items(library_id=args["library_id"])
+async def _h_get_lib_items(args):
+    return await tp_get_library_items(library_id=args["library_id"], native_strength=args.get("native_strength", False))
 
 @_handler("tp_get_ironman_publisher_status")
 async def _h_ironman_publisher_status(args):

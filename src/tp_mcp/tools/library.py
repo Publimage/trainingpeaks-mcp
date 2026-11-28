@@ -15,6 +15,7 @@ from tp_mcp.tools.exercise_media_gate import (
     assert_exercise_media_ready,
     normalize_media_sport,
 )
+from tp_mcp.tools.organization import get_native_strength_library_items
 
 logger = logging.getLogger("tp-mcp")
 
@@ -313,7 +314,7 @@ async def tp_get_libraries() -> dict[str, Any]:
         return {"libraries": libraries, "count": len(libraries)}
 
 
-async def tp_get_library_items(library_id: str) -> dict[str, Any]:
+async def tp_get_library_items(library_id: str, native_strength: bool = False) -> dict[str, Any]:
     """List templates in a workout library.
 
     Args:
@@ -333,6 +334,8 @@ async def tp_get_library_items(library_id: str) -> dict[str, Any]:
         }
 
     async with TPClient() as client:
+        if native_strength:
+            return await get_native_strength_library_items(client, int(validated.workout_id))
         athlete_id = await client.ensure_athlete_id()
         if not athlete_id:
             return {

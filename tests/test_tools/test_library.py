@@ -584,3 +584,24 @@ class TestLibraryPlannedDistance:
             )
         assert result["error_code"] == "VALIDATION_ERROR"
         client.post.assert_not_called()
+
+
+async def test_native_strength_library_lists_native_copy_ids():
+    rows = [
+        {"id": "550", "title": "Strength", "workout": {
+            "workoutType": "StructuredStrength", "blocks": [{"blockType": "Circuit"}],
+        }},
+        {"id": "551", "workout": {"workoutType": "StructuredBike"}},
+    ]
+    with (
+        patch("tp_mcp.tools.library.TPClient") as factory,
+        patch("tp_mcp.tools.organization._native_session", return_value=(AsyncMock(), {}, None)),
+        patch("tp_mcp.tools.organization._read_native_items_http", return_value=(rows, None)) as read,
+    ):
+        result = await tp_get_library_items("3890637", native_strength=True)
+    assert result == {"library_id": "3890637", "count": 1, "items": [{
+        "item_id": "550", "title": "Strength", "workout_type": "StructuredStrength",
+        "instructions": None, "block_count": 1,
+    }]}
+    assert read.await_args.args[-1] == 3890637
+    factory.return_value.__aenter__.return_value.get.assert_not_called()

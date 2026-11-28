@@ -812,6 +812,35 @@ async def _read_native_items_http(
         return None, _error("API_ERROR", "Native Strength library returned invalid JSON.")
 
 
+async def get_native_strength_library_items(
+    client: TPClient, library_id: int,
+) -> dict[str, Any]:
+    """List native Strength Builder templates with their provider item IDs."""
+    http, headers, err = await _native_session(client)
+    if err or http is None or headers is None:
+        return err or _error("AUTH_INVALID", "Native library session unavailable.")
+    async with http:
+        rows, err = await _read_native_items_http(http, headers, library_id)
+    if err:
+        return err
+    items = []
+    for row in rows or []:
+        workout = row.get("workout")
+        if not isinstance(workout, dict) or workout.get("workoutType") != "StructuredStrength":
+            continue
+        item_id = _native_item_id(row)
+        if item_id is None:
+            return _error("PROVIDER_DRIFT", "A native Strength template has no valid item ID.")
+        items.append({
+            "item_id": str(item_id),
+            "title": row.get("title") or workout.get("title"),
+            "workout_type": "StructuredStrength",
+            "instructions": workout.get("instructions"),
+            "block_count": len(workout.get("blocks") or []),
+        })
+    return {"library_id": str(library_id), "count": len(items), "items": items}
+
+
 async def _resolve_library_item(
     client: TPClient,
     http: httpx.AsyncClient,
