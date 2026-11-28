@@ -2378,6 +2378,14 @@
       "scope": "trainingpeaks:athlete:4480273:note:100766794:winter8-start-native-pdf-original-only",
       "script": "scripts/ironman_jobs/athlete_native_note_pdf_publish.py",
       "test": "tests/test_athlete_native_note_pdf_publish.py"
+    },
+    {
+      "name": "reviewed_workout_comment_cleanup_v1",
+      "mode": "GUARDED_WRITE",
+      "owner_id": 2116886,
+      "scope": "trainingpeaks:athlete:6757136:delete-four-owned-exercise-video-comments-322550499-322550519",
+      "script": "scripts/ironman_jobs/reviewed_workout_comment_cleanup.py",
+      "test": "tests/test_reviewed_workout_comment_cleanup.py"
     }
   ]
 }
