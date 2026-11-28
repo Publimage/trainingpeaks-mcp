@@ -1015,18 +1015,25 @@ async def tp_create_strength_plan_lab_probe(dry_run: bool = True) -> dict[str, A
     plan_title = "[MCP TEST] TP Native Strength Plan Route 2026-10-09"
     sample_id = "33903234"
     trial_date = "2027-08-05"
+    plan_person_id = 6678164
+    expected_count = 6
     trial_title = "[MCP TEST] Native Strength Plan route - Goblet 1x7"
     if type(dry_run) is not bool:
         return _err("VALIDATION_ERROR", "dry_run must be boolean.")
     async with TPClient() as client:
+        owner = await client._get_user_data()
+        if not isinstance(owner, dict) or owner.get("personId") != 2116886:
+            return _err("PROTECTED_RESOURCE", "Lab owner does not match.")
         detail = await client.get(f"/plans/v1/plans/{plan_id}")
         if detail.is_error or not isinstance(detail.data, dict):
             return _err("PLAN_UNAVAILABLE", "Lab plan cannot be verified; no write.")
         plan = detail.data
         if (plan.get("planId") != plan_id
             or plan.get("title") != plan_title
-            or (plan.get("startDate") or "")[:10] != "2027-08-02"
-            or plan.get("workoutCount") != 2
+            or (plan.get("startDate") or "")[:10] != "2026-10-07"
+            or plan.get("workoutCount") != expected_count
+            or plan.get("isPublic") is not False
+            or plan.get("planPersonId") != plan_person_id
             or plan.get("price") not in (None, 0)):
             return _err("PROTECTED_RESOURCE",
                         "Lab identity, privacy, anchor or prior count changed.")
@@ -1064,14 +1071,26 @@ async def tp_create_strength_plan_lab_probe(dry_run: bool = True) -> dict[str, A
                 calendar_id = int(raw.get("calendarId"))
             except (ValueError, TypeError, KeyError, IndexError):
                 correct, calendar_id = False, 0
-            if not correct or calendar_id <= 0:
+            if not correct or calendar_id != plan_person_id:
                 return _err("SOURCE_UNVERIFIED",
                             "Source exercise, 1x7 dose or plan calendar ID not verified.")
+            route = f"{STRENGTH_API_BASE}/rx/activity/v1/plans/{plan_id}/workouts"
+            slot_url = f"{route}/{trial_date}/2027-08-06"
+            slot_before = await h.get(slot_url, headers=_headers(access))
+            if slot_before.status_code != 200:
+                return _err("NATIVE_MEMBERSHIP_UNAVAILABLE", "Could not inspect the native LAB slot.")
+            slot = slot_before.json()
+            slot = slot.get("data") if isinstance(slot, dict) else slot
+            if not isinstance(slot, list) or any(not isinstance(row, dict) for row in slot):
+                return _err("NATIVE_MEMBERSHIP_BAD_SHAPE", "Unexpected native LAB slot format.")
+            if any(row.get("title") == trial_title for row in slot):
+                return _err("ALREADY_EXISTS_IN_TARGET", "The exact LAB trial already exists.")
+
             if dry_run:
                 return {
                     "success": True, "dry_run": True, "plan_id": plan_id,
                     "source_workout_id": sample_id,
-                    "source_calendar_matches_plan": calendar_id == plan_id,
+                    "source_calendar_matches_plan": True,
                     "observed_provider_route":
                         f"/rx/activity/v1/plans/{plan_id}/workouts/save",
                     "planned_date": trial_date, "planned_title": trial_title,
@@ -1111,16 +1130,25 @@ async def tp_create_strength_plan_lab_probe(dry_run: bool = True) -> dict[str, A
             native = check.json().get("data") or {}
             refreshed = await client.get(f"/plans/v1/plans/{plan_id}")
             updated = refreshed.data if not refreshed.is_error else {}
+            member_response = await h.get(slot_url, headers=_headers(access))
+            members = member_response.json() if member_response.status_code == 200 else None
+            members = members.get("data") if isinstance(members, dict) else members
             return {
                 "success": (
                     native.get("workoutType") == "StructuredStrength"
                     and native.get("title") == trial_title
-                    and updated.get("workoutCount") == 3
+                    and native.get("calendarId") == plan_person_id
+                    and str(native.get("prescribedDate") or "")[:10] == trial_date
+                    and (native.get("snapshot") or {}).get("totalSets") == 1
+                    and isinstance(members, list)
+                    and sum(isinstance(row, dict) and str(row.get("id")) == new_id for row in members) == 1
+                    and isinstance(updated, dict)
+                    and updated.get("workoutCount") == expected_count + 1
                 ),
                 "plan_id": plan_id, "workout_id": new_id,
                 "native_type": native.get("workoutType"),
                 "title": native.get("title"),
-                "workout_count_after": updated.get("workoutCount"),
+                "workout_count_after": (updated or {}).get("workoutCount"),
                 "provider_acknowledged": True,
                 "manual_plan_ui_confirmation_still_required": True,
                 "never_retry_without_inspection": True,
