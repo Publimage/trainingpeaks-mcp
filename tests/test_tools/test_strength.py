@@ -1,5 +1,6 @@
 """Tests for structured strength workout tools."""
 
+from copy import deepcopy
 from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
@@ -12,6 +13,7 @@ from tp_mcp.tools.strength import (
     _input_format,
     _min,
     _validate_blocks,
+    tp_create_strength_plan_lab_probe,
     tp_create_strength_workout,
     tp_delete_strength_workout,
     tp_get_strength_summary,
@@ -621,3 +623,84 @@ class TestUpdateStrength:
         r = await self._run(http, workout_id="24373159", blocks=_BLOCKS)
         assert r["error_code"] == "API_ERROR"
         assert "bad" in r["message"]
+
+
+def _completed_workout_with_prescription():
+    doc = _garmin_doc()
+    doc["blocks"] = _build_payload(TEST_ATHLETE_ID, "2026-08-02", "Strength", _BLOCKS, None)["blocks"]
+    block = doc["blocks"][0]
+    prescription = block["prescriptions"][0]
+    planned_set = prescription["sets"][0]
+    planned_set["isComplete"] = True
+    planned_set["parameterValues"][0]["executedValue"] = "9"
+    edit = {"block_id": block["id"], "prescription_id": prescription["id"],
+            "set_id": planned_set["id"], "parameter": "Reps", "value": 12}
+    return doc, edit
+
+
+class TestPrescriptionEdits:
+    _run = TestUpdateStrength._run
+
+    async def test_updates_only_prescription_and_verifies_history(self):
+        doc, edit = _completed_workout_with_prescription()
+        expected = deepcopy(doc)
+        expected["blocks"][0]["prescriptions"][0]["sets"][0]["parameterValues"][0]["prescribedValue"] = "12"
+        http = _mock_get_then_post(doc)
+        persisted = MagicMock(status_code=200)
+        persisted.json.return_value = {"data": expected}
+        http.get.side_effect = [http.get.return_value, persisted]
+        result = await self._run(http, workout_id=doc["id"], prescription_edits=[edit])
+        assert result["readback_verified"]
+        assert _posted(http) == expected
+        assert http.get.await_count == 2
+
+    async def test_readback_mismatch_is_reported(self):
+        doc, edit = _completed_workout_with_prescription()
+        http = _mock_get_then_post(doc)
+        persisted = MagicMock(status_code=200)
+        persisted.json.return_value = {"data": deepcopy(doc)}
+        http.get.side_effect = [http.get.return_value, persisted]
+        result = await self._run(http, workout_id=doc["id"], prescription_edits=[edit])
+        assert result["error_code"] == "READBACK_FAILED"
+        assert http.post.await_count == 1
+
+    async def test_dry_run_and_invalid_batch_do_not_write(self):
+        doc, edit = _completed_workout_with_prescription()
+        original = deepcopy(doc)
+        http = _mock_get_then_post(doc)
+        result = await self._run(http, workout_id=doc["id"], prescription_edits=[
+            edit, dict(edit, set_id="missing"),
+        ])
+        assert result["error_code"] == "VALIDATION_ERROR"
+        assert doc == original
+        result = await self._run(http, workout_id=doc["id"], prescription_edits=[edit], dry_run=True)
+        assert result["dry_run"]
+        http.post.assert_not_awaited()
+
+
+async def test_plan_lab_probe_checks_native_slot_before_writing():
+    sample = _build_payload(6678164, "2027-08-04", "Sample", [
+        {"exercises": [{"id": "144", "sets": [{"Reps": 7}]}]},
+    ], None)
+    sample["id"] = "33903234"
+    sample["blocks"][0]["prescriptions"][0]["exercise"]["title"] = "Goblet Squat"
+    http = AsyncMock()
+    http.get.side_effect = [
+        MagicMock(status_code=200, json=lambda: {"data": sample}),
+        MagicMock(status_code=200, json=lambda: {"data": []}),
+    ]
+    with patch("tp_mcp.tools.strength.TPClient") as factory:
+        client = _mock_tp_client()
+        client._get_user_data = AsyncMock(return_value={"personId": 2116886})
+        client.get = AsyncMock(return_value=APIResponse(success=True, data={
+            "planId": 684543, "planPersonId": 6678164, "isPublic": False,
+            "title": "[MCP TEST] TP Native Strength Plan Route 2026-10-09",
+            "startDate": "2026-10-07", "workoutCount": 6,
+        }))
+        factory.return_value.__aenter__.return_value = client
+        with patch("tp_mcp.tools.strength.httpx.AsyncClient") as transport:
+            transport.return_value.__aenter__.return_value = http
+            result = await tp_create_strength_plan_lab_probe()
+    assert result["source_calendar_matches_plan"]
+    assert http.get.await_args.args[0].endswith("/plans/684543/workouts/2027-08-05/2027-08-06")
+    http.post.assert_not_awaited()

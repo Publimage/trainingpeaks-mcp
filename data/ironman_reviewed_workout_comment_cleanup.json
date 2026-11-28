@@ -1,0 +1,37 @@
+{
+  "schema": "IRONMAN_REVIEWED_WORKOUT_COMMENT_CLEANUP_V1",
+  "owner_id": 2116886,
+  "athlete_id": 6757136,
+  "expected_marker": "VIDEO ESERCIZI TECNICI (link apribili dai commenti)",
+  "entries": [
+    {
+      "workout_id": 4081853605,
+      "comment_id": 322550499,
+      "expected_urls": [
+        "https://youtu.be/o0ffl059C1Q"
+      ]
+    },
+    {
+      "workout_id": 4081855488,
+      "comment_id": 322550505,
+      "expected_urls": [
+        "https://youtu.be/3WYyowAvb5U"
+      ]
+    },
+    {
+      "workout_id": 4081857186,
+      "comment_id": 322550512,
+      "expected_urls": [
+        "https://youtu.be/o0ffl059C1Q",
+        "https://youtu.be/3WYyowAvb5U"
+      ]
+    },
+    {
+      "workout_id": 4081858052,
+      "comment_id": 322550519,
+      "expected_urls": [
+        "https://youtu.be/o0ffl059C1Q"
+      ]
+    }
+  ]
+}

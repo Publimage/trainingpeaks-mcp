@@ -16,6 +16,12 @@ from tp_mcp.tools._validation import (
     WorkoutIdInput,
     format_validation_error,
 )
+from tp_mcp.tools.exercise_media_gate import (
+    ExerciseMediaGateError,
+    assert_exercise_description_preserved,
+    assert_exercise_media_ready,
+    normalize_media_sport,
+)
 from tp_mcp.tools.structure import (
     build_wire_structure,
     compute_if_tss,
@@ -442,6 +448,17 @@ async def tp_create_workout(
             "message": msg,
         }
 
+    try:
+        assert_exercise_media_ready(
+            params.description, sport=normalize_media_sport(params.sport),
+            surface="athlete-calendar:create",
+            title=params.title,
+            structure=params.structure if params.structure is not None else params.structured_workout,
+        )
+    except ExerciseMediaGateError as exc:
+        return {"isError": True, "error_code": "EXERCISE_MEDIA_NOT_READY",
+                "message": str(exc)}
+
     family_id, type_id = SPORT_TYPE_MAP[params.sport]
 
     structure_payload = _prepare_structure_payload(params.structure)
@@ -708,6 +725,21 @@ async def tp_update_workout(
         elif raw_structure_payload is not None:
             existing["structure"] = raw_structure_payload
 
+        # Keep old workouts editable without requiring retroactive mass fixes:
+        # validate only when instructions are being rewritten.
+        if params.description is not None or params.structure is not None or params.structured_workout is not None:
+            try:
+                assert_exercise_media_ready(
+                    existing.get("description"),
+                    sport=normalize_media_sport(existing.get("workoutTypeValueId")),
+                    surface="athlete-calendar:update",
+                    title=str(existing.get("title") or ""),
+                    structure=existing.get("structure"),
+                )
+            except ExerciseMediaGateError as exc:
+                return {"isError": True, "error_code": "EXERCISE_MEDIA_NOT_READY",
+                        "message": str(exc)}
+
         # PUT updated workout
         put_endpoint = f"/fitness/v6/athletes/{athlete_id}/workouts/{params.workout_id}"
         put_response = await client.put(put_endpoint, json=existing)
@@ -879,6 +911,23 @@ async def tp_copy_workout(
                 payload["structure"] = json.dumps(structure_val)
             else:
                 payload["structure"] = structure_val
+
+        # A copy must not silently propagate broken drill instructions or
+        # drop existing media/text from its source.
+        try:
+            assert_exercise_media_ready(
+                source.get("description"),
+                sport=normalize_media_sport(source.get("workoutTypeValueId")),
+                surface="athlete-calendar:copy",
+                title=str(source.get("title") or ""),
+                structure=source.get("structure"),
+            )
+            assert_exercise_description_preserved(
+                source, payload, surface="athlete-calendar:copy",
+            )
+        except ExerciseMediaGateError as exc:
+            return {"isError": True, "error_code": "EXERCISE_MEDIA_NOT_READY",
+                    "message": str(exc)}
 
         # POST new workout
         post_endpoint = f"/fitness/v6/athletes/{athlete_id}/workouts"

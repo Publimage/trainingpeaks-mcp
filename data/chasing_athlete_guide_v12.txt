@@ -1,0 +1,179 @@
+CHASING THE SLOT 24W
+GUIDA ATLETA
+Istruzioni operative per usare il piano su TrainingPeaks, interpretare test e target, gestire carico, durability, forza e race execution.
+01 | PRIMA DI INIZIARE
+CHASING THE SLOT non è un piano per il primo Ironman. Presuppone esperienza reale sulla distanza, continuità di preparazione e capacità già dimostrata di tollerare settimane impegnative.
+Profilo di ingresso
+Il riferimento del prodotto è un atleta che ha già preparato e disputato Ironman in stagioni precedenti e che, nei picchi storici, ha sostenuto circa 14–16 ore settimanali o più. È preferibile arrivare al piano con alcuni mesi continui di lavoro e settimane recenti già vicine alle 14–15 ore.
+Le tre guide
+Guida Atleta: come usare il sistema.
+Guida Settimana per Settimana: perché il piano cambia e come si collegano gli stimoli.
+Guida Fueling & Nutrizione: alimentazione quotidiana, gut training, idratazione e strategia gara.
+Il primo controllo pratico
+1. Apri la nota START | Come usare Chasing the Slot nel primo lunedì.
+2. Verifica che le 24 settimane terminino sulla tua gara.
+3. Controlla FTP, soglie di corsa, unità e dispositivi collegati.
+4. Leggi il workout completo prima di eseguire il primo blocco strutturato.
+5. Usa i test previsti per confermare i riferimenti, non per inseguire numeri migliori a ogni costo.
+Se arrivi da un periodo discontinuo, da infortunio o da settimane molto inferiori al carico previsto, non usare W1 come se lo stato di partenza fosse irrilevante. Il piano è avanzato, ma la dose deve restare compatibile con la tua condizione reale.
+02 | COME LEGGERE IL CALENDARIO
+Il piano non cresce per semplice somma di minuti. Cambiano funzione, densità, posizione dei lunghi, specificità e costo complessivo.
+Prima individua la funzione: recovery/easy, endurance e lungo, quality o test, specifico Ironman, brick, strength, rehearsal e taper. Poi guarda il contesto: cosa è successo il giorno prima, quale seduta condiziona il weekend, quanto recupero hai prima del prossimo key day, se corsa e bici lunga sono ravvicinate e se il fueling è parte esplicita del compito.
+Simboli e campi importanti
+◆  FONDAMENTALE: seduta ad alta priorità nel microciclo. Non significa necessariamente la più dura: segnala la funzione da preservare quando il microciclo va adattato.
+↳  BRICK: seconda frazione collegata alla prima, normalmente la corsa dopo la bici.
+◎  TEST/BENCHMARK: protocollo standardizzato da eseguire in condizioni il più possibile confrontabili.
+I simboli non si sommano sullo stesso titolo: ◎ e ↳ prevalgono su ◆. Sono indicatori contestuali del Training Plan e non fanno parte del titolo madre della Workout Library.
+Il lunedì non è un OFF automatico
+Nel CHASING il lunedì può contenere lavoro facile o allenante. Il riposo nasce dalla funzione del microciclo e dalla risposta reale, non da una regola fissa del giorno della settimana.
+Doppie sedute
+Due sessioni nella stessa giornata non sono automaticamente una doppia qualità. Mantieni la funzione di ciascuna, separale quando il calendario le presenta come sedute distinte e considera alimentazione e recupero fra le due come parte dell’esecuzione.
+03 | INTENSITÀ: NUMERI E PERCEZIONE
+Il CHASING usa numeri più precisi, ma non li trasforma in verità assolute. Potenza, passo, frequenza cardiaca e RPE devono raccontare la stessa seduta.
+RPE 1–2: recupero e movimento molto facile.
+RPE 2–3: easy/endurance sotto LT1, respirazione e gesto controllati.
+RPE 4–5: steady e lavoro specifico controllato.
+RPE 6–7: qualità prossima alla soglia quando prescritta.
+RPE 8–10: high-aerobic, VO2 o test, solo nelle sedute che lo richiedono.
+Bici
+Il Workout Builder usa soprattutto %FTP come prescrizione primaria. L’RPE resta il controllo secondario. Nei blocchi specifici CHASING, Ironman Pace è 71–75% FTP e Ironman Pace+ 76–80% FTP. Sono fasce di lavoro, non previsione automatica della media sui 180 km.
+Corsa e nuoto
+Nella corsa, quando previsto, il Builder usa riferimenti di soglia/pace individuali con RPE e meccanica come controllo. Nel nuoto prevalgono metri, recuperi, RPE e il riferimento del T1500/CSS quando realmente applicabile.
+FTP non coincide automaticamente con LT2 e LT1 non è una percentuale fissa universale di FTP. Se target e risposta reale divergono chiaramente, verifica prima fatica, caldo, vento, pendenza, alimentazione e affidabilità dei dati.
+04 | TEST E RETEST
+I test servono a rendere più credibile la prescrizione successiva. Non sono una gara aggiunta alla settimana.
+W1 — Nuoto: T1500 iniziale dentro seduta da 2500 m.
+W1 — Corsa: 5 km come riferimento prestativo e di pacing.
+W1 — Bici: 20' di miglior potenza media sostenibile in protocollo da 60'.
+W5 — Nuoto e bici: retest T1500 e retest 20' bici.
+W9 — Nuoto: nuovo T1500.
+W10 — Bici: retest FTP su 20' nel protocollo iniziale, mantenendo il richiamo in salita del martedì.
+W13 — Corsa: retest 5 km.
+W17 — Batteria dopo scarico W16: retest corsa 5 km lunedì, nuoto T1500 martedì (3000 m totali), bici FTP P20 giovedì; sedute complementari facili e forza venerdì.
+Regola di aggiornamento
+Aggiorna FTP, passo di soglia o riferimenti di nuoto soltanto se il test è rappresentativo e coerente con le sedute recenti. Registra condizioni, dispositivo, RPE e gestione dello sforzo. Un risultato anomalo non obbliga a riscrivere le zone.
+Nei retest prova a replicare sorgente di potenza, ambiente, orario, alimentazione e protocollo. La qualità del confronto è parte del dato.
+05 | TRAININGPEAKS E DISPOSITIVI
+Prima del primo workout strutturato verifica FTP bici, zone corsa, unità, profili sport del device e sincronizzazione senza doppio invio delle attività.
+Dopo la sincronizzazione confronta il primo blocco sul dispositivo con TrainingPeaks e controlla recuperi, secondi, watt, metri e ripetizioni. Se compare un target assurdo, verifica soglie e unità prima di modificare il workout.
+La precisione del Builder dipende dai tuoi riferimenti
+Un intervallo al 75% FTP è preciso solo se FTP e sorgente di potenza sono credibili. Lo stesso vale per la corsa basata sulla velocità o passo di soglia.
+TrainingPeaks è anche uno strumento di rilettura. Usa commenti e dati eseguiti per annotare RPE, condizioni, alimentazione, qualità del gesto e recupero. Il numero isolato non sostituisce il contesto.
+06 | NUOTO: METRI, RITMO E ATTREZZI
+Nel CHASING il nuoto resta una disciplina completa: tecnica, qualità selettiva ed endurance del gesto convivono, senza trasformare tre contatti in tre sedute dure.
+Tecnica / economia
+Assetto, respirazione, presa e ritorno al gesto completo. I drill devono risolvere un problema osservabile.
+Qualità selettiva
+Ritmi sostenuti o CSS quando il riferimento è valido, con recuperi e metri espliciti.
+Endurance
+Serie medio-lunghe, continuità tecnica e controllo della bracciata sotto fatica.
+Attrezzi
+Pull buoy: focus su assetto e trazione; non sostituisce sistematicamente il nuoto completo.
+Palette piccole: feedback sulla presa e forza specifica; evitare con dolore alla spalla o tecnica instabile.
+Pinnette corte: supporto a coordinazione, assetto e drill; controllare tolleranza di polpaccio e Achille.
+Warm-up a secco opzionale
+4–8 minuti di mobilità dinamica per torace, spalle e scapole possono essere utili se non creano fatica. Non sostituiscono il riscaldamento in acqua e non vanno aggiunti come carico obbligatorio nascosto.
+07 | CORSA: DRILLS E COSTO MECCANICO
+Nella corsa avanzata il limite non è sempre il fiato. Appoggio, tessuti, rigidità e qualità del gesto possono diventare il fattore che decide quanto lavoro è realmente utile.
+Prima di una seduta qualitativa usa una progressione semplice: corsa facile, mobilità dinamica, eventualmente pochi drills o strides già familiari. Evita stretching statico lungo immediatamente prima di lavori dinamici.
+Drills possibili: A-march / A-skip quando appropriati, ankling, strides rilassati, micro-reattività o corda solo se prevista e tollerata.
+Regola di dose
+Inserisci gli elementi tecnici dentro la durata prevista quando indicato. Non trasformare una corsa easy in una seduta pliometrica. Riduci o ometti con DOMS, dolore o peggioramento della tecnica.
+Quando il lungo di corsa precede una grande bici, deve lasciare la giornata successiva allenabile. Se l’appoggio si altera o il dolore cresce, la funzione del microciclo viene prima del minutaggio.
+08 | FORZA E INTERFERENZA
+La forza è programmata in modo nativo e progressivo. Il suo valore dipende dalla qualità dell’esecuzione e dalla capacità di non compromettere nuoto, bici e corsa.
+Nel workout trovi esercizi e varianti, serie, ripetizioni o durata, RIR/RPE o indicazione del carico, recupero fra serie quando necessario, pausa prima dell’esercizio successivo, video e note tecniche dove previsti.
+Progressione del piano
+Le prime fasi costruiscono e consolidano forza reale; la parte specifica passa a mantenimento e dose minima efficace. Nel piano attuale non c’è nuova forza strutturata nelle ultime tre settimane W22–W24.
+Interferenza
+Evita cedimento e DOMS deliberati vicino a lungo corsa, bike quality o weekend specifici. Se il carico endurance cresce, la forza non deve essere mantenuta per orgoglio di calendario: si riduce la dose conservando il segnale utile.
+09 | AERO, BRICK E DURABILITY
+Durability significa mantenere output, tecnica, alimentazione e controllo quando cresce il lavoro accumulato. Non coincide con “resistere al dolore”.
+Posizione aero
+Ha valore se riesci a respirare, alimentarti, controllare la bici e produrre potenza sostenibile. Una posizione più aggressiva ma instabile dopo due ore può essere meno utile di una leggermente meno chiusa ma mantenibile.
+Brick
+Serve a leggere che cosa la bici lascia alla corsa: appoggio, respirazione, stomaco, ritmo e lucidità. I primi minuti non sono una gara per “sbloccare” le gambe.
+Tre piani da osservare nei lunghi
+1. Output: potenza o passo.
+2. Costo interno: frequenza cardiaca, respirazione, RPE.
+3. Esecuzione: posizione, cadenza, tecnica, fueling e capacità di continuare a decidere bene.
+Se per mantenere gli stessi watt devi irrigidirti, smetti di mangiare o perdi controllo, la seduta sta dicendo qualcosa che la sola potenza media non mostra.
+10 | FUELING: COME LEGGERE I TARGET
+Ogni workout contiene indicazioni coerenti con la propria funzione. La Guida Fueling & Nutrizione fornisce il quadro completo.
+Routine / easy
+Alimentazione quotidiana sufficiente, acqua secondo sete e snack quando il pasto è lontano. Nessun bisogno di creare deliberatamente carenza energetica.
+Quality / test
+Arriva con carboidrati disponibili e routine replicabile. Standardizza pre-fueling, caffeina e prodotti quando vuoi confrontare i test.
+Long / specific
+Inizia presto, distribuisci con regolarità e annota ciò che assumi realmente. Il target cresce solo se comfort GI, output e recupero restano credibili.
+Rehearsal
+Usa prodotti, trasporto e logistica realistici. Non introdurre il giorno della prova quantità o combinazioni mai allenate.
+Per carboidrati/ora, fluidi, sodio, gut training, race week e race day usa la guida dedicata. Se il workout prescrive un target specifico, prevale il workout.
+11 | AUTOREGOLAZIONE
+Un piano avanzato richiede più disciplina nell’adattare, non meno. La capacità di distinguere fatica normale da perdita di funzione è parte dell’esecuzione.
+Target coerenti, tecnica buona, RPE previsto: esegui quanto programmato senza aggiungere qualità extra.
+RPE molto più alto, deriva insolita, tecnica che degrada: riduci la richiesta conservando la funzione quando possibile; se non è possibile, interrompi o trasforma la seduta.
+Dolore progressivo, malattia o sintomi insoliti: non allenarti attraverso il problema. La valutazione sanitaria appropriata precede il calendario.
+Una seduta saltata: non comprimerla automaticamente nel giorno successivo.
+Più giorni persi: riparti in modo progressivo; non cercare di tornare immediatamente al volume nominale.
+Sonno, appetito, dolore, motivazione, FC, RPE, qualità del gesto e capacità di recuperare vanno letti insieme. Nessun singolo indicatore decide da solo se sei pronto.
+12 | TSS, CTL, ATL E TSB
+Sono modelli utili per descrivere il carico, ma non misurano direttamente adattamento, salute o prontezza.
+Aiutano quando le soglie sono aggiornate, i dispositivi coerenti e vengono letti come trend su più settimane. Possono ingannare con FTP o soglie obsolete, confrontando sport diversi come se costassero allo stesso modo, sottostimando forza e carico meccanico oppure cercando di “recuperare TSS” dopo sedute saltate.
+Prima il lavoro reale
+Guarda durata, intensità, appoggio, posizione, brick, alimentazione, sonno e qualità del recupero. Due giornate con TSS simile possono produrre effetti molto diversi.
+13 | LE 24 SETTIMANE IN BREVE
+W1–W4 — Calibration & Stability: riferimenti iniziali, lavoro aerobico controllato, stabilità e primo assorbimento.
+W5–W8 — Development: qualità selettiva, crescita del lavoro utile, primi segnali di durability e controllo.
+W9–W12 — Durability: endurance prolungata, aero, brick e lettura della risposta sotto fatica.
+W13–W16 — Race Specificity: Ironman Pace, Pace+, lunga durata e gestione del carico; W15 raggiunge 20 h di endurance.
+W17–W20 — Specific Utility / Rehearsal: esecuzione gara, lungo corsa fino a 150', prova generale selettiva e successivo assorbimento.
+W21–W24 — Last Peak → Taper → Race: W21 ultimo picco da 20 h di endurance, poi riduzione progressiva del carico e race week.
+Le 20 ore di W15 e W21 sono ore endurance, cioè nuoto, bici e corsa; la forza è gestita separatamente. Il volume non è l’unica progressione: cambiano anche specificità, sequenza dei lunghi, aero, brick e race execution.
+Per il dettaglio usa la Guida Settimana per Settimana.
+14 | REHEARSAL, TAPER E GARA
+Rehearsal
+La rehearsal non deve essere un Ironman intero in allenamento. Serve a verificare un sistema: materiale, posizione, potenza, alimentazione, gestione delle soste, transizione e comportamento della corsa. Scegli poche correzioni verificabili, non cambiare tutto insieme.
+Ultimo picco
+W21 è l’ultima grande esposizione. Non serve aggiungere un lungo extra o cercare una conferma della forma. Il valore della settimana dipende dalla capacità di assorbirla.
+Taper
+Da W22 il volume scende. Restano richiami brevi e familiari: servono a mantenere gesto e specificità, non a costruire nuova capacità. Sensazioni variabili nei giorni finali non sono da sole una previsione della gara.
+Race week
+Riduci le decisioni aperte: bici, scarpe, abbigliamento, prodotti, orari, percorso, meteo, deposito e zone cambio devono essere già organizzati. Le attivazioni sono brevi; non recuperare ciò che non hai fatto prima.
+15 | CHECKLIST FINALE
+Prima dell’inizio
+- Le 24 settimane terminano sulla gara corretta.
+- Ho letto la nota START e aperto le tre guide.
+- FTP e zone disponibili hanno riferimenti credibili.
+- Dispositivi e unità sono corretti.
+- So che il lunedì non è OFF per definizione.
+- Conosco la funzione dei test iniziali.
+Dopo i test
+- Ho registrato risultato, RPE, condizioni e dispositivo.
+- Ho aggiornato solo riferimenti rappresentativi.
+- Ho controllato il prossimo workout sul device.
+- Non ho aggiunto qualità per compensare il test.
+Ogni settimana
+- So quale seduta condiziona il resto del microciclo.
+- Easy e recovery restano realmente facili.
+- Controllo alimentazione e recupero fra doppie sedute.
+- Nei lunghi leggo output, costo interno ed esecuzione.
+- Non recupero automaticamente le sedute saltate.
+- Se compaiono segnali anomali, riduco prima di accumulare.
+Per eseguire: TrainingPeaks e il workout del giorno.
+Per capire il percorso: Guida Settimana per Settimana.
+Per alimentazione e gara: Guida Fueling & Nutrizione.
+Versione 1.0 · CHASING THE SLOT 24W · materiale educativo per atleta adulto esperto · non sostituisce valutazione medica o coaching individuale quando necessario.
+ 
+AGGIORNAMENTO TECNICO – TEST BICI E CALCOLO FTP (21 OTTOBRE 2026; SORGENTE EDITABILE, PDF TRAININGPEAKS NON RIGENERATO)
+Nel test da 20 minuti, usare la potenza MEDIA registrata nell'intero blocco a miglior sforzo sostenibile: FTP operativa stimata = potenza media dei 20′ × 0,95. Escludere riscaldamento, recuperi e defaticamento dal calcolo.
+In alternativa, quando un test continuo da 20′ non è praticabile, svolgere due prove da 8 minuti con circa 10′ di pedalata facile fra le due: FTP operativa stimata = 0,90 × migliore potenza MEDIA delle due prove da 8′. Non eseguire 20′ e 2×8′ come due test obbligatori nella stessa seduta.
+Per confrontare W01 e i retest successivi, mantenere se possibile stesso protocollo, misuratore di potenza, configurazione, riscaldamento, tipo di percorso/trainer e condizioni. Questi coefficienti producono stime utili per impostare le zone, non una misura diretta di LT2 o Critical Power. Dopo un retest coerente aggiornare la soglia e le zone di riferimento in TrainingPeaks.
+I test delle settimane W10 e W17, lo scarico W09 e le settimane W19–W21 sono stati aggiornati sul piano TrainingPeaks. Per i dettagli giorno per giorno, consultare la guida settimanale della release aggiornata e soprattutto il Workout Builder nel calendario.
+16 | AGGIORNAMENTO DEL PIANO — RELEASE OTTOBRE 2026
+Il calendario degli allenamenti presente su TrainingPeaks è il riferimento per giorni, durata e Builder nativo; la Guida Settimana per Settimana è stata aggiornata alla versione di rilascio.
+Nuoto. I lunghi ininterrotti principali non sono più settimanali: W11 2600 m, W13 3000 m, W15 3000 m e W19 4000 m. Le altre sedute di endurance lunga prevedono frazioni con recuperi esplicitati nel Builder; 71 nuoti complessivi. Il volume totale della seduta e la lunghezza del blocco senza pause sono grandezze diverse.
+Bici. W06 include VO2 breve 4x2', W07 4x3', W08 introduce Over-Under 2x9', W09 propone richiamo THR 2x6' in scarico a 12 h endurance. W10 ha salita 3x6' martedì e retest P20 giovedì. W16 conserva soltanto un micro-richiamo 6x1' HI-VO2 nella settimana di recupero dopo W15.
+Test W17. Il test 5 km, il T1500 e il P20 vanno eseguiti con protocolli comparabili ai precedenti e senza aumentare artificialmente il carico. La settimana ha 15h55' di endurance; la forza M45 è venerdì, non martedì.
+Picco e taper. W19 18h30' con bici lunga di 6 h e brick di 20'; W20 recupero 14h45'; W21 20 h prevalentemente facili e lungo bici domenicale con 2x40' IM Pace; W22 15h50' con specificità ridotta, poi taper W23 e W24. La forza è aggiuntiva al budget endurance e rimane nativa; in W19–W21 è collocata al lunedì.
+Questi tempi descrivono il piano commerciale, non un obbligo di completamento se recupero, dolore o condizioni non consentono la dose prescritta. I target percentuali della FTP devono essere individualizzati.

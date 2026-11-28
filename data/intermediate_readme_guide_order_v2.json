@@ -1,0 +1,27 @@
+{
+  "plan_id": 684602,
+  "plan_note_id": 2653899,
+  "library_id": 3892900,
+  "library_item_id": 14951945,
+  "title": "README FIRST | INIZIA DA QUI",
+  "old_body": "Questo è un piano IRONMAN di 24 settimane per un atleta intermedio: presuppone autonomia reale nelle tre discipline e la capacità di seguire workout strutturati, ma non presuppone che ogni giornata vada eseguita “a qualunque costo”.\n\nPRIMA DI INIZIARE\n1. Leggi LEGENDA | Come leggere il piano.\n2. Leggi INTENSITÀ | RPE, zone e soglie.\n3. Leggi TRAININGPEAKS | TSS e gli altri numeri.\n4. Leggi AUTOREGOLAZIONE | Quale dato decide davvero.\n5. Prima dei test iniziali, leggi TEST E SOGLIE | Come usare i riferimenti iniziali.\n6. Consulta la guida Fueling quando vuoi capire la logica completa: nel singolo workout prevale sempre la prescrizione specifica della seduta.\n\nCOME È COSTRUITO IL PIANO\nLa settimana organizza gli stimoli per funzione: qualità concentrata, lavoro facile davvero facile, lunghi progressivi, forza che diminuisce avvicinandosi alla gara, brick, posizione aero, fueling e specificità Ironman crescente. Le settimane di assorbimento non sono “settimane perse”: fanno parte della progressione.\n\nSE SALTI UNA SEDUTA\nNon comprimere automaticamente il calendario per recuperarla. Riprendi il flusso del piano e preserva prima la funzione delle sedute successive.\n\nSE NUMERO E SENSAZIONE NON COINCIDONO\nIl target strutturato è un riferimento, non un ordine cieco. RPE, capacità di completare il lavoro, risposta cardiaca coerente, tecnica e stato di recupero restano parte della decisione.\n\nSELF-GUIDED\nQuesto prodotto non presuppone un contatto diretto con un coach. Le note sono costruite per rendere il piano eseguibile e comprensibile in autonomia; dolore, malattia o problemi medici non vanno “allenati attraverso” e richiedono valutazione appropriata.",
+  "new_body": "Questo è un piano IRONMAN di 24 settimane per un atleta intermedio: presuppone autonomia reale nelle tre discipline e la capacità di seguire workout strutturati, ma non presuppone che ogni giornata vada eseguita “a qualunque costo”.\n\nI 3 PDF ALLEGATI — ORDINE DI LETTURA OBBLIGATORIO\n1. GUIDA ATLETA INTERMEDIATE 24W — LEGGI QUESTA PER PRIMA, dall'inizio alla fine. È il manuale operativo e il canovaccio di tutto il programma: spiega come usare TrainingPeaks, leggere le sedute, interpretare RPE, zone e test, e gestire il calendario in autonomia.\n2. GUIDA SETTIMANA PER SETTIMANA — LEGGI QUESTA DOPO LA GUIDA ATLETA. Ti accompagna nelle 24 settimane e spiega obiettivi, logica dei blocchi, progressioni e settimane di recupero.\n3. GUIDA FUELING & NUTRIZIONE — CONSULTA QUESTA PER COMPLETARE LA PREPARAZIONE. Approfondisce alimentazione, idratazione e strategia di carboidrati, da applicare insieme alle indicazioni della singola seduta.\n\nScarica tutti e tre i PDF, ma inizia dalla GUIDA ATLETA: le altre due guide si capiscono e si utilizzano meglio dopo aver letto le istruzioni generali. Nel singolo workout prevale sempre la sua prescrizione specifica.\n\nDOPO AVER LETTO LA GUIDA ATLETA — NOTE DEL CALENDARIO\n1. Leggi LEGENDA | Come leggere il piano.\n2. Leggi INTENSITÀ | RPE, zone e soglie.\n3. Leggi TRAININGPEAKS | TSS e gli altri numeri.\n4. Leggi AUTOREGOLAZIONE | Quale dato decide davvero.\n5. Prima dei test iniziali, leggi TEST E SOGLIE | Come usare i riferimenti iniziali.\n6. Consulta la guida Fueling quando vuoi capire la logica completa: nel singolo workout prevale sempre la prescrizione specifica della seduta.\n\nCOME È COSTRUITO IL PIANO\nLa settimana organizza gli stimoli per funzione: qualità concentrata, lavoro facile davvero facile, lunghi progressivi, forza che diminuisce avvicinandosi alla gara, brick, posizione aero, fueling e specificità Ironman crescente. Le settimane di assorbimento non sono “settimane perse”: fanno parte della progressione.\n\nSE SALTI UNA SEDUTA\nNon comprimere automaticamente il calendario per recuperarla. Riprendi il flusso del piano e preserva prima la funzione delle sedute successive.\n\nSE NUMERO E SENSAZIONE NON COINCIDONO\nIl target strutturato è un riferimento, non un ordine cieco. RPE, capacità di completare il lavoro, risposta cardiaca coerente, tecnica e stato di recupero restano parte della decisione.\n\nSELF-GUIDED\nQuesto prodotto non presuppone un contatto diretto con un coach. Le note sono costruite per rendere il piano eseguibile e comprensibile in autonomia; dolore, malattia o problemi medici non vanno “allenati attraverso” e richiedono valutazione appropriata.",
+  "expected_pdf_attachments": [
+    {
+      "id": 95193,
+      "size": 169368
+    },
+    {
+      "id": 95194,
+      "size": 109724
+    },
+    {
+      "id": 95228,
+      "size": 396936
+    }
+  ],
+  "source_sheet_id": "1ulKJfLdr3X2WK32XP7TSXbF90OIDXSmkjkWULpNTIgk",
+  "source_sheet_tab": "NOTES_LIBRARY",
+  "source_cell": "H2",
+  "change": "insert athlete guide first; preserve prior calendar notes guidance"
+}

@@ -1,0 +1,128 @@
+{
+  "id": "AFE-IRONMAN-PDF-VISUAL-FREEZE-1.0",
+  "date": "2026-10-15",
+  "source_of_truth": "Google Drive 24_IRONMAN_VISUAL_DESIGN_SYSTEM",
+  "status": "PARTIAL_IMPLEMENTATION: frozen RPE and symbol cards, full page-by-page match PENDING",
+  "reference_pdf": {
+    "title": "IRONMAN_Intermediate_24W_Guida_Atleta_v3_Verificata.pdf",
+    "drive_id": "1NW6BIY50CZAgUNwR14lYDIX0sJp06c3r",
+    "sha256": "7759224d295123bfdab5203dd82dfc7822228b0a3e60885a6b1003a1b4d7c938"
+  },
+  "brand": {
+    "title": "ALBERTO_FAZI_ENDURANCE_LOGO_MASTER_v1.0.png",
+    "drive_id": "1Fl8aJ5zNw8GLTan4oxxMjcv3E6OqELnh",
+    "sha256": "ad2710edac3834c467331d2497716c45f8e4cdaf37eaeb658203d531ea9ceea6",
+    "rule": "original master image or deterministic resize only"
+  },
+  "page": {
+    "format": "A4 portrait",
+    "margins_mm": {
+      "top": 16,
+      "left": 18,
+      "right": 18,
+      "bottom": 15
+    }
+  },
+  "colors": {
+    "NAVY_900": "#173B55",
+    "ORANGE_500": "#F07B24",
+    "INFO_050": "#EAF1F5",
+    "KEY_050": "#FFF0E2",
+    "SURFACE_050": "#F4F6F7",
+    "TEXT_900": "#27313A",
+    "TEXT_500": "#7A858D",
+    "BORDER_200": "#D8E0E5"
+  },
+  "type": {
+    "css": "Arial,Helvetica,sans-serif",
+    "reference_regular": "Arimo",
+    "reference_bold": "Arimo-Bold",
+    "master_logo_lettering": "raster only; never replace with font"
+  },
+  "symbols": [
+    "◆",
+    "↳",
+    "◎"
+  ],
+  "rpe": {
+    "source": "rpe_scale.svg",
+    "reference_pdf_page": 5,
+    "circles": 10,
+    "reference_circle_diameter_pt": 30.015,
+    "reference_first_center_x_pt": 75.685,
+    "reference_spacing_x_pt": 49.323,
+    "fill_color_per_item": [
+      "#EAF1F5",
+      "#EAF1F5",
+      "#EAF1F5",
+      "#EAF1F5",
+      "#173B55",
+      "#173B55",
+      "#173B55",
+      "#F07B24",
+      "#F07B24",
+      "#F07B24"
+    ],
+    "number_centered": true,
+    "caption_groups": [
+      [
+        "1–2",
+        "Recupero"
+      ],
+      [
+        "2–3",
+        "Easy / endurance"
+      ],
+      [
+        "4–5",
+        "Steady / moderato"
+      ],
+      [
+        "6–7",
+        "Qualità controllata"
+      ],
+      [
+        "8–10",
+        "Molto intenso / test"
+      ]
+    ]
+  },
+  "layout": {
+    "reference_roles_athlete_start": [
+      "cover",
+      "start",
+      "orientation",
+      "symbols",
+      "RPE",
+      "zones",
+      "swim-test",
+      "bike-test",
+      "run-test",
+      "trainingpeaks",
+      "structured-workout",
+      "microcycle",
+      "strength",
+      "specificity",
+      "fueling",
+      "autoregulatory",
+      "24week-map",
+      "race-week"
+    ],
+    "must_reuse_component_css": true,
+    "program_specific_content_editable": true
+  },
+  "qa": {
+    "automatic": [
+      "font/color/geometry contract",
+      "RPE 10 circles center and fill against approved PDF",
+      "master logo hash and proportions",
+      "A4/page counts",
+      "duplicate RPE labels"
+    ],
+    "visual": [
+      "side by side reference output for cover, symbols, RPE, zones, tables, chart, footer",
+      "no overflows on all pages"
+    ],
+    "policy": "Changed frozen geometry requires an explicit version bump and new reference approval; passing only the RPE check is NOT a complete full-document freeze"
+  }
+}
