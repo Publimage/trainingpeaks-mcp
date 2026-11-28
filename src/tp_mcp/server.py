@@ -1925,6 +1925,22 @@ TOOLS = [
                         "Omit to leave the existing structure untouched."
                     ),
                 },
+                "prescription_edits": {
+                    "type": "array",
+                    "minItems": 1,
+                    "items": {
+                        "type": "object",
+                        "properties": {
+                            "block_id": {"type": "string"},
+                            "prescription_id": {"type": "string"},
+                            "set_id": {"type": "string"},
+                            "parameter": {"type": "string"},
+                            "value": {"type": ["string", "number"]},
+                        },
+                        "required": ["block_id", "prescription_id", "set_id", "parameter", "value"],
+                    },
+                    "description": "Edit existing prescribed set values in place, using native IDs.",
+                },
                 "title": {"type": "string", "description": "Optional new title."},
                 "instructions": {"type": "string", "description": "Optional new instructions."},
                 "mode": {
@@ -2475,7 +2491,8 @@ async def _h_update_strength(args):
         title=args.get("title"), instructions=args.get("instructions"),
         mode=args.get("mode", "replace"),
         mark_complete=bool(args.get("mark_complete", False)),
-        dry_run=bool(args.get("dry_run", False)))
+        dry_run=bool(args.get("dry_run", False)),
+        prescription_edits=args.get("prescription_edits"))
 
 @_handler("tp_delete_strength_workout")
 async def _h_delete_strength(args):
