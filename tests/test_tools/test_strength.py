@@ -1,5 +1,6 @@
 """Tests for structured strength workout tools."""
 
+from copy import deepcopy
 from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
@@ -621,3 +622,56 @@ class TestUpdateStrength:
         r = await self._run(http, workout_id="24373159", blocks=_BLOCKS)
         assert r["error_code"] == "API_ERROR"
         assert "bad" in r["message"]
+
+
+def _completed_workout_with_prescription():
+    doc = _garmin_doc()
+    doc["blocks"] = _build_payload(TEST_ATHLETE_ID, "2026-08-02", "Strength", _BLOCKS, None)["blocks"]
+    block = doc["blocks"][0]
+    prescription = block["prescriptions"][0]
+    planned_set = prescription["sets"][0]
+    planned_set["isComplete"] = True
+    planned_set["parameterValues"][0]["executedValue"] = "9"
+    edit = {"block_id": block["id"], "prescription_id": prescription["id"],
+            "set_id": planned_set["id"], "parameter": "Reps", "value": 12}
+    return doc, edit
+
+
+class TestPrescriptionEdits:
+    _run = TestUpdateStrength._run
+
+    async def test_updates_only_prescription_and_verifies_history(self):
+        doc, edit = _completed_workout_with_prescription()
+        expected = deepcopy(doc)
+        expected["blocks"][0]["prescriptions"][0]["sets"][0]["parameterValues"][0]["prescribedValue"] = "12"
+        http = _mock_get_then_post(doc)
+        persisted = MagicMock(status_code=200)
+        persisted.json.return_value = {"data": expected}
+        http.get.side_effect = [http.get.return_value, persisted]
+        result = await self._run(http, workout_id=doc["id"], prescription_edits=[edit])
+        assert result["readback_verified"]
+        assert _posted(http) == expected
+        assert http.get.await_count == 2
+
+    async def test_readback_mismatch_is_reported(self):
+        doc, edit = _completed_workout_with_prescription()
+        http = _mock_get_then_post(doc)
+        persisted = MagicMock(status_code=200)
+        persisted.json.return_value = {"data": deepcopy(doc)}
+        http.get.side_effect = [http.get.return_value, persisted]
+        result = await self._run(http, workout_id=doc["id"], prescription_edits=[edit])
+        assert result["error_code"] == "READBACK_FAILED"
+        assert http.post.await_count == 1
+
+    async def test_dry_run_and_invalid_batch_do_not_write(self):
+        doc, edit = _completed_workout_with_prescription()
+        original = deepcopy(doc)
+        http = _mock_get_then_post(doc)
+        result = await self._run(http, workout_id=doc["id"], prescription_edits=[
+            edit, dict(edit, set_id="missing"),
+        ])
+        assert result["error_code"] == "VALIDATION_ERROR"
+        assert doc == original
+        result = await self._run(http, workout_id=doc["id"], prescription_edits=[edit], dry_run=True)
+        assert result["dry_run"]
+        http.post.assert_not_awaited()
